@@ -1,0 +1,140 @@
+'use client';
+
+import { useRouter } from 'next/navigation';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { Dialog } from '@/components/ui/dialog';
+import { useCan } from '@/lib/hooks';
+import { useTranslation } from '@/lib/i18n';
+import { useSkuList, useStrategies, useRecommendations } from '@/lib/queries';
+import { useCommandStore } from './command-store';
+import { NAV } from './nav';
+
+interface Item { id: string; group: string; label: string; hint?: string; href: string }
+
+function Highlight({ text, q }: { text: string; q: string }): ReactNode {
+  const i = q ? text.toLowerCase().indexOf(q.toLowerCase()) : -1;
+  if (i < 0) return text;
+  return (
+    <>
+      {text.slice(0, i)}
+      <mark className="rounded bg-brand-soft text-brand">{text.slice(i, i + q.length)}</mark>
+      {text.slice(i + q.length)}
+    </>
+  );
+}
+
+const MAX_PER_GROUP = 6;
+
+export function CommandMenu() {
+  const { open, setOpen } = useCommandStore();
+  const { t } = useTranslation();
+  const router = useRouter();
+  const can = useCan();
+  const skus = useSkuList().data;
+  const strategies = useStrategies().data;
+  const recs = useRecommendations().data;
+  const [q, setQ] = useState('');
+  const [cursor, setCursor] = useState(0);
+  const listRef = useRef<HTMLUListElement>(null);
+
+  // Global shortcut: Cmd/Ctrl+K toggles.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        useCommandStore.getState().setOpen(!useCommandStore.getState().open);
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
+  useEffect(() => { if (open) { setQ(''); setCursor(0); } }, [open]);
+
+  const items = useMemo<Item[]>(() => {
+    const needle = q.trim().toLowerCase();
+    const match = (s: string) => !needle || s.toLowerCase().includes(needle);
+    const out: Item[] = [];
+    if (can('recommendation.view')) {
+      out.push({ id: 'qa-pending', group: t('common.cmd.actions'), label: t('common.cmd.pendingApprovals'), href: '/recommendations?status=pending' });
+    }
+    if (can('strategy.create')) out.push({ id: 'qa-strategy', group: t('common.cmd.actions'), label: t('common.cmd.createStrategy'), href: '/strategy/new' });
+    if (can('deployment.view')) out.push({ id: 'qa-deploy', group: t('common.cmd.actions'), label: t('common.cmd.deployFailures'), href: '/deployment?status=failed' });
+    for (const n of NAV) if (can(n.action)) out.push({ id: `nav-${n.key}`, group: t('common.cmd.actions'), label: t(`common.nav.${n.key}`), href: n.href });
+    const filteredQuick = out.filter((i) => match(i.label));
+    const skuHits = skus
+      .filter((p) => match(p.sku) || match(p.name))
+      .slice(0, MAX_PER_GROUP)
+      .map((p) => ({ id: p.sku, group: t('common.cmd.sku'), label: p.sku, hint: p.name, href: `/catalog/${p.sku}` }));
+    const strHits = strategies
+      .filter((s) => match(s.name) || match(s.id))
+      .slice(0, MAX_PER_GROUP)
+      .map((s) => ({ id: s.id, group: t('common.cmd.strategy'), label: s.name, hint: s.id, href: `/strategy/${s.id}/edit` }));
+    const recHits = recs
+      .filter((r) => match(r.id) || match(r.sku))
+      .slice(0, MAX_PER_GROUP)
+      .map((r) => ({ id: r.id, group: t('common.cmd.recommendation'), label: r.id, hint: r.sku, href: `/recommendations/${r.id}` }));
+    return needle ? [...skuHits, ...strHits, ...recHits, ...filteredQuick] : [...filteredQuick, ...skuHits.slice(0, 3)];
+  }, [q, skus, strategies, recs, can, t]);
+
+  useEffect(() => { setCursor(0); }, [q]);
+  useEffect(() => {
+    listRef.current?.querySelector('[aria-selected="true"]')?.scrollIntoView({ block: 'nearest' });
+  }, [cursor]);
+
+  const go = (item: Item | undefined) => {
+    if (!item) return;
+    setOpen(false);
+    router.push(item.href);
+  };
+
+  const onKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'ArrowDown') { e.preventDefault(); setCursor((c) => Math.min(c + 1, items.length - 1)); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); setCursor((c) => Math.max(c - 1, 0)); }
+    else if (e.key === 'Enter') { e.preventDefault(); go(items[cursor]); }
+  };
+
+  let lastGroup = '';
+  return (
+    <Dialog open={open} onClose={() => setOpen(false)} title={t('common.cmd.open')} className="max-w-lg self-start mt-[12vh]">
+      <input
+        autoFocus
+        role="combobox"
+        aria-expanded
+        aria-controls="cmd-list"
+        aria-activedescendant={items[cursor] ? `cmd-${items[cursor].id}` : undefined}
+        value={q}
+        onChange={(e) => setQ(e.target.value)}
+        onKeyDown={onKeyDown}
+        placeholder={t('common.cmd.placeholder')}
+        className="mb-2 h-10 w-full rounded-input border border-line bg-surface px-3 text-sm"
+      />
+      {items.length === 0 ? (
+        <p className="p-4 text-center text-sm text-muted">{t('common.cmd.noResults')}</p>
+      ) : (
+        <ul id="cmd-list" role="listbox" ref={listRef} className="max-h-72 overflow-auto">
+          {items.map((it, i) => {
+            const header = it.group !== lastGroup ? it.group : null;
+            lastGroup = it.group;
+            return (
+              <li key={it.id} role="presentation">
+                {header && <p className="px-2 pb-1 pt-2 text-xs font-medium text-faint">{header}</p>}
+                <div
+                  id={`cmd-${it.id}`}
+                  role="option"
+                  aria-selected={i === cursor}
+                  onMouseMove={() => setCursor(i)}
+                  onClick={() => go(it)}
+                  className={`flex cursor-pointer items-center justify-between rounded-input px-2 py-1.5 text-sm ${i === cursor ? 'bg-brand-soft text-brand' : ''}`}
+                >
+                  <span><Highlight text={it.label} q={q.trim()} /></span>
+                  {it.hint && <span className="text-xs text-faint"><Highlight text={it.hint} q={q.trim()} /></span>}
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </Dialog>
+  );
+}

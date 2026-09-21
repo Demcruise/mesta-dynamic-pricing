@@ -1,0 +1,32 @@
+{
+  "app": { "name": "Mesta", "skip": "Skip to content", "bootstrapping": "Loading demo data…" },
+  "nav": {
+    "overview": "Overview", "catalog": "Catalog", "strategy": "Strategy", "simulation": "Simulation",
+    "recommendations": "Recommendations", "deployment": "Deployment", "monitoring": "Monitoring", "audit": "Audit",
+    "primary": "Primary navigation", "mobile": "Mobile navigation"
+  },
+  "role": { "analyst": "Analyst", "manager": "Manager", "ops_lead": "Ops Lead", "compliance": "Compliance", "switcher": "Switch role (dev)" },
+  "state": {
+    "loading": "Loading…", "error": "Something went wrong while loading data.", "retry": "Retry",
+    "empty": "No data yet.", "clearFilters": "Clear filters", "back": "Back"
+  },
+  "perm": {
+    "deniedTitle": "Access denied", "deniedBody": "The {role} role has no permission for this page.",
+    "notice": "You were redirected because you do not have permission to open that page.", "dismiss": "Dismiss"
+  },
+  "user": { "menu": "User menu", "language": "Language", "resetDemo": "Reset demo data", "theme": "Theme", "light": "Light", "dark": "Dark" },
+  "cmd": {
+    "open": "Search or jump to…", "placeholder": "Search SKUs, strategies, recommendations…", "noResults": "No results.",
+    "sku": "SKU", "strategy": "Strategy", "recommendation": "Recommendation", "actions": "Quick actions",
+    "createStrategy": "Create strategy", "pendingApprovals": "Open pending approvals", "deployFailures": "Open deployment failures"
+  },
+  "status": { "pending": "Pending", "approved": "Approved", "rejected": "Rejected", "adjusted": "Adjusted", "stale": "Stale" },
+  "delta": { "up": "Increase", "down": "Decrease", "flat": "No change" },
+  "confidence": { "high": "High", "medium": "Medium", "low": "Low", "label": "Confidence" },
+  "agent": { "agent": "Agent", "human": "Human", "rule": "Rule" },
+  "page": {
+    "overview": "Overview", "strategy": "Pricing strategy", "simulation": "Simulation", "recommendations": "AI recommendations",
+    "deployment": "Deployment", "monitoring": "Outcome monitoring", "audit": "Audit & governance",
+    "comingSoon": "This page is built in a later epic."
+  }
+}

@@ -1,0 +1,70 @@
+/* Mesta design tokens. Feature components must use these via Tailwind classes, never raw hex. */
+:root {
+  --font-ui: 'Inter', 'IBM Plex Sans', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+  --bg: #f7f8fa;
+  --bg-surface: #ffffff;
+  --bg-subtle: #eef0f4;
+  --bg-selected: #e8f0ff;
+  --text: #111827;
+  --text-muted: #4b5563;
+  --text-faint: #6b7280;
+  --border: #d9dde5;
+  --border-strong: #b8bfcc;
+
+  --brand: #2f5bea;
+  --brand-fg: #ffffff;
+  --brand-soft: #e8eeff;
+
+  --up: #0f7a3d;
+  --up-soft: #e3f5ea;
+  --down: #b42318;
+  --down-soft: #fdeceb;
+  --hold: #6b7280;
+  --hold-soft: #eef0f4;
+  --info: #175cd3;
+  --info-soft: #e8f0ff;
+  --warn: #b54708;
+  --warn-soft: #fef3e2;
+  --critical: #b42318;
+  --critical-soft: #fdeceb;
+  --agent: #7a3ff2;
+  --focus: #2f5bea;
+
+  --radius-card: 10px;
+  --radius-input: 6px;
+  --row-h: 44px;
+  --space: 4px;
+}
+
+:root[data-density='compact'] { --row-h: 34px; }
+
+:root[data-theme='dark'] {
+  --bg: #0d1117;
+  --bg-surface: #161b22;
+  --bg-subtle: #1f2630;
+  --bg-selected: #172447;
+  --text: #f0f3f6;
+  --text-muted: #b1bac4;
+  --text-faint: #8b949e;
+  --border: #30363d;
+  --border-strong: #484f58;
+  --brand: #6b8cff;
+  --brand-fg: #0d1117;
+  --brand-soft: #172447;
+  --up: #4ade80;
+  --up-soft: #12301f;
+  --down: #ff8a80;
+  --down-soft: #3a1815;
+  --hold: #9ca3af;
+  --hold-soft: #1f2630;
+  --info: #7aa7ff;
+  --info-soft: #172447;
+  --warn: #fbbf24;
+  --warn-soft: #3a2a0b;
+  --critical: #ff8a80;
+  --critical-soft: #3a1815;
+  --agent: #b794ff;
+  --focus: #8aa5ff;
+}

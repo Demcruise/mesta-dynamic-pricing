@@ -1,0 +1,32 @@
+{
+  "app": { "name": "Mesta", "skip": "Lewati ke konten", "bootstrapping": "Memuat data demo…" },
+  "nav": {
+    "overview": "Ringkasan", "catalog": "Katalog", "strategy": "Strategi", "simulation": "Simulasi",
+    "recommendations": "Rekomendasi", "deployment": "Deployment", "monitoring": "Monitoring", "audit": "Audit",
+    "primary": "Navigasi utama", "mobile": "Navigasi mobile"
+  },
+  "role": { "analyst": "Analis", "manager": "Manajer", "ops_lead": "Ops Lead", "compliance": "Kepatuhan", "switcher": "Ganti peran (dev)" },
+  "state": {
+    "loading": "Memuat…", "error": "Terjadi kesalahan saat memuat data.", "retry": "Coba lagi",
+    "empty": "Belum ada data.", "clearFilters": "Hapus filter", "back": "Kembali"
+  },
+  "perm": {
+    "deniedTitle": "Akses ditolak", "deniedBody": "Peran {role} tidak memiliki izin untuk halaman ini.",
+    "notice": "Anda dialihkan karena tidak punya izin untuk membuka halaman itu.", "dismiss": "Tutup"
+  },
+  "user": { "menu": "Menu pengguna", "language": "Bahasa", "resetDemo": "Reset data demo", "theme": "Tema", "light": "Terang", "dark": "Gelap" },
+  "cmd": {
+    "open": "Cari atau lompat ke…", "placeholder": "Cari SKU, strategi, rekomendasi…", "noResults": "Tidak ada hasil.",
+    "sku": "SKU", "strategy": "Strategi", "recommendation": "Rekomendasi", "actions": "Aksi cepat",
+    "createStrategy": "Buat strategi", "pendingApprovals": "Buka persetujuan tertunda", "deployFailures": "Buka kegagalan deployment"
+  },
+  "status": { "pending": "Tertunda", "approved": "Disetujui", "rejected": "Ditolak", "adjusted": "Disesuaikan", "stale": "Usang" },
+  "delta": { "up": "Naik", "down": "Turun", "flat": "Tetap" },
+  "confidence": { "high": "Tinggi", "medium": "Sedang", "low": "Rendah", "label": "Keyakinan" },
+  "agent": { "agent": "Agen", "human": "Manusia", "rule": "Aturan" },
+  "page": {
+    "overview": "Ringkasan", "strategy": "Strategi harga", "simulation": "Simulasi", "recommendations": "Rekomendasi AI",
+    "deployment": "Deployment", "monitoring": "Monitoring hasil", "audit": "Audit & tata kelola",
+    "comingSoon": "Halaman ini dibangun pada epic berikutnya."
+  }
+}
