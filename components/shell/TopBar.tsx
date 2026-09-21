@@ -1,6 +1,6 @@
 'use client';
 
-import { Search, User } from 'lucide-react';
+import { CircleHelp, Search, User } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { resetMestaData } from '@/lib/bootstrap';
@@ -8,6 +8,9 @@ import { useTranslation } from '@/lib/i18n';
 import { ROLES } from '@/lib/rbac';
 import { useSessionStore, useUiStore } from '@/lib/stores';
 import { useCommandStore } from './command-store';
+import { useFeedbackDialog } from './FeedbackDialog';
+import { useGlossaryStore } from './Glossary';
+import { NotificationBell } from './NotificationBell';
 import type { Role } from '@/lib/ontology';
 
 const isDev = process.env.NODE_ENV !== 'production';
@@ -52,6 +55,9 @@ function UserMenu() {
               {t(theme === 'light' ? 'common.user.dark' : 'common.user.light')}
             </Button>
           </div>
+          <Button size="sm" variant="secondary" className="mb-2 w-full" onClick={() => { useFeedbackDialog.getState().setOpen(true); setOpen(false); }}>
+            {t('common.a11y.feedback')}
+          </Button>
           {isDev && (
             <Button size="sm" variant="secondary" className="w-full" onClick={() => { resetMestaData(); setOpen(false); }}>
               {t('common.user.resetDemo')}
@@ -93,6 +99,10 @@ export function TopBar() {
             </select>
           </label>
         )}
+        <Button variant="ghost" size="icon" aria-label={t('common.a11y.help')} onClick={() => useGlossaryStore.getState().show(null)}>
+          <CircleHelp className="size-4" aria-hidden />
+        </Button>
+        <NotificationBell />
         <UserMenu />
       </div>
     </div>

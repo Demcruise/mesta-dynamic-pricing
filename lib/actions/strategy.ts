@@ -51,7 +51,7 @@ export function submitStrategy(user: UserSession, id: string) {
   if (!r.ok) return r;
   audit(user, 'strategy_submit', s);
   useNotificationStore.getState().push({
-    targetRole: 'manager', groupKey: 'strategy_pending', message: `${s.name} awaits activation`, href: '/strategy',
+    targetRole: 'manager', groupKey: 'strategy_pending', messageKey: 'common.notify.strategyPending', params: { name: s.name }, href: '/strategy',
   });
   return ok();
 }
@@ -65,7 +65,7 @@ export function activateStrategy(user: UserSession, id: string) {
   if (!r.ok) return r;
   audit(user, 'strategy_activate', s);
   useNotificationStore.getState().push({
-    targetRole: 'analyst', groupKey: 'strategy_activated', message: `${s.name} is now active`, href: '/strategy',
+    targetRole: 'analyst', groupKey: 'strategy_activated', messageKey: 'common.notify.strategyActive', params: { name: s.name }, href: '/strategy',
   });
   return ok();
 }
@@ -79,7 +79,7 @@ export function rejectStrategy(user: UserSession, id: string, note: string) {
   if (!r.ok) return r;
   audit(user, 'strategy_reject', s, note.trim());
   useNotificationStore.getState().push({
-    targetRole: 'analyst', groupKey: 'strategy_rejected', message: `${s.name} was returned: ${note.trim()}`, href: '/strategy',
+    targetRole: 'analyst', groupKey: 'strategy_rejected', messageKey: 'common.notify.strategyRejected', params: { name: s.name, note: note.trim() }, href: '/strategy',
   });
   return ok();
 }
@@ -87,4 +87,15 @@ export function rejectStrategy(user: UserSession, id: string, note: string) {
 export function archiveStrategy(user: UserSession, id: string) {
   if (!can(user.role, 'strategy.activate')) return fail('forbidden');
   return useStrategyStore.getState().transition(id, 'archived');
+}
+
+/** Restores an earlier version's content. Manager only; keeps the current status and records an audit event. */
+export function rollbackStrategy(user: UserSession, id: string, versionIndex: number) {
+  if (!can(user.role, 'strategy.activate')) return fail('forbidden');
+  const s = find(id);
+  if (!s) return fail('not_found');
+  const r = useStrategyStore.getState().rollback(id, versionIndex);
+  if (!r.ok) return r;
+  audit(user, 'strategy_rollback', s, `version ${versionIndex + 1}`);
+  return ok();
 }

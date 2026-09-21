@@ -4,32 +4,97 @@
   "new": "New strategy",
   "edit": "Edit strategy",
   "search": "Search strategies",
-  "status": { "draft": "Draft", "pending_manager_approval": "Pending manager approval", "active": "Active", "archived": "Archived", "all": "All statuses" },
+  "status": {
+    "draft": "Draft",
+    "pending_manager_approval": "Pending manager approval",
+    "active": "Active",
+    "archived": "Archived",
+    "all": "All statuses"
+  },
   "objective": {
-    "label": "Objective", "maximize_margin": "Maximize margin", "maximize_revenue": "Maximize revenue",
-    "match_competitor": "Match competitor", "clear_inventory": "Clear inventory", "all": "All objectives"
+    "label": "Objective",
+    "maximize_margin": "Maximize margin",
+    "maximize_revenue": "Maximize revenue",
+    "match_competitor": "Match competitor",
+    "clear_inventory": "Clear inventory",
+    "all": "All objectives"
   },
   "list": {
-    "scope": "{skus} SKUs, {cats} categories", "owner": "Owner", "updated": "Updated", "empty": "No strategies match.",
-    "guardrail": "Max {change}% per cycle · auto-approve ≥ {threshold}%{map}", "map": " · MAP enforced", "category": "Category", "none": "No strategies yet."
+    "scope": "{skus} SKUs, {cats} categories",
+    "owner": "Owner",
+    "updated": "Updated",
+    "empty": "No strategies match.",
+    "guardrail": "Max {change}% per cycle · auto-approve ≥ {threshold}%{map}",
+    "map": " · MAP enforced",
+    "category": "Category",
+    "none": "No strategies yet."
   },
   "action": {
-    "saveDraft": "Save draft", "submit": "Submit for approval", "activate": "Activate", "approve": "Approve activation", "reject": "Reject",
-    "archive": "Archive", "edit": "Edit", "back": "Back", "next": "Next", "cancel": "Cancel", "rejectNote": "Reason for rejection", "confirmReject": "Reject strategy"
+    "saveDraft": "Save draft",
+    "submit": "Submit for approval",
+    "activate": "Activate",
+    "approve": "Approve activation",
+    "reject": "Reject",
+    "archive": "Archive",
+    "edit": "Edit",
+    "back": "Back",
+    "next": "Next",
+    "cancel": "Cancel",
+    "rejectNote": "Reason for rejection",
+    "confirmReject": "Reject strategy"
   },
-  "step": { "objective": "Objective", "scope": "Scope", "guardrail": "Guardrails", "review": "Review", "progress": "Step {n} of {total}" },
+  "step": {
+    "objective": "Objective",
+    "scope": "Scope",
+    "guardrail": "Guardrails",
+    "review": "Review",
+    "progress": "Step {n} of {total}"
+  },
   "field": {
-    "name": "Strategy name", "categories": "Categories", "skus": "SKUs in scope", "addSku": "Add SKU", "addSkuHint": "Type an SKU and press Add",
-    "minPrice": "Minimum price (optional)", "maxPrice": "Maximum price (optional)", "map": "Enforce MAP", "maxChange": "Max price change per cycle (%)",
-    "threshold": "Auto-approve confidence threshold (0–100)", "removeSku": "Remove {sku}", "noSkus": "No SKUs selected yet."
+    "name": "Strategy name",
+    "categories": "Categories",
+    "skus": "SKUs in scope",
+    "addSku": "Add SKU",
+    "addSkuHint": "Type an SKU and press Add",
+    "minPrice": "Minimum price (optional)",
+    "maxPrice": "Maximum price (optional)",
+    "map": "Enforce MAP",
+    "maxChange": "Max price change per cycle (%)",
+    "threshold": "Auto-approve confidence threshold (0–100)",
+    "removeSku": "Remove {sku}",
+    "noSkus": "No SKUs selected yet."
   },
-  "review": { "title": "Summary", "plain": "This strategy will {objective} for {scope}. Prices may move at most {change}% per cycle{bounds}{map}. Recommendations with confidence of {threshold}% or more qualify for auto-approval.", "bounds": ", stay between {min} and {max}", "map": ", and never go below MAP", "scopeText": "{skus} SKUs and {cats} categories" },
+  "review": {
+    "title": "Summary",
+    "plain": "This strategy will {objective} for {scope}. Prices may move at most {change}% per cycle{bounds}{map}. Recommendations with confidence of {threshold}% or more qualify for auto-approval.",
+    "bounds": ", stay between {min} and {max}",
+    "map": ", and never go below MAP",
+    "scopeText": "{skus} SKUs and {cats} categories"
+  },
   "issue": {
-    "name_required": "Give the strategy a name.", "scope_required": "Select at least one SKU or category.", "min_ge_max": "Minimum price must be lower than maximum price.",
-    "change_range": "Max change per cycle must be above 0 and at most 100.", "threshold_range": "Threshold must be between 0 and 100.",
-    "overlap": "Scope overlaps with active strategy: {detail}.", "blocker": "Fix before continuing", "warning": "Warning"
+    "name_required": "Give the strategy a name.",
+    "scope_required": "Select at least one SKU or category.",
+    "min_ge_max": "Minimum price must be lower than maximum price.",
+    "change_range": "Max change per cycle must be above 0 and at most 100.",
+    "threshold_range": "Threshold must be between 0 and 100.",
+    "overlap": "Scope overlaps with active strategy: {detail}.",
+    "blocker": "Fix before continuing",
+    "warning": "Warning"
   },
-  "err": { "forbidden": "Your role cannot do that.", "invalid": "Fix the blocking issues first.", "not_found": "Strategy not found.", "note_required": "A reason is required.", "archived": "Archived strategies cannot be edited." },
+  "err": {
+    "forbidden": "Your role cannot do that.",
+    "invalid": "Fix the blocking issues first.",
+    "not_found": "Strategy not found.",
+    "note_required": "A reason is required.",
+    "archived": "Archived strategies cannot be edited."
+  },
   "notFound": "Strategy not found.",
-  "draftRestored": "Restored your unsaved draft."
+  "draftRestored": "Restored your unsaved draft.",
+  "history": {
+    "history": "Version history",
+    "rollback": "Roll back",
+    "noHistory": "No earlier versions.",
+    "version": "Version {n}",
+    "rolledBack": "Rolled back to version {n}"
+  }
 }

@@ -13,11 +13,19 @@ import enCatalog from './en/catalog.json';
 import enStrategy from './en/strategy.json';
 import enSimulation from './en/simulation.json';
 import enRecommendations from './en/recommendations.json';
+import idDeployment from './id/deployment.json';
+import idMonitoring from './id/monitoring.json';
+import idAudit from './id/audit.json';
+import idOverview from './id/overview.json';
+import enDeployment from './en/deployment.json';
+import enMonitoring from './en/monitoring.json';
+import enAudit from './en/audit.json';
+import enOverview from './en/overview.json';
 
 /** One file per namespace per locale; add new namespaces here. */
 export const messages = {
-  id: { common: idCommon, catalog: idCatalog, strategy: idStrategy, simulation: idSimulation, recommendations: idRecommendations },
-  en: { common: enCommon, catalog: enCatalog, strategy: enStrategy, simulation: enSimulation, recommendations: enRecommendations },
+  id: { common: idCommon, catalog: idCatalog, strategy: idStrategy, simulation: idSimulation, recommendations: idRecommendations, deployment: idDeployment, monitoring: idMonitoring, audit: idAudit, overview: idOverview },
+  en: { common: enCommon, catalog: enCatalog, strategy: enStrategy, simulation: enSimulation, recommendations: enRecommendations, deployment: enDeployment, monitoring: enMonitoring, audit: enAudit, overview: enOverview },
 } as const;
 
 type Tree = { [k: string]: string | Tree };

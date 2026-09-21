@@ -1,5 +1,5 @@
-import { ComingSoon } from '@/components/shell/ComingSoon';
+import { OverviewPage } from '@/features/overview/OverviewPage';
 
 export default function Page() {
-  return <ComingSoon pageKey="overview" />;
+  return <OverviewPage />;
 }

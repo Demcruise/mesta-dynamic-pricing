@@ -6,16 +6,21 @@ export interface Notification {
   targetRole: Role | 'all';
   /** Same groupKey collapses into one row in digest views. */
   groupKey: string;
-  message: string;
+  /** i18n key under "common.notify.*"; params are interpolated at render time. */
+  messageKey: string;
+  params?: Record<string, string | number>;
   href?: string;
   read: boolean;
   createdAt: string;
 }
 
+type NewNotification = Omit<Notification, 'id' | 'read' | 'createdAt'>;
+
 interface NotificationState {
   items: Notification[];
-  push: (n: Omit<Notification, 'id' | 'read' | 'createdAt'>) => void;
+  push: (n: NewNotification) => void;
   markRead: (id: string) => void;
+  markAllRead: (role: Role) => void;
   reset: () => void;
 }
 
@@ -29,6 +34,8 @@ export const useNotificationStore = create<NotificationState>((set) => ({
       ],
     })),
   markRead: (id) => set((s) => ({ items: s.items.map((i) => (i.id === id ? { ...i, read: true } : i)) })),
+  markAllRead: (role) =>
+    set((s) => ({ items: s.items.map((i) => (i.targetRole === role || i.targetRole === 'all' ? { ...i, read: true } : i)) })),
   reset: () => set({ items: [] }),
 }));
 

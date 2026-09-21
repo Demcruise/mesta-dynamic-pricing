@@ -8,6 +8,7 @@ import { PriceValue } from '@/components/ds/PriceValue';
 import { Sparkline } from '@/components/ds/Sparkline';
 import { StatusChip } from '@/components/ds/StatusChip';
 import { EmptyState, ErrorState, LoadingRows, PageHeader } from '@/components/ds/states';
+import { Term } from '@/components/shell/Glossary';
 import { RoleGate } from '@/components/shell/RoleGate';
 import { competitorGap, elasticityBand, marginHealth, marginPct } from '@/lib/domain';
 import { formatDate, formatPercent } from '@/lib/format';
@@ -56,15 +57,15 @@ function Detail({ p }: { p: Product }) {
           <dl className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
             <dt className="text-muted">{t('catalog.col.price')}</dt><dd><PriceValue value={p.price} /></dd>
             <dt className="text-muted">{t('catalog.col.cost')}</dt><dd><PriceValue value={p.cost} /></dd>
-            <dt className="text-muted">{t('catalog.col.margin')}</dt>
+            <dt className="text-muted"><Term k="margin" /></dt>
             <dd className="tabular">{formatPercent(marginPct(p), locale)} ({t(`catalog.health.${health}`)})</dd>
             <dt className="text-muted">{t('catalog.col.stock')}</dt>
             <dd className="tabular">{p.stockUnits} ({t(`catalog.stock.${p.stockStatus}`)})</dd>
-            <dt className="text-muted">{t('catalog.col.elasticity')}</dt>
+            <dt className="text-muted"><Term k="elasticity" /></dt>
             <dd>{t(`catalog.elasticity.${elasticityBand(p.elasticity)}`)} <span className="tabular text-muted">({p.elasticity})</span></dd>
             <dt className="text-muted">{t('catalog.detail.minMax')}</dt>
             <dd><PriceValue value={p.minPrice} /> – <PriceValue value={p.maxPrice} /></dd>
-            <dt className="text-muted">{t('catalog.detail.map')}</dt><dd><PriceValue value={p.mapPrice} /></dd>
+            <dt className="text-muted"><Term k="map" /></dt><dd><PriceValue value={p.mapPrice} /></dd>
             <dt className="text-muted">{t('catalog.detail.gap')}</dt><dd><DeltaBadge value={competitorGap(p)} /></dd>
           </dl>
         </Card>

@@ -129,10 +129,12 @@ export interface AnomalyAlert {
   severity: 'info' | 'warning' | 'critical';
   flaggedForReview: boolean;
   createdAt: string;
+  channel: Channel;
+  strategyId: string | null;
 }
 
 export type AuditEventType =
-  | 'strategy_submit' | 'strategy_activate' | 'strategy_reject'
+  | 'strategy_submit' | 'strategy_activate' | 'strategy_reject' | 'strategy_rollback'
   | 'scenario_sent'
   | 'recommendation_approve' | 'recommendation_reject' | 'recommendation_adjust'
   | 'deployment_success' | 'deployment_failure' | 'deployment_retry'
@@ -150,4 +152,29 @@ export interface AuditEvent {
   note: string | null;
   timestamp: string;
   snapshot?: { oldPrice?: number; newPrice?: number };
+}
+
+export interface OutcomeMetrics {
+  revenue: number;
+  margin: number;
+  units: number;
+}
+
+/** Forecast vs actual for one deployed price change; traceable to its PriceEvent and recommendation. */
+export interface Outcome {
+  id: string;
+  sku: string;
+  category: string;
+  recommendationId: string | null;
+  priceEventId: string | null;
+  forecast: OutcomeMetrics;
+  actual: OutcomeMetrics;
+  at: string;
+}
+
+export interface FeedbackEntry {
+  id: string;
+  message: string;
+  page: string;
+  at: string;
 }

@@ -1,32 +1,163 @@
 {
-  "app": { "name": "Mesta", "skip": "Lewati ke konten", "bootstrapping": "Memuat data demo…" },
-  "nav": {
-    "overview": "Ringkasan", "catalog": "Katalog", "strategy": "Strategi", "simulation": "Simulasi",
-    "recommendations": "Rekomendasi", "deployment": "Deployment", "monitoring": "Monitoring", "audit": "Audit",
-    "primary": "Navigasi utama", "mobile": "Navigasi mobile"
+  "app": {
+    "name": "Mesta",
+    "skip": "Lewati ke konten",
+    "bootstrapping": "Memuat data demo…"
   },
-  "role": { "analyst": "Analis", "manager": "Manajer", "ops_lead": "Ops Lead", "compliance": "Kepatuhan", "switcher": "Ganti peran (dev)" },
+  "nav": {
+    "overview": "Ringkasan",
+    "catalog": "Katalog",
+    "strategy": "Strategi",
+    "simulation": "Simulasi",
+    "recommendations": "Rekomendasi",
+    "deployment": "Deployment",
+    "monitoring": "Monitoring",
+    "audit": "Audit",
+    "primary": "Navigasi utama",
+    "mobile": "Navigasi mobile"
+  },
+  "role": {
+    "analyst": "Analis",
+    "manager": "Manajer",
+    "ops_lead": "Ops Lead",
+    "compliance": "Kepatuhan",
+    "switcher": "Ganti peran (dev)"
+  },
   "state": {
-    "loading": "Memuat…", "error": "Terjadi kesalahan saat memuat data.", "retry": "Coba lagi",
-    "empty": "Belum ada data.", "clearFilters": "Hapus filter", "back": "Kembali"
+    "loading": "Memuat…",
+    "error": "Terjadi kesalahan saat memuat data.",
+    "retry": "Coba lagi",
+    "empty": "Belum ada data.",
+    "clearFilters": "Hapus filter",
+    "back": "Kembali"
   },
   "perm": {
-    "deniedTitle": "Akses ditolak", "deniedBody": "Peran {role} tidak memiliki izin untuk halaman ini.",
-    "notice": "Anda dialihkan karena tidak punya izin untuk membuka halaman itu.", "dismiss": "Tutup"
+    "deniedTitle": "Akses ditolak",
+    "deniedBody": "Peran {role} tidak memiliki izin untuk halaman ini.",
+    "notice": "Anda dialihkan karena tidak punya izin untuk membuka halaman itu.",
+    "dismiss": "Tutup"
   },
-  "user": { "menu": "Menu pengguna", "language": "Bahasa", "resetDemo": "Reset data demo", "theme": "Tema", "light": "Terang", "dark": "Gelap" },
+  "user": {
+    "menu": "Menu pengguna",
+    "language": "Bahasa",
+    "resetDemo": "Reset data demo",
+    "theme": "Tema",
+    "light": "Terang",
+    "dark": "Gelap"
+  },
   "cmd": {
-    "open": "Cari atau lompat ke…", "placeholder": "Cari SKU, strategi, rekomendasi…", "noResults": "Tidak ada hasil.",
-    "sku": "SKU", "strategy": "Strategi", "recommendation": "Rekomendasi", "actions": "Aksi cepat",
-    "createStrategy": "Buat strategi", "pendingApprovals": "Buka persetujuan tertunda", "deployFailures": "Buka kegagalan deployment"
+    "open": "Cari atau lompat ke…",
+    "placeholder": "Cari SKU, strategi, rekomendasi…",
+    "noResults": "Tidak ada hasil.",
+    "sku": "SKU",
+    "strategy": "Strategi",
+    "recommendation": "Rekomendasi",
+    "actions": "Aksi cepat",
+    "createStrategy": "Buat strategi",
+    "pendingApprovals": "Buka persetujuan tertunda",
+    "deployFailures": "Buka kegagalan deployment",
+    "recent": "Terbaru"
   },
-  "status": { "pending": "Tertunda", "approved": "Disetujui", "rejected": "Ditolak", "adjusted": "Disesuaikan", "stale": "Usang" },
-  "delta": { "up": "Naik", "down": "Turun", "flat": "Tetap" },
-  "confidence": { "high": "Tinggi", "medium": "Sedang", "low": "Rendah", "label": "Keyakinan" },
-  "agent": { "agent": "Agen", "human": "Manusia", "rule": "Aturan" },
+  "status": {
+    "pending": "Tertunda",
+    "approved": "Disetujui",
+    "rejected": "Ditolak",
+    "adjusted": "Disesuaikan",
+    "stale": "Usang"
+  },
+  "delta": {
+    "up": "Naik",
+    "down": "Turun",
+    "flat": "Tetap"
+  },
+  "confidence": {
+    "high": "Tinggi",
+    "medium": "Sedang",
+    "low": "Rendah",
+    "label": "Keyakinan"
+  },
+  "agent": {
+    "agent": "Agen",
+    "human": "Manusia",
+    "rule": "Aturan"
+  },
   "page": {
-    "overview": "Ringkasan", "strategy": "Strategi harga", "simulation": "Simulasi", "recommendations": "Rekomendasi AI",
-    "deployment": "Deployment", "monitoring": "Monitoring hasil", "audit": "Audit & tata kelola",
-    "comingSoon": "Halaman ini dibangun pada epic berikutnya."
+    "overview": "Ringkasan",
+    "strategy": "Strategi harga",
+    "simulation": "Simulasi",
+    "recommendations": "Rekomendasi AI",
+    "deployment": "Deployment",
+    "monitoring": "Monitoring hasil",
+    "audit": "Audit & tata kelola"
+  },
+  "notify": {
+    "title": "Notifikasi",
+    "empty": "Tidak ada notifikasi.",
+    "markAll": "Tandai semua dibaca",
+    "strategyPending": "{name} menunggu aktivasi",
+    "strategyActive": "{name} kini aktif",
+    "strategyRejected": "{name} dikembalikan: {note}",
+    "deployed": "Harga {sku} tayang di semua kanal",
+    "deployFailed": "{sku} gagal di {channel}",
+    "flagged": "{sku} ditandai untuk tinjauan model",
+    "grouped": "{n} serupa"
+  },
+  "a11y": {
+    "expandSidebar": "Perluas sidebar",
+    "collapseSidebar": "Ciutkan sidebar",
+    "kpi": "Metrik utama",
+    "notifications": "Buka notifikasi",
+    "help": "Buka glosarium",
+    "feedback": "Kirim masukan"
+  },
+  "feedback": {
+    "title": "Kirim masukan",
+    "placeholder": "Apa yang bisa diperbaiki?",
+    "send": "Kirim",
+    "thanks": "Terima kasih, masukan disimpan lokal.",
+    "required": "Tulis pesan dulu.",
+    "cancel": "Batal"
+  },
+  "glossary": {
+    "title": "Glosarium",
+    "margin": "Margin",
+    "marginDef": "Bagian harga yang tersisa setelah biaya: (harga − biaya) ÷ harga.",
+    "elasticity": "Elastisitas",
+    "elasticityDef": "Seberapa kuat permintaan bereaksi terhadap harga. −2 berarti kenaikan harga 1% menurunkan permintaan sekitar 2%.",
+    "map": "MAP",
+    "mapDef": "Harga iklan minimum. Harga di bawahnya melanggar kebijakan.",
+    "confidence": "Keyakinan",
+    "confidenceDef": "Seberapa yakin model terhadap rekomendasi, 0–100."
+  },
+  "event": {
+    "strategy_submit": "Strategi diajukan",
+    "strategy_activate": "Strategi diaktifkan",
+    "strategy_reject": "Strategi ditolak",
+    "scenario_sent": "Skenario dikirim",
+    "recommendation_approve": "Rekomendasi disetujui",
+    "recommendation_reject": "Rekomendasi ditolak",
+    "recommendation_adjust": "Rekomendasi disesuaikan",
+    "deployment_success": "Deployment berhasil",
+    "deployment_failure": "Deployment gagal",
+    "deployment_retry": "Deployment diulang",
+    "model_review_feedback": "Ditandai untuk tinjauan model",
+    "manual_override": "Override manual",
+    "strategy_rollback": "Strategi dikembalikan"
+  },
+  "channel": {
+    "pos": "POS",
+    "ecommerce": "E-commerce",
+    "marketplace_a": "Marketplace A",
+    "marketplace_b": "Marketplace B"
+  },
+  "severity": {
+    "info": "Info",
+    "warning": "Peringatan",
+    "critical": "Kritis"
+  },
+  "source": {
+    "ui": "Pengguna",
+    "agent": "Agen",
+    "system": "Sistem"
   }
 }

@@ -96,7 +96,7 @@ export function CatalogPage() {
         }
       />
 
-      <section aria-label="KPI" className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <section aria-label={t('common.a11y.kpi')} className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
         <KpiCard label={t('catalog.kpi.avgMargin')} value={formatPercent(kpis.avgMargin, locale)} />
         <KpiCard label={t('catalog.kpi.belowMap')} value={kpis.belowMap} />
         <KpiCard label={t('catalog.kpi.pendingAi')} value={kpis.pendingAi} />

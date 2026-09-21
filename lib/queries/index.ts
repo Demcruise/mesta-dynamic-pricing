@@ -6,7 +6,10 @@ import { useRecommendationStore } from '../stores/recommendation';
 import { useStrategyStore } from '../stores/strategy';
 import { useAuditStore } from '../stores/audit';
 import { useScenarioStore } from '../stores/scenario';
-import { can } from '../rbac';
+import { useDeploymentStore } from '../stores/deployment';
+import { useMonitoringStore } from '../stores/monitoring';
+import { useNotificationStore } from '../stores/notification';
+import { selectAuditForUser } from '../audit-scope';
 import { keys, useItemQuery, useListQuery } from './core';
 
 export * from './core';
@@ -36,17 +39,16 @@ export const useStrategy = (id: string) =>
  */
 export const useAuditLog = () => {
   const user = useSessionStore((s) => s.user);
-  return useListQuery(keys.audit.list(user.userId, user.role), () => {
-    const all = useAuditStore.getState().events;
-    if (can(user.role, 'audit.view_all')) return all;
-    if (user.role === 'ops_lead') return all.filter((e) => e.entityType === 'deployment');
-    return all.filter((e) => e.actorId === user.userId || (e.sku !== null && user.ownedSkuIds.includes(e.sku)));
-  });
+  return useListQuery(keys.audit.list(user.userId, user.role), () => selectAuditForUser(useAuditStore.getState().events, user));
 };
 
 // Placeholders for later epics: keep the hook surface stable so pages never touch stores directly.
 export const useScenarios = () => useListQuery(keys.scenario.list(), () => useScenarioStore.getState().items);
 export const useScenario = (id: string) =>
   useItemQuery(['scenario', 'detail', id], () => useScenarioStore.getState().items.find((s) => s.id === id));
-export const useDeploymentRecords = () => useListQuery(keys.deployment.list(), () => []);
-export const useAnomalies = () => useListQuery(keys.anomaly.list(), () => []);
+export const useDeploymentRecords = () => useListQuery(keys.deployment.list(), () => useDeploymentStore.getState().records);
+export const useAnomalies = () => useListQuery(keys.anomaly.list(), () => useMonitoringStore.getState().anomalies);
+export const useOutcomes = () => useListQuery(['anomaly', 'outcomes'], () => useMonitoringStore.getState().outcomes);
+export const usePriceEvents = () => useListQuery(['sku', 'priceEvents'], () => useProductCatalogStore.getState().priceEvents);
+export const useNotifications = () => useListQuery(['notification', 'list'], () => useNotificationStore.getState().items);
+export const useStrategyHistory = (id: string) => useListQuery(['strategy', 'history', id], () => useStrategyStore.getState().history[id] ?? []);

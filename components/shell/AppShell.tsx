@@ -1,9 +1,12 @@
 'use client';
 
-import type { ReactNode } from 'react';
+import { usePathname } from 'next/navigation';
+import { useEffect, type ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from '@/lib/i18n';
 import { CommandMenu } from './CommandMenu';
+import { FeedbackDialog } from './FeedbackDialog';
+import { GlossaryDialog } from './Glossary';
 import { RouteGuard, useGuardStore } from './guard';
 import { MobileNav } from './MobileNav';
 import { Sidebar } from './Sidebar';
@@ -14,6 +17,9 @@ export function AppShell({ children }: { children: ReactNode }) {
   const { t } = useTranslation();
   const denied = useGuardStore((s) => s.denied);
   const setDenied = useGuardStore((s) => s.setDenied);
+  const pathname = usePathname();
+  // The notice belongs to the redirect landing page; clear it once the user navigates on.
+  useEffect(() => { if (denied && pathname !== '/overview') setDenied(false); }, [pathname, denied, setDenied]);
   return (
     <div className="flex min-h-screen">
       <a
@@ -38,6 +44,8 @@ export function AppShell({ children }: { children: ReactNode }) {
       <MobileNav />
       <CommandMenu />
       <ToastHost />
+      <FeedbackDialog />
+      <GlossaryDialog />
     </div>
   );
 }

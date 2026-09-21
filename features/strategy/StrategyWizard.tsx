@@ -6,17 +6,18 @@ import { EmptyState, LoadingRows, PageHeader } from '@/components/ds/states';
 import { PriceValue } from '@/components/ds/PriceValue';
 import { Button } from '@/components/ui/button';
 import { Field, Input, inputCls } from '@/components/ui/field';
-import { activateStrategy, saveStrategy, submitStrategy } from '@/lib/actions/strategy';
+import { activateStrategy, rollbackStrategy, saveStrategy, submitStrategy } from '@/lib/actions/strategy';
 import { CATEGORIES } from '@/lib/categories';
 import { useCan } from '@/lib/hooks';
 import { useTranslation } from '@/lib/i18n';
 import type { StrategyObjective } from '@/lib/ontology';
-import { useSkuList, useStrategies } from '@/lib/queries';
+import { useSkuList, useStrategies, useStrategyHistory } from '@/lib/queries';
 import {
   emptyDraft, hasBlocker, toDraft, validateDraft, type Issue, type IssueCode, type StrategyDraft,
 } from '@/lib/strategy-rules';
 import { useCatalogSelectionStore, useSessionStore, useStrategyDraftStore, useToastStore } from '@/lib/stores';
 import { cn } from '@/lib/utils';
+import { formatDate } from '@/lib/format';
 
 const OBJECTIVES: StrategyObjective[] = ['maximize_margin', 'maximize_revenue', 'match_competitor', 'clear_inventory'];
 const STEPS = ['objective', 'scope', 'guardrail', 'review'] as const;
@@ -30,7 +31,41 @@ export function StrategyWizard({ strategyId }: { strategyId: string | null }) {
   if (strategies.isLoading || skus.isLoading) return <LoadingRows rows={4} />;
   const existing = strategyId ? strategies.data.find((s) => s.id === strategyId) : undefined;
   if (strategyId && !existing) return <NotFound />;
-  return <Wizard strategyId={strategyId} initial={existing ? toDraft(existing) : null} status={existing?.status ?? null} />;
+  return (
+    <>
+      <Wizard key={existing?.updatedAt ?? 'new'} strategyId={strategyId} initial={existing ? toDraft(existing) : null} status={existing?.status ?? null} />
+      {strategyId && <History strategyId={strategyId} />}
+    </>
+  );
+}
+
+function History({ strategyId }: { strategyId: string }) {
+  const { t, locale } = useTranslation();
+  const user = useSessionStore((s) => s.user);
+  const can = useCan();
+  const toast = useToastStore((s) => s.push);
+  const versions = useStrategyHistory(strategyId).data;
+  return (
+    <section className="mt-6 max-w-2xl rounded-card border border-line bg-surface p-5">
+      <h2 className="mb-2 text-sm font-semibold">{t('strategy.history.history')}</h2>
+      {versions.length === 0 ? <p className="text-sm text-muted">{t('strategy.history.noHistory')}</p> : (
+        <ol className="divide-y divide-line text-sm">
+          {versions.map((v, i) => (
+            <li key={`${v.updatedAt}-${i}`} className="flex items-center justify-between gap-2 py-2">
+              <span>{t('strategy.history.version', { n: i + 1 })} · {v.name} · <span className="text-muted">{formatDate(v.updatedAt, locale)}</span></span>
+              {can('strategy.activate') && (
+                <Button size="sm" variant="secondary" onClick={() => {
+                  const r = rollbackStrategy(user, strategyId, i);
+                  toast(r.ok ? t('strategy.history.rolledBack', { n: i + 1 }) : t(`strategy.err.${r.error}`));
+                  if (r.ok) useStrategyDraftStore.getState().clearDraft(strategyId);
+                }}>{t('strategy.history.rollback')}</Button>
+              )}
+            </li>
+          ))}
+        </ol>
+      )}
+    </section>
+  );
 }
 
 function NotFound() {

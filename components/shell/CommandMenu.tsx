@@ -24,6 +24,21 @@ function Highlight({ text, q }: { text: string; q: string }): ReactNode {
 }
 
 const MAX_PER_GROUP = 6;
+const RECENT_KEY = 'mesta-cmd-recent';
+const MAX_RECENT = 5;
+
+function loadRecent(): Item[] {
+  try { return JSON.parse(localStorage.getItem(RECENT_KEY) ?? '[]') as Item[]; } catch { return []; }
+}
+function saveRecent(item: Item) {
+  try {
+    const next = [item, ...loadRecent().filter((r) => r.href !== item.href)].slice(0, MAX_RECENT);
+    localStorage.setItem(RECENT_KEY, JSON.stringify(next));
+  } catch { /* storage unavailable */ }
+}
+/** Prefix matches outrank substring matches; stable otherwise. */
+const rank = (needle: string) => (a: Item, b: Item) =>
+  Number(b.label.toLowerCase().startsWith(needle)) - Number(a.label.toLowerCase().startsWith(needle));
 
 export function CommandMenu() {
   const { open, setOpen } = useCommandStore();
@@ -49,7 +64,8 @@ export function CommandMenu() {
     return () => window.removeEventListener('keydown', onKey);
   }, []);
 
-  useEffect(() => { if (open) { setQ(''); setCursor(0); } }, [open]);
+  const [recent, setRecent] = useState<Item[]>([]);
+  useEffect(() => { if (open) { setQ(''); setCursor(0); setRecent(loadRecent()); } }, [open]);
 
   const items = useMemo<Item[]>(() => {
     const needle = q.trim().toLowerCase();
@@ -74,8 +90,10 @@ export function CommandMenu() {
       .filter((r) => match(r.id) || match(r.sku))
       .slice(0, MAX_PER_GROUP)
       .map((r) => ({ id: r.id, group: t('common.cmd.recommendation'), label: r.id, hint: r.sku, href: `/recommendations/${r.id}` }));
-    return needle ? [...skuHits, ...strHits, ...recHits, ...filteredQuick] : [...filteredQuick, ...skuHits.slice(0, 3)];
-  }, [q, skus, strategies, recs, can, t]);
+    if (needle) return [...skuHits.sort(rank(needle)), ...strHits.sort(rank(needle)), ...recHits.sort(rank(needle)), ...filteredQuick.sort(rank(needle))];
+    const recentItems = recent.map((r) => ({ ...r, id: `recent-${r.id}`, group: t('common.cmd.recent') }));
+    return [...recentItems, ...filteredQuick, ...skuHits.slice(0, 3)];
+  }, [q, skus, strategies, recs, can, t, recent]);
 
   useEffect(() => { setCursor(0); }, [q]);
   useEffect(() => {
@@ -84,6 +102,7 @@ export function CommandMenu() {
 
   const go = (item: Item | undefined) => {
     if (!item) return;
+    saveRecent({ ...item, id: item.id.replace(/^recent-/, '') });
     setOpen(false);
     router.push(item.href);
   };
@@ -100,6 +119,7 @@ export function CommandMenu() {
       <input
         autoFocus
         role="combobox"
+        aria-label={t('common.cmd.open')}
         aria-expanded
         aria-controls="cmd-list"
         aria-activedescendant={items[cursor] ? `cmd-${items[cursor].id}` : undefined}

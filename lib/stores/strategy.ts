@@ -15,19 +15,39 @@ export function canTransitionStrategy(from: StrategyStatus, to: StrategyStatus) 
 
 interface StrategyState {
   items: Strategy[];
+  /** Previous versions per strategy id, newest last. Written on every edit. */
+  history: Record<string, Strategy[]>;
   hydrate: (items: Strategy[]) => void;
   upsert: (s: Strategy) => void;
+  /** Restores the guardrail/scope/name of a stored version while keeping current status. */
+  rollback: (id: string, versionIndex: number) => TransitionResult;
   transition: (id: string, to: StrategyStatus) => TransitionResult;
   reset: () => void;
 }
 
 export const useStrategyStore = create<StrategyState>((set, get) => ({
   items: [],
-  hydrate: (items) => set({ items }),
+  history: {},
+  hydrate: (items) => set({ items, history: {} }),
   upsert: (s) =>
-    set((st) => ({
-      items: st.items.some((x) => x.id === s.id) ? st.items.map((x) => (x.id === s.id ? s : x)) : [s, ...st.items],
-    })),
+    set((st) => {
+      const prev = st.items.find((x) => x.id === s.id);
+      return {
+        items: prev ? st.items.map((x) => (x.id === s.id ? s : x)) : [s, ...st.items],
+        history: prev ? { ...st.history, [s.id]: [...(st.history[s.id] ?? []), prev] } : st.history,
+      };
+    }),
+  rollback: (id, versionIndex) => {
+    const cur = get().items.find((x) => x.id === id);
+    const version = get().history[id]?.[versionIndex];
+    if (!cur || !version) return { ok: false, error: 'not_found' };
+    if (cur.status === 'archived') return { ok: false, error: 'archived' };
+    get().upsert({
+      ...cur, name: version.name, objective: version.objective, skuIds: version.skuIds,
+      categories: version.categories, guardrail: version.guardrail, updatedAt: new Date().toISOString(),
+    });
+    return { ok: true };
+  },
   transition: (id, to) => {
     const s = get().items.find((x) => x.id === id);
     if (!s) return { ok: false, error: 'not_found' };
@@ -37,5 +57,5 @@ export const useStrategyStore = create<StrategyState>((set, get) => ({
     }));
     return { ok: true };
   },
-  reset: () => set({ items: [] }),
+  reset: () => set({ items: [], history: {} }),
 }));

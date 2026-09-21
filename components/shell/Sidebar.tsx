@@ -56,7 +56,7 @@ export function Sidebar() {
       <button
         type="button"
         onClick={toggle}
-        aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+        aria-label={t(collapsed ? 'common.a11y.expandSidebar' : 'common.a11y.collapseSidebar')}
         className="m-2 hidden h-9 items-center justify-center rounded-input text-muted hover:bg-subtle lg:flex"
       >
         {collapsed ? <PanelLeftOpen className="size-4" aria-hidden /> : <PanelLeftClose className="size-4" aria-hidden />}

@@ -25,9 +25,9 @@ describe('bootstrap', () => {
     expect(useProductCatalogStore.getState().products).toHaveLength(100);
   });
 
-  it('uses one SKU list: every recommendation SKU exists in catalog with same price', () => {
+  it('uses one SKU list: every recommendation SKU exists in catalog; live price matches (deployed ones show the new price)', () => {
     const skus = new Map(useProductCatalogStore.getState().products.map((p) => [p.sku, p.price]));
-    for (const r of useRecommendationStore.getState().items) expect(skus.get(r.sku)).toBe(r.currentPrice);
+    for (const r of useRecommendationStore.getState().items) expect(skus.get(r.sku)).toBe(r.deployed ? r.proposedPrice : r.currentPrice);
   });
 });
 
@@ -86,9 +86,9 @@ describe('catalog price guard', () => {
 describe('notification grouping', () => {
   it('collapses same groupKey with count', () => {
     const { push } = useNotificationStore.getState();
-    push({ targetRole: 'all', groupKey: 'a', message: '1' });
-    push({ targetRole: 'all', groupKey: 'a', message: '2' });
-    push({ targetRole: 'all', groupKey: 'b', message: '3' });
+    push({ targetRole: 'all', groupKey: 'a', messageKey: 'common.notify.strategyActive' });
+    push({ targetRole: 'all', groupKey: 'a', messageKey: 'common.notify.strategyActive' });
+    push({ targetRole: 'all', groupKey: 'b', messageKey: 'common.notify.strategyActive' });
     const g = groupNotifications(useNotificationStore.getState().items);
     expect(g).toHaveLength(2);
     expect(g.find((x) => x.groupKey === 'a')?.count).toBe(2);

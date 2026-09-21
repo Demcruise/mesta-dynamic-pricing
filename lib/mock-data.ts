@@ -4,7 +4,8 @@
  */
 import { CATEGORIES } from './categories';
 import type {
-  AuditEvent, CompetitorObservation, Product, RationaleFactor, Recommendation, Strategy,
+  AnomalyAlert, AuditEvent, Channel, CompetitorObservation, DeploymentRecord, Outcome, PriceEvent, Product,
+  RationaleFactor, Recommendation, Strategy,
 } from './ontology';
 
 export const NOW = Date.UTC(2026, 8, 21, 6, 0, 0);
@@ -166,4 +167,66 @@ export function generateAudit(recs: Recommendation[]): AuditEvent[] {
       timestamp: x.decidedAt as string,
       snapshot: { oldPrice: x.currentPrice, newPrice: x.proposedPrice },
     }));
+}
+
+/** Marks the first `count` approved recommendations as already deployed and applies their prices. */
+export function applySeedDeployments(products: Product[], recs: Recommendation[], count: number) {
+  const r = rng(2026);
+  const byId = new Map(products.map((p) => [p.sku, p]));
+  const priceEvents: PriceEvent[] = [];
+  const outcomes: Outcome[] = [];
+  const nextRecs = recs.map((rec) => ({ ...rec }));
+  let done = 0;
+  for (const rec of nextRecs) {
+    if (done >= count) break;
+    if (rec.status !== 'approved') continue;
+    const p = byId.get(rec.sku);
+    if (!p || p.price !== rec.currentPrice) continue;
+    const at = rec.decidedAt ?? new Date(NOW - DAY).toISOString();
+    p.priceHistory = [...p.priceHistory.slice(0, -1), { at: p.lastChangeAt, price: rec.currentPrice }, { at, price: rec.proposedPrice }];
+    p.price = rec.proposedPrice;
+    p.lastChangeAt = at;
+    rec.deployed = true;
+    const pe: PriceEvent = { id: `PE-S${done + 1}`, sku: rec.sku, oldPrice: rec.currentPrice, newPrice: rec.proposedPrice, recommendationId: rec.id, source: 'deployment', at };
+    priceEvents.push(pe);
+    const units = BASE * Math.pow(rec.proposedPrice / rec.currentPrice, p.elasticity);
+    const forecast = { units, revenue: units * rec.proposedPrice, margin: units * (rec.proposedPrice - p.cost) };
+    const k = 0.8 + r() * 0.4;
+    outcomes.push({
+      id: `OUT-${1000 + done}`, sku: rec.sku, category: p.category, recommendationId: rec.id, priceEventId: pe.id, forecast,
+      actual: { units: forecast.units * k, revenue: forecast.revenue * k, margin: forecast.margin * (0.85 + r() * 0.3) }, at,
+    });
+    done++;
+  }
+  return { products, recs: nextRecs, priceEvents, outcomes };
+}
+
+const BASE = 1000;
+
+export function generateAnomalies(products: Product[]): AnomalyAlert[] {
+  const r = rng(555);
+  const out: AnomalyAlert[] = [];
+  const channels: Channel[] = ['pos', 'ecommerce', 'marketplace_a', 'marketplace_b'];
+  const bev = products.filter((p) => p.category === 'Beverages');
+  const other = products.filter((p) => p.category !== 'Beverages');
+  const mk = (p: Product, dev: number, i: number, strategyId: string | null): AnomalyAlert => ({
+    id: `ANM-${1000 + i}`, sku: p.sku, category: p.category, deviationPercent: dev,
+    severity: Math.abs(dev) >= 25 ? 'critical' : Math.abs(dev) >= 15 ? 'warning' : 'info',
+    flaggedForReview: false, createdAt: new Date(NOW - Math.floor(r() * DAY)).toISOString(),
+    channel: channels[Math.floor(r() * channels.length)] as Channel, strategyId,
+  });
+  bev.slice(0, 12).forEach((p, i) => out.push(mk(p, (r() < 0.5 ? -1 : 1) * (16 + Math.round(r() * 14)), i, 'STR-001')));
+  other.slice(0, 20).forEach((p, i) => out.push(mk(p, (r() < 0.5 ? -1 : 1) * (4 + Math.round(r() * 30)), 12 + i, null)));
+  return out;
+}
+
+export function generateDeployments(recs: Recommendation[]): DeploymentRecord[] {
+  const target = recs.find((x) => x.status === 'approved' && !x.deployed);
+  if (!target) return [];
+  const at = new Date(NOW - HOUR).toISOString();
+  const statuses: DeploymentRecord['status'][] = ['synced', 'synced', 'failed', 'pending'];
+  return (['pos', 'ecommerce', 'marketplace_a', 'marketplace_b'] as Channel[]).map((channel, i) => ({
+    id: `DEP-${target.id}-${channel}`, recommendationId: target.id, sku: target.sku, channel, status: statuses[i] as DeploymentRecord['status'],
+    retryCount: statuses[i] === 'failed' ? 1 : 0, errorReason: statuses[i] === 'failed' ? 'Marketplace API timeout' : null, updatedAt: at,
+  }));
 }

@@ -12,8 +12,9 @@ import type { Product } from '@/lib/ontology';
 import { useAuditStore, useProductCatalogStore, useSessionStore } from '@/lib/stores';
 
 export function OverrideDialog({ product, onClose }: { product: Product | null; onClose: () => void }) {
+  const { t } = useTranslation();
   return (
-    <Dialog open={product !== null} onClose={onClose} title="Override">
+    <Dialog open={product !== null} onClose={onClose} title={t('catalog.override.title')}>
       {product && <OverrideForm key={product.sku} product={product} onClose={onClose} />}
     </Dialog>
   );
