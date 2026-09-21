@@ -7,6 +7,7 @@ import { CommandMenu } from './CommandMenu';
 import { RouteGuard, useGuardStore } from './guard';
 import { MobileNav } from './MobileNav';
 import { Sidebar } from './Sidebar';
+import { ToastHost } from './ToastHost';
 import { TopBar } from './TopBar';
 
 export function AppShell({ children }: { children: ReactNode }) {
@@ -36,6 +37,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       </div>
       <MobileNav />
       <CommandMenu />
+      <ToastHost />
     </div>
   );
 }

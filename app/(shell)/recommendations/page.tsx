@@ -1,5 +1,10 @@
-import { ComingSoon } from '@/components/shell/ComingSoon';
+import { Suspense } from 'react';
+import { QueuePage } from '@/features/recommendations/QueuePage';
 
 export default function Page() {
-  return <ComingSoon pageKey="recommendations" />;
+  return (
+    <Suspense>
+      <QueuePage />
+    </Suspense>
+  );
 }

@@ -1,5 +1,5 @@
-import { ComingSoon } from '@/components/shell/ComingSoon';
+import { StrategyListPage } from '@/features/strategy/StrategyListPage';
 
 export default function Page() {
-  return <ComingSoon pageKey="strategy" />;
+  return <StrategyListPage />;
 }

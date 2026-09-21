@@ -62,7 +62,11 @@ export interface Scenario {
   sku: string;
   strategyId: string | null;
   proposedPrice: number;
+  ownerId: string;
   createdAt: string;
+  updatedAt: string;
+  /** Set once the scenario was sent to the queue; a scenario can be sent only once. */
+  recommendationId: string | null;
 }
 
 export type RationaleFactorKey = 'competitor' | 'elasticity' | 'stock' | 'seasonality';

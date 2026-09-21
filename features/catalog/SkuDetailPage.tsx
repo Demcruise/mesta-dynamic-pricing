@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { DeltaBadge } from '@/components/ds/DeltaBadge';
 import { ConfidenceBar } from '@/components/ds/ConfidenceBar';
 import { PriceValue } from '@/components/ds/PriceValue';
+import { Sparkline } from '@/components/ds/Sparkline';
 import { StatusChip } from '@/components/ds/StatusChip';
 import { EmptyState, ErrorState, LoadingRows, PageHeader } from '@/components/ds/states';
 import { RoleGate } from '@/components/shell/RoleGate';
@@ -20,20 +21,6 @@ function Card({ title, children }: { title: string; children: React.ReactNode })
       <h2 className="mb-3 text-sm font-semibold">{title}</h2>
       {children}
     </section>
-  );
-}
-
-function Sparkline({ points }: { points: number[] }) {
-  const w = 240, h = 48;
-  const min = Math.min(...points), max = Math.max(...points);
-  const span = max - min || 1;
-  const d = points
-    .map((p, i) => `${i === 0 ? 'M' : 'L'}${(i / Math.max(points.length - 1, 1)) * w},${h - ((p - min) / span) * (h - 6) - 3}`)
-    .join(' ');
-  return (
-    <svg viewBox={`0 0 ${w} ${h}`} className="h-12 w-full max-w-60 text-brand" aria-hidden>
-      <path d={d} fill="none" stroke="currentColor" strokeWidth="2" />
-    </svg>
   );
 }
 

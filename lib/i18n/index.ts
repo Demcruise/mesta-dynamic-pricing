@@ -5,13 +5,19 @@ import type { Locale } from '../format';
 import { useUiStore } from '../stores/ui';
 import idCommon from './id/common.json';
 import idCatalog from './id/catalog.json';
+import idStrategy from './id/strategy.json';
+import idSimulation from './id/simulation.json';
+import idRecommendations from './id/recommendations.json';
 import enCommon from './en/common.json';
 import enCatalog from './en/catalog.json';
+import enStrategy from './en/strategy.json';
+import enSimulation from './en/simulation.json';
+import enRecommendations from './en/recommendations.json';
 
 /** One file per namespace per locale; add new namespaces here. */
 export const messages = {
-  id: { common: idCommon, catalog: idCatalog },
-  en: { common: enCommon, catalog: enCatalog },
+  id: { common: idCommon, catalog: idCatalog, strategy: idStrategy, simulation: idSimulation, recommendations: idRecommendations },
+  en: { common: enCommon, catalog: enCatalog, strategy: enStrategy, simulation: enSimulation, recommendations: enRecommendations },
 } as const;
 
 type Tree = { [k: string]: string | Tree };

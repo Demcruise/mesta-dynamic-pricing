@@ -1,9 +1,10 @@
 import {
   generateAudit, generateCompetitors, generateProducts, generateRecommendations, generateStrategies,
 } from './mock-data';
+import { cancelAllDecisionTimers } from './actions/recommendation';
 import {
   useAuditStore, useCatalogSelectionStore, useNotificationStore, useProductCatalogStore,
-  useRecommendationStore, useStrategyStore,
+  useRecommendationStore, useScenarioStore, useStrategyStore,
 } from './stores';
 
 export const DEFAULT_PRODUCT_COUNT = 500;
@@ -29,6 +30,8 @@ export function bootstrapMestaData({ productCount = DEFAULT_PRODUCT_COUNT, force
   useStrategyStore.getState().hydrate(generateStrategies());
   useAuditStore.getState().hydrate(generateAudit(recs));
   useNotificationStore.getState().reset();
+  useScenarioStore.getState().reset();
+  cancelAllDecisionTimers();
   useCatalogSelectionStore.getState().clear();
   bootstrapped = true;
 }

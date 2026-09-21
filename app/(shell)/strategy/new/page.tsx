@@ -1,5 +1,5 @@
-import { ComingSoon } from '@/components/shell/ComingSoon';
+import { StrategyWizard } from '@/features/strategy/StrategyWizard';
 
 export default function Page() {
-  return <ComingSoon pageKey="strategy" />;
+  return <StrategyWizard strategyId={null} />;
 }

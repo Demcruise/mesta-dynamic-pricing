@@ -43,6 +43,7 @@ export const ROUTE_ACTIONS: Record<string, Action> = {
 };
 
 export function actionForPath(pathname: string): Action | null {
+  if (/^\/strategy\/(new|[^/]+\/edit)(\/|$)/.test(pathname)) return 'strategy.create';
   const hit = Object.keys(ROUTE_ACTIONS).find((p) => pathname === p || pathname.startsWith(p + '/'));
   return hit ? (ROUTE_ACTIONS[hit] as Action) : null;
 }

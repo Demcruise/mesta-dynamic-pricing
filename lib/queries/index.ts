@@ -5,6 +5,7 @@ import { useProductCatalogStore } from '../stores/catalog';
 import { useRecommendationStore } from '../stores/recommendation';
 import { useStrategyStore } from '../stores/strategy';
 import { useAuditStore } from '../stores/audit';
+import { useScenarioStore } from '../stores/scenario';
 import { can } from '../rbac';
 import { keys, useItemQuery, useListQuery } from './core';
 
@@ -44,6 +45,8 @@ export const useAuditLog = () => {
 };
 
 // Placeholders for later epics: keep the hook surface stable so pages never touch stores directly.
-export const useScenarios = () => useListQuery(keys.scenario.list(), () => []);
+export const useScenarios = () => useListQuery(keys.scenario.list(), () => useScenarioStore.getState().items);
+export const useScenario = (id: string) =>
+  useItemQuery(['scenario', 'detail', id], () => useScenarioStore.getState().items.find((s) => s.id === id));
 export const useDeploymentRecords = () => useListQuery(keys.deployment.list(), () => []);
 export const useAnomalies = () => useListQuery(keys.anomaly.list(), () => []);

@@ -1,0 +1,35 @@
+{
+  "title": "Strategi harga",
+  "subtitle": "Tujuan, cakupan, dan guardrail yang mengarahkan simulasi dan rekomendasi",
+  "new": "Strategi baru",
+  "edit": "Ubah strategi",
+  "search": "Cari strategi",
+  "status": { "draft": "Draf", "pending_manager_approval": "Menunggu persetujuan manajer", "active": "Aktif", "archived": "Diarsipkan", "all": "Semua status" },
+  "objective": {
+    "label": "Tujuan", "maximize_margin": "Maksimalkan margin", "maximize_revenue": "Maksimalkan pendapatan",
+    "match_competitor": "Samakan dengan kompetitor", "clear_inventory": "Habiskan stok", "all": "Semua tujuan"
+  },
+  "list": {
+    "scope": "{skus} SKU, {cats} kategori", "owner": "Pemilik", "updated": "Diperbarui", "empty": "Tidak ada strategi yang cocok.",
+    "guardrail": "Maks {change}% per siklus · auto-approve ≥ {threshold}%{map}", "map": " · MAP diberlakukan", "category": "Kategori", "none": "Belum ada strategi."
+  },
+  "action": {
+    "saveDraft": "Simpan draf", "submit": "Ajukan persetujuan", "activate": "Aktifkan", "approve": "Setujui aktivasi", "reject": "Tolak",
+    "archive": "Arsipkan", "edit": "Ubah", "back": "Kembali", "next": "Lanjut", "cancel": "Batal", "rejectNote": "Alasan penolakan", "confirmReject": "Tolak strategi"
+  },
+  "step": { "objective": "Tujuan", "scope": "Cakupan", "guardrail": "Guardrail", "review": "Tinjau", "progress": "Langkah {n} dari {total}" },
+  "field": {
+    "name": "Nama strategi", "categories": "Kategori", "skus": "SKU dalam cakupan", "addSku": "Tambah SKU", "addSkuHint": "Ketik SKU lalu tekan Tambah",
+    "minPrice": "Harga minimum (opsional)", "maxPrice": "Harga maksimum (opsional)", "map": "Terapkan MAP", "maxChange": "Perubahan harga maks per siklus (%)",
+    "threshold": "Ambang keyakinan auto-approve (0–100)", "removeSku": "Hapus {sku}", "noSkus": "Belum ada SKU dipilih."
+  },
+  "review": { "title": "Ringkasan", "plain": "Strategi ini akan {objective} untuk {scope}. Harga boleh berubah maksimal {change}% per siklus{bounds}{map}. Rekomendasi dengan keyakinan {threshold}% atau lebih memenuhi syarat auto-approve.", "bounds": ", tetap di antara {min} dan {max}", "map": ", dan tidak pernah di bawah MAP", "scopeText": "{skus} SKU dan {cats} kategori" },
+  "issue": {
+    "name_required": "Beri nama strategi.", "scope_required": "Pilih minimal satu SKU atau kategori.", "min_ge_max": "Harga minimum harus lebih rendah dari harga maksimum.",
+    "change_range": "Perubahan maks per siklus harus di atas 0 dan paling banyak 100.", "threshold_range": "Ambang harus antara 0 dan 100.",
+    "overlap": "Cakupan tumpang tindih dengan strategi aktif: {detail}.", "blocker": "Perbaiki sebelum lanjut", "warning": "Peringatan"
+  },
+  "err": { "forbidden": "Peran Anda tidak dapat melakukan itu.", "invalid": "Perbaiki masalah yang memblokir dulu.", "not_found": "Strategi tidak ditemukan.", "note_required": "Alasan wajib diisi.", "archived": "Strategi yang diarsipkan tidak dapat diubah." },
+  "notFound": "Strategi tidak ditemukan.",
+  "draftRestored": "Draf yang belum disimpan dipulihkan."
+}
