@@ -44,10 +44,10 @@ export function RecommendationCard({ rec, product, defaultOpen = false }: {
     <AgentBorderCard actor={rec.source === 'agent' ? 'agent' : 'human'} className="flex flex-col gap-3">
       <header className="flex flex-wrap items-start justify-between gap-2">
         <div>
-          <p className="text-sm font-semibold">
+          <h2 className="text-sm font-semibold">
             <Link href={`/catalog/${rec.sku}`} className="tabular text-brand hover:underline">{rec.sku}</Link>
             {product && <span className="ml-2 font-normal">{product.name}</span>}
-          </p>
+          </h2>
           <p className="text-xs text-muted">
             <Link href={`/recommendations/${rec.id}`} className="tabular hover:underline">{rec.id}</Link>
             {' · '}{t(`recommendations.source.${rec.source}`)} · {formatDate(rec.createdAt, locale)}

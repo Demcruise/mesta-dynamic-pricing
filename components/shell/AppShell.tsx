@@ -15,11 +15,13 @@ import { TopBar } from './TopBar';
 
 export function AppShell({ children }: { children: ReactNode }) {
   const { t } = useTranslation();
-  const denied = useGuardStore((s) => s.denied);
-  const setDenied = useGuardStore((s) => s.setDenied);
+  const deniedFrom = useGuardStore((s) => s.deniedFrom);
+  const clearDenied = useGuardStore((s) => s.clearDenied);
   const pathname = usePathname();
-  // The notice belongs to the redirect landing page; clear it once the user navigates on.
-  useEffect(() => { if (denied && pathname !== '/overview') setDenied(false); }, [pathname, denied, setDenied]);
+  // The notice belongs to the /overview redirect landing; clear it once the user navigates on.
+  useEffect(() => {
+    if (deniedFrom && pathname !== deniedFrom && pathname !== '/overview') clearDenied();
+  }, [pathname, deniedFrom, clearDenied]);
   return (
     <div className="flex min-h-screen">
       <a
@@ -31,10 +33,10 @@ export function AppShell({ children }: { children: ReactNode }) {
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col">
         <TopBar />
-        {denied && (
+        {deniedFrom && pathname === '/overview' && (
           <div role="status" className="flex items-center justify-between gap-3 bg-warn-soft px-4 py-2 text-sm text-warn">
             <span>{t('common.perm.notice')}</span>
-            <Button size="sm" variant="secondary" onClick={() => setDenied(false)}>{t('common.perm.dismiss')}</Button>
+            <Button size="sm" variant="secondary" onClick={clearDenied}>{t('common.perm.dismiss')}</Button>
           </div>
         )}
         <main id="main" tabIndex={-1} className="min-w-0 flex-1 p-4 pb-20 md:p-6 md:pb-6">

@@ -55,6 +55,9 @@ function UserMenu() {
               {t(theme === 'light' ? 'common.user.dark' : 'common.user.light')}
             </Button>
           </div>
+          <Button size="sm" variant="secondary" className="mb-2 w-full sm:hidden" onClick={() => { useGlossaryStore.getState().show(null); setOpen(false); }}>
+            {t('common.a11y.help')}
+          </Button>
           <Button size="sm" variant="secondary" className="mb-2 w-full" onClick={() => { useFeedbackDialog.getState().setOpen(true); setOpen(false); }}>
             {t('common.a11y.feedback')}
           </Button>
@@ -76,30 +79,30 @@ export function TopBar() {
   const setRole = useSessionStore((s) => s.setRole);
 
   return (
-    <div className="sticky top-0 z-20 flex h-14 items-center gap-3 border-b border-line bg-surface px-4">
+    <div className="sticky top-0 z-20 flex h-14 items-center gap-2 border-b border-line bg-surface px-2 sm:gap-3 sm:px-4">
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="flex h-9 flex-1 items-center gap-2 rounded-input border border-line bg-bg px-3 text-left text-sm text-faint md:max-w-md"
+        className="flex h-9 min-w-0 flex-1 items-center gap-2 rounded-input border border-line bg-bg px-3 text-left text-sm text-faint md:max-w-md"
       >
         <Search className="size-4" aria-hidden />
         <span className="flex-1 truncate">{t('common.cmd.open')}</span>
         <kbd className="hidden rounded border border-line px-1 text-xs sm:inline">Ctrl K</kbd>
       </button>
-      <div className="ml-auto flex items-center gap-2">
+      <div className="ml-auto flex shrink-0 items-center gap-1 sm:gap-2">
         {isDev && (
           <label className="flex items-center gap-1 text-xs text-muted">
             <span className="sr-only sm:not-sr-only">{t('common.role.switcher')}</span>
             <select
               value={role}
               onChange={(e) => setRole(e.target.value as Role)}
-              className="h-9 rounded-input border border-line bg-surface px-2 text-sm text-fg"
+              className="h-9 w-20 rounded-input border border-line bg-surface px-1 text-sm text-fg sm:w-auto sm:px-2"
             >
               {ROLES.map((r) => <option key={r} value={r}>{t(`common.role.${r}`)}</option>)}
             </select>
           </label>
         )}
-        <Button variant="ghost" size="icon" aria-label={t('common.a11y.help')} onClick={() => useGlossaryStore.getState().show(null)}>
+        <Button variant="ghost" size="icon" className="max-sm:hidden" aria-label={t('common.a11y.help')} onClick={() => useGlossaryStore.getState().show(null)}>
           <CircleHelp className="size-4" aria-hidden />
         </Button>
         <NotificationBell />

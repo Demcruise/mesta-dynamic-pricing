@@ -72,7 +72,7 @@ export function OverviewPage() {
       <PageHeader title={t('overview.title')} subtitle={t('overview.greeting', { name: user.name, role: t(`common.role.${user.role}`) })} />
       {loading ? <LoadingRows rows={4} rowHeight={72} /> : (
         <>
-          <section aria-label={t('common.a11y.kpi')} className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
+          <section aria-label={t('common.a11y.kpi')} className="mb-4 grid grid-cols-1 gap-3 min-[420px]:grid-cols-2 lg:grid-cols-4">
             {view.kpis.map((k) => (
               <Link key={k.key} href={k.href ?? '/overview'} onClick={() => quick(k.href ?? '/overview')} className="block rounded-card hover:opacity-90">
                 <KpiCard label={t(`overview.kpi.${k.key}`)} value={fmt(k)} />

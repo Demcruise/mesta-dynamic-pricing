@@ -58,7 +58,7 @@ export function KpiCard({ label, value, hint }: { label: string; value: ReactNod
   return (
     <div className="rounded-card border border-line bg-surface p-4">
       <p className="text-xs text-muted">{label}</p>
-      <p className="tabular mt-1 text-2xl font-semibold text-fg">{value}</p>
+      <p className="tabular mt-1 break-words text-xl font-semibold text-fg sm:text-2xl">{value}</p>
       {hint && <p className="mt-1 text-xs text-faint">{hint}</p>}
     </div>
   );

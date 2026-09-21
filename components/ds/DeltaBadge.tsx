@@ -20,9 +20,8 @@ export function DeltaBadge({ value, className }: Props) {
   const pct = formatPercent(Math.abs(value), locale);
   return (
     <span
-      aria-label={`${label} ${pct}`}
       className={cn(
-        'tabular inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-medium',
+        'tabular relative inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-medium',
         dir === 'up' && 'bg-up-soft text-up',
         dir === 'down' && 'bg-down-soft text-down',
         dir === 'flat' && 'bg-hold-soft text-hold',
@@ -30,6 +29,7 @@ export function DeltaBadge({ value, className }: Props) {
       )}
     >
       <Icon className="size-3" aria-hidden />
+      <span className="sr-only">{`${label} ${pct}`}</span>
       <span aria-hidden>{pct}</span>
     </span>
   );

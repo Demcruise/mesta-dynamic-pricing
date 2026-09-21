@@ -3,10 +3,10 @@ import { expect, type Page } from '@playwright/test';
 export type RoleKey = 'analyst' | 'manager' | 'ops_lead' | 'compliance';
 
 /** English UI and fresh demo data for every test. */
-export async function open(page: Page, path: string, role: RoleKey = 'analyst') {
-  await page.addInitScript(() => {
-    localStorage.setItem('mesta-ui', JSON.stringify({ state: { density: 'comfortable', theme: 'light', locale: 'en', sidebarCollapsed: false }, version: 0 }));
-  });
+export async function open(page: Page, path: string, role: RoleKey = 'analyst', locale: 'en' | 'id' = 'en') {
+  await page.addInitScript((l) => {
+    localStorage.setItem('mesta-ui', JSON.stringify({ state: { density: 'comfortable', theme: 'light', locale: l, sidebarCollapsed: false }, version: 0 }));
+  }, locale);
   // Switch role on a page every role may open, then navigate client-side (route guard would redirect otherwise).
   await page.goto(role === 'analyst' ? path : '/overview');
   await expect(page.getByRole('main')).toBeVisible();
@@ -17,7 +17,7 @@ export async function open(page: Page, path: string, role: RoleKey = 'analyst') 
 }
 
 export async function setRole(page: Page, role: RoleKey) {
-  await page.getByLabel('Switch role (dev)').selectOption(role);
+  await page.getByLabel(/Switch role|Ganti peran/).selectOption(role);
 }
 
 /** Client-side navigation keeps in-memory store state; a full reload would reset the demo data. */

@@ -50,7 +50,7 @@ export function BarChart({ items, format, label }: { items: { label: string; val
   const maxAbs = Math.max(...items.map((i) => Math.abs(i.value)), 1e-9);
   const hasNeg = items.some((i) => i.value < 0);
   return (
-    <ul role="img" aria-label={label} className="flex flex-col gap-1.5">
+    <ul aria-label={label} className="flex flex-col gap-1.5">
       {items.map((i) => {
         const w = (Math.abs(i.value) / maxAbs) * (hasNeg ? 50 : 100);
         return (

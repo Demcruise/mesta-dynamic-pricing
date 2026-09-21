@@ -13,13 +13,13 @@ beforeEach(() => {
 describe('DeltaBadge', () => {
   it('pairs icon with direction label in aria-label', () => {
     render(<DeltaBadge value={0.05} />);
-    expect(screen.getByLabelText(/Increase/)).toBeInTheDocument();
+    expect(screen.getByText(/Increase/)).toBeInTheDocument();
   });
   it('labels decreases and flat', () => {
     const { rerender } = render(<DeltaBadge value={-0.02} />);
-    expect(screen.getByLabelText(/Decrease/)).toBeInTheDocument();
+    expect(screen.getByText(/Decrease/)).toBeInTheDocument();
     rerender(<DeltaBadge value={0} />);
-    expect(screen.getByLabelText(/No change/)).toBeInTheDocument();
+    expect(screen.getByText(/No change/)).toBeInTheDocument();
   });
 });
 

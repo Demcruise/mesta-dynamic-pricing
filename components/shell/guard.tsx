@@ -7,9 +7,14 @@ import { PermissionDeniedState } from '@/components/ds/states';
 import { useCan } from '@/lib/hooks';
 import { actionForPath } from '@/lib/rbac';
 
-export const useGuardStore = create<{ denied: boolean; setDenied: (v: boolean) => void }>((set) => ({
-  denied: false,
-  setDenied: (denied) => set({ denied }),
+export const useGuardStore = create<{
+  deniedFrom: string | null;
+  deny: (path: string) => void;
+  clearDenied: () => void;
+}>((set) => ({
+  deniedFrom: null,
+  deny: (deniedFrom) => set({ deniedFrom }),
+  clearDenied: () => set({ deniedFrom: null }),
 }));
 
 /**
@@ -25,10 +30,10 @@ export function RouteGuard({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!allowed) {
-      useGuardStore.getState().setDenied(true);
+      useGuardStore.getState().deny(pathname);
       router.replace('/overview');
     }
-  }, [allowed, router]);
+  }, [allowed, pathname, router]);
 
   return allowed ? <>{children}</> : <PermissionDeniedState />;
 }

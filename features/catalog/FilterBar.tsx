@@ -14,12 +14,12 @@ function MultiSelect<T extends string>({
   label, options, value, onChange,
 }: { label: string; options: { value: T; label: string }[]; value: T[]; onChange: (v: T[]) => void }) {
   return (
-    <details className="relative">
+    <details className="relative max-sm:static max-sm:w-full">
       <summary className={`${inputCls} flex cursor-pointer list-none items-center justify-between gap-2 whitespace-nowrap`}>
         <span>{label}{value.length > 0 && <span className="ml-1 rounded bg-brand-soft px-1 text-xs text-brand">{value.length}</span>}</span>
         <ChevronDown className="size-3.5" aria-hidden />
       </summary>
-      <fieldset className="absolute left-0 top-10 z-20 min-w-44 rounded-card border border-line bg-surface p-2 shadow-lg">
+      <fieldset className="absolute left-0 top-10 z-20 min-w-44 rounded-card border border-line bg-surface p-2 shadow-lg max-sm:static max-sm:mt-1 max-sm:w-full">
         <legend className="sr-only">{label}</legend>
         {options.map((o) => (
           <label key={o.value} className="flex cursor-pointer items-center gap-2 rounded px-2 py-1 text-sm hover:bg-subtle">
