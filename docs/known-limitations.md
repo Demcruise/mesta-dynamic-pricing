@@ -10,13 +10,16 @@ Everything here is deliberate or not yet done. Nothing below is hidden behind a 
 - The forecast model is constant elasticity with a fixed 1,000 units/month baseline (disclosed on the Simulation page).
 
 ## Not done or not verified
-- **Storybook** is not set up. `/design-system` is an in-app reference instead (props, states, a11y notes, do/don't, decision guide).
-- **Visual regression baselines** are not captured.
-- **Automated axe / Lighthouse audits were not run.** Covered instead: WCAG AA contrast of every token pair in both themes (`tests/a11y-contrast.test.ts`), semantic tables with captions and `scope`, `role="meter"`, native `<dialog>` focus trapping, `prefers-reduced-motion`, keyboard flows in Playwright. A manual screen-reader pass has not been done.
-- **Catalog virtual table has no jsdom component test** (jsdom has no layout, so the virtualizer renders nothing). Virtualization was verified in a real browser with 5,000 SKUs (`/catalog?skus=5000`, ~18 rows in the DOM) and filter+sort of 5,000 rows is benchmarked in unit tests.
-- **Indonesian string-length QA** for overflow was not done systematically.
-- Playwright uses the system Chrome (`channel: 'chrome'`) because the bundled Chromium build did not match the installed Playwright version.
+- **Storybook** was evaluated and dropped. `/design-system` is the in-app reference instead (props, states, a11y notes, do/don't, decision guide, React Bits Pro links). Visual regression is covered by Playwright screenshot baselines in `e2e/visual.spec.ts` (per-primitive sections, light + dark).
+- **A manual screen-reader pass has not been done.** Covered instead: axe-core WCAG A/AA on every route in both themes plus open dialogs (`e2e/a11y.spec.ts`), WCAG AA contrast of every token pair in both themes (`tests/a11y-contrast.test.ts`), semantic tables with captions and `scope`, `role="meter"`, native `<dialog>` focus trapping, `prefers-reduced-motion`, keyboard flows in Playwright.
+- Playwright uses the system Chrome (`channel: 'chrome'`) because the bundled Chromium build did not match the installed Playwright version. Visual baselines in `e2e/visual.spec.ts-snapshots/` are Windows/Chrome-specific; regenerate on other platforms.
 - `React Bits Pro` blocks are registered in `components.json` but no block is installed (needs a licence token).
+
+## Verified performance (2026-09-21, prod build, Lighthouse on system Chrome)
+- `/overview` — performance 95, accessibility 100, best-practices 100, 0 console errors.
+- `/catalog` — performance 97, accessibility 100, best-practices 100, 0 console errors.
+- `/recommendations` — performance 97, accessibility 100, best-practices 100, 0 console errors.
+- Catalog virtualization verified with 5,000 SKUs (`/catalog?skus=5000`) and in jsdom (`tests/catalog-table.test.tsx`); filter+sort of 5,000 rows is benchmarked in unit tests. Charts are lazy-loaded via `next/dynamic`.
 
 ## Behaviours worth knowing
 - Approve/reject/adjust are staged for 10 seconds; closing the tab during that window drops the decision (no audit event is written).
