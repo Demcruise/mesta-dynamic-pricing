@@ -120,7 +120,7 @@ Blueprint items are covered by the existing foundation.
 | E | `4dbe573` | Experiments, 7-step onboarding, multi-level approval + delegation, optimistic concurrency |
 | F | `c6c4ef8` | Command-menu entity coverage, chart unit/window metadata, builder dirty-guard, read-only policy matrix |
 | G | `2d5910f` | Strategy scheduling (simulated clock), strategy-bound rules/signals with real evaluation semantics, audit-timeline icon-map fix, 320px responsive hardening (`grid-cols-1` bases + `min-w-0` clipping) |
-| H | pending | Table standards: column resize (fixed layout, colgroup, pointer/keyboard separator, persisted per table) + row grouping (toolbar select, group header rows, non-virtualized tables) |
+| H | `19012c3` | Table standards: column resize (fixed layout, colgroup, pointer/keyboard separator, persisted per table) + row grouping (toolbar select, group header rows, non-virtualized tables) |
 
 Known honest gaps remaining: writable policy editing
 (intentionally code-only — the matrix on /settings is read-only)
