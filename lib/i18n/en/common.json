@@ -46,6 +46,18 @@
     "clearFilters": "Clear filters",
     "back": "Back"
   },
+  "table": {
+    "columns": "Columns",
+    "exportCsv": "Export CSV",
+    "exported": "Exported {n} rows",
+    "views": "Saved views",
+    "saveView": "Save",
+    "viewName": "View name",
+    "deleteView": "Delete view {name}",
+    "noViews": "No saved views yet.",
+    "openFull": "Open full page",
+    "close": "Close"
+  },
   "perm": {
     "deniedTitle": "Access denied",
     "deniedBody": "The {role} role has no permission for this page.",

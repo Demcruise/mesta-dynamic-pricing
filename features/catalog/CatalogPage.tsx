@@ -4,9 +4,13 @@ import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useMemo, useState } from 'react';
 import { EmptyState, ErrorState, KpiCard, LoadingRows, PageHeader } from '@/components/ds/states';
+import { useColumnVisibility } from '@/components/ds/table/DataTable';
+import { SavedViewMenu } from '@/components/ds/table/SavedViewMenu';
 import { Button } from '@/components/ui/button';
 import { RoleGate } from '@/components/shell/RoleGate';
+import { marginPct } from '@/lib/domain';
 import { formatPercent } from '@/lib/format';
+import { useCan } from '@/lib/hooks';
 import { useTranslation } from '@/lib/i18n';
 import type { Product } from '@/lib/ontology';
 import { useRecommendations, useSkuList } from '@/lib/queries';
@@ -15,10 +19,11 @@ import { useDevStore } from '@/lib/stores/dev';
 import { CatalogTable } from './CatalogTable';
 import { FilterBar } from './FilterBar';
 import {
-  applyFilters, computeKpis, EMPTY_FILTERS, parseFilters, serializeFilters, sortProducts,
+  applyFilters, BUILT_IN_PRESETS, computeKpis, EMPTY_FILTERS, parseFilters, serializeFilters, sortProducts,
   type CatalogFilters, type SortKey,
 } from './filters';
 import { OverrideDialog } from './OverrideDialog';
+import { SkuDrawer } from './SkuDrawer';
 
 const ROW_HEIGHT = { compact: 34, comfortable: 44 } as const;
 const isDev = process.env.NODE_ENV !== 'production';
@@ -40,6 +45,9 @@ export function CatalogPage() {
   const failQueries = useDevStore((s) => s.failQueries);
   const setFailQueries = useDevStore((s) => s.setFailQueries);
   const [overrideTarget, setOverrideTarget] = useState<Product | null>(null);
+  const [drawerTarget, setDrawerTarget] = useState<Product | null>(null);
+  const columnVis = useColumnVisibility('catalog');
+  const can = useCan();
 
   // Filters live in the URL so KPIs, table and shared links agree.
   const query = sp.toString();
@@ -106,9 +114,7 @@ export function CatalogPage() {
       <FilterBar
         filters={filters}
         onChange={setFilters}
-        onApplyQuery={(q) => router.replace(`${pathname}?${q}`, { scroll: false })}
         onClear={() => setFilters({ ...EMPTY_FILTERS, sort: filters.sort, dir: filters.dir })}
-        currentQuery={serializeFilters({ ...filters, sort: 'sku', dir: 'asc' }).toString()}
       />
 
       {loading ? (
@@ -132,6 +138,26 @@ export function CatalogPage() {
           onToggle={toggle}
           onToggleAll={onToggleAll}
           onOverride={setOverrideTarget}
+          onRowClick={setDrawerTarget}
+          visibility={columnVis}
+          toolbar={
+            <SavedViewMenu
+              tableId="catalog"
+              legacyKey="mesta-catalog-presets"
+              currentQuery={serializeFilters(filters).toString()}
+              hidden={[...columnVis.hidden]}
+              onApply={({ query, hidden }) => {
+                router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
+                columnVis.setHidden(hidden);
+              }}
+              builtIns={BUILT_IN_PRESETS.map((p) => ({ id: p.key, label: t(`catalog.filter.${p.key}`), query: p.query }))}
+            />
+          }
+          csv={can('catalog.export') ? {
+            filename: 'mesta-catalog.csv',
+            headers: ['sku', 'name', 'category', 'cost', 'price', 'minPrice', 'maxPrice', 'mapPrice', 'competitorAvg', 'marginPct', 'elasticity', 'stockUnits', 'stockStatus', 'lastChangeAt'],
+            cells: (p) => [p.sku, p.name, p.category, p.cost, p.price, p.minPrice, p.maxPrice, p.mapPrice, p.competitorAvg, marginPct(p), p.elasticity, p.stockUnits, p.stockStatus, p.lastChangeAt],
+          } : undefined}
         />
       )}
 
@@ -156,6 +182,7 @@ export function CatalogPage() {
         </div>
       )}
 
+      <SkuDrawer product={drawerTarget} pendingSkus={pendingSkus} onClose={() => setDrawerTarget(null)} onOverride={setOverrideTarget} />
       <OverrideDialog product={overrideTarget} onClose={() => setOverrideTarget(null)} />
     </>
   );

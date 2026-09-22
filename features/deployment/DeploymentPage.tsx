@@ -1,19 +1,21 @@
 'use client';
 
-import { ChevronDown, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { Fragment, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
+import { Drawer } from '@/components/ds/Drawer';
 import { PriceValue } from '@/components/ds/PriceValue';
 import { EmptyState, ErrorState, LoadingRows, PageHeader } from '@/components/ds/states';
+import { MestaDataTable, useColumnVisibility, type DataColumn } from '@/components/ds/table/DataTable';
 import { RoleGate } from '@/components/shell/RoleGate';
 import { Button } from '@/components/ui/button';
 import { inputCls } from '@/components/ui/field';
 import { retryDeployment, triggerDeployment } from '@/lib/actions/deployment';
 import { CHANNELS } from '@/lib/stores/deployment';
 import { formatRelativeTime } from '@/lib/format';
+import { useCan } from '@/lib/hooks';
 import { useTranslation } from '@/lib/i18n';
-import type { DeploymentStatus } from '@/lib/ontology';
+import type { DeploymentRecord, DeploymentStatus } from '@/lib/ontology';
 import { useDeploymentRecords, useRecommendations, useSkuList } from '@/lib/queries';
 import { useSessionStore, useToastStore } from '@/lib/stores';
 import { cn } from '@/lib/utils';
@@ -30,11 +32,13 @@ export function DeploymentPage() {
   const sp = useSearchParams();
   const user = useSessionStore((s) => s.user);
   const toast = useToastStore((s) => s.push);
+  const can = useCan();
   const recs = useRecommendations();
   const recsData = recs.data;
   const records = useDeploymentRecords();
   const skus = useSkuList();
-  const [open, setOpen] = useState<string | null>(null);
+  const [selected, setSelected] = useState<DeploymentRecord | null>(null);
+  const columnVis = useColumnVisibility('deployment');
 
   const status = (sp.get('status') ?? '') as DeploymentStatus | '';
   const setStatus = (v: string) => router.replace(v ? `${pathname}?status=${v}` : pathname, { scroll: false });
@@ -58,6 +62,33 @@ export function DeploymentPage() {
     if (!r.ok) toast(t(`deployment.err.${r.error}`));
     else if (id) toast(t('deployment.toast.started', { id }));
   };
+
+  const deployColumns: DataColumn<DeploymentRecord>[] = [
+    {
+      id: 'sku', header: t('deployment.table.sku'), required: true,
+      cell: (r) => <Link href={`/catalog/${r.sku}`} className="tabular text-brand hover:underline">{r.sku}</Link>,
+    },
+    { id: 'channel', header: t('deployment.table.channel'), cell: (r) => t(`common.channel.${r.channel}`) },
+    {
+      id: 'status', header: t('deployment.table.status'),
+      cell: (r) => <span className={cn('rounded-full px-2 py-0.5 text-xs font-medium', STATUS_CLS[r.status])}>{t(`deployment.status.${r.status}`)}</span>,
+    },
+    { id: 'retries', header: t('deployment.table.retries'), cell: (r) => <span className="tabular">{r.retryCount}</span> },
+    { id: 'updated', header: t('deployment.table.updated'), cell: (r) => <span className="tabular text-muted">{formatRelativeTime(r.updatedAt, locale)}</span> },
+    {
+      id: 'actions', header: t('deployment.table.actions'), required: true,
+      cell: (r) => (
+        <RoleGate action="deployment.execute">
+          {r.status === 'failed' && (
+            <Button size="sm" variant="secondary" onClick={() => run(retryDeployment(user, r.id))}>{t('deployment.table.retry')}</Button>
+          )}
+          {r.status === 'pending' && (
+            <Button size="sm" onClick={() => run(triggerDeployment(user, r.recommendationId))}>{t('deployment.queue.deploy')}</Button>
+          )}
+        </RoleGate>
+      ),
+    },
+  ];
 
   return (
     <>
@@ -112,63 +143,66 @@ export function DeploymentPage() {
             {rows.length === 0 ? (
               <EmptyState title={t('deployment.table.empty')} {...(status ? { action: { label: t('common.state.clearFilters'), onClick: () => setStatus('') } } : {})} />
             ) : (
-              <div className="overflow-x-auto rounded-card border border-line bg-surface shadow-e1">
-                <table className="w-full min-w-[720px] text-sm">
-                  <caption className="sr-only">{t('deployment.table.caption')}</caption>
-                  <thead className="bg-subtle text-xs text-muted">
-                    <tr className="h-row">
-                      <th scope="col" className="w-8 px-2 py-row" />
-                      {(['sku', 'channel', 'status', 'retries', 'updated', 'actions'] as const).map((c) => (
-                        <th key={c} scope="col" className="px-3 py-row text-left font-medium">{t(`deployment.table.${c}`)}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {rows.map((r) => {
-                      const expanded = open === r.id;
-                      return (
-                        <Fragment key={r.id}>
-                          <tr className="h-row border-t border-line transition-colors duration-fast hover:bg-subtle">
-                            <td className="px-2">
-                              <button type="button" aria-expanded={expanded} aria-label={t('deployment.table.expand', { id: r.id })} onClick={() => setOpen(expanded ? null : r.id)} className="grid size-7 place-items-center rounded transition-colors duration-fast hover:bg-subtle">
-                                {expanded ? <ChevronDown className="size-4" aria-hidden /> : <ChevronRight className="size-4" aria-hidden />}
-                              </button>
-                            </td>
-                            <td className="px-3 py-row"><Link href={`/catalog/${r.sku}`} className="tabular text-brand hover:underline">{r.sku}</Link></td>
-                            <td className="px-3">{t(`common.channel.${r.channel}`)}</td>
-                            <td className="px-3"><span className={cn('rounded-full px-2 py-0.5 text-xs font-medium', STATUS_CLS[r.status])}>{t(`deployment.status.${r.status}`)}</span></td>
-                            <td className="tabular px-3">{r.retryCount}</td>
-                            <td className="tabular px-3 text-muted">{formatRelativeTime(r.updatedAt, locale)}</td>
-                            <td className="px-3">
-                              <RoleGate action="deployment.execute">
-                                {r.status === 'failed' && (
-                                  <Button size="sm" variant="secondary" onClick={() => run(retryDeployment(user, r.id))}>{t('deployment.table.retry')}</Button>
-                                )}
-                                {r.status === 'pending' && (
-                                  <Button size="sm" onClick={() => run(triggerDeployment(user, r.recommendationId))}>{t('deployment.queue.deploy')}</Button>
-                                )}
-                              </RoleGate>
-                            </td>
-                          </tr>
-                          {expanded && (
-                            <tr className="bg-subtle text-xs">
-                              <td />
-                              <td colSpan={6} className="px-3 py-2">
-                                <p>{t('deployment.table.recommendation')}: <Link className="tabular text-brand underline" href={`/recommendations/${r.recommendationId}`}>{r.recommendationId}</Link> · {names.get(r.sku)}</p>
-                                {r.errorReason && <p className="text-down">{t('deployment.table.error')}: {r.errorReason}</p>}
-                              </td>
-                            </tr>
-                          )}
-                        </Fragment>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
+              <MestaDataTable
+                tableId="deployment"
+                caption={t('deployment.table.caption')}
+                rows={rows}
+                getRowId={(r) => r.id}
+                onRowClick={setSelected}
+                minWidth={720}
+                visibility={columnVis}
+                columns={deployColumns}
+                csv={can('deployment.export') ? {
+                  filename: 'mesta-deployment.csv',
+                  headers: ['id', 'recommendationId', 'sku', 'channel', 'status', 'retryCount', 'errorReason', 'updatedAt'],
+                  cells: (r) => [r.id, r.recommendationId, r.sku, r.channel, r.status, r.retryCount, r.errorReason, r.updatedAt],
+                } : undefined}
+              />
             )}
           </section>
         </>
       )}
+
+      <Drawer
+        open={selected !== null}
+        onClose={() => setSelected(null)}
+        title={selected ? `${t('deployment.table.title')} — ${selected.id}` : ''}
+        href={selected && can('recommendation.view') ? `/recommendations/${selected.recommendationId}` : undefined}
+        hrefLabel={t('deployment.table.openFull')}
+      >
+        {selected && (
+          <div className="flex flex-col gap-3 text-sm">
+            <dl className="grid grid-cols-2 gap-x-4 gap-y-2">
+              <div><dt className="text-xs text-muted">{t('deployment.table.sku')}</dt><dd><Link href={`/catalog/${selected.sku}`} className="tabular text-brand hover:underline">{selected.sku}</Link> <span className="text-muted">{names.get(selected.sku)}</span></dd></div>
+              <div><dt className="text-xs text-muted">{t('deployment.table.channel')}</dt><dd>{t(`common.channel.${selected.channel}`)}</dd></div>
+              <div><dt className="text-xs text-muted">{t('deployment.table.status')}</dt><dd><span className={cn('rounded-full px-2 py-0.5 text-xs font-medium', STATUS_CLS[selected.status])}>{t(`deployment.status.${selected.status}`)}</span></dd></div>
+              <div><dt className="text-xs text-muted">{t('deployment.table.retries')}</dt><dd className="tabular">{selected.retryCount}</dd></div>
+              <div><dt className="text-xs text-muted">{t('deployment.table.updated')}</dt><dd className="tabular">{formatRelativeTime(selected.updatedAt, locale)}</dd></div>
+              <div>
+                <dt className="text-xs text-muted">{t('deployment.table.recommendation')}</dt>
+                <dd>
+                  {can('recommendation.view') ? (
+                    <Link className="tabular text-brand hover:underline" href={`/recommendations/${selected.recommendationId}`}>{selected.recommendationId}</Link>
+                  ) : (
+                    <span className="tabular">{selected.recommendationId}</span>
+                  )}
+                </dd>
+              </div>
+            </dl>
+            {selected.errorReason && <p className="rounded-input bg-down-soft px-3 py-2 text-xs text-down">{t('deployment.table.error')}: {selected.errorReason}</p>}
+            <RoleGate action="deployment.execute">
+              <div className="flex gap-2 border-t border-line pt-3">
+                {selected.status === 'failed' && (
+                  <Button size="sm" variant="secondary" onClick={() => { run(retryDeployment(user, selected.id)); }}>{t('deployment.table.retry')}</Button>
+                )}
+                {selected.status === 'pending' && (
+                  <Button size="sm" onClick={() => { run(triggerDeployment(user, selected.recommendationId)); }}>{t('deployment.queue.deploy')}</Button>
+                )}
+              </div>
+            </RoleGate>
+          </div>
+        )}
+      </Drawer>
     </>
   );
 }

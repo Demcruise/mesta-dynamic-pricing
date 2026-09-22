@@ -5,7 +5,7 @@
   "kpi": { "avgMargin": "Avg margin", "belowMap": "SKUs below MAP", "pendingAi": "Pending AI recommendations", "avgGap": "Avg competitor price gap" },
   "col": {
     "select": "Select", "sku": "SKU", "name": "Name", "category": "Category", "cost": "Cost", "price": "Price", "competitor": "Competitor avg",
-    "margin": "Margin", "elasticity": "Elasticity", "stock": "Stock", "lastChange": "Last change", "ai": "AI", "actions": "Actions"
+    "margin": "Margin", "elasticity": "Elasticity", "stock": "Stock", "lastChange": "Last change", "trend": "Trend", "ai": "AI", "actions": "Actions"
   },
   "elasticity": { "inelastic": "Inelastic", "moderate": "Moderate", "elastic": "Elastic" },
   "stock": { "in_stock": "In stock", "low_stock": "Low stock", "out_of_stock": "Out of stock" },

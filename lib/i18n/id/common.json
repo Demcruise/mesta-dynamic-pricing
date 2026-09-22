@@ -46,6 +46,18 @@
     "clearFilters": "Hapus filter",
     "back": "Kembali"
   },
+  "table": {
+    "columns": "Kolom",
+    "exportCsv": "Ekspor CSV",
+    "exported": "{n} baris diekspor",
+    "views": "Tampilan tersimpan",
+    "saveView": "Simpan",
+    "viewName": "Nama tampilan",
+    "deleteView": "Hapus tampilan {name}",
+    "noViews": "Belum ada tampilan tersimpan.",
+    "openFull": "Buka halaman penuh",
+    "close": "Tutup"
+  },
   "perm": {
     "deniedTitle": "Akses ditolak",
     "deniedBody": "Peran {role} tidak memiliki izin untuk halaman ini.",

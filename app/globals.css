@@ -49,6 +49,14 @@
   --ease-standard: var(--ease-standard);
   --ease-decelerate: var(--ease-decelerate);
   --ease-accelerate: var(--ease-accelerate);
+
+  /* Animations → animate-drawer-in */
+  --animate-drawer-in: drawer-in var(--motion-base) var(--ease-decelerate);
+
+  @keyframes drawer-in {
+    from { transform: translateX(1.5rem); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
 }
 
 html, body { background: var(--bg); color: var(--text); font-family: var(--font-ui); }

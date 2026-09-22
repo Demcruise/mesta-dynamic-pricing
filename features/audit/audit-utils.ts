@@ -11,6 +11,24 @@ export interface AuditFilters {
 
 export const EMPTY_AUDIT_FILTERS: AuditFilters = { from: '', to: '', actor: '', source: '', type: '', sku: '' };
 
+/** Filters live in the URL so saved views and shared links reproduce the same slice. */
+export function parseAuditFilters(sp: URLSearchParams): AuditFilters {
+  return {
+    from: sp.get('from') ?? '',
+    to: sp.get('to') ?? '',
+    actor: sp.get('actor') ?? '',
+    source: sp.get('source') ?? '',
+    type: sp.get('type') ?? '',
+    sku: sp.get('sku') ?? '',
+  };
+}
+
+export function serializeAuditFilters(f: AuditFilters): URLSearchParams {
+  const sp = new URLSearchParams();
+  for (const k of ['from', 'to', 'actor', 'source', 'type', 'sku'] as const) if (f[k]) sp.set(k, f[k]);
+  return sp;
+}
+
 export function filterAudit(events: AuditEvent[], f: AuditFilters): AuditEvent[] {
   const from = f.from ? new Date(`${f.from}T00:00:00`).getTime() : null;
   const to = f.to ? new Date(`${f.to}T23:59:59.999`).getTime() : null;

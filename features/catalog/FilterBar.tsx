@@ -1,14 +1,11 @@
 'use client';
 
 import { ChevronDown } from 'lucide-react';
-import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input, inputCls } from '@/components/ui/field';
 import { CATEGORIES } from '@/lib/categories';
 import { useTranslation } from '@/lib/i18n';
-import {
-  activeFilterCount, BUILT_IN_PRESETS, parseFilters, type CatalogFilters, type FilterPreset,
-} from './filters';
+import { activeFilterCount, type CatalogFilters } from './filters';
 
 function MultiSelect<T extends string>({
   label, options, value, onChange,
@@ -36,40 +33,16 @@ function MultiSelect<T extends string>({
   );
 }
 
-const PRESET_KEY = 'mesta-catalog-presets';
-
-function loadPresets(): FilterPreset[] {
-  try {
-    return JSON.parse(localStorage.getItem(PRESET_KEY) ?? '[]') as FilterPreset[];
-  } catch {
-    return [];
-  }
-}
-
 interface Props {
   filters: CatalogFilters;
   onChange: (f: CatalogFilters) => void;
-  onApplyQuery: (query: string) => void;
   onClear: () => void;
-  currentQuery: string;
 }
 
-export function FilterBar({ filters, onChange, onApplyQuery, onClear, currentQuery }: Props) {
+export function FilterBar({ filters, onChange, onClear }: Props) {
   const { t } = useTranslation();
-  const [presets, setPresets] = useState<FilterPreset[]>([]);
-  const [name, setName] = useState('');
-  useEffect(() => setPresets(loadPresets()), []);
   const count = activeFilterCount(filters);
   const set = (patch: Partial<CatalogFilters>) => onChange({ ...filters, ...patch });
-
-  const save = () => {
-    const n = name.trim();
-    if (!n || !currentQuery) return;
-    const next = [...presets.filter((p) => p.name !== n), { name: n, query: currentQuery }];
-    setPresets(next);
-    try { localStorage.setItem(PRESET_KEY, JSON.stringify(next)); } catch { /* storage unavailable */ }
-    setName('');
-  };
 
   const numChange = (key: 'gapMin' | 'gapMax') => (e: React.ChangeEvent<HTMLInputElement>) =>
     set({ [key]: e.target.value === '' ? null : Number(e.target.value) } as Partial<CatalogFilters>);
@@ -97,30 +70,14 @@ export function FilterBar({ filters, onChange, onApplyQuery, onClear, currentQue
       <Input type="number" aria-label={t('catalog.filter.gapMax')} placeholder={t('catalog.filter.gapMax')} className="tabular w-28"
         value={filters.gapMax ?? ''} onChange={numChange('gapMax')} />
 
-      <select
-        aria-label={t('catalog.filter.presets')}
-        className={`${inputCls} w-40`}
-        value=""
-        onChange={(e) => { if (e.target.value) onApplyQuery(e.target.value); }}
-      >
-        <option value="">{t('catalog.filter.presets')}</option>
-        {BUILT_IN_PRESETS.map((p) => <option key={p.key} value={p.query}>{t(`catalog.filter.${p.key}`)}</option>)}
-        {presets.map((p) => <option key={p.name} value={p.query}>{p.name}</option>)}
-      </select>
-
       {count > 0 && (
         <>
           <span className="rounded-full bg-brand-soft px-2 py-1 text-xs font-medium text-brand" aria-live="polite">
             {t('catalog.filter.count', { n: count })}
           </span>
-          <Input aria-label={t('catalog.filter.presetName')} placeholder={t('catalog.filter.presetName')} className="w-36"
-            value={name} onChange={(e) => setName(e.target.value)} />
-          <Button variant="secondary" size="md" onClick={save} disabled={!name.trim()}>{t('catalog.filter.savePreset')}</Button>
           <Button variant="ghost" onClick={onClear}>{t('common.state.clearFilters')}</Button>
         </>
       )}
     </div>
   );
 }
-
-export { parseFilters };

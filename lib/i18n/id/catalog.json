@@ -5,7 +5,7 @@
   "kpi": { "avgMargin": "Margin rata-rata", "belowMap": "SKU di bawah MAP", "pendingAi": "Rekomendasi AI tertunda", "avgGap": "Selisih harga kompetitor" },
   "col": {
     "select": "Pilih", "sku": "SKU", "name": "Nama", "category": "Kategori", "cost": "Biaya", "price": "Harga", "competitor": "Rata-rata kompetitor",
-    "margin": "Margin", "elasticity": "Elastisitas", "stock": "Stok", "lastChange": "Perubahan terakhir", "ai": "AI", "actions": "Aksi"
+    "margin": "Margin", "elasticity": "Elastisitas", "stock": "Stok", "lastChange": "Perubahan terakhir", "trend": "Tren", "ai": "AI", "actions": "Aksi"
   },
   "elasticity": { "inelastic": "Inelastis", "moderate": "Sedang", "elastic": "Elastis" },
   "stock": { "in_stock": "Tersedia", "low_stock": "Menipis", "out_of_stock": "Habis" },
