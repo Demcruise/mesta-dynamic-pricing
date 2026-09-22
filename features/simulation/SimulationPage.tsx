@@ -214,7 +214,7 @@ function Simulator({ sku, strategyId, initial, basePrice }: {
         </table>
       </section>
 
-      <div className="grid gap-4 lg:grid-cols-[2fr_1fr]">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[2fr_1fr]">
         <DemandChart product={product} markers={markers} />
         <section className="rounded-card border border-line bg-surface p-card shadow-e1">
           <h2 className="mb-2 text-sm font-semibold">{t('simulation.assumptions.title')}</h2>

@@ -189,6 +189,7 @@ describe('concurrent-edit detection (E.4)', () => {
     const s = useStrategyStore.getState().items[0]!;
     const mkDraft = (name: string) => ({
       name, objective: s.objective, skuIds: s.skuIds, categories: s.categories, guardrail: s.guardrail,
+      ruleIds: s.ruleIds, signals: s.signals,
     });
     expect(saveStrategy(manager, mkDraft(`${s.name} A`), s.id).ok).toBe(true);
     const moved = useStrategyStore.getState().items.find((x) => x.id === s.id)!;

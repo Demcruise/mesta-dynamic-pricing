@@ -1,4 +1,4 @@
-import type { Guardrail, Product, Strategy, StrategyObjective } from './ontology';
+import type { Guardrail, Product, RuleConditionField, Strategy, StrategyObjective } from './ontology';
 
 export interface StrategyDraft {
   name: string;
@@ -6,6 +6,8 @@ export interface StrategyDraft {
   skuIds: string[];
   categories: string[];
   guardrail: Guardrail;
+  ruleIds: string[];
+  signals: RuleConditionField[];
 }
 
 export type IssueCode =
@@ -24,10 +26,13 @@ export const emptyDraft = (skuIds: string[] = []): StrategyDraft => ({
   skuIds,
   categories: [],
   guardrail: { minPrice: null, maxPrice: null, mapEnforced: true, maxChangePercent: 5, autoApproveThreshold: 90 },
+  ruleIds: [],
+  signals: [],
 });
 
 export const toDraft = (s: Strategy): StrategyDraft => ({
   name: s.name, objective: s.objective, skuIds: s.skuIds, categories: s.categories, guardrail: s.guardrail,
+  ruleIds: s.ruleIds, signals: s.signals,
 });
 
 /** SKUs covered by a strategy: explicit SKUs plus everything in its categories. */

@@ -35,6 +35,7 @@ export function saveStrategy(user: UserSession, draft: StrategyDraft, id: string
     ...draft,
     id: existing?.id ?? nextId(),
     status: existing?.status ?? 'draft',
+    activateAt: existing?.activateAt ?? null,
     ownerId: existing?.ownerId ?? user.userId,
     updatedAt: new Date().toISOString(),
   };
@@ -61,18 +62,66 @@ export function submitStrategy(user: UserSession, id: string) {
   return ok();
 }
 
-export function activateStrategy(user: UserSession, id: string) {
+/**
+ * Approve a pending strategy. With `opts.at` in the future the activation is parked as
+ * `scheduled` — `promoteScheduledStrategies` fires it once the timestamp passes (the
+ * frontend stand-in for a backend job runner, same convention as runScheduledJob).
+ */
+export function activateStrategy(user: UserSession, id: string, opts: { at?: string } = {}) {
   if (!can(user.role, 'strategy.activate')) return fail('forbidden');
   const s = find(id);
   if (!s) return fail('not_found');
   if (blockers(s)) return fail('invalid');
-  const r = useStrategyStore.getState().transition(id, 'active');
+  if (opts.at && new Date(opts.at).getTime() > Date.now()) {
+    const r = useStrategyStore.getState().schedule(id, opts.at);
+    if (!r.ok) return r;
+    audit(user, 'strategy_schedule', s, opts.at);
+    useNotificationStore.getState().push({
+      targetRole: 'analyst', groupKey: 'strategy_scheduled', messageKey: 'common.notify.strategyScheduled', params: { name: s.name }, href: '/strategy',
+    });
+    return ok();
+  }
+  const r = s.status === 'scheduled' ? useStrategyStore.getState().promote(id) : useStrategyStore.getState().transition(id, 'active');
   if (!r.ok) return r;
   audit(user, 'strategy_activate', s);
   useNotificationStore.getState().push({
     targetRole: 'analyst', groupKey: 'strategy_activated', messageKey: 'common.notify.strategyActive', params: { name: s.name }, href: '/strategy',
   });
   return ok();
+}
+
+/** Cancel a scheduled activation — the strategy returns to pending_manager_approval. */
+export function unscheduleStrategy(user: UserSession, id: string) {
+  if (!can(user.role, 'strategy.activate')) return fail('forbidden');
+  const s = find(id);
+  if (!s) return fail('not_found');
+  const r = useStrategyStore.getState().clearSchedule(id);
+  if (!r.ok) return r;
+  audit(user, 'strategy_unschedule', s);
+  return ok();
+}
+
+/**
+ * Fires scheduled activations whose time has passed. Called once at bootstrap — the
+ * honest stand-in for a scheduler, documented as such wherever the timestamp shows.
+ */
+export function promoteScheduledStrategies(now = Date.now()): number {
+  const st = useStrategyStore.getState();
+  let promoted = 0;
+  for (const s of st.items) {
+    if (s.status === 'scheduled' && s.activateAt && new Date(s.activateAt).getTime() <= now) {
+      if (!useStrategyStore.getState().promote(s.id).ok) continue;
+      promoted += 1;
+      useAuditStore.getState().record({
+        type: 'strategy_activate', actorId: 'system', actorRole: 'ops_lead', entityType: 'strategy',
+        entityId: s.id, sku: null, source: 'system', note: 'scheduled activation fired',
+      });
+      useNotificationStore.getState().push({
+        targetRole: 'analyst', groupKey: 'strategy_activated', messageKey: 'common.notify.strategyActive', params: { name: s.name }, href: '/strategy',
+      });
+    }
+  }
+  return promoted;
 }
 
 export function rejectStrategy(user: UserSession, id: string, note: string) {

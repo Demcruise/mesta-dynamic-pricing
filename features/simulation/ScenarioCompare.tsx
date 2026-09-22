@@ -41,7 +41,7 @@ export function ScenarioCompare({ columns }: { columns: CompareColumn[] }) {
           ))}
         </ul>
       </div>
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         {METRICS.map((m) => {
           const max = Math.max(...columns.map((c) => Math.abs(m.get(c.p))), 1e-9);
           const base = m.get(columns[0]!.p);

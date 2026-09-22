@@ -11,8 +11,8 @@ import { formatRelativeTime } from '@/lib/format';
 import { useCan } from '@/lib/hooks';
 import { useTranslation } from '@/lib/i18n';
 import type { Rule, RuleStatus } from '@/lib/ontology';
-import { useRules, useSkuList } from '@/lib/queries';
-import { findConflicts, inRuleScope, evalCondition } from '@/lib/rules';
+import { useRules, useSkuList, useStrategies } from '@/lib/queries';
+import { findConflicts, inRuleScope, ruleApplies, evalCondition } from '@/lib/rules';
 import { useSessionStore, useToastStore } from '@/lib/stores';
 import { RuleBuilderDialog } from './RuleBuilderDialog';
 import { describeCondition, describeFormula, describeScope } from './rule-format';
@@ -23,6 +23,7 @@ export function RulesPage() {
   const { t, locale } = useTranslation();
   const rules = useRules();
   const products = useSkuList();
+  const strategies = useStrategies();
   const user = useSessionStore((s) => s.user);
   const can = useCan();
   const toast = useToastStore((s) => s.push);
@@ -32,16 +33,24 @@ export function RulesPage() {
   const matchCount = useMemo(() => {
     const map = new Map<string, number>();
     for (const r of rules.data) {
-      map.set(r.id, products.data.filter((p) => inRuleScope(r, p) && r.when.every((c) => evalCondition(c, p, now))).length);
+      map.set(r.id, products.data.filter((p) => inRuleScope(r, p) && ruleApplies(r, p, strategies.data, products.data)
+        && r.when.every((c) => evalCondition(c, p, now))).length);
     }
     return map;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rules.data, products.data]);
+  }, [rules.data, products.data, strategies.data]);
+
+  // Reverse lookup: which strategies bind each rule — shown as the "bound to" line on the card.
+  const boundTo = useMemo(() => {
+    const map = new Map<string, string[]>();
+    for (const s of strategies.data) for (const rid of s.ruleIds) map.set(rid, [...(map.get(rid) ?? []), s.name]);
+    return map;
+  }, [strategies.data]);
 
   const conflicts = useMemo(
-    () => findConflicts(rules.data.filter((r) => r.status === 'active'), products.data, now),
+    () => findConflicts(rules.data.filter((r) => r.status === 'active'), strategies.data, products.data, now),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [rules.data, products.data],
+    [rules.data, products.data, strategies.data],
   );
 
   const run = () => {
@@ -95,7 +104,7 @@ export function RulesPage() {
       ) : rows.length === 0 ? (
         <EmptyState variant="empty" title={t('rules.empty')} />
       ) : (
-        <ul className="grid gap-3 lg:grid-cols-2">
+        <ul className="grid grid-cols-1 gap-3 lg:grid-cols-2">
           {rows.map((r) => (
             <li key={r.id} className="rounded-card border border-line bg-surface p-card shadow-e1">
               <div className="flex items-start justify-between gap-2">
@@ -125,6 +134,12 @@ export function RulesPage() {
                   <dt className="w-14 shrink-0 font-medium uppercase tracking-wide text-faint">{t('rules.table.scope')}</dt>
                   <dd className="text-fg">{describeScope(r, t)}</dd>
                 </div>
+                {(boundTo.get(r.id)?.length ?? 0) > 0 && (
+                  <div className="flex gap-2">
+                    <dt className="w-14 shrink-0 font-medium uppercase tracking-wide text-faint">{t('rules.table.bound')}</dt>
+                    <dd className="text-fg">{boundTo.get(r.id)!.join(', ')}</dd>
+                  </div>
+                )}
               </dl>
 
               <div className="mt-3 flex items-center justify-between gap-2 border-t border-line pt-2.5">

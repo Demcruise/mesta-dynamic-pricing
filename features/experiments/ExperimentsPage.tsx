@@ -117,7 +117,7 @@ function ExperimentCard({ e, t, locale, onStart, onConclude, onCancel }: {
       </p>
       {res && (
         <div className="mt-3 border-t border-line pt-3">
-          <div className="grid gap-2 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
             <ResultRow label={t('experiments.result.revenue')} expected={res.expectedRevenue} observed={res.observedRevenue} locale={locale} />
             <ResultRow label={t('experiments.result.margin')} expected={res.expectedMargin} observed={res.observedMargin} locale={locale} />
           </div>

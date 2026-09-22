@@ -1,4 +1,5 @@
-import type { ConditionOp, Product, Rule, RuleCondition, RuleConditionField, RuleFormula } from './ontology';
+import type { ConditionOp, Product, Rule, RuleCondition, RuleConditionField, RuleFormula, Strategy } from './ontology';
+import { skusInScope } from './strategy-rules';
 
 const DAY_MS = 86_400_000;
 
@@ -58,9 +59,26 @@ export interface RuleEvalResult {
   price: number | null;
 }
 
-export function evaluateProduct(p: Product, rules: Rule[], now: number): RuleEvalResult {
+/**
+ * Whether a rule applies to a product once strategy binding is considered.
+ * An unbound rule applies anywhere its own scope covers. A rule listed in one or more
+ * strategies' `ruleIds` only applies on SKUs an *active* binding strategy governs —
+ * and only when every condition field it reads is inside that strategy's enabled
+ * `signals` (empty signals = all fields allowed).
+ */
+export function ruleApplies(rule: Rule, p: Product, strategies: Strategy[], products: Product[]): boolean {
+  const bound = strategies.filter((s) => s.ruleIds.includes(rule.id));
+  if (bound.length === 0) return true;
+  return bound.some(
+    (s) => s.status === 'active' && skusInScope(s, products).has(p.sku)
+      && (s.signals.length === 0 || rule.when.every((c) => s.signals.includes(c.field))),
+  );
+}
+
+export function evaluateProduct(p: Product, rules: Rule[], strategies: Strategy[], products: Product[], now: number): RuleEvalResult {
   const matched = rules
-    .filter((r) => r.status === 'active' && inRuleScope(r, p) && r.when.every((c) => evalCondition(c, p, now)))
+    .filter((r) => r.status === 'active' && inRuleScope(r, p) && ruleApplies(r, p, strategies, products)
+      && r.when.every((c) => evalCondition(c, p, now)))
     .sort((a, b) => a.priority - b.priority || a.id.localeCompare(b.id));
   const winner = matched[0] ?? null;
   const conflicts = winner ? matched.filter((r) => r.priority === winner.priority && r.id !== winner.id) : [];
@@ -68,10 +86,10 @@ export function evaluateProduct(p: Product, rules: Rule[], now: number): RuleEva
 }
 
 /** Rules that overlap the same products — used by the builder's conflict warning. */
-export function findConflicts(rules: Rule[], products: Product[], now: number): { ruleIds: string[]; sku: string }[] {
+export function findConflicts(rules: Rule[], strategies: Strategy[], products: Product[], now: number): { ruleIds: string[]; sku: string }[] {
   const out: { ruleIds: string[]; sku: string }[] = [];
   for (const p of products) {
-    const { winner, conflicts } = evaluateProduct(p, rules, now);
+    const { winner, conflicts } = evaluateProduct(p, rules, strategies, products, now);
     if (winner && conflicts.length > 0) out.push({ sku: p.sku, ruleIds: [winner.id, ...conflicts.map((c) => c.id)] });
   }
   return out;

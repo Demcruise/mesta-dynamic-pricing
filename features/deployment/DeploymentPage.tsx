@@ -207,7 +207,7 @@ export function DeploymentPage() {
             {jobRows.length === 0 ? (
               <EmptyState variant="empty" title={t('deployment.jobs.empty')} />
             ) : (
-              <ul className="grid gap-2 md:grid-cols-2">
+              <ul className="grid grid-cols-1 gap-2 md:grid-cols-2">
                 {jobRows.map(({ job, live, rs }) => {
                   const synced = rs.filter((r) => r.status === 'synced').length;
                   const failedRs = rs.filter((r) => r.status === 'failed');
@@ -251,7 +251,7 @@ export function DeploymentPage() {
             {awaiting.length === 0 ? (
               <EmptyState variant="caughtUp" title={t('deployment.queue.empty')} />
             ) : (
-              <ul className="grid gap-2 md:grid-cols-2">
+              <ul className="grid grid-cols-1 gap-2 md:grid-cols-2">
                 {awaiting.map((r) => (
                   <li key={r.id} className="flex flex-wrap items-center justify-between gap-2 rounded-card border border-line bg-surface p-3 text-sm shadow-e1">
                     <div>

@@ -156,16 +156,16 @@ export function generateRecommendations(products: Product[], count: number, seed
 }
 
 export function generateStrategies(): Strategy[] {
-  const base = { ownerId: 'u-analyst-1', updatedAt: new Date(NOW - 2 * DAY).toISOString() };
+  const base = { ownerId: 'u-analyst-1', updatedAt: new Date(NOW - 2 * DAY).toISOString(), activateAt: null, signals: [] };
   return [
     {
       ...base, id: 'STR-001', name: 'Beverage margin lift', objective: 'maximize_margin', skuIds: [],
-      categories: ['Beverages'], status: 'active',
+      categories: ['Beverages'], status: 'active', ruleIds: [],
       guardrail: { minPrice: null, maxPrice: null, mapEnforced: true, maxChangePercent: 8, autoApproveThreshold: 90 },
     },
     {
       ...base, id: 'STR-002', name: 'Snack competitor match', objective: 'match_competitor', skuIds: [],
-      categories: ['Snacks'], status: 'pending_manager_approval',
+      categories: ['Snacks'], status: 'pending_manager_approval', ruleIds: [],
       guardrail: { minPrice: null, maxPrice: null, mapEnforced: true, maxChangePercent: 5, autoApproveThreshold: 85 },
     },
   ];

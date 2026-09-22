@@ -38,7 +38,7 @@ export function PageSkeleton({ variant }: { variant: 'table' | 'cards' | 'board'
         </>
       )}
       {variant === 'detail' && (
-        <div className="grid gap-4 lg:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           {[0, 1, 2, 3].map((i) => <Bar key={i} className="h-44 rounded-card" />)}
         </div>
       )}

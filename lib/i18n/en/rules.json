@@ -12,7 +12,8 @@
     "scope": "Scope",
     "updated": "Updated",
     "actions": "Actions",
-    "matches": "{n} of {total} SKUs match"
+    "matches": "{n} of {total} SKUs match",
+    "bound": "Bound to"
   },
   "scope": {
     "all": "All SKUs",

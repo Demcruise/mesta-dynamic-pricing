@@ -11,8 +11,8 @@ import { activateStrategy, rollbackStrategy, saveStrategy, submitStrategy } from
 import { CATEGORIES } from '@/lib/categories';
 import { useCan } from '@/lib/hooks';
 import { useTranslation } from '@/lib/i18n';
-import type { StrategyObjective } from '@/lib/ontology';
-import { useSkuList, useStrategies, useStrategyHistory } from '@/lib/queries';
+import type { RuleConditionField, StrategyObjective } from '@/lib/ontology';
+import { useRules, useSkuList, useStrategies, useStrategyHistory } from '@/lib/queries';
 import {
   emptyDraft, hasBlocker, overlapSkus, toDraft, validateDraft, type Issue, type IssueCode, type StrategyDraft,
 } from '@/lib/strategy-rules';
@@ -22,7 +22,8 @@ import { cn } from '@/lib/utils';
 import { formatDate } from '@/lib/format';
 
 const OBJECTIVES: StrategyObjective[] = ['maximize_margin', 'maximize_revenue', 'match_competitor', 'clear_inventory'];
-const STEPS = ['objective', 'scope', 'guardrail', 'review'] as const;
+const STEPS = ['objective', 'scope', 'guardrail', 'rules', 'review'] as const;
+const SIGNAL_FIELDS: RuleConditionField[] = ['competitor_gap_pct', 'margin_pct', 'stock_units', 'days_since_change'];
 const STEP_OF: Record<IssueCode, number> = {
   name_required: 0, scope_required: 1, min_ge_max: 2, change_range: 2, threshold_range: 2, overlap: 1,
 };
@@ -86,6 +87,7 @@ function Wizard({ strategyId, initial, status, expectedUpdatedAt }: {
   const toast = useToastStore((s) => s.push);
   const strategies = useStrategies().data;
   const products = useSkuList().data;
+  const rules = useRules().data;
   const selection = useCatalogSelectionStore((s) => s.skuIds);
   const key = strategyId ?? 'new';
   const stored = useStrategyDraftStore.getState().drafts[key];
@@ -149,10 +151,15 @@ function Wizard({ strategyId, initial, status, expectedUpdatedAt }: {
     threshold: g.autoApproveThreshold,
     map: g.mapEnforced ? t('strategy.list.map') : '',
   });
+  const rulesText = t('strategy.rules.summary', {
+    rules: draft.ruleIds.length,
+    signals: draft.signals.length === 0 ? t('strategy.rules.allSignals') : draft.signals.length,
+  });
   const stepSummaries = [
     draft.name || '—',
     scopeText,
     guardrailText,
+    rulesText,
     '—',
   ];
   const go = (i: number, review = false) => { setStep(i); setFromReview(review); };
@@ -230,7 +237,7 @@ function Wizard({ strategyId, initial, status, expectedUpdatedAt }: {
             </Field>
             <fieldset>
               <legend className="mb-1 text-xs font-medium text-muted">{t('strategy.objective.label')}</legend>
-              <div className="grid gap-2 sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                 {OBJECTIVES.map((o) => (
                   <label key={o} className={cn('flex cursor-pointer items-center gap-2 rounded-input border p-3 text-sm', draft.objective === o ? 'border-brand bg-brand-soft' : 'border-line')}>
                     <input type="radio" name="objective" checked={draft.objective === o} onChange={() => set({ objective: o })} />
@@ -304,7 +311,7 @@ function Wizard({ strategyId, initial, status, expectedUpdatedAt }: {
         )}
 
         {step === 2 && (
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Field label={t('strategy.field.minPrice')}>
               {(p) => <Input {...p} type="number" value={g.minPrice ?? ''} onChange={(e) => setG({ minPrice: numOrNull(e.target.value) })} />}
             </Field>
@@ -327,12 +334,60 @@ function Wizard({ strategyId, initial, status, expectedUpdatedAt }: {
 
         {step === 3 && (
           <div className="flex flex-col gap-4">
+            <fieldset>
+              <legend className="mb-1 text-xs font-medium text-muted">{t('strategy.rules.signalsLabel')}</legend>
+              <p className="mb-2 text-xs text-faint">{t('strategy.rules.signalsHint')}</p>
+              <div className="flex flex-wrap gap-1.5">
+                {SIGNAL_FIELDS.map((f) => (
+                  <label key={f} className="flex items-center gap-1.5 rounded-input border border-line px-2 py-1 text-sm">
+                    <input
+                      type="checkbox"
+                      checked={draft.signals.includes(f)}
+                      onChange={(e) => set({ signals: e.target.checked ? [...draft.signals, f] : draft.signals.filter((x) => x !== f) })}
+                    />
+                    {t(`rules.when.field.${f}`)}
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+            <fieldset>
+              <legend className="mb-1 text-xs font-medium text-muted">{t('strategy.rules.rulesLabel')}</legend>
+              <p className="mb-2 text-xs text-faint">{t('strategy.rules.rulesHint')}</p>
+              {rules.length === 0 ? (
+                <p className="text-sm text-muted">{t('strategy.rules.noRules')}</p>
+              ) : (
+                <ul className="flex flex-col gap-1.5">
+                  {rules.map((r) => (
+                    <li key={r.id}>
+                      <label className="flex items-center gap-2 rounded-input border border-line px-3 py-2 text-sm">
+                        <input
+                          type="checkbox"
+                          checked={draft.ruleIds.includes(r.id)}
+                          onChange={(e) => set({ ruleIds: e.target.checked ? [...draft.ruleIds, r.id] : draft.ruleIds.filter((x) => x !== r.id) })}
+                        />
+                        <span className="min-w-0 flex-1">
+                          <span className="font-medium">{r.name}</span>
+                          <span className="ml-1.5 text-xs text-faint">{r.id} · {t(`common.status.${r.status}`)}</span>
+                        </span>
+                      </label>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </fieldset>
+            <p className="rounded-input bg-info-soft px-3 py-2 text-xs text-info">{t('strategy.rules.effect')}</p>
+          </div>
+        )}
+
+        {step === 4 && (
+          <div className="flex flex-col gap-4">
             <h2 className="text-sm font-semibold">{t('strategy.review.title')}</h2>
-            <div className="grid gap-3 sm:grid-cols-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
               {([
                 { i: 0, title: t('strategy.step.objective'), body: <><strong>{draft.name || '—'}</strong><br />{t(`strategy.objective.${draft.objective}`)}</> },
                 { i: 1, title: t('strategy.step.scope'), body: scopeText },
                 { i: 2, title: t('strategy.step.guardrail'), body: <>{guardrailText}{g.minPrice !== null && g.maxPrice !== null && <><br /><PriceValue value={g.minPrice} /> – <PriceValue value={g.maxPrice} /></>}</> },
+                { i: 3, title: t('strategy.step.rules'), body: rulesText },
               ]).map((sec) => (
                 <section key={sec.i} className="rounded-input border border-line p-3">
                   <div className="mb-1 flex items-center justify-between gap-2">

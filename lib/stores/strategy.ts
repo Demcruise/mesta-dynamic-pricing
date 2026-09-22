@@ -4,7 +4,8 @@ import type { TransitionResult } from './recommendation';
 
 const ALLOWED: Record<StrategyStatus, StrategyStatus[]> = {
   draft: ['pending_manager_approval', 'archived'],
-  pending_manager_approval: ['active', 'draft', 'archived'], // reject → back to draft
+  pending_manager_approval: ['active', 'scheduled', 'draft', 'archived'], // reject → back to draft
+  scheduled: ['active', 'pending_manager_approval', 'archived'], // promote on time · unschedule → pending
   active: ['archived'],
   archived: [],
 };
@@ -22,6 +23,12 @@ interface StrategyState {
   /** Restores the guardrail/scope/name of a stored version while keeping current status. */
   rollback: (id: string, versionIndex: number) => TransitionResult;
   transition: (id: string, to: StrategyStatus) => TransitionResult;
+  /** pending_manager_approval → scheduled, carrying the activation timestamp. */
+  schedule: (id: string, activateAt: string) => TransitionResult;
+  /** scheduled → pending_manager_approval, dropping the timestamp. */
+  clearSchedule: (id: string) => TransitionResult;
+  /** scheduled → active once activateAt has passed, dropping the timestamp. */
+  promote: (id: string) => TransitionResult;
   reset: () => void;
 }
 
@@ -44,7 +51,8 @@ export const useStrategyStore = create<StrategyState>((set, get) => ({
     if (cur.status === 'archived') return { ok: false, error: 'archived' };
     get().upsert({
       ...cur, name: version.name, objective: version.objective, skuIds: version.skuIds,
-      categories: version.categories, guardrail: version.guardrail, updatedAt: new Date().toISOString(),
+      categories: version.categories, guardrail: version.guardrail, ruleIds: version.ruleIds,
+      signals: version.signals, updatedAt: new Date().toISOString(),
     });
     return { ok: true };
   },
@@ -55,6 +63,24 @@ export const useStrategyStore = create<StrategyState>((set, get) => ({
     set((st) => ({
       items: st.items.map((x) => (x.id === id ? { ...x, status: to, updatedAt: new Date().toISOString() } : x)),
     }));
+    return { ok: true };
+  },
+  schedule: (id, activateAt) => {
+    const r = get().transition(id, 'scheduled');
+    if (!r.ok) return r;
+    set((st) => ({ items: st.items.map((x) => (x.id === id ? { ...x, activateAt } : x)) }));
+    return { ok: true };
+  },
+  clearSchedule: (id) => {
+    const r = get().transition(id, 'pending_manager_approval');
+    if (!r.ok) return r;
+    set((st) => ({ items: st.items.map((x) => (x.id === id ? { ...x, activateAt: null } : x)) }));
+    return { ok: true };
+  },
+  promote: (id) => {
+    const r = get().transition(id, 'active');
+    if (!r.ok) return r;
+    set((st) => ({ items: st.items.map((x) => (x.id === id ? { ...x, activateAt: null } : x)) }));
     return { ok: true };
   },
   reset: () => set({ items: [], history: {} }),

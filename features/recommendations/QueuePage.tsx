@@ -176,9 +176,9 @@ export function QueuePage() {
       ) : (
         <>
           {allStale && <p role="status" className="mb-3 rounded-input bg-warn-soft px-3 py-2 text-sm text-warn">{t('recommendations.empty.staleOnly')}</p>}
-          <ul className="grid gap-3 xl:grid-cols-2">
+          <ul className="grid grid-cols-1 gap-3 xl:grid-cols-2">
             {rows.slice(0, shown).map((r) => (
-              <li key={r.id}><RecommendationCard rec={r} product={productMap.get(r.sku)} showStatus={filters.tab === 'all'} /></li>
+              <li key={r.id} className="min-w-0"><RecommendationCard rec={r} product={productMap.get(r.sku)} showStatus={filters.tab === 'all'} /></li>
             ))}
           </ul>
           {rows.length > shown && (

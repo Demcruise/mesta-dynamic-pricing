@@ -38,7 +38,7 @@ export interface CompetitorObservation {
 }
 
 export type StrategyObjective = 'maximize_margin' | 'maximize_revenue' | 'match_competitor' | 'clear_inventory';
-export type StrategyStatus = 'draft' | 'pending_manager_approval' | 'active' | 'archived';
+export type StrategyStatus = 'draft' | 'pending_manager_approval' | 'scheduled' | 'active' | 'archived';
 
 export interface Guardrail {
   minPrice: number | null;
@@ -56,6 +56,12 @@ export interface Strategy {
   categories: string[];
   guardrail: Guardrail;
   status: StrategyStatus;
+  /** ISO timestamp a scheduled activation fires at; null unless status === 'scheduled'. */
+  activateAt: string | null;
+  /** Rules bound to this strategy — a bound rule only fires on SKUs the strategy governs. */
+  ruleIds: string[];
+  /** Condition signals the strategy's bound rules may use; empty = all signals allowed. */
+  signals: RuleConditionField[];
   ownerId: string;
   updatedAt: string;
 }
@@ -241,6 +247,7 @@ export interface DelegationGrant {
 
 export type AuditEventType =
   | 'strategy_submit' | 'strategy_activate' | 'strategy_reject' | 'strategy_rollback'
+  | 'strategy_schedule' | 'strategy_unschedule'
   | 'scenario_sent'
   | 'recommendation_approve' | 'recommendation_reject' | 'recommendation_adjust'
   | 'recommendation_request_changes' | 'recommendation_escalate' | 'recommendation_expire' | 'recommendation_resubmit'

@@ -12,7 +12,8 @@
     "scope": "Cakupan",
     "updated": "Diperbarui",
     "actions": "Aksi",
-    "matches": "{n} dari {total} SKU cocok"
+    "matches": "{n} dari {total} SKU cocok",
+    "bound": "Terikat ke"
   },
   "scope": {
     "all": "Semua SKU",

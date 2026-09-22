@@ -84,7 +84,7 @@ export function DataPage() {
           <section aria-label={t('data.quality.title')}>
             <h2 className="mb-2 text-sm font-semibold">{t('data.quality.title')}</h2>
             <p className="mb-3 text-xs text-muted">{t('data.quality.desc')}</p>
-            <ul className="grid gap-2 sm:grid-cols-2">
+            <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2">
               <QualityCard
                 title={t('data.quality.missingTitle')}
                 desc={t('data.quality.missingDesc')}

@@ -142,7 +142,7 @@ const ENTRIES: Entry[] = [
     a11y: 'Visually hidden label announces actor + status; colour is supplementary.',
     doText: 'Wrap recommendation-like content authored by an agent, human or rule.', dontText: 'Do not use as a generic card.',
     reactBits: 'Application UI › Cards · Blocks › agent-approval-2',
-    demo: <div className="grid gap-2 sm:grid-cols-3">{(['agent', 'human', 'rule'] as const).map((a) => <AgentBorderCard key={a} actor={a}><p className="text-sm">{a}</p></AgentBorderCard>)}</div>,
+    demo: <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">{(['agent', 'human', 'rule'] as const).map((a) => <AgentBorderCard key={a} actor={a}><p className="text-sm">{a}</p></AgentBorderCard>)}</div>,
   },
   {
     name: 'AgentRunTimeline', file: 'components/ds/AgentRunTimeline.tsx', summary: 'Ordered trace of how a recommendation was produced.',
@@ -304,7 +304,7 @@ const ENTRIES: Entry[] = [
     a11y: 'LoadingRows + PageSkeleton are role="status" aria-live; ErrorState is role="alert". EmptyState icons are decorative.',
     doText: 'Every data view handles loading, empty, error; match the EmptyState variant to the context.', dontText: 'Do not invent one-off skeletons or variant-less empty boxes.',
     reactBits: 'Application UI › Layout, Empty states · Blocks › empty-state-1',
-    demo: <div className="grid gap-3 sm:grid-cols-2"><KpiCard label="Pending" value={12} hint="since Monday" /><EmptyState variant="caughtUp" title="Nothing here yet" /><div className="sm:col-span-2"><LoadingRows rows={2} rowHeight={28} /></div></div>,
+    demo: <div className="grid grid-cols-1 gap-3 sm:grid-cols-2"><KpiCard label="Pending" value={12} hint="since Monday" /><EmptyState variant="caughtUp" title="Nothing here yet" /><div className="sm:col-span-2"><LoadingRows rows={2} rowHeight={28} /></div></div>,
   },
   {
     name: 'Button', file: 'components/ui/button.tsx', summary: 'Primary action primitive (shadcn-style).',

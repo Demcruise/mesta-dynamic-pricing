@@ -7,6 +7,7 @@
   "status": {
     "draft": "Draft",
     "pending_manager_approval": "Pending manager approval",
+    "scheduled": "Scheduled",
     "active": "Active",
     "archived": "Archived",
     "all": "All statuses"
@@ -27,6 +28,8 @@
     "guardrail": "Max {change}% per cycle · auto-approve ≥ {threshold}%{map}",
     "map": " · MAP enforced",
     "category": "Category",
+    "activatesAt": "Activates",
+    "boundRules": "Bound rules",
     "none": "No strategies yet."
   },
   "action": {
@@ -42,14 +45,34 @@
     "cancel": "Cancel",
     "rejectNote": "Reason for rejection",
     "confirmReject": "Reject strategy",
-    "backToReview": "Back to review"
+    "backToReview": "Back to review",
+    "schedule": "Schedule…",
+    "activateNow": "Activate now",
+    "unschedule": "Cancel schedule"
   },
   "step": {
     "objective": "Objective",
     "scope": "Scope",
     "guardrail": "Guardrails",
+    "rules": "Signals & rules",
     "review": "Review",
     "progress": "Step {n} of {total}"
+  },
+  "schedule": {
+    "title": "Schedule activation",
+    "desc": "\"{name}\" will go live at the chosen time instead of immediately.",
+    "at": "Activation time",
+    "honest": "Runs on this app's scheduler — activations fire when the workspace loads after the set time."
+  },
+  "rules": {
+    "signalsLabel": "Enabled signals",
+    "signalsHint": "Bound rules may only read the signals checked here. Leave all unchecked to allow every signal.",
+    "rulesLabel": "Bound rules",
+    "rulesHint": "A bound rule only applies to SKUs this strategy governs, and only while the strategy is active.",
+    "noRules": "No rules exist yet — create them on the Rules page.",
+    "effect": "Binding narrows a rule to this strategy's scope. Unbound rules keep applying everywhere.",
+    "summary": "{rules} rules bound · {signals} signals",
+    "allSignals": "all"
   },
   "field": {
     "name": "Strategy name",

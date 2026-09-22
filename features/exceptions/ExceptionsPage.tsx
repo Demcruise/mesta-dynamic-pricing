@@ -102,7 +102,7 @@ export function ExceptionsPage() {
             {pendingRequests.length === 0 ? (
               <p className="rounded-card border border-line bg-surface p-3 text-xs text-muted shadow-e1">{t('exceptions.requests.empty')}</p>
             ) : (
-              <ul className="grid gap-2">
+              <ul className="grid grid-cols-1 gap-2">
                 {pendingRequests.map((r) => (
                   <li key={r.id} className="rounded-card border border-line bg-surface p-3 shadow-e1">
                     <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">

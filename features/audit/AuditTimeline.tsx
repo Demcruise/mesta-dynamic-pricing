@@ -1,8 +1,8 @@
 'use client';
 
 import {
-  Ban, CalendarClock, CheckCircle2, Flag, FlaskConical, PenLine, Pencil, RotateCw, Rocket, Send, TriangleAlert,
-  Undo2, XCircle, type LucideIcon,
+  Ban, CalendarClock, CheckCircle2, Database, Flag, FlaskConical, PenLine, Pencil, Play, RotateCw, Rocket, Send, Timer,
+  TriangleAlert, Undo2, UserMinus, UserPlus, XCircle, type LucideIcon,
 } from 'lucide-react';
 import { formatRelativeTime } from '@/lib/format';
 import { useTranslation } from '@/lib/i18n';
@@ -15,16 +15,34 @@ const ICONS: Record<AuditEventType, LucideIcon> = {
   strategy_activate: CheckCircle2,
   strategy_reject: XCircle,
   strategy_rollback: Undo2,
+  strategy_schedule: CalendarClock,
+  strategy_unschedule: Ban,
   scenario_sent: FlaskConical,
   recommendation_approve: CheckCircle2,
   recommendation_reject: XCircle,
   recommendation_adjust: Pencil,
+  recommendation_request_changes: Pencil,
+  recommendation_escalate: TriangleAlert,
+  recommendation_expire: Timer,
+  recommendation_resubmit: RotateCw,
   deployment_success: Rocket,
   deployment_failure: TriangleAlert,
   deployment_retry: RotateCw,
   deployment_rollback: Undo2,
   publish_scheduled: CalendarClock,
   publish_cancelled: Ban,
+  rule_save: Pencil,
+  rule_run: Play,
+  override_request: Send,
+  override_approve: CheckCircle2,
+  override_reject: XCircle,
+  datasource_sync: Database,
+  experiment_save: FlaskConical,
+  experiment_start: Play,
+  experiment_conclude: CheckCircle2,
+  experiment_cancel: Ban,
+  delegation_grant: UserPlus,
+  delegation_revoke: UserMinus,
   model_review_feedback: Flag,
   manual_override: PenLine,
 };

@@ -75,7 +75,7 @@ export function RecommendationCard({ rec, product, defaultOpen = false, showStat
   return (
     <AgentBorderCard actor={rec.source === 'agent' ? 'agent' : 'human'} status={rec.status} className="flex flex-col gap-3">
       <header className="flex flex-wrap items-start justify-between gap-2">
-        <div>
+        <div className="min-w-0">
           <h2 className="text-sm font-semibold">
             <Link href={`/catalog/${rec.sku}`} className="tabular text-brand hover:underline">{rec.sku}</Link>
             {product && <span className="ml-2 font-normal">{product.name}</span>}
@@ -129,7 +129,7 @@ export function RecommendationCard({ rec, product, defaultOpen = false, showStat
           <AgentRunTimeline steps={run} />
         </div>
         {product && (
-          <div className="mt-2 grid gap-3 sm:grid-cols-2">
+          <div className="mt-2 grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div>
               <p className="mb-1 text-xs text-muted">{t('recommendations.card.trend')}</p>
               <Sparkline points={product.priceHistory.map((h) => h.price)} className="h-10 w-full text-brand" />

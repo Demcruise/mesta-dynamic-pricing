@@ -49,7 +49,7 @@ export function GuardrailsPage() {
 
       <section aria-label={t('guardrails.catalog.title')}>
         <h2 className="mb-2 text-sm font-semibold">{t('guardrails.catalog.title')}</h2>
-        <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+        <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
           {CONSTRAINT_ORDER.map((id) => {
             const r = rows.find((x) => x.id === id)!;
             return (
@@ -88,7 +88,7 @@ export function GuardrailsPage() {
           </select>
         </div>
         {report && (
-          <div className="grid gap-3 lg:grid-cols-2">
+          <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
             <div className="rounded-card border border-line bg-surface p-card shadow-e1">
               <h3 className="text-sm font-medium">{report.product.sku} · {report.product.name}</h3>
               <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs">

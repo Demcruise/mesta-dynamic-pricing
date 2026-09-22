@@ -91,7 +91,7 @@ describe('rule engine', () => {
         { field: 'stock_units', op: 'gt', value: p.stockUnits }, // false at the boundary
       ],
     });
-    expect(evaluateProduct(p, [r], Date.now()).winner).toBeNull();
+    expect(evaluateProduct(p, [r], [], [p], Date.now()).winner).toBeNull();
   });
 
   it('scopes by category, region, and explicit SKU list', () => {
@@ -114,11 +114,11 @@ describe('rule engine', () => {
   it('lower priority number wins; equal priorities surface as conflicts', () => {
     const a = makeRule({ id: 'RULE-A', priority: 5, when: [] });
     const b = makeRule({ id: 'RULE-B', priority: 20, when: [] });
-    expect(evaluateProduct(p, [b, a], Date.now()).winner?.id).toBe('RULE-A');
+    expect(evaluateProduct(p, [b, a], [], [p], Date.now()).winner?.id).toBe('RULE-A');
     const c = makeRule({ id: 'RULE-C', priority: 5, when: [] });
-    const res = evaluateProduct(p, [a, c], Date.now());
+    const res = evaluateProduct(p, [a, c], [], [p], Date.now());
     expect(res.conflicts.map((x) => x.id)).toContain('RULE-C');
-    expect(findConflicts([a, c], [p], Date.now())).toEqual([{ sku: p.sku, ruleIds: expect.arrayContaining(['RULE-A', 'RULE-C']) }]);
+    expect(findConflicts([a, c], [], [p], Date.now())).toEqual([{ sku: p.sku, ruleIds: expect.arrayContaining(['RULE-A', 'RULE-C']) }]);
   });
 });
 

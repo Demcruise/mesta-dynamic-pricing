@@ -67,7 +67,7 @@ export function ApprovalsPage() {
                 {t('approvals.escalated.title')} <span className="tabular text-muted">({groups.escalated.length})</span>
               </h2>
               <p className="mb-2 text-xs text-muted">{t('approvals.escalated.desc')}</p>
-              <ul className="grid gap-3">
+              <ul className="grid grid-cols-1 gap-3">
                 {groups.escalated.map((r) => (
                   <li key={r.id}><RecommendationCard rec={r} product={productsBySku.get(r.sku)} showStatus /></li>
                 ))}
@@ -142,7 +142,7 @@ function DelegationStrip({ t, locale }: { t: T; locale: 'en' | 'id' }) {
         <Button size="sm" variant="secondary" onClick={() => setOpen(true)}>{t('approvals.delegation.grant')}</Button>
       </div>
       {active.length > 0 && (
-        <ul className="mt-3 grid gap-1.5">
+        <ul className="mt-3 grid grid-cols-1 gap-1.5">
           {active.map((g) => (
             <li key={g.id} className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-input bg-subtle px-3 py-2 text-xs">
               <span className="font-medium">{nameOf(g.toUserId)}</span>
@@ -191,7 +191,7 @@ function WorkflowSection({ title, desc, recs, locale, resubmit, t, ctaKey, extra
       <h2 className="mb-2 text-sm font-semibold">{title} <span className="tabular text-muted">({recs.length})</span></h2>
       <p className="mb-2 text-xs text-muted">{desc}</p>
       {extra && <RecoveryNotice className="mb-2">{extra}</RecoveryNotice>}
-      <ul className="grid gap-2">
+      <ul className="grid grid-cols-1 gap-2">
         {recs.map((r) => (
           <li key={r.id} className="flex flex-wrap items-center gap-x-4 gap-y-1.5 rounded-card border border-line bg-surface p-3 shadow-e1">
             <StatusBadge status={r.status} />

@@ -10,7 +10,7 @@ import { CATEGORIES } from '@/lib/categories';
 import { formatPrice, type Locale } from '@/lib/format';
 import { useTranslation } from '@/lib/i18n';
 import type { ConditionOp, Rule, RuleCondition, RuleConditionField, RuleFormulaKind, RuleStatus } from '@/lib/ontology';
-import { useSkuList } from '@/lib/queries';
+import { useSkuList, useStrategies } from '@/lib/queries';
 import { evaluateProduct, OPS } from '@/lib/rules';
 import { REGIONS } from '@/lib/scope';
 import { useRuleStore, useSessionStore, useToastStore } from '@/lib/stores';
@@ -39,14 +39,16 @@ function ToggleChips({ options, selected, onToggle }: { options: string[]; selec
 function PreviewList({ draft, locale }: { draft: Rule; locale: Locale }) {
   const { t } = useTranslation();
   const products = useSkuList().data;
+  const strategies = useStrategies().data;
   const preview = useMemo(() => {
     const asActive = { ...draft, status: 'active' as const };
+    const now = Date.now();
     const hits = products.filter((p) => {
-      const r = evaluateProduct(p, [asActive], Date.now());
+      const r = evaluateProduct(p, [asActive], strategies, products, now);
       return r.winner !== null && r.price !== p.price;
-    }).map((p) => ({ sku: p.sku, from: p.price, to: evaluateProduct(p, [asActive], Date.now()).price ?? p.price }));
+    }).map((p) => ({ sku: p.sku, from: p.price, to: evaluateProduct(p, [asActive], strategies, products, now).price ?? p.price }));
     return hits;
-  }, [draft, products]);
+  }, [draft, products, strategies]);
   return (
     <div className="rounded-card border border-line bg-subtle p-3">
       <p className="text-xs font-medium text-muted">{t('rules.builder.previewTitle')} — {t('rules.table.matches', { n: preview.length, total: products.length })}</p>

@@ -57,6 +57,7 @@ export function runRules(user: UserSession): Fail | { ok: true; summary: RunSumm
   const cat = useProductCatalogStore.getState();
   const recStore = useRecommendationStore.getState();
   const rules = useRuleStore.getState().items;
+  const strategies = useStrategyStore.getState().items;
   const pendingSkus = new Set(recStore.items.filter((r) => r.status === 'pending' || r.status === 'escalated' || r.status === 'changes_requested').map((r) => r.sku));
   const summary: RunSummary = { evaluated: 0, created: 0, skipped: { pending: 0, unchanged: 0, guardrail: 0, conflict: 0 }, conflicts: [] };
   const runId = now.toString(36);
@@ -64,7 +65,7 @@ export function runRules(user: UserSession): Fail | { ok: true; summary: RunSumm
 
   for (const p of cat.products) {
     summary.evaluated += 1;
-    const { winner, conflicts } = evaluateProduct(p, rules, now);
+    const { winner, conflicts } = evaluateProduct(p, rules, strategies, cat.products, now);
     if (!winner) continue;
     if (conflicts.length > 0) {
       summary.skipped.conflict += 1;
@@ -74,7 +75,7 @@ export function runRules(user: UserSession): Fail | { ok: true; summary: RunSumm
     if (pendingSkus.has(p.sku)) { summary.skipped.pending += 1; continue; }
     const price = applyFormula(winner.then, p);
     if (price === p.price) { summary.skipped.unchanged += 1; continue; }
-    const strategy = governingStrategy(p, useStrategyStore.getState().items);
+    const strategy = governingStrategy(p, strategies);
     if (checkPrice(p, strategy, price) !== 'ok') { summary.skipped.guardrail += 1; continue; }
 
     const matchedConds = winner.when.map((c) => ({ c, v: conditionValue(p, c.field, now) }));

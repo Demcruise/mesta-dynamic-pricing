@@ -7,6 +7,7 @@
   "status": {
     "draft": "Draf",
     "pending_manager_approval": "Menunggu persetujuan manajer",
+    "scheduled": "Terjadwal",
     "active": "Aktif",
     "archived": "Diarsipkan",
     "all": "Semua status"
@@ -27,6 +28,8 @@
     "guardrail": "Maks {change}% per siklus · auto-approve ≥ {threshold}%{map}",
     "map": " · MAP diberlakukan",
     "category": "Kategori",
+    "activatesAt": "Aktif",
+    "boundRules": "Aturan terikat",
     "none": "Belum ada strategi."
   },
   "action": {
@@ -42,14 +45,34 @@
     "cancel": "Batal",
     "rejectNote": "Alasan penolakan",
     "confirmReject": "Tolak strategi",
-    "backToReview": "Kembali ke tinjauan"
+    "backToReview": "Kembali ke tinjauan",
+    "schedule": "Jadwalkan…",
+    "activateNow": "Aktifkan sekarang",
+    "unschedule": "Batalkan jadwal"
   },
   "step": {
     "objective": "Tujuan",
     "scope": "Cakupan",
     "guardrail": "Guardrail",
+    "rules": "Sinyal & aturan",
     "review": "Tinjau",
     "progress": "Langkah {n} dari {total}"
+  },
+  "schedule": {
+    "title": "Jadwalkan aktivasi",
+    "desc": "\"{name}\" akan aktif pada waktu yang dipilih, bukan segera.",
+    "at": "Waktu aktivasi",
+    "honest": "Berjalan di penjadwal aplikasi ini — aktivasi berjalan saat workspace dimuat setelah waktu yang ditentukan."
+  },
+  "rules": {
+    "signalsLabel": "Sinyal aktif",
+    "signalsHint": "Aturan terikat hanya boleh membaca sinyal yang dicentang. Kosongkan semua untuk mengizinkan setiap sinyal.",
+    "rulesLabel": "Aturan terikat",
+    "rulesHint": "Aturan terikat hanya berlaku pada SKU yang diatur strategi ini, dan hanya selama strategi aktif.",
+    "noRules": "Belum ada aturan — buat di halaman Aturan.",
+    "effect": "Pengikatan mempersempit aturan ke cakupan strategi ini. Aturan tak terikat tetap berlaku di mana saja.",
+    "summary": "{rules} aturan terikat · {signals} sinyal",
+    "allSignals": "semua"
   },
   "field": {
     "name": "Nama strategi",
