@@ -6,11 +6,17 @@
   "card": {
     "current": "Saat ini", "proposed": "Usulan", "competitor": "Rata-rata kompetitor", "impact": "Dampak margin proyeksi", "created": "Dibuat",
     "evidence": "Bukti", "trend": "Tren harga terbaru", "simulate": "Buka simulasi", "detail": "Buka detail", "stale": "Usang: harga atau data kompetitor berubah sejak dibuat",
-    "breach": "Pelanggaran guardrail: harga usulan di luar batas yang diizinkan", "pendingUndo": "Keputusan tertunda: {s} dtk untuk batal", "decision": "Catatan keputusan", "decidedAt": "Diputuskan"
+    "breach": "Pelanggaran guardrail: harga usulan di luar batas yang diizinkan", "pendingUndo": "Keputusan tertunda: {s} dtk untuk batal", "decision": "Catatan keputusan", "decidedAt": "Diputuskan",
+    "owner": "Pemilik", "reason": "Pendorong utama"
+  },
+  "tabs": {
+    "label": "Antrean kerja", "all": "Semua", "decide": "Perlu keputusan", "deploy": "Siap deploy",
+    "impact": "Dampak tinggi", "stale": "Usang", "anomaly": "SKU anomali",
+    "impactHint": "Proyeksi dampak margin ≥ IDR {n}"
   },
   "action": { "approve": "Setujui", "reject": "Tolak", "adjust": "Sesuaikan", "undo": "Batalkan", "confirm": "Konfirmasi", "cancel": "Batal", "bulk": "Setujui massal", "more": "Tampilkan lagi ({n} tersisa)" },
   "dialog": {
-    "rejectTitle": "Tolak rekomendasi", "adjustTitle": "Sesuaikan harga usulan", "note": "Catatan (wajib)", "newPrice": "Harga disesuaikan",
+    "rejectTitle": "Tolak rekomendasi", "adjustTitle": "Sesuaikan harga usulan", "note": "Catatan (wajib)", "newPrice": "Harga disesuaikan", "delta": "Perubahan vs saat ini",
     "bulkTitle": "Setujui massal", "threshold": "Keyakinan minimum", "targets": "{n} rekomendasi akan disetujui", "impact": "Total dampak margin proyeksi",
     "excluded": "{n} dikecualikan ({stale} usang, {breach} melanggar guardrail)", "none": "Tidak ada yang memenuhi ambang ini.", "confirmBulk": "Setujui {n}",
     "checklist": "Pilih rekomendasi untuk disetujui", "excludedList": "Tampilkan yang dikecualikan ({n})", "excludedShort": "{n} dikecualikan", "targetsShort": "{n} rekomendasi",
@@ -41,5 +47,35 @@
   },
   "notFound": "Rekomendasi tidak ditemukan.",
   "back": "Kembali ke antrean",
-  "audit": "Jejak audit"
+  "audit": "Jejak audit",
+  "rules": {
+    "title": "Evaluasi aturan",
+    "caption": "Bagaimana harga usulan dinilai terhadap setiap pemeriksaan",
+    "check": "Pemeriksaan", "expected": "Diharapkan", "actual": "Aktual", "result": "Hasil",
+    "pass": "Lulus", "fail": "Gagal", "na": "n/a",
+    "rows": {
+      "min_price": "Harga minimum",
+      "max_price": "Harga maksimum",
+      "map": "MAP (harga iklan minimum)",
+      "max_change": "Perubahan maks per siklus",
+      "auto_approve": "Kelayakan auto-approve",
+      "freshness": "Kesegaran"
+    },
+    "explain": {
+      "min_price": "Harga usulan tidak boleh di bawah batas bawah produk.",
+      "max_price": "Harga usulan tidak boleh melebihi batas atas produk.",
+      "map": "Harga usulan harus mematuhi batas harga iklan produsen bila diberlakukan.",
+      "max_change": "Strategi membatasi seberapa jauh harga boleh berubah dalam satu siklus.",
+      "auto_approve": "Keyakinan di atas ambang strategi memenuhi syarat auto-approve.",
+      "freshness": "Tidak ada harga atau data kompetitor yang berubah sejak rekomendasi dibuat."
+    }
+  },
+  "decision": {
+    "title": "Sebelum Anda memutuskan",
+    "priceMove": "Perubahan harga",
+    "marginImpact": "Dampak margin proyeksi",
+    "channels": "Kanal terdampak",
+    "channelsValue": "Semua kanal terkonfigurasi",
+    "undoNote": "Setujui, sesuaikan, atau tolak menahapkan keputusan — berlaku setelah jeda pembatalan {s} dtk dan tercatat di jejak audit."
+  }
 }

@@ -5,7 +5,7 @@
 import { CATEGORIES } from './categories';
 import type {
   AnomalyAlert, AuditEvent, Channel, CompetitorObservation, DeploymentRecord, Outcome, PriceEvent, Product,
-  RationaleFactor, Recommendation, Strategy,
+  PublishJob, RationaleFactor, Recommendation, Strategy,
 } from './ontology';
 
 export const NOW = Date.UTC(2026, 8, 21, 6, 0, 0);
@@ -126,6 +126,7 @@ export function generateRecommendations(products: Product[], count: number, seed
       projectedMarginImpact: Math.round((proposed - p.price) * (20 + r() * 80)),
       strategyId: null,
       scenarioId: null,
+      ownerId: 'agent',
       createdAt: new Date(NOW - Math.floor(r() * 3 * DAY)).toISOString(),
       decidedAt: status === 'pending' ? null : new Date(NOW - Math.floor(r() * DAY)).toISOString(),
       decisionNote: status === 'rejected' ? 'Competitor data looked stale' : null,
@@ -220,13 +221,20 @@ export function generateAnomalies(products: Product[]): AnomalyAlert[] {
   return out;
 }
 
-export function generateDeployments(recs: Recommendation[]): DeploymentRecord[] {
+export function generateDeployments(recs: Recommendation[]): { jobs: PublishJob[]; records: DeploymentRecord[] } {
   const target = recs.find((x) => x.status === 'approved' && !x.deployed);
-  if (!target) return [];
+  if (!target) return { jobs: [], records: [] };
   const at = new Date(NOW - HOUR).toISOString();
+  const jobId = `PJ-${target.id}`;
   const statuses: DeploymentRecord['status'][] = ['synced', 'synced', 'failed', 'pending'];
-  return (['pos', 'ecommerce', 'marketplace_a', 'marketplace_b'] as Channel[]).map((channel, i) => ({
-    id: `DEP-${target.id}-${channel}`, recommendationId: target.id, sku: target.sku, channel, status: statuses[i] as DeploymentRecord['status'],
+  const records = (['pos', 'ecommerce', 'marketplace_a', 'marketplace_b'] as Channel[]).map((channel, i) => ({
+    id: `DEP-${target.id}-${channel}`, recommendationId: target.id, jobId, sku: target.sku, channel, status: statuses[i] as DeploymentRecord['status'],
     retryCount: statuses[i] === 'failed' ? 1 : 0, errorReason: statuses[i] === 'failed' ? 'Marketplace API timeout' : null, updatedAt: at,
   }));
+  // Two synced + one failed + one pending — a live partial-publish example out of the box.
+  const jobs: PublishJob[] = [{
+    id: jobId, recommendationId: target.id, sku: target.sku, status: 'publishing',
+    scheduledFor: null, createdBy: 'u-ops-1', createdAt: at, updatedAt: at,
+  }];
+  return { jobs, records };
 }

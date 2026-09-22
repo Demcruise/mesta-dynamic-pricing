@@ -14,6 +14,9 @@ async function violations(page: Page, label: string): Promise<string[]> {
 
 for (const theme of ['light', 'dark'] as const) {
   test(`axe: every route has no WCAG A/AA violations (${theme})`, async ({ page }) => {
+    // One axe pass per route is cumulative; heavier routes (rule-eval table, publish jobs)
+    // pushed the sweep past the shared 60s budget.
+    test.setTimeout(120_000);
     await open(page, '/overview', 'manager');
     if (theme === 'dark') {
       await page.evaluate(() => { document.documentElement.dataset.theme = 'dark'; });

@@ -10,6 +10,7 @@ import { LiveDot } from '@/components/ds/LiveDot';
 import { OnboardingChecklist } from '@/components/ds/OnboardingChecklist';
 import { PriceValue } from '@/components/ds/PriceValue';
 import { RationaleBreakdown } from '@/components/ds/RationaleBreakdown';
+import { RuleEvaluation } from '@/components/ds/RuleEvaluation';
 import { SeverityChip } from '@/components/ds/SeverityChip';
 import { Sparkline } from '@/components/ds/Sparkline';
 import { StatusBadge } from '@/components/ds/StatusBadge';
@@ -77,6 +78,18 @@ function DrawerDemo() {
     </>
   );
 }
+
+/** Static demo objects — a strategy-less rec so strategy-bound rows show the n/a state. */
+const DEMO_PRODUCT = {
+  sku: 'SKU-101', name: 'Demo product', category: 'Beverages', cost: 90000, price: 125000,
+  minPrice: 100000, maxPrice: 200000, mapPrice: 110000, competitorAvg: 128000, elasticity: -1.2,
+  stockUnits: 140, stockStatus: 'in_stock' as const, lastChangeAt: '2026-09-20T09:00:00Z', priceHistory: [],
+};
+const DEMO_REC = {
+  id: 'REC-DEMO', sku: 'SKU-101', currentPrice: 125000, proposedPrice: 118000, confidence: 86,
+  source: 'agent' as const, status: 'pending' as const, rationale: [], projectedMarginImpact: 420000,
+  strategyId: null, scenarioId: null, createdAt: '2026-09-21T09:00:00Z', ownerId: 'agent', decidedAt: null, decisionNote: null, deployed: false,
+};
 
 function DialogDemo() {
   const [open, setOpen] = useState(false);
@@ -218,6 +231,14 @@ const ENTRIES: Entry[] = [
     doText: 'One severity scheme everywhere — alerts, monitoring, deployment health.', dontText: 'Do not invent ad-hoc red/yellow chips per page.',
     reactBits: 'Blocks › monitoring-1',
     demo: <div className="flex items-center gap-3"><SeverityChip s="info" /><SeverityChip s="warning" /><SeverityChip s="critical" /><span className="flex items-center gap-1.5 text-xs text-muted"><LiveDot />Live</span></div>,
+  },
+  {
+    name: 'RuleEvaluation', file: 'components/ds/RuleEvaluation.tsx', summary: 'Per-check input→expected→actual→result table explaining why a proposed price passes or fails.',
+    props: 'rec: Recommendation · product: Product | undefined — rows derive from evaluateRules()',
+    a11y: 'Semantic table with caption and header row; results are icon + translated text, never colour alone.',
+    doText: 'Render on the recommendation detail page so a reviewer sees which check drove the outcome.', dontText: 'Do not pass editor drafts — it evaluates the stored proposed price.',
+    reactBits: 'Application UI › Data display › Table',
+    demo: <RuleEvaluation rec={DEMO_REC} product={DEMO_PRODUCT} />,
   },
   {
     name: 'MestaDataTable', file: 'components/ds/table/DataTable.tsx', summary: 'Unified enterprise table: sort, selection, sticky header, density, virtualization, CSV, column visibility, saved views.',

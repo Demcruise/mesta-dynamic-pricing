@@ -14,19 +14,22 @@ import { MestaDataTable, useColumnVisibility, type DataColumn } from '@/componen
 import { RoleGate } from '@/components/shell/RoleGate';
 import { Button } from '@/components/ui/button';
 import { inputCls } from '@/components/ui/field';
-import { retryDeployment, triggerDeployment } from '@/lib/actions/deployment';
+import { cancelPublishJob, liveJobStatus, retryDeployment, runScheduledJob } from '@/lib/actions/deployment';
 import { CHANNELS } from '@/lib/stores/deployment';
-import { formatPercent, formatRelativeTime } from '@/lib/format';
+import { formatDate, formatPercent, formatRelativeTime } from '@/lib/format';
 import { useCan } from '@/lib/hooks';
 import { useTranslation } from '@/lib/i18n';
-import type { DeploymentRecord, DeploymentStatus } from '@/lib/ontology';
-import { useAuditLog, useDeploymentRecords, useRecommendations, useSkuList } from '@/lib/queries';
+import type { DeploymentRecord, DeploymentStatus, PublishJob, Recommendation } from '@/lib/ontology';
+import { useAuditLog, useDeploymentRecords, usePublishJobs, useRecommendations, useSkuList } from '@/lib/queries';
 import { useSessionStore, useToastStore } from '@/lib/stores';
 import { cn } from '@/lib/utils';
+import { PublishDialog } from './PublishDialog';
+import { RollbackDialog } from './RollbackDialog';
 
-const STATUSES: DeploymentStatus[] = ['failed', 'in_flight', 'pending', 'synced'];
+const STATUSES: DeploymentStatus[] = ['failed', 'in_flight', 'pending', 'synced', 'rolled_back', 'cancelled'];
 const DOT_CLS: Record<DeploymentStatus, string> = {
   synced: 'bg-up-soft', pending: 'bg-info-soft', failed: 'bg-down-soft', in_flight: 'bg-warn-soft',
+  cancelled: 'bg-subtle', rolled_back: 'bg-warn-soft',
 };
 
 export function DeploymentPage() {
@@ -42,15 +45,27 @@ export function DeploymentPage() {
   const records = useDeploymentRecords();
   const skus = useSkuList();
   const audit = useAuditLog();
+  const jobs = usePublishJobs();
   const [selected, setSelected] = useState<DeploymentRecord | null>(null);
+  const [publishRec, setPublishRec] = useState<Recommendation | null>(null);
+  const [rollbackJob, setRollbackJob] = useState<PublishJob | null>(null);
   const columnVis = useColumnVisibility('deployment');
 
   const status = (sp.get('status') ?? '') as DeploymentStatus | '';
   const setStatus = (v: string) => router.replace(v ? `${pathname}?status=${v}` : pathname, { scroll: false });
   const names = useMemo(() => new Map(skus.data.map((p) => [p.sku, p.name])), [skus.data]);
+  const activeJobRecIds = useMemo(
+    () => new Set(jobs.data.filter((j) => ['scheduled', 'publishing', 'partial', 'failed'].includes(liveJobStatus(j))).map((j) => j.recommendationId)),
+    [jobs.data, records.data],
+  );
   const awaiting = useMemo(
-    () => recsData.filter((r) => (r.status === 'approved' || r.status === 'adjusted') && !r.deployed && !records.data.some((d) => d.recommendationId === r.id)),
-    [recsData, records.data],
+    () => recsData.filter((r) => (r.status === 'approved' || r.status === 'adjusted') && !r.deployed && !activeJobRecIds.has(r.id)),
+    [recsData, activeJobRecIds],
+  );
+  const jobRows = useMemo(
+    () => jobs.data.map((j) => ({ job: j, live: liveJobStatus(j), rs: records.data.filter((r) => r.jobId === j.id) }))
+      .sort((a, b) => b.job.updatedAt.localeCompare(a.job.updatedAt)),
+    [jobs.data, records.data],
   );
   const rows = useMemo(
     () => records.data.filter((r) => !status || r.status === status)
@@ -77,17 +92,24 @@ export function DeploymentPage() {
     };
   });
 
+  const selectedJob = selected ? jobs.data.find((j) => j.id === selected.jobId) : undefined;
   const trace: ExecStep[] = useMemo(() => {
     if (!selected) return [];
+    const statusOf = (type: string): MestaStatus =>
+      type === 'deployment_success' ? 'synced'
+        : type === 'deployment_failure' ? 'failed'
+          : type === 'deployment_rollback' ? 'rolled_back'
+            : type === 'publish_cancelled' ? 'cancelled'
+              : type === 'publish_scheduled' ? 'scheduled' : 'in_flight';
     return audit.data
-      .filter((e) => e.entityType === 'deployment' && e.entityId === selected.id)
+      .filter((e) => e.entityType === 'deployment' && e.entityId === selected.recommendationId)
       .sort((a, b) => a.timestamp.localeCompare(b.timestamp))
       .map((e) => ({
         id: e.id,
         label: t(`common.event.${e.type}`),
         detail: e.note ?? undefined,
         at: e.timestamp,
-        status: e.type === 'deployment_success' ? 'synced' : e.type === 'deployment_failure' ? 'failed' : 'in_flight',
+        status: statusOf(e.type),
       }));
   }, [audit.data, selected, t]);
 
@@ -114,9 +136,6 @@ export function DeploymentPage() {
         <RoleGate action="deployment.execute">
           {r.status === 'failed' && (
             <Button size="sm" variant="secondary" onClick={() => run(retryDeployment(user, r.id))}>{t('deployment.table.retry')}</Button>
-          )}
-          {r.status === 'pending' && (
-            <Button size="sm" onClick={() => run(triggerDeployment(user, r.recommendationId))}>{t('deployment.queue.deploy')}</Button>
           )}
         </RoleGate>
       ),
@@ -177,6 +196,50 @@ export function DeploymentPage() {
           </section>
 
           <section className="mb-5">
+            <h2 className="mb-2 text-sm font-semibold">{t('deployment.jobs.title')}</h2>
+            {jobRows.length === 0 ? (
+              <EmptyState variant="empty" title={t('deployment.jobs.empty')} />
+            ) : (
+              <ul className="grid gap-2 md:grid-cols-2">
+                {jobRows.map(({ job, live, rs }) => {
+                  const synced = rs.filter((r) => r.status === 'synced').length;
+                  const failedRs = rs.filter((r) => r.status === 'failed');
+                  return (
+                    <li key={job.id} className="rounded-card border border-line bg-surface p-3 text-sm shadow-e1">
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <p className="min-w-0"><span className="tabular font-medium">{job.id}</span> <span className="text-muted">·</span> <span className="tabular">{job.sku}</span></p>
+                        <StatusBadge status={live} />
+                      </div>
+                      {job.scheduledFor && (
+                        <p className="mt-1 text-xs text-muted">{t('deployment.jobs.scheduledFor')}: <span className="tabular">{formatDate(job.scheduledFor, locale)}</span></p>
+                      )}
+                      <JobProgress done={synced} total={rs.length} label={t('deployment.board.progress')} className="mt-2" />
+                      <RoleGate action="deployment.execute">
+                        <div className="mt-2 flex flex-wrap gap-2">
+                          {job.status === 'scheduled' && (
+                            <>
+                              <Button size="sm" onClick={() => run(runScheduledJob(user, job.id))}>{t('deployment.jobs.runNow')}</Button>
+                              <Button size="sm" variant="secondary" onClick={() => run(cancelPublishJob(user, job.id))}>{t('deployment.jobs.cancel')}</Button>
+                            </>
+                          )}
+                          {(live === 'published' || live === 'partial') && (
+                            <Button size="sm" variant="secondary" onClick={() => setRollbackJob(job)}>{t('deployment.jobs.rollback')}</Button>
+                          )}
+                          {failedRs.length > 0 && live !== 'published' && (
+                            <Button size="sm" variant="secondary" onClick={() => failedRs.forEach((r) => run(retryDeployment(user, r.id)))}>
+                              {t('deployment.jobs.retryFailed', { n: failedRs.length })}
+                            </Button>
+                          )}
+                        </div>
+                      </RoleGate>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </section>
+
+          <section className="mb-5">
             <h2 className="mb-2 text-sm font-semibold">{t('deployment.queue.title')}</h2>
             {awaiting.length === 0 ? (
               <EmptyState variant="caughtUp" title={t('deployment.queue.empty')} />
@@ -189,7 +252,7 @@ export function DeploymentPage() {
                       <p className="text-xs text-muted">{t('deployment.queue.proposed')}: <PriceValue value={r.proposedPrice} /></p>
                     </div>
                     <RoleGate action="deployment.execute">
-                      <Button size="sm" onClick={() => run(triggerDeployment(user, r.id), r.id)}>{t('deployment.queue.deploy')}</Button>
+                      <Button size="sm" onClick={() => setPublishRec(r)}>{t('deployment.queue.deploy')}</Button>
                     </RoleGate>
                   </li>
                 ))}
@@ -241,6 +304,13 @@ export function DeploymentPage() {
               <div><dt className="text-xs text-muted">{t('deployment.table.sku')}</dt><dd><Link href={`/catalog/${selected.sku}`} className="tabular text-brand hover:underline">{selected.sku}</Link> <span className="text-muted">{names.get(selected.sku)}</span></dd></div>
               <div><dt className="text-xs text-muted">{t('deployment.table.channel')}</dt><dd>{t(`common.channel.${selected.channel}`)}</dd></div>
               <div><dt className="text-xs text-muted">{t('deployment.table.status')}</dt><dd><StatusBadge status={selected.status} label={t(`deployment.status.${selected.status}`)} /></dd></div>
+              <div>
+                <dt className="text-xs text-muted">{t('deployment.table.job')}</dt>
+                <dd className="flex items-center gap-2">
+                  <span className="tabular">{selected.jobId}</span>
+                  {selectedJob && <StatusBadge status={liveJobStatus(selectedJob)} className="px-1.5 py-px" />}
+                </dd>
+              </div>
               <div><dt className="text-xs text-muted">{t('deployment.table.retries')}</dt><dd className="tabular">{selected.retryCount}</dd></div>
               <div><dt className="text-xs text-muted">{t('deployment.table.updated')}</dt><dd className="tabular">{formatRelativeTime(selected.updatedAt, locale)}</dd></div>
               <div>
@@ -267,14 +337,22 @@ export function DeploymentPage() {
                 {selected.status === 'failed' && (
                   <Button size="sm" variant="secondary" onClick={() => { run(retryDeployment(user, selected.id)); }}>{t('deployment.table.retry')}</Button>
                 )}
-                {selected.status === 'pending' && (
-                  <Button size="sm" onClick={() => { run(triggerDeployment(user, selected.recommendationId)); }}>{t('deployment.queue.deploy')}</Button>
+                {selectedJob && liveJobStatus(selectedJob) === 'scheduled' && (
+                  <Button size="sm" onClick={() => { run(runScheduledJob(user, selectedJob.id)); setSelected(null); }}>{t('deployment.jobs.runNow')}</Button>
                 )}
               </div>
             </RoleGate>
           </div>
         )}
       </Drawer>
+
+      <PublishDialog rec={publishRec} onClose={() => setPublishRec(null)} />
+      <RollbackDialog
+        job={rollbackJob}
+        rec={rollbackJob ? recsData.find((x) => x.id === rollbackJob.recommendationId) : undefined}
+        records={records.data}
+        onClose={() => setRollbackJob(null)}
+      />
     </>
   );
 }

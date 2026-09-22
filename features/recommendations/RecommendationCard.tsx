@@ -23,8 +23,10 @@ import { useProductCatalogStore, useSessionStore, useToastStore, useUndoStore } 
 import { DecisionDialog, type DialogMode } from './DecisionDialog';
 import { changeRatio } from './filters';
 
-export function RecommendationCard({ rec, product, defaultOpen = false }: {
+export function RecommendationCard({ rec, product, defaultOpen = false, showStatus = true }: {
   rec: Recommendation; product: Product | undefined; defaultOpen?: boolean;
+  /** Under a status-owning queue tab the chip repeats the tab — only render it when it adds information. */
+  showStatus?: boolean;
 }) {
   const { t, locale } = useTranslation();
   const user = useSessionStore((s) => s.user);
@@ -34,6 +36,7 @@ export function RecommendationCard({ rec, product, defaultOpen = false }: {
   const competitors = useProductCatalogStore((s) => s.competitors);
   const [dialog, setDialog] = useState<DialogMode>(null);
   const health = recommendationHealth(rec);
+  const topReason = [...rec.rationale].sort((a, b) => b.weight - a.weight)[0]?.detail;
   const pending = rec.status === 'pending';
   const locked = !!staged;
   const canDecide = pending && !locked && can('recommendation.decide');
@@ -76,10 +79,12 @@ export function RecommendationCard({ rec, product, defaultOpen = false }: {
           <p className="text-xs text-muted">
             <Link href={`/recommendations/${rec.id}`} className="tabular hover:underline">{rec.id}</Link>
             {' · '}{t(`recommendations.source.${rec.source}`)} · <span className="tabular">{formatDate(rec.createdAt, locale)}</span>
+            {' · '}{t('recommendations.card.owner')}: <span className="tabular">{rec.ownerId === 'agent' ? t('common.source.agent') : rec.ownerId}</span>
           </p>
+          {topReason && <p className="mt-0.5 max-w-prose truncate text-xs text-faint" title={topReason}>{t('recommendations.card.reason')}: {topReason}</p>}
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <StatusChip status={rec.status} />
+          {showStatus && <StatusChip status={rec.status} />}
           {pending && health.stale && <StatusChip status="stale" />}
         </div>
       </header>

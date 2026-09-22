@@ -166,6 +166,7 @@
     "recBulkReady": "{n} recommendations approved — ready to deploy",
     "deployed": "{sku} price is live on all channels",
     "deployFailed": "{sku} failed on {channel}",
+    "rolledBack": "{sku} publish rolled back to the previous price",
     "flagged": "{sku} flagged for model review",
     "grouped": "{n} similar"
   },
@@ -209,6 +210,9 @@
     "deployment_success": "Deployment succeeded",
     "deployment_failure": "Deployment failed",
     "deployment_retry": "Deployment retried",
+    "deployment_rollback": "Publish rolled back",
+    "publish_scheduled": "Publish scheduled",
+    "publish_cancelled": "Scheduled publish cancelled",
     "model_review_feedback": "Flagged for model review",
     "manual_override": "Manual override",
     "strategy_rollback": "Strategy rolled back"

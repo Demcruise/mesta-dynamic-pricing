@@ -4,8 +4,10 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { Field, Input } from '@/components/ui/field';
+import { ConsequencePreview } from '@/components/ds/trust';
 import { stageDecision } from '@/lib/actions/recommendation';
 import { checkPrice } from '@/lib/guardrails';
+import { formatPrice } from '@/lib/format';
 import { useTranslation } from '@/lib/i18n';
 import type { Product, Recommendation } from '@/lib/ontology';
 import { useSessionStore, useStrategyStore, useToastStore } from '@/lib/stores';
@@ -24,7 +26,7 @@ export function DecisionDialog({ rec, product, mode, onClose }: {
 }
 
 function Form({ rec, product, mode, onClose }: { rec: Recommendation; product: Product | undefined; mode: 'reject' | 'adjust'; onClose: () => void }) {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const user = useSessionStore((s) => s.user);
   const toast = useToastStore((s) => s.push);
   const [note, setNote] = useState('');
@@ -32,7 +34,11 @@ function Form({ rec, product, mode, onClose }: { rec: Recommendation; product: P
   const [submitted, setSubmitted] = useState(false);
 
   const strategy = rec.strategyId ? useStrategyStore.getState().items.find((s) => s.id === rec.strategyId) ?? null : null;
-  const priceCheck = mode === 'adjust' && product ? checkPrice(product, strategy, Number(price)) : 'ok';
+  const priceNum = Number(price);
+  const priceCheck = mode === 'adjust' && product ? checkPrice(product, strategy, priceNum) : 'ok';
+  const deltaPct = mode === 'adjust' && Number.isFinite(priceNum) && rec.currentPrice > 0
+    ? ((priceNum - rec.currentPrice) / rec.currentPrice) * 100
+    : null;
   const noteErr = note.trim() ? undefined : t('recommendations.err.note_required');
   const priceErr = priceCheck === 'ok' ? undefined : t(`recommendations.err.${priceCheck}`);
 
@@ -49,9 +55,23 @@ function Form({ rec, product, mode, onClose }: { rec: Recommendation; product: P
     <form onSubmit={submit} noValidate className="flex flex-col gap-3">
       <p className="tabular text-sm text-muted">{rec.id} · {rec.sku}</p>
       {mode === 'adjust' && (
-        <Field label={t('recommendations.dialog.newPrice')} error={submitted ? priceErr : undefined}>
-          {(p) => <Input {...p} type="number" value={price} onChange={(e) => setPrice(e.target.value)} />}
-        </Field>
+        <>
+          <Field label={t('recommendations.dialog.newPrice')} error={submitted ? priceErr : undefined}>
+            {(p) => <Input {...p} type="number" value={price} onChange={(e) => setPrice(e.target.value)} />}
+          </Field>
+          {Number.isFinite(priceNum) && priceNum > 0 && deltaPct !== null && (
+            <ConsequencePreview
+              items={[
+                { label: t('recommendations.decision.priceMove'), value: `${formatPrice(rec.currentPrice, locale)} → ${formatPrice(priceNum, locale)}` },
+                {
+                  label: t('recommendations.dialog.delta'),
+                  value: `${deltaPct > 0 ? '+' : ''}${deltaPct.toFixed(1)}%`,
+                  tone: priceCheck === 'ok' ? 'default' : 'warn',
+                },
+              ]}
+            />
+          )}
+        </>
       )}
       <Field label={t('recommendations.dialog.note')} error={submitted ? noteErr : undefined}>
         {(p) => <Input {...p} value={note} onChange={(e) => setNote(e.target.value)} />}

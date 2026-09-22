@@ -92,6 +92,8 @@ export interface Recommendation {
   strategyId: string | null;
   scenarioId: string | null;
   createdAt: string;
+  /** Who produced the recommendation — 'agent' for generated ones, a user id for simulation sends. */
+  ownerId: string;
   decidedAt: string | null;
   decisionNote: string | null;
   deployed: boolean;
@@ -108,11 +110,29 @@ export interface PriceEvent {
 }
 
 export type Channel = 'pos' | 'ecommerce' | 'marketplace_a' | 'marketplace_b';
-export type DeploymentStatus = 'pending' | 'in_flight' | 'synced' | 'failed';
+export type DeploymentStatus = 'pending' | 'in_flight' | 'synced' | 'failed' | 'cancelled' | 'rolled_back';
+
+/** Aggregate publish lifecycle — derived from its channel records plus job-level terminals. */
+export type PublishJobStatus = 'scheduled' | 'publishing' | 'published' | 'partial' | 'failed' | 'rolled_back' | 'cancelled';
+
+/** One publish job per recommendation: batches the per-channel DeploymentRecords. */
+export interface PublishJob {
+  id: string;
+  recommendationId: string;
+  sku: string;
+  status: PublishJobStatus;
+  /** ISO time the job is due; null = immediate. Scheduled jobs promote via runScheduledJob (no backend clock). */
+  scheduledFor: string | null;
+  createdBy: string;
+  createdAt: string;
+  updatedAt: string;
+}
 
 export interface DeploymentRecord {
   id: string;
   recommendationId: string;
+  /** The publish job this channel attempt belongs to. */
+  jobId: string;
   sku: string;
   channel: Channel;
   status: DeploymentStatus;
@@ -137,7 +157,8 @@ export type AuditEventType =
   | 'strategy_submit' | 'strategy_activate' | 'strategy_reject' | 'strategy_rollback'
   | 'scenario_sent'
   | 'recommendation_approve' | 'recommendation_reject' | 'recommendation_adjust'
-  | 'deployment_success' | 'deployment_failure' | 'deployment_retry'
+  | 'deployment_success' | 'deployment_failure' | 'deployment_retry' | 'deployment_rollback'
+  | 'publish_scheduled' | 'publish_cancelled'
   | 'model_review_feedback' | 'manual_override';
 
 export interface AuditEvent {

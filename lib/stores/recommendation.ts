@@ -20,6 +20,8 @@ interface RecommendationState {
   add: (r: Recommendation) => void;
   decide: (id: string, to: Exclude<RecommendationStatus, 'pending'>, opts?: { note?: string; proposedPrice?: number }) => TransitionResult;
   markDeployed: (id: string) => TransitionResult;
+  /** Rollback path: the price went live once but was reverted — the rec becomes publishable again. */
+  markUndeployed: (id: string) => void;
   reset: () => void;
 }
 
@@ -55,5 +57,7 @@ export const useRecommendationStore = create<RecommendationState>((set, get) => 
     set((s) => ({ items: s.items.map((x) => (x.id === id ? { ...x, deployed: true } : x)) }));
     return { ok: true };
   },
+  markUndeployed: (id) =>
+    set((s) => ({ items: s.items.map((x) => (x.id === id ? { ...x, deployed: false } : x)) })),
   reset: () => set({ items: [] }),
 }));

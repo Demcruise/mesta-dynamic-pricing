@@ -1,8 +1,8 @@
 'use client';
 
 import {
-  CheckCircle2, Flag, FlaskConical, PenLine, Pencil, RotateCw, Rocket, Send, TriangleAlert, Undo2, XCircle,
-  type LucideIcon,
+  Ban, CalendarClock, CheckCircle2, Flag, FlaskConical, PenLine, Pencil, RotateCw, Rocket, Send, TriangleAlert,
+  Undo2, XCircle, type LucideIcon,
 } from 'lucide-react';
 import { formatRelativeTime } from '@/lib/format';
 import { useTranslation } from '@/lib/i18n';
@@ -22,6 +22,9 @@ const ICONS: Record<AuditEventType, LucideIcon> = {
   deployment_success: Rocket,
   deployment_failure: TriangleAlert,
   deployment_retry: RotateCw,
+  deployment_rollback: Undo2,
+  publish_scheduled: CalendarClock,
+  publish_cancelled: Ban,
   model_review_feedback: Flag,
   manual_override: PenLine,
 };

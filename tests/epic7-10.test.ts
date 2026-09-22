@@ -65,7 +65,7 @@ describe('deployment', () => {
     expect(audits).toHaveLength(1);
     expect(audits[0]?.snapshot).toEqual({ oldPrice: before.price, newPrice: r.proposedPrice });
     expect(useMonitoringStore.getState().outcomes.some((o) => o.recommendationId === r.id && o.priceEventId)).toBe(true);
-    expect(triggerDeployment(ops, r.id)).toEqual({ ok: false, error: 'not_deployable' });
+    expect(triggerDeployment(ops, r.id)).toEqual({ ok: false, error: 'preflight_blocked' });
   });
 
   it('willFail is deterministic and never fails a retry', () => {

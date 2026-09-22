@@ -11,5 +11,6 @@ export * from './draft';
 export * from './undo';
 export * from './toast';
 export * from './deployment';
+export * from './publish';
 export * from './monitoring';
 export * from './feedback';

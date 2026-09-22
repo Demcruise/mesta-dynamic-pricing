@@ -7,6 +7,7 @@ import { useStrategyStore } from '../stores/strategy';
 import { useAuditStore } from '../stores/audit';
 import { useScenarioStore } from '../stores/scenario';
 import { useDeploymentStore } from '../stores/deployment';
+import { usePublishJobStore } from '../stores/publish';
 import { useMonitoringStore } from '../stores/monitoring';
 import { useNotificationStore } from '../stores/notification';
 import { selectAuditForUser } from '../audit-scope';
@@ -47,6 +48,7 @@ export const useScenarios = () => useListQuery(keys.scenario.list(), () => useSc
 export const useScenario = (id: string) =>
   useItemQuery(['scenario', 'detail', id], () => useScenarioStore.getState().items.find((s) => s.id === id));
 export const useDeploymentRecords = () => useListQuery(keys.deployment.list(), () => useDeploymentStore.getState().records);
+export const usePublishJobs = () => useListQuery(['deployment', 'jobs'], () => usePublishJobStore.getState().jobs);
 export const useAnomalies = () => useListQuery(keys.anomaly.list(), () => useMonitoringStore.getState().anomalies);
 export const useOutcomes = () => useListQuery(['anomaly', 'outcomes'], () => useMonitoringStore.getState().outcomes);
 export const usePriceEvents = () => useListQuery(['sku', 'priceEvents'], () => useProductCatalogStore.getState().priceEvents);

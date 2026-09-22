@@ -10,7 +10,7 @@ import { go, open } from './helpers';
 const SECTIONS = [
   'ds-PriceValue', 'ds-DeltaBadge', 'ds-ConfidenceBar', 'ds-Sparkline',
   'ds-AgentBorderCard', 'ds-AgentRunTimeline', 'ds-RationaleBreakdown',
-  'ds-StatusBadge', 'ds-Trust components', 'ds-System-status primitives', 'ds-SeverityChip / LiveDot', 'ds-MestaDataTable',
+  'ds-StatusBadge', 'ds-Trust components', 'ds-System-status primitives', 'ds-SeverityChip / LiveDot', 'ds-RuleEvaluation', 'ds-MestaDataTable',
   'ds-Drawer / Dialog', 'ds-Field / Input', 'ds-RoleGate', 'ds-OnboardingChecklist',
   'ds-TopMoversPanel', 'ds-Charts (ChartWithTable)',
   'ds-KpiCard / PageHeader / EmptyState / LoadingRows / PageSkeleton', 'ds-Button',

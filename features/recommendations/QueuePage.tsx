@@ -10,11 +10,13 @@ import { inputCls } from '@/components/ui/field';
 import { recommendationHealth } from '@/lib/actions/recommendation';
 import { CATEGORIES } from '@/lib/categories';
 import { useTranslation } from '@/lib/i18n';
-import { useRecommendations, useSkuList } from '@/lib/queries';
+import { useAnomalies, useRecommendations, useSkuList } from '@/lib/queries';
 import { track } from '@/lib/telemetry';
+import { cn } from '@/lib/utils';
 import { BulkDialog } from './BulkDialog';
 import {
-  DEFAULT_QUEUE_FILTERS, filterAndSort, isDefaultFilters, parseQueueFilters, serializeQueueFilters, type QueueFilters,
+  DEFAULT_QUEUE_FILTERS, filterAndSort, HIGH_IMPACT_IDR, isDefaultFilters, parseQueueFilters, serializeQueueFilters,
+  tabMatches, type QueueFilters, type QueueTab,
 } from './filters';
 import { RecommendationCard } from './RecommendationCard';
 
@@ -35,6 +37,7 @@ export function QueuePage() {
   const sp = useSearchParams();
   const recs = useRecommendations();
   const skus = useSkuList();
+  const anomalies = useAnomalies();
   const [shown, setShown] = useState(PAGE_SIZE);
   const [bulkOpen, setBulkOpen] = useState(false);
 
@@ -50,7 +53,7 @@ export function QueuePage() {
   // Active facets rendered as removable chips — the "query builder" read-out.
   const chips = useMemo(() => {
     const out: { key: string; label: string; remove: () => void }[] = [];
-    if (filters.status !== 'pending') {
+    if (filters.tab === 'all' && filters.status !== 'pending') {
       out.push({
         key: 'status',
         label: `${t('recommendations.filter.status')}: ${filters.status === 'all' ? t('recommendations.filter.all') : t(`common.status.${filters.status}`)}`,
@@ -66,7 +69,12 @@ export function QueuePage() {
   }, [filters, t]);
 
   const productMap = useMemo(() => new Map(skus.data.map((p) => [p.sku, p])), [skus.data]);
-  const rows = useMemo(() => filterAndSort(recs.data, productMap, filters), [recs.data, productMap, filters]);
+  const anomalySkus = useMemo(() => new Set(anomalies.data.map((a) => a.sku)), [anomalies.data]);
+  const rows = useMemo(() => filterAndSort(recs.data, productMap, filters, anomalySkus), [recs.data, productMap, filters, anomalySkus]);
+  const tabCounts = useMemo(() => {
+    const tabs: QueueTab[] = ['all', 'decide', 'deploy', 'impact', 'stale', 'anomaly'];
+    return tabs.map((tab) => ({ tab, n: recs.data.filter((r) => tabMatches(tab, r, anomalySkus)).length }));
+  }, [recs.data, anomalySkus]);
   const pendingTotal = recs.data.filter((r) => r.status === 'pending').length;
   const allStale = rows.length > 0 && rows.every((r) => r.status === 'pending' && recommendationHealth(r).stale);
   const loading = recs.isLoading || skus.isLoading;
@@ -83,12 +91,33 @@ export function QueuePage() {
         }
       />
 
+      <nav aria-label={t('recommendations.tabs.label')} className="mb-3 flex flex-wrap gap-1 border-b border-line">
+        {tabCounts.map(({ tab, n }) => (
+          <button
+            key={tab}
+            type="button"
+            aria-pressed={filters.tab === tab}
+            title={tab === 'impact' ? t('recommendations.tabs.impactHint', { n: HIGH_IMPACT_IDR.toLocaleString() }) : undefined}
+            onClick={() => patch({ tab })}
+            className={cn(
+              '-mb-px flex items-center gap-1.5 border-b-2 px-3 py-2 text-sm transition-colors duration-fast',
+              filters.tab === tab ? 'border-brand font-medium text-fg' : 'border-transparent text-muted hover:text-fg',
+            )}
+          >
+            {t(`recommendations.tabs.${tab}`)}
+            <span className="tabular rounded-full bg-subtle px-1.5 py-px text-[11px] text-muted">{n}</span>
+          </button>
+        ))}
+      </nav>
+
       <div className="mb-3 flex flex-wrap gap-2" role="search">
+        {filters.tab === 'all' && (
         <Select label={t('recommendations.filter.status')} value={filters.status} onChange={(v) => patch({ status: v as QueueFilters['status'] })}>
           {(['pending', 'approved', 'rejected', 'adjusted', 'all'] as const).map((s) => (
             <option key={s} value={s}>{s === 'all' ? t('recommendations.filter.all') : t(`common.status.${s}`)}</option>
           ))}
         </Select>
+        )}
         <Select label={t('recommendations.filter.category')} value={filters.category} onChange={(v) => patch({ category: v })}>
           <option value="">{t('recommendations.filter.category')}</option>
           {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
@@ -144,7 +173,7 @@ export function QueuePage() {
           {allStale && <p role="status" className="mb-3 rounded-input bg-warn-soft px-3 py-2 text-sm text-warn">{t('recommendations.empty.staleOnly')}</p>}
           <ul className="grid gap-3 xl:grid-cols-2">
             {rows.slice(0, shown).map((r) => (
-              <li key={r.id}><RecommendationCard rec={r} product={productMap.get(r.sku)} /></li>
+              <li key={r.id}><RecommendationCard rec={r} product={productMap.get(r.sku)} showStatus={filters.tab === 'all'} /></li>
             ))}
           </ul>
           {rows.length > shown && (

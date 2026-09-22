@@ -7,6 +7,7 @@ import {
   useAuditStore, useCatalogSelectionStore, useDeploymentStore, useMonitoringStore, useNotificationStore,
   useProductCatalogStore, useRecommendationStore, useScenarioStore, useStrategyStore,
 } from './stores';
+import { usePublishJobStore } from './stores/publish';
 
 export const DEFAULT_PRODUCT_COUNT = 500;
 export const STRESS_PRODUCT_COUNT = 5000;
@@ -31,7 +32,9 @@ export function bootstrapMestaData({ productCount = DEFAULT_PRODUCT_COUNT, force
   const recs = seeded.recs;
   useProductCatalogStore.getState().hydrate(seeded.products, generateCompetitors(seeded.products), seeded.priceEvents);
   useRecommendationStore.getState().hydrate(recs);
-  useDeploymentStore.getState().hydrate(generateDeployments(recs));
+  const deploymentSeed = generateDeployments(recs);
+  useDeploymentStore.getState().hydrate(deploymentSeed.records);
+  usePublishJobStore.getState().hydrate(deploymentSeed.jobs);
   useMonitoringStore.getState().hydrate(generateAnomalies(seeded.products), seeded.outcomes);
   useStrategyStore.getState().hydrate(generateStrategies());
   useAuditStore.getState().hydrate(generateAudit(recs));

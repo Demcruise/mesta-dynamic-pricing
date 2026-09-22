@@ -66,6 +66,7 @@ export function eventTone(type: AuditEventType): AuditTone {
   if (type === 'deployment_success') return 'up';
   if (type === 'deployment_failure') return 'down';
   if (type === 'deployment_retry') return 'warn';
+  if (type === 'deployment_rollback' || type === 'publish_cancelled') return 'warn';
   if (type === 'manual_override') return 'warn';
   if (type === 'scenario_sent') return 'agent';
   return 'info';

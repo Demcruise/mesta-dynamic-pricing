@@ -106,17 +106,24 @@ function Simulator({ sku, strategyId, initial, basePrice }: {
     setConfirmDiscard(false);
   };
 
-  const markers = [{ label: 'B', price: product.price }, ...rows.filter((r) => r.check === 'ok').map((r, i) => ({ label: String(i + 1), price: r.price }))];
+  const markers = [
+    { label: 'B', price: product.price },
+    ...(product.cost >= product.minPrice && product.cost <= product.maxPrice ? [{ label: 'E', price: product.cost }] : []),
+    ...rows.filter((r) => r.check === 'ok').map((r, i) => ({ label: String(i + 1), price: r.price })),
+  ];
   const columns = [{ label: t('simulation.baseline'), p: base }, ...rows.filter((r) => Number.isFinite(r.price) && r.price > 0).map((r, i) => ({ label: t('simulation.scenario', { n: i + 1 }), p: project(product, r.price) }))];
   const pct = (v: number) => formatPercent(v, locale);
   const metric: { key: string; render: (p: ReturnType<typeof project>) => React.ReactNode }[] = [
     { key: 'price', render: (p) => <PriceValue value={Math.round(p.price)} /> },
     { key: 'priceDelta', render: (p) => <DeltaBadge value={p.priceDelta} /> },
+    { key: 'competitorAvg', render: () => <PriceValue value={Math.round(product.competitorAvg)} muted /> },
+    { key: 'vsCompetitor', render: (p) => <DeltaBadge value={product.competitorAvg > 0 ? p.price / product.competitorAvg - 1 : 0} /> },
     { key: 'units', render: (p) => <span className="tabular">{Math.round(p.units)}</span> },
     { key: 'demandChange', render: (p) => <DeltaBadge value={p.demandChange} /> },
     { key: 'revenue', render: (p) => <PriceValue value={Math.round(p.revenue)} /> },
     { key: 'grossMargin', render: (p) => <PriceValue value={Math.round(p.grossMargin)} /> },
     { key: 'marginPct', render: (p) => <span className="tabular">{pct(p.marginPct)}</span> },
+    { key: 'breakEven', render: () => <PriceValue value={product.cost} muted /> },
   ];
 
   return (
@@ -213,6 +220,11 @@ function Simulator({ sku, strategyId, initial, basePrice }: {
           <h2 className="mb-2 text-sm font-semibold">{t('simulation.assumptions.title')}</h2>
           <p className="text-sm text-muted">
             {t('simulation.assumptions.body', { base: BASE_UNITS, elasticity: product.elasticity, ci: Math.round(CI * 100) })}
+          </p>
+          <p className="mt-2 text-xs text-faint">
+            {competitorFreshAt
+              ? t('simulation.assumptions.runState', { n: competitorObs.length, at: formatRelativeTime(competitorFreshAt, locale) })
+              : t('simulation.assumptions.noCompetitorData')}
           </p>
         </section>
       </div>

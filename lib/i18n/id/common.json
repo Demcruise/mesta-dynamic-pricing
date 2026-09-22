@@ -166,6 +166,7 @@
     "recBulkReady": "{n} rekomendasi disetujui — siap dideploy",
     "deployed": "Harga {sku} tayang di semua kanal",
     "deployFailed": "{sku} gagal di {channel}",
+    "rolledBack": "Publikasi {sku} dikembalikan ke harga sebelumnya",
     "flagged": "{sku} ditandai untuk tinjauan model",
     "grouped": "{n} serupa"
   },
@@ -209,6 +210,9 @@
     "deployment_success": "Deployment berhasil",
     "deployment_failure": "Deployment gagal",
     "deployment_retry": "Deployment diulang",
+    "deployment_rollback": "Publikasi dikembalikan",
+    "publish_scheduled": "Publikasi dijadwalkan",
+    "publish_cancelled": "Publikasi terjadwal dibatalkan",
     "model_review_feedback": "Ditandai untuk tinjauan model",
     "manual_override": "Override manual",
     "strategy_rollback": "Strategi dikembalikan"

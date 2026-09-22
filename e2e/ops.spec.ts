@@ -4,6 +4,8 @@ import { go, open } from './helpers';
 test('ops: deploy an approved change, retry failures, audit records success', async ({ page }) => {
   await open(page, '/deployment', 'ops_lead');
   await page.getByRole('button', { name: 'Deploy to all channels' }).first().click();
+  // Publish Center: preflight dialog must confirm before channels fan out.
+  await page.getByRole('button', { name: 'Publish to all channels' }).click();
 
   const retry = page.getByRole('button', { name: 'Retry' });
   await expect

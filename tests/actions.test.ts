@@ -235,7 +235,7 @@ describe('queue filters', () => {
     const items = useRecommendationStore.getState().items;
     const snapshot = JSON.stringify(items);
     const map = new Map(useProductCatalogStore.getState().products.map((p) => [p.sku, p]));
-    const out = filterAndSort(items, map, { ...DEFAULT_QUEUE_FILTERS, status: 'all', sort: 'impact' });
+    const out = filterAndSort(items, map, { ...DEFAULT_QUEUE_FILTERS, tab: 'all', status: 'all', sort: 'impact' });
     expect(out).toHaveLength(items.length);
     expect(JSON.stringify(items)).toBe(snapshot);
     expect(filterAndSort(items, map, DEFAULT_QUEUE_FILTERS).every((r) => r.status === 'pending')).toBe(true);

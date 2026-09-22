@@ -6,11 +6,17 @@
   "card": {
     "current": "Current", "proposed": "Proposed", "competitor": "Competitor avg", "impact": "Projected margin impact", "created": "Created",
     "evidence": "Evidence", "trend": "Recent price trend", "simulate": "Open simulation", "detail": "Open detail", "stale": "Stale: price or competitor data changed since this was created",
-    "breach": "Guardrail breach: proposed price is outside allowed bounds", "pendingUndo": "Decision pending: {s}s to undo", "decision": "Decision note", "decidedAt": "Decided"
+    "breach": "Guardrail breach: proposed price is outside allowed bounds", "pendingUndo": "Decision pending: {s}s to undo", "decision": "Decision note", "decidedAt": "Decided",
+    "owner": "Owner", "reason": "Primary driver"
+  },
+  "tabs": {
+    "label": "Work queues", "all": "All", "decide": "Needs decision", "deploy": "Ready to deploy",
+    "impact": "High impact", "stale": "Stale", "anomaly": "Anomalous SKUs",
+    "impactHint": "Projected margin impact ≥ IDR {n}"
   },
   "action": { "approve": "Approve", "reject": "Reject", "adjust": "Adjust", "undo": "Undo", "confirm": "Confirm", "cancel": "Cancel", "bulk": "Bulk approve", "more": "Show more ({n} left)" },
   "dialog": {
-    "rejectTitle": "Reject recommendation", "adjustTitle": "Adjust proposed price", "note": "Note (required)", "newPrice": "Adjusted price",
+    "rejectTitle": "Reject recommendation", "adjustTitle": "Adjust proposed price", "note": "Note (required)", "newPrice": "Adjusted price", "delta": "Change vs current",
     "bulkTitle": "Bulk approve", "threshold": "Minimum confidence", "targets": "{n} recommendations will be approved", "impact": "Total projected margin impact",
     "excluded": "{n} excluded ({stale} stale, {breach} guardrail breach)", "none": "Nothing eligible at this threshold.", "confirmBulk": "Approve {n}",
     "checklist": "Select recommendations to approve", "excludedList": "Show excluded ({n})", "excludedShort": "{n} excluded", "targetsShort": "{n} recommendations",
@@ -41,5 +47,35 @@
   },
   "notFound": "Recommendation not found.",
   "back": "Back to queue",
-  "audit": "Audit trail"
+  "audit": "Audit trail",
+  "rules": {
+    "title": "Rule evaluation",
+    "caption": "How the proposed price performs against each check",
+    "check": "Check", "expected": "Expected", "actual": "Actual", "result": "Result",
+    "pass": "Pass", "fail": "Fail", "na": "n/a",
+    "rows": {
+      "min_price": "Minimum price",
+      "max_price": "Maximum price",
+      "map": "MAP (minimum advertised price)",
+      "max_change": "Max change per cycle",
+      "auto_approve": "Auto-approve eligibility",
+      "freshness": "Freshness"
+    },
+    "explain": {
+      "min_price": "Proposed price cannot go below the product's floor.",
+      "max_price": "Proposed price cannot exceed the product's ceiling.",
+      "map": "Proposed price must respect the manufacturer's advertised-price floor when enforced.",
+      "max_change": "The strategy caps how far the price may move in one cycle.",
+      "auto_approve": "Confidence at or above the strategy threshold qualifies for auto-approval.",
+      "freshness": "No price or competitor data changed since this recommendation was created."
+    }
+  },
+  "decision": {
+    "title": "Before you decide",
+    "priceMove": "Price change",
+    "marginImpact": "Projected margin impact",
+    "channels": "Channels affected",
+    "channelsValue": "All configured channels",
+    "undoNote": "Approve, adjust or reject stages the decision — it takes effect after a {s}s undo window and is recorded in the audit trail."
+  }
 }

@@ -2,10 +2,32 @@
   "title": "Deployment",
   "subtitle": "Terapkan harga yang disetujui ke kanal penjualan",
   "board": { "title": "Status kanal", "synced": "Tersinkron", "pending": "Tertunda", "failed": "Gagal", "in_flight": "Berjalan", "updated": "Sinkron terakhir", "successRate": "Sukses", "avgRetries": "Rerata retry", "recent": "Aktivitas terbaru", "retry": "Coba ulang", "progress": "Kanal tersinkron" },
-  "status": { "all": "Semua status", "pending": "Tertunda", "in_flight": "Berjalan", "synced": "Tersinkron", "failed": "Gagal" },
+  "status": { "all": "Semua status", "pending": "Tertunda", "in_flight": "Berjalan", "synced": "Tersinkron", "failed": "Gagal", "cancelled": "Dibatalkan", "rolled_back": "Dikembalikan" },
+  "jobs": {
+    "title": "Publish job", "empty": "Belum ada publish job. Men-deploy rekomendasi yang disetujui akan membuat satu.",
+    "scheduledFor": "Terjadwal untuk", "runNow": "Jalankan sekarang", "cancel": "Batalkan job", "rollback": "Kembalikan",
+    "retryFailed": "Ulangi {n} yang gagal"
+  },
+  "publish": {
+    "title": "Publikasikan perubahan harga", "preflight": "Pemeriksaan pra-publikasi", "when": "Kapan dipublikasikan",
+    "now": "Publikasikan sekarang", "schedule": "Jadwalkan nanti", "at": "Publikasikan pada", "nowCta": "Publikasikan ke semua kanal",
+    "scheduleCta": "Jadwalkan publikasi", "consequence": "{n} kanal · {sku}",
+    "recovery": "Job terjadwal dapat dibatalkan sebelum berjalan; job yang sudah terpublikasi dapat dikembalikan ke harga sebelumnya.",
+    "check": {
+      "approval": "Rekomendasi disetujui dan belum di-deploy",
+      "duplicate": "Tidak ada publish job aktif untuk rekomendasi ini",
+      "guardrails": "Harga masih lolos guardrail produk",
+      "freshness": "Data kompetitor masih segar (≤48 jam)"
+    }
+  },
+  "rollback": {
+    "title": "Kembalikan publish job", "current": "Harga berjalan", "restores": "Dikembalikan ke", "channels": "Kanal yang dikembalikan",
+    "channelsValue": "{n} dari {total}", "recovery": "Tercatat di jejak audit. Rekomendasi kembali ke antrean deploy untuk publish job baru.",
+    "confirm": "Kembalikan sekarang", "done": "{sku} dikembalikan ke harga sebelumnya"
+  },
   "queue": { "title": "Menunggu deployment", "empty": "Tidak ada antrean. Rekomendasi yang disetujui muncul di sini.", "deploy": "Deploy ke semua kanal", "proposed": "Harga baru", "approved": "Disetujui" },
-  "table": { "title": "Catatan deployment", "caption": "Catatan deployment per kanal", "sku": "SKU", "channel": "Kanal", "status": "Status", "retries": "Percobaan ulang", "updated": "Diperbarui", "actions": "Aksi", "retry": "Ulangi", "expand": "Detail {id}", "error": "Kesalahan", "empty": "Tidak ada catatan deployment yang cocok.", "recommendation": "Rekomendasi", "openFull": "Buka rekomendasi", "trace": "Riwayat eksekusi" },
+  "table": { "title": "Catatan deployment", "caption": "Catatan deployment per kanal", "sku": "SKU", "channel": "Kanal", "status": "Status", "retries": "Percobaan ulang", "updated": "Diperbarui", "actions": "Aksi", "retry": "Ulangi", "expand": "Detail {id}", "error": "Kesalahan", "empty": "Tidak ada catatan deployment yang cocok.", "recommendation": "Rekomendasi", "openFull": "Buka rekomendasi", "trace": "Riwayat eksekusi", "job": "Publish job" },
   "recovery": { "retry": "Coba ulang hanya menjalankan ulang kanal ini — kanal lain tidak terpengaruh. Setiap percobaan tercatat di jejak audit." },
-  "err": { "forbidden": "Hanya Ops Lead yang dapat men-deploy.", "locked": "Baris ini sedang berjalan.", "not_deployable": "Rekomendasi ini tidak dapat di-deploy.", "not_found": "Tidak ditemukan." },
-  "toast": { "started": "Deployment dimulai untuk {id}" }
+  "err": { "forbidden": "Hanya Ops Lead yang dapat men-deploy.", "locked": "Baris ini sedang berjalan.", "not_found": "Tidak ditemukan.", "preflight_blocked": "Pemeriksaan pra-publikasi gagal.", "not_rollbackable": "Hanya job yang terpublikasi atau parsial yang dapat dikembalikan.", "restore_bounds": "Tidak dapat mengembalikan harga sebelumnya — di luar batas produk saat ini." },
+  "toast": { "started": "Deployment dimulai untuk {id}", "scheduled": "Publikasi dijadwalkan untuk {id}" }
 }
