@@ -22,7 +22,7 @@ Everything here is deliberate or not yet done. Nothing below is hidden behind a 
 - Catalog virtualization verified with 5,000 SKUs (`/catalog?skus=5000`) and in jsdom (`tests/catalog-table.test.tsx`); filter+sort of 5,000 rows is benchmarked in unit tests. Charts are lazy-loaded via `next/dynamic`.
 
 ## Behaviours worth knowing
-- Approve/reject/adjust are staged for 10 seconds; closing the tab during that window drops the decision (no audit event is written).
+- Approve/reject/adjust are staged for 10 seconds; a `beforeunload` prompt warns while any decision is staged, but if the tab is closed anyway the decision is dropped (no audit event is written).
 - Bulk approve applies immediately (no undo) and skips stale or guardrail-breaching items.
 - Recommendation staleness = product price changed, or a newer competitor observation exists, since the recommendation was created.
 - `useAuditLog` filters by `actorId` and owned SKUs for analysts. `ownedSkuIds` is empty for all mock users, so analysts see only their own actions.

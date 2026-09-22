@@ -3,14 +3,16 @@
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useEffect, useMemo } from 'react';
+import { OnboardingChecklist } from '@/components/ds/OnboardingChecklist';
 import { TopMoversPanel } from '@/components/ds/TopMoversPanel';
 import { KpiCard, LoadingRows, PageHeader } from '@/components/ds/states';
 import { recommendationHealth } from '@/lib/actions/recommendation';
 import { formatDate, formatPercent, formatPrice } from '@/lib/format';
 import { useTranslation } from '@/lib/i18n';
 import {
-  useAnomalies, useAuditLog, useDeploymentRecords, usePriceEvents, useRecommendations, useSkuList, useStrategies,
+  useAnomalies, useAuditLog, useDeploymentRecords, usePriceEvents, useRecommendations, useScenarios, useSkuList, useStrategies,
 } from '@/lib/queries';
+import { can } from '@/lib/rbac';
 import { useMonitoringStore, useSessionStore } from '@/lib/stores';
 import { track } from '@/lib/telemetry';
 import { decisionsByCategory, gapByCategory, roleKpis } from './kpis';
@@ -28,12 +30,13 @@ export function OverviewPage() {
   const audit = useAuditLog();
   const anomalies = useAnomalies();
   const strategies = useStrategies();
+  const scenarios = useScenarios();
   const deployments = useDeploymentRecords();
   const events = usePriceEvents();
 
   useEffect(() => { track('page_viewed', { page: 'overview', role: user.role }); }, [user.role]);
 
-  const loading = [skus, recs, audit, anomalies, strategies, deployments, events].some((q) => q.isLoading);
+  const loading = [skus, recs, audit, anomalies, strategies, scenarios, deployments, events].some((q) => q.isLoading);
 
   const view = useMemo(() => {
     const breachRecs = recs.data.filter((r) => r.status === 'pending' && recommendationHealth(r).breach);
@@ -72,6 +75,27 @@ export function OverviewPage() {
       <PageHeader title={t('overview.title')} subtitle={t('overview.greeting', { name: user.name, role: t(`common.role.${user.role}`) })} />
       {loading ? <LoadingRows rows={4} rowHeight={72} /> : (
         <>
+          {can(user.role, 'strategy.create') && !(strategies.data.length && scenarios.data.length && recs.data.length) && (
+            <OnboardingChecklist
+              title={t('overview.onboarding.title')}
+              subtitle={t('overview.onboarding.subtitle')}
+              doneLabel={(n, total) => t('overview.onboarding.progress', { n, total })}
+              steps={[
+                {
+                  id: 'strategy', href: '/strategy/new', done: strategies.data.length > 0,
+                  title: t('overview.onboarding.step.strategy'), description: t('overview.onboarding.step.strategyHint'),
+                },
+                {
+                  id: 'simulation', href: '/simulation', done: scenarios.data.length > 0,
+                  title: t('overview.onboarding.step.simulation'), description: t('overview.onboarding.step.simulationHint'),
+                },
+                {
+                  id: 'review', href: '/recommendations', done: recs.data.length > 0,
+                  title: t('overview.onboarding.step.review'), description: t('overview.onboarding.step.reviewHint'),
+                },
+              ]}
+            />
+          )}
           <section aria-label={t('common.a11y.kpi')} className="mb-4 grid grid-cols-1 gap-3 min-[420px]:grid-cols-2 lg:grid-cols-4">
             {view.kpis.map((k) => (
               <Link key={k.key} href={k.href ?? '/overview'} onClick={() => quick(k.href ?? '/overview')} className="block rounded-card transition-opacity duration-fast hover:opacity-90">

@@ -3,7 +3,7 @@ import type { Product, Recommendation, RationaleFactor, Strategy, UserSession } 
 import { project } from '../projection';
 import { can } from '../rbac';
 import {
-  useAuditStore, useProductCatalogStore, useRecommendationStore, useScenarioStore, useStrategyStore,
+  useAuditStore, useNotificationStore, useProductCatalogStore, useRecommendationStore, useScenarioStore, useStrategyStore,
 } from '../stores';
 import { track } from '../telemetry';
 import { fail, type Fail, type Ok } from './result';
@@ -70,6 +70,11 @@ export function sendScenario(user: UserSession, scenarioId: string): (Ok & { rec
   useAuditStore.getState().record({
     type: 'scenario_sent', actorId: user.userId, actorRole: user.role, entityType: 'scenario', entityId: sc.id,
     sku: sc.sku, source: 'ui', note: null, snapshot: { oldPrice: product.price, newPrice: sc.proposedPrice },
+  });
+  // Analyst → Manager handoff: the new recommendation needs a decision.
+  useNotificationStore.getState().push({
+    targetRole: 'manager', groupKey: `rec_pending:${rec.id}`, messageKey: 'common.notify.recPending',
+    params: { sku: rec.sku }, href: `/recommendations/${rec.id}`,
   });
   track('scenario_sent', { scenarioId: sc.id });
   return { ok: true, recommendation: rec };

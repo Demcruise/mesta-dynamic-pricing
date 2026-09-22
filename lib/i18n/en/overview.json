@@ -13,6 +13,16 @@
     "periodLabel": "Chart period", "weekly": "Weekly", "monthly": "Monthly", "quarterly": "Quarterly", "avgMargin": "average margin"
   },
   "movers": { "title": "Top price movers", "live": "Live", "empty": "No price movement yet.", "margin": "Margin" },
+  "onboarding": {
+    "title": "Get started with Mesta",
+    "subtitle": "Three steps to your first price decision.",
+    "progress": "{n} of {total} done",
+    "step": {
+      "strategy": "Create your first strategy", "strategyHint": "Set guardrails and scope for automated pricing.",
+      "simulation": "Run a simulation", "simulationHint": "Compare scenarios before any price moves.",
+      "review": "Review a recommendation", "reviewHint": "Approve, adjust, or reject — every decision is audited."
+    }
+  },
   "activity": { "title": "Recent activity", "empty": "No activity yet." },
   "glossary": "Glossary"
 }

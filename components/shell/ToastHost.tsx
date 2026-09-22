@@ -46,6 +46,15 @@ export function ToastHost() {
     return () => clearInterval(i);
   }, [stagedList.length]);
 
+  // Closing the tab inside an undo window would drop the staged decision with no
+  // audit event — ask the browser to confirm before that can happen silently.
+  useEffect(() => {
+    if (stagedList.length === 0) return;
+    const warn = (e: BeforeUnloadEvent) => e.preventDefault();
+    window.addEventListener('beforeunload', warn);
+    return () => window.removeEventListener('beforeunload', warn);
+  }, [stagedList.length]);
+
   return (
     <div role="status" aria-live="polite" className="fixed bottom-20 right-4 z-50 flex max-w-sm flex-col gap-2 md:bottom-4">
       {stagedList.map((d) => (

@@ -13,6 +13,16 @@
     "periodLabel": "Periode grafik", "weekly": "Mingguan", "monthly": "Bulanan", "quarterly": "Triwulan", "avgMargin": "margin rata-rata"
   },
   "movers": { "title": "Pergerakan harga teratas", "live": "Live", "empty": "Belum ada pergerakan harga.", "margin": "Margin" },
+  "onboarding": {
+    "title": "Mulai dengan Mesta",
+    "subtitle": "Tiga langkah menuju keputusan harga pertama.",
+    "progress": "{n} dari {total} selesai",
+    "step": {
+      "strategy": "Buat strategi pertama", "strategyHint": "Atur guardrail dan cakupan untuk pricing otomatis.",
+      "simulation": "Jalankan simulasi", "simulationHint": "Bandingkan skenario sebelum harga bergerak.",
+      "review": "Tinjau rekomendasi", "reviewHint": "Setujui, sesuaikan, atau tolak — setiap keputusan teraudit."
+    }
+  },
   "activity": { "title": "Aktivitas terbaru", "empty": "Belum ada aktivitas." },
   "glossary": "Glosarium"
 }

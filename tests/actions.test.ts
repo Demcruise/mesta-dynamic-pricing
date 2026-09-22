@@ -242,3 +242,47 @@ describe('queue filters', () => {
     expect(['small', 'medium', 'large']).toContain(magnitudeOf(items[0]!));
   });
 });
+
+describe('cross-role handoff notifications', () => {
+  const notices = (role: Role) => useNotificationStore.getState().items.filter((n) => n.targetRole === role || n.targetRole === 'all');
+
+  it('analyst send → manager gets a pending-decision notification with a deep link', () => {
+    const prod = useProductCatalogStore.getState().products[0]!;
+    const saved = saveScenario(analyst, { sku: prod.sku, strategyId: null, proposedPrice: prod.price });
+    const id = (saved as { scenario: { id: string } }).scenario.id;
+    const sent = sendScenario(analyst, id);
+    expect(sent.ok).toBe(true);
+    const rec = (sent as { recommendation: { id: string; sku: string } }).recommendation;
+    const n = notices('manager').find((x) => x.messageKey === 'common.notify.recPending');
+    expect(n).toBeDefined();
+    expect(n!.params?.sku).toBe(rec.sku);
+    expect(n!.href).toBe(`/recommendations/${rec.id}`);
+  });
+
+  it('approve commit → ops_lead gets a ready-to-deploy notification', () => {
+    const rec = pending();
+    stageDecision(manager, rec.id, 'approved');
+    vi.advanceTimersByTime(UNDO_WINDOW_MS + 100);
+    const n = notices('ops_lead').find((x) => x.messageKey === 'common.notify.recReadyDeploy');
+    expect(n).toBeDefined();
+    expect(n!.params?.sku).toBe(rec.sku);
+    expect(n!.href).toBe('/deployment');
+  });
+
+  it('reject commit does not notify ops_lead', () => {
+    const rec = pending();
+    stageDecision(manager, rec.id, 'rejected', { note: 'stale data' });
+    vi.advanceTimersByTime(UNDO_WINDOW_MS + 100);
+    expect(notices('ops_lead').some((x) => x.messageKey === 'common.notify.recReadyDeploy')).toBe(false);
+  });
+
+  it('bulk approve → one grouped ready-to-deploy notification to ops_lead', () => {
+    const items = useRecommendationStore.getState().items;
+    const res = bulkApprove(manager, items, 0);
+    if (!res.ok) throw new Error('bulkApprove failed');
+    expect(res.count).toBeGreaterThan(0);
+    const n = notices('ops_lead').find((x) => x.messageKey === 'common.notify.recBulkReady');
+    expect(n).toBeDefined();
+    expect(n!.params?.n).toBe(res.count);
+  });
+});

@@ -2,7 +2,7 @@ import { checkPrice } from '../guardrails';
 import type { Product, Recommendation, RecommendationStatus, UserSession } from '../ontology';
 import { can } from '../rbac';
 import {
-  UNDO_WINDOW_MS, useAuditStore, useProductCatalogStore, useRecommendationStore, useStrategyStore, useUndoStore,
+  UNDO_WINDOW_MS, useAuditStore, useNotificationStore, useProductCatalogStore, useRecommendationStore, useStrategyStore, useUndoStore,
 } from '../stores';
 import { track } from '../telemetry';
 import { fail, ok } from './result';
@@ -63,6 +63,13 @@ function commit(recId: string) {
     sku: rec.sku, source: 'ui', note: d.note,
     snapshot: { oldPrice: rec.currentPrice, newPrice: d.proposedPrice ?? rec.proposedPrice },
   });
+  // Approver → Ops handoff: an approved/adjusted recommendation is deployable.
+  if (d.to === 'approved' || d.to === 'adjusted') {
+    useNotificationStore.getState().push({
+      targetRole: 'ops_lead', groupKey: `rec_ready:${recId}`, messageKey: 'common.notify.recReadyDeploy',
+      params: { sku: rec.sku }, href: '/deployment',
+    });
+  }
 }
 
 /**
@@ -135,6 +142,13 @@ export function bulkApprove(user: UserSession, recs: Recommendation[], minConfid
         snapshot: { oldPrice: r.currentPrice, newPrice: r.proposedPrice },
       });
     }
+  }
+  // Approver → Ops handoff: one grouped notification for the whole batch.
+  if (count > 0) {
+    useNotificationStore.getState().push({
+      targetRole: 'ops_lead', groupKey: 'rec_bulk_ready', messageKey: 'common.notify.recBulkReady',
+      params: { n: count }, href: '/deployment',
+    });
   }
   return { ok: true as const, count };
 }
