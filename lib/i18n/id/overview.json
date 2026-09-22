@@ -9,8 +9,10 @@
   "links": { "pending": "Tinjau persetujuan tertunda", "breach": "Tinjau pelanggaran guardrail", "failures": "Buka kegagalan deployment", "strategies": "Tinjau strategi", "audit": "Buka log audit", "monitoring": "Buka monitoring" },
   "charts": {
     "marginTrend": "Tren margin rata-rata", "volume": "Keputusan perubahan harga per kategori", "gap": "Selisih kompetitor per kategori", "period": "Periode {n}", "category": "Kategori", "value": "Nilai", "chart": "Grafik", "table": "Tabel data",
-    "marginCaption": "Margin rata-rata per periode", "volumeCaption": "Keputusan per kategori", "gapCaption": "Rata-rata selisih kompetitor per kategori", "cheaper": "Lebih murah dari kompetitor", "pricier": "Lebih mahal dari kompetitor"
+    "marginCaption": "Margin rata-rata per periode", "volumeCaption": "Keputusan per kategori", "gapCaption": "Rata-rata selisih kompetitor per kategori", "cheaper": "Lebih murah dari kompetitor", "pricier": "Lebih mahal dari kompetitor",
+    "periodLabel": "Periode grafik", "weekly": "Mingguan", "monthly": "Bulanan", "quarterly": "Triwulan", "avgMargin": "margin rata-rata"
   },
+  "movers": { "title": "Pergerakan harga teratas", "live": "Live", "empty": "Belum ada pergerakan harga.", "margin": "Margin" },
   "activity": { "title": "Aktivitas terbaru", "empty": "Belum ada aktivitas." },
   "glossary": "Glosarium"
 }

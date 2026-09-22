@@ -71,23 +71,31 @@ export function BarChart({ items, format, label }: { items: { label: string; val
 }
 
 /** Every chart ships with the same data as an accessible table (screen readers, print, precision). */
-export function ChartWithTable({ title, caption, chart, columns, rows }: {
+export function ChartWithTable({ title, caption, chart, columns, rows, controls, headline }: {
   title: string; caption: string; chart: ReactNode; columns: string[]; rows: ReactNode[][];
+  /** Extra header controls rendered left of the chart/table toggle (e.g. a period selector). */
+  controls?: ReactNode;
+  /** Headline figure rendered above the chart/table content. */
+  headline?: ReactNode;
 }) {
   const { t } = useTranslation();
   const [view, setView] = useState<'chart' | 'table'>('chart');
   return (
     <section className="rounded-card border border-line bg-surface p-card shadow-e1">
-      <div className="mb-3 flex items-center justify-between gap-2">
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <h2 className="text-sm font-semibold">{title}</h2>
-        <div role="group" aria-label={title} className="flex gap-1">
-          {(['chart', 'table'] as const).map((v) => (
-            <Button key={v} size="sm" variant={view === v ? 'primary' : 'secondary'} aria-pressed={view === v} onClick={() => setView(v)}>
-              {t(v === 'chart' ? 'overview.charts.chart' : 'overview.charts.table')}
-            </Button>
-          ))}
+        <div className="flex items-center gap-2">
+          {controls}
+          <div role="group" aria-label={title} className="flex gap-1">
+            {(['chart', 'table'] as const).map((v) => (
+              <Button key={v} size="sm" variant={view === v ? 'primary' : 'secondary'} aria-pressed={view === v} onClick={() => setView(v)}>
+                {t(v === 'chart' ? 'overview.charts.chart' : 'overview.charts.table')}
+              </Button>
+            ))}
+          </div>
         </div>
       </div>
+      {headline}
       {view === 'chart' ? chart : (
         <div className="max-h-64 overflow-auto">
           <table className="w-full text-sm">

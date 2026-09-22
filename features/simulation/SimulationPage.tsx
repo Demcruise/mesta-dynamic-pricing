@@ -20,6 +20,7 @@ import { useScenario, useScenarios, useSkuDetail, useSkuList, useStrategies } fr
 import { skusInScope } from '@/lib/strategy-rules';
 import { useSessionStore, useToastStore } from '@/lib/stores';
 import { DemandChart } from './DemandChart';
+import { ScenarioCompare } from './ScenarioCompare';
 
 const MAX_SCENARIOS = 3;
 
@@ -179,6 +180,8 @@ function Simulator({ sku, strategyId, initial, basePrice }: {
           </button>
         )}
       </div>
+
+      <ScenarioCompare columns={columns} />
 
       <section className="mb-4 overflow-x-auto rounded-card border border-line bg-surface shadow-e1">
         <table className="w-full min-w-[520px] text-sm">

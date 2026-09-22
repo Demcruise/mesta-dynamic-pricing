@@ -6,6 +6,8 @@ import { useTranslation } from '@/lib/i18n';
 import { useSessionStore } from '@/lib/stores/session';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { DeltaBadge } from './DeltaBadge';
+import { Sparkline } from './Sparkline';
 
 export function EmptyState({
   title, action, className, children,
@@ -54,12 +56,26 @@ export function PageHeader({ title, subtitle, actions }: { title: string; subtit
   );
 }
 
-export function KpiCard({ label, value, hint }: { label: string; value: ReactNode; hint?: ReactNode }) {
+export function KpiCard({ label, value, hint, spark, delta }: {
+  label: string; value: ReactNode; hint?: ReactNode;
+  /** Per-period series for the inline sparkline (same source as the KPI value). */
+  spark?: number[];
+  /** Ratio change between the last two periods — icon+label badge, never colour alone. */
+  delta?: number;
+}) {
   return (
     <div className="rounded-card border border-line bg-surface p-card shadow-e1">
-      <p className="text-xs text-muted">{label}</p>
+      <div className="flex items-start justify-between gap-2">
+        <p className="text-xs text-muted">{label}</p>
+        {spark && spark.length > 1 && <Sparkline points={spark} className="h-7 w-16 shrink-0 text-faint" />}
+      </div>
       <p className="tabular mt-1 break-words text-xl font-semibold text-fg sm:text-2xl">{value}</p>
-      {hint && <p className="mt-1 text-xs text-faint">{hint}</p>}
+      {(delta !== undefined || hint) && (
+        <p className="mt-1 flex items-center gap-2 text-xs text-faint">
+          {delta !== undefined && <DeltaBadge value={delta} />}
+          {hint}
+        </p>
+      )}
     </div>
   );
 }

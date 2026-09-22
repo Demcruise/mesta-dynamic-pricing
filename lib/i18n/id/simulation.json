@@ -9,6 +9,7 @@
     "range": "Rentang diizinkan {min} – {max}", "save": "Simpan draf", "send": "Kirim ke Rekomendasi", "saved": "Disimpan sebagai {id}", "sent": "Terkirim sebagai {rec}", "discard": "Buang"
   },
   "metric": { "price": "Harga", "priceDelta": "Perubahan harga", "units": "Unit per bulan", "demandChange": "Perubahan permintaan", "revenue": "Pendapatan", "grossMargin": "Margin kotor", "marginPct": "Margin %" },
+  "compare": { "title": "Perbandingan skenario" },
   "chart": { "title": "Kurva permintaan", "toggleChart": "Grafik", "toggleTable": "Tabel data", "x": "Harga", "y": "Unit per bulan", "tableCaption": "Proyeksi permintaan menurut harga", "ci": "Interval permintaan" },
   "assumptions": {
     "title": "Asumsi", "body": "Model elastisitas konstan: unit = {base} × (P / P0) ^ elastisitas ({elasticity}). Interval permintaan ±{ci}%. Reaksi kompetitor dan musiman tidak dimodelkan."

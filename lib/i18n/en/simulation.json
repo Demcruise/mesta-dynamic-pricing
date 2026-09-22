@@ -9,6 +9,7 @@
     "range": "Allowed range {min} – {max}", "save": "Save draft", "send": "Send to Recommendations", "saved": "Saved as {id}", "sent": "Sent as {rec}", "discard": "Discard"
   },
   "metric": { "price": "Price", "priceDelta": "Price change", "units": "Monthly units", "demandChange": "Demand change", "revenue": "Revenue", "grossMargin": "Gross margin", "marginPct": "Margin %" },
+  "compare": { "title": "Scenario comparison" },
   "chart": { "title": "Demand curve", "toggleChart": "Chart", "toggleTable": "Data table", "x": "Price", "y": "Monthly units", "tableCaption": "Projected demand by price", "ci": "Demand interval" },
   "assumptions": {
     "title": "Assumptions", "body": "Constant-elasticity model: units = {base} × (P / P0) ^ elasticity ({elasticity}). Demand interval is ±{ci}%. Competitor reactions and seasonality are not modelled."

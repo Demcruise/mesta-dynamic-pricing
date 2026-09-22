@@ -155,7 +155,7 @@ describe('overview kpis', () => {
     threshold: 15,
     strategies: [],
     deployments: useDeploymentStore.getState().records,
-    breachCount: 2,
+    breachRecs: useRecommendationStore.getState().items.filter((r) => r.status === 'pending').slice(0, 2),
     lastDeploymentAt: null,
   });
 
@@ -174,6 +174,16 @@ describe('overview kpis', () => {
     expect(k?.value).toBe(failed);
     const pending = useRecommendationStore.getState().items.filter((r) => r.status === 'pending').length;
     expect(roleKpis({ ...base(), user: user('analyst') })[0]?.value).toBe(pending);
+  });
+
+  it('every KPI carries a sparkline series and a delta from the same data', () => {
+    for (const role of ['analyst', 'manager', 'ops_lead', 'compliance'] as const) {
+      for (const k of roleKpis({ ...base(), user: user(role) })) {
+        expect(k.spark, `${role}.${k.key} spark`).toBeDefined();
+        expect(k.spark!.length).toBeLessThanOrEqual(8);
+        expect(k.delta, `${role}.${k.key} delta`).toBeDefined();
+      }
+    }
   });
 
   it('chart series come from stores', () => {

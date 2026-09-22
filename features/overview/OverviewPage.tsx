@@ -3,6 +3,7 @@
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useEffect, useMemo } from 'react';
+import { TopMoversPanel } from '@/components/ds/TopMoversPanel';
 import { KpiCard, LoadingRows, PageHeader } from '@/components/ds/states';
 import { recommendationHealth } from '@/lib/actions/recommendation';
 import { formatDate, formatPercent, formatPrice } from '@/lib/format';
@@ -12,7 +13,7 @@ import {
 } from '@/lib/queries';
 import { useMonitoringStore, useSessionStore } from '@/lib/stores';
 import { track } from '@/lib/telemetry';
-import { decisionsByCategory, gapByCategory, marginTrend, roleKpis } from './kpis';
+import { decisionsByCategory, gapByCategory, roleKpis } from './kpis';
 
 const OverviewCharts = dynamic(() => import('./OverviewCharts').then((m) => m.OverviewCharts), {
   loading: () => <LoadingRows rows={4} rowHeight={60} />,
@@ -35,17 +36,16 @@ export function OverviewPage() {
   const loading = [skus, recs, audit, anomalies, strategies, deployments, events].some((q) => q.isLoading);
 
   const view = useMemo(() => {
-    const breachCount = recs.data.filter((r) => r.status === 'pending' && recommendationHealth(r).breach).length;
+    const breachRecs = recs.data.filter((r) => r.status === 'pending' && recommendationHealth(r).breach);
     const lastDeploymentAt = events.data.filter((e) => e.source === 'deployment').map((e) => e.at).sort().at(-1) ?? null;
     return {
       kpis: roleKpis({
         user, recs: recs.data, audit: audit.data, anomalies: anomalies.data, threshold, strategies: strategies.data,
-        deployments: deployments.data, breachCount, lastDeploymentAt,
+        deployments: deployments.data, breachRecs, lastDeploymentAt,
       }),
-      margin: marginTrend(skus.data),
       volume: decisionsByCategory(recs.data, skus.data),
       gap: gapByCategory(skus.data),
-      breachCount,
+      breachCount: breachRecs.length,
     };
   }, [user, recs.data, audit.data, anomalies.data, threshold, strategies.data, deployments.data, events.data, skus.data]);
 
@@ -75,7 +75,7 @@ export function OverviewPage() {
           <section aria-label={t('common.a11y.kpi')} className="mb-4 grid grid-cols-1 gap-3 min-[420px]:grid-cols-2 lg:grid-cols-4">
             {view.kpis.map((k) => (
               <Link key={k.key} href={k.href ?? '/overview'} onClick={() => quick(k.href ?? '/overview')} className="block rounded-card transition-opacity duration-fast hover:opacity-90">
-                <KpiCard label={t(`overview.kpi.${k.key}`)} value={fmt(k)} />
+                <KpiCard label={t(`overview.kpi.${k.key}`)} value={fmt(k)} spark={k.spark} delta={k.delta} />
               </Link>
             ))}
           </section>
@@ -88,21 +88,25 @@ export function OverviewPage() {
             ))}
           </nav>
 
-          <OverviewCharts margin={view.margin} volume={view.volume} gap={view.gap} />
-
-          <section className="mt-6 rounded-card border border-line bg-surface p-card shadow-e1">
-            <h2 className="mb-2 text-sm font-semibold">{t('overview.activity.title')}</h2>
-            {audit.data.length === 0 ? <p className="text-sm text-muted">{t('overview.activity.empty')}</p> : (
-              <ul className="divide-y divide-line text-sm">
-                {audit.data.slice(0, 8).map((e) => (
-                  <li key={e.id} className="flex flex-wrap justify-between gap-2 py-1.5">
-                    <span>{t(`common.event.${e.type}`)} · <span className="tabular">{e.sku ?? e.entityId}</span></span>
-                    <span className="tabular text-muted">{formatDate(e.timestamp, locale)}</span>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </section>
+          <div className="grid grid-cols-1 gap-4 xl:grid-cols-[2fr_1fr]">
+            <OverviewCharts products={skus.data} volume={view.volume} gap={view.gap} />
+            <div className="flex min-w-0 flex-col gap-4">
+              <TopMoversPanel products={skus.data} />
+              <section className="rounded-card border border-line bg-surface p-card shadow-e1">
+                <h2 className="mb-2 text-sm font-semibold">{t('overview.activity.title')}</h2>
+                {audit.data.length === 0 ? <p className="text-sm text-muted">{t('overview.activity.empty')}</p> : (
+                  <ul className="divide-y divide-line text-sm">
+                    {audit.data.slice(0, 8).map((e) => (
+                      <li key={e.id} className="flex flex-wrap justify-between gap-2 py-1.5">
+                        <span>{t(`common.event.${e.type}`)} · <span className="tabular">{e.sku ?? e.entityId}</span></span>
+                        <span className="tabular text-muted">{formatDate(e.timestamp, locale)}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </section>
+            </div>
+          </div>
         </>
       )}
     </>

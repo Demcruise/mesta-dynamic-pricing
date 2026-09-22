@@ -4,12 +4,15 @@ import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import { DeltaBadge } from '@/components/ds/DeltaBadge';
+import { LiveDot } from '@/components/ds/LiveDot';
 import { PriceValue } from '@/components/ds/PriceValue';
+import { SeverityChip } from '@/components/ds/SeverityChip';
 import { EmptyState, ErrorState, LoadingRows, PageHeader } from '@/components/ds/states';
 import { RoleGate } from '@/components/shell/RoleGate';
 import { Button } from '@/components/ui/button';
 import { Field, Input } from '@/components/ui/field';
 import { flagForModelReview, groupAnomalies } from '@/lib/actions/monitoring';
+import { formatDate } from '@/lib/format';
 import { useTranslation } from '@/lib/i18n';
 import type { AnomalyAlert } from '@/lib/ontology';
 import { useAnomalies, useOutcomes } from '@/lib/queries';
@@ -21,15 +24,9 @@ const ForecastCharts = dynamic(() => import('./ForecastCharts').then((m) => m.Fo
 });
 
 type Metric = 'revenue' | 'margin' | 'units';
-const SEV_CLS = { info: 'bg-info-soft text-info', warning: 'bg-warn-soft text-warn', critical: 'bg-down-soft text-down' } as const;
-
-function Severity({ s }: { s: AnomalyAlert['severity'] }) {
-  const { t } = useTranslation();
-  return <span className={cn('rounded-full px-2 py-0.5 text-xs font-medium', SEV_CLS[s])}>{t(`common.severity.${s}`)}</span>;
-}
 
 export function MonitoringPage() {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const outcomes = useOutcomes();
   const anomalies = useAnomalies();
   const threshold = useMonitoringStore((s) => s.threshold);
@@ -43,6 +40,7 @@ export function MonitoringPage() {
   const visible = useMemo(() => anomalies.data.filter((a) => Math.abs(a.deviationPercent) > threshold), [anomalies.data, threshold]);
   const groups = useMemo(() => groupAnomalies(visible), [visible]);
   const sorted = useMemo(() => [...outcomes.data].sort((a, b) => a.at.localeCompare(b.at)), [outcomes.data]);
+  const lastEventAt = sorted.at(-1)?.at ?? null;
 
   const flag = (a: AnomalyAlert) => {
     const r = flagForModelReview(user, a.id);
@@ -64,6 +62,12 @@ export function MonitoringPage() {
         <ErrorState title={t('common.state.error')} onRetry={() => { outcomes.refetch(); anomalies.refetch(); }} />
       ) : (
         <>
+          <div className="mb-4 flex items-center gap-2 rounded-card border border-line bg-surface px-3 py-2 text-xs text-muted shadow-e1" role="status">
+            <LiveDot />
+            <span className="font-medium text-fg">{t('monitoring.live.stream')}</span>
+            {lastEventAt && <span className="tabular">{t('monitoring.live.lastEvent', { at: formatDate(lastEventAt, locale) })}</span>}
+            <span className="tabular ml-auto">{t('monitoring.live.alerts', { n: visible.length })}</span>
+          </div>
           <div className="mb-2 flex items-center justify-between gap-2">
             <h2 className="text-sm font-semibold">{t('monitoring.forecast.title')}</h2>
             <div role="group" aria-label={t('monitoring.forecast.title')} className="flex gap-1">
@@ -130,7 +134,7 @@ export function MonitoringPage() {
                   <li key={g.category} className="rounded-card border border-line bg-surface p-3 shadow-e1">
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <div aria-label={t('monitoring.anomaly.digestAria', { category: g.category, n: g.items.length, pct: g.maxDeviation })}>
-                        <p className="text-sm font-semibold">{g.category} <Severity s={g.severity} /></p>
+                        <p className="text-sm font-semibold">{g.category} <SeverityChip s={g.severity} /></p>
                         <p className="text-xs text-muted">{t('monitoring.anomaly.count', { n: g.items.length })} · {t('monitoring.anomaly.worst', { pct: g.maxDeviation })}</p>
                       </div>
                       <Button size="sm" variant="secondary" aria-expanded={expanded === g.category} onClick={() => setExpanded(expanded === g.category ? null : g.category)}>
@@ -164,7 +168,7 @@ export function MonitoringPage() {
                         <td className="px-3">{a.category}</td>
                         <td className="tabular px-3">{a.deviationPercent}%</td>
                         <td className="px-3">{t(`common.channel.${a.channel}`)}</td>
-                        <td className="px-3"><Severity s={a.severity} /></td>
+                        <td className="px-3"><SeverityChip s={a.severity} /></td>
                         <td className="px-3"><FlagCell a={a} /></td>
                       </tr>
                     ))}

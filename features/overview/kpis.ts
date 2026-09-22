@@ -9,6 +9,25 @@ export interface Kpi {
   /** 'money' and 'percent' are formatted by the view in the active locale; 'date' is an ISO string. */
   kind: 'count' | 'money' | 'percent' | 'date';
   href?: string;
+  /** Event counts per period across the observed span — drives the card sparkline. */
+  spark?: number[];
+  /** Ratio change between the last two periods (0 when both empty). */
+  delta?: number;
+}
+
+const SPARK_PERIODS = 8;
+
+/** Bucket event timestamps across their observed span; delta compares the last two buckets. */
+function seriesOf(ats: (string | null | undefined)[], periods = SPARK_PERIODS): Pick<Kpi, 'spark' | 'delta'> {
+  const ts = ats.filter((a): a is string => !!a).map((a) => Date.parse(a)).filter(Number.isFinite);
+  if (ts.length === 0) return { spark: [], delta: 0 };
+  const lo = Math.min(...ts);
+  const span = Math.max(...ts) - lo || 1;
+  const spark = Array.from({ length: periods }, () => 0);
+  for (const t of ts) spark[Math.min(periods - 1, Math.floor(((t - lo) / span) * periods))]!++;
+  const prev = spark[periods - 2]!;
+  const last = spark[periods - 1]!;
+  return { spark, delta: prev === 0 ? (last === 0 ? 0 : 1) : (last - prev) / prev };
 }
 
 export interface KpiInput {
@@ -19,7 +38,8 @@ export interface KpiInput {
   threshold: number;
   strategies: Strategy[];
   deployments: DeploymentRecord[];
-  breachCount: number;
+  /** Pending recommendations currently breaching guardrails — also drives the KPI spark. */
+  breachRecs: Recommendation[];
   lastDeploymentAt: string | null;
 }
 
@@ -31,27 +51,28 @@ export function roleKpis(input: KpiInput): Kpi[] {
   const activeAnomalies = anomalies.filter((a) => Math.abs(a.deviationPercent) > threshold).length;
   const overrides = audit.filter((e) => e.type === 'manual_override').length;
   const decisions = audit.filter((e) => DECISIONS.includes(e.type)).length;
+  const auditAt = (f: (e: AuditEvent) => boolean) => audit.filter(f).map((e) => e.timestamp);
   const byRole: Record<Role, Kpi[]> = {
     analyst: [
-      { key: 'pendingApprovals', value: pending, kind: 'count', href: '/recommendations?status=pending' },
-      { key: 'reviewed', value: audit.filter((e) => e.actorId === user.userId && DECISIONS.includes(e.type)).length, kind: 'count', href: '/audit' },
-      { key: 'activeAnomalies', value: activeAnomalies, kind: 'count', href: '/monitoring' },
+      { key: 'pendingApprovals', value: pending, kind: 'count', href: '/recommendations?status=pending', ...seriesOf(recs.map((r) => r.createdAt)) },
+      { key: 'reviewed', value: audit.filter((e) => e.actorId === user.userId && DECISIONS.includes(e.type)).length, kind: 'count', href: '/audit', ...seriesOf(auditAt((e) => e.actorId === user.userId && DECISIONS.includes(e.type))) },
+      { key: 'activeAnomalies', value: activeAnomalies, kind: 'count', href: '/monitoring', ...seriesOf(anomalies.map((a) => a.createdAt)) },
     ],
     manager: [
-      { key: 'marginImpact', value: recs.filter((r) => r.status === 'approved' || r.status === 'adjusted').reduce((s, r) => s + r.projectedMarginImpact, 0), kind: 'money', href: '/recommendations?status=approved' },
-      { key: 'overrideRate', value: overrides + decisions ? overrides / (overrides + decisions) : 0, kind: 'percent', href: '/audit' },
-      { key: 'strategyHealth', value: strategies.filter((s) => s.status === 'active').length, kind: 'count', href: '/strategy' },
-      { key: 'pendingStrategies', value: strategies.filter((s) => s.status === 'pending_manager_approval').length, kind: 'count', href: '/strategy' },
+      { key: 'marginImpact', value: recs.filter((r) => r.status === 'approved' || r.status === 'adjusted').reduce((s, r) => s + r.projectedMarginImpact, 0), kind: 'money', href: '/recommendations?status=approved', ...seriesOf(auditAt((e) => DECISIONS.includes(e.type))) },
+      { key: 'overrideRate', value: overrides + decisions ? overrides / (overrides + decisions) : 0, kind: 'percent', href: '/audit', ...seriesOf(auditAt((e) => e.type === 'manual_override')) },
+      { key: 'strategyHealth', value: strategies.filter((s) => s.status === 'active').length, kind: 'count', href: '/strategy', ...seriesOf(auditAt((e) => e.type === 'strategy_activate')) },
+      { key: 'pendingStrategies', value: strategies.filter((s) => s.status === 'pending_manager_approval').length, kind: 'count', href: '/strategy', ...seriesOf(auditAt((e) => e.type === 'strategy_submit')) },
     ],
     ops_lead: [
-      { key: 'channelFailures', value: deployments.filter((d) => d.status === 'failed').length, kind: 'count', href: '/deployment?status=failed' },
-      { key: 'pendingSyncs', value: deployments.filter((d) => d.status === 'pending' || d.status === 'in_flight').length, kind: 'count', href: '/deployment?status=pending' },
-      { key: 'lastDeployment', value: input.lastDeploymentAt, kind: 'date', href: '/deployment' },
+      { key: 'channelFailures', value: deployments.filter((d) => d.status === 'failed').length, kind: 'count', href: '/deployment?status=failed', ...seriesOf(deployments.filter((d) => d.status === 'failed').map((d) => d.updatedAt)) },
+      { key: 'pendingSyncs', value: deployments.filter((d) => d.status === 'pending' || d.status === 'in_flight').length, kind: 'count', href: '/deployment?status=pending', ...seriesOf(deployments.filter((d) => d.status === 'pending' || d.status === 'in_flight').map((d) => d.updatedAt)) },
+      { key: 'lastDeployment', value: input.lastDeploymentAt, kind: 'date', href: '/deployment', ...seriesOf(deployments.map((d) => d.updatedAt)) },
     ],
     compliance: [
-      { key: 'auditVolume', value: audit.length, kind: 'count', href: '/audit' },
-      { key: 'manualOverrides', value: overrides, kind: 'count', href: '/audit' },
-      { key: 'guardrailExceptions', value: input.breachCount, kind: 'count', href: '/recommendations' },
+      { key: 'auditVolume', value: audit.length, kind: 'count', href: '/audit', ...seriesOf(audit.map((e) => e.timestamp)) },
+      { key: 'manualOverrides', value: overrides, kind: 'count', href: '/audit', ...seriesOf(auditAt((e) => e.type === 'manual_override')) },
+      { key: 'guardrailExceptions', value: input.breachRecs.length, kind: 'count', href: '/recommendations', ...seriesOf(input.breachRecs.map((r) => r.createdAt)) },
     ],
   };
   return byRole[user.role];

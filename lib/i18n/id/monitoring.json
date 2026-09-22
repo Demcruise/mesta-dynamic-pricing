@@ -7,6 +7,7 @@
     "empty": "Tidak ada anomali di atas ambang.", "sku": "SKU", "category": "Kategori", "deviation": "Deviasi", "channel": "Kanal", "severity": "Tingkat", "actions": "Aksi", "caption": "Peringatan anomali",
     "flag": "Tandai untuk tinjauan model", "flagged": "Ditandai", "flagAria": "Tandai {sku} untuk tinjauan model", "digestAria": "{category}: {n} SKU, deviasi terburuk {pct}%", "expand": "Tampilkan SKU"
   },
+  "live": { "stream": "Aliran metrik live", "lastEvent": "kejadian terakhir {at}", "alerts": "{n} peringatan aktif" },
   "err": { "forbidden": "Peran Anda tidak dapat menandai anomali.", "already_flagged": "Sudah ditandai.", "not_found": "Tidak ditemukan." },
   "toast": { "flagged": "{sku} ditandai untuk tinjauan model" }
 }
