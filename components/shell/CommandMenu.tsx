@@ -52,12 +52,19 @@ export function CommandMenu() {
   const [cursor, setCursor] = useState(0);
   const listRef = useRef<HTMLUListElement>(null);
 
-  // Global shortcut: Cmd/Ctrl+K toggles.
+  // Global shortcuts: Cmd/Ctrl+K toggles; "/" opens (unless typing in a field).
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
         useCommandStore.getState().setOpen(!useCommandStore.getState().open);
+        return;
+      }
+      const el = e.target as HTMLElement;
+      const typing = el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement || el instanceof HTMLSelectElement || el.isContentEditable;
+      if (e.key === '/' && !typing) {
+        e.preventDefault();
+        useCommandStore.getState().setOpen(true);
       }
     };
     window.addEventListener('keydown', onKey);
@@ -76,7 +83,7 @@ export function CommandMenu() {
     }
     if (can('strategy.create')) out.push({ id: 'qa-strategy', group: t('common.cmd.actions'), label: t('common.cmd.createStrategy'), href: '/strategy/new' });
     if (can('deployment.view')) out.push({ id: 'qa-deploy', group: t('common.cmd.actions'), label: t('common.cmd.deployFailures'), href: '/deployment?status=failed' });
-    for (const n of NAV) if (can(n.action)) out.push({ id: `nav-${n.key}`, group: t('common.cmd.actions'), label: t(`common.nav.${n.key}`), href: n.href });
+    for (const n of NAV) if (!n.action || can(n.action)) out.push({ id: `nav-${n.key}`, group: t('common.cmd.actions'), label: t(`common.nav.${n.key}`), href: n.href });
     const filteredQuick = out.filter((i) => match(i.label));
     const skuHits = skus
       .filter((p) => match(p.sku) || match(p.name))

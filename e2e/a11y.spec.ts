@@ -23,6 +23,8 @@ for (const theme of ['light', 'dark'] as const) {
       await go(page, r);
       await expect(page.getByRole('main')).toBeVisible();
       await page.waitForTimeout(600);
+      // Client nav streams <title> async — axe's document-title rule needs it settled.
+      await expect.poll(async () => (await page.title()).length, { timeout: 5_000 }).toBeGreaterThan(0);
       found.push(...(await violations(page, `${theme} ${r}`)));
     }
     expect(found).toEqual([]);
@@ -32,7 +34,11 @@ for (const theme of ['light', 'dark'] as const) {
 test('axe: open dialogs and menus (command menu, override dialog, notifications, glossary)', async ({ page }) => {
   const found: string[] = [];
   await open(page, '/catalog');
-  await page.keyboard.press('Control+k');
+  // Retry until hydrated — the global keydown listener mounts after first paint.
+  for (let i = 0; i < 5 && !(await page.getByRole('dialog').isVisible()); i++) {
+    await page.keyboard.press('Control+k');
+    await page.waitForTimeout(300);
+  }
   await expect(page.getByRole('dialog')).toBeVisible();
   found.push(...(await violations(page, 'command menu')));
   await page.keyboard.press('Escape');

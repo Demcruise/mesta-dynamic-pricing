@@ -1,26 +1,57 @@
 import {
-  Activity, BarChart3, FlaskConical, LayoutDashboard, Package, ScrollText, Send, Sparkles, type LucideIcon,
+  Activity, BarChart3, FlaskConical, LayoutDashboard, Package, Palette, ScrollText, Send, Settings, Sparkles,
+  type LucideIcon,
 } from 'lucide-react';
 import type { Action } from '@/lib/rbac';
 
 export interface NavItem {
   href: string;
-  key: 'overview' | 'catalog' | 'strategy' | 'simulation' | 'recommendations' | 'deployment' | 'monitoring' | 'audit';
+  key:
+    | 'overview' | 'catalog' | 'strategy' | 'simulation' | 'recommendations' | 'deployment' | 'monitoring' | 'audit'
+    | 'designSystem' | 'settings';
   icon: LucideIcon;
-  action: Action;
+  /** Absent = visible to every role (open routes). */
+  action?: Action;
   mobile?: boolean;
+  /** Live badge source rendered on the item (Sidebar + MobileNav). */
+  badge?: 'pendingRecommendations' | 'failedDeployments';
 }
 
-export const NAV: NavItem[] = [
-  { href: '/overview', key: 'overview', icon: LayoutDashboard, action: 'overview.view', mobile: true },
-  { href: '/catalog', key: 'catalog', icon: Package, action: 'catalog.view' },
-  { href: '/strategy', key: 'strategy', icon: BarChart3, action: 'strategy.view' },
-  { href: '/simulation', key: 'simulation', icon: FlaskConical, action: 'simulation.use' },
-  { href: '/recommendations', key: 'recommendations', icon: Sparkles, action: 'recommendation.view' },
-  { href: '/deployment', key: 'deployment', icon: Send, action: 'deployment.view', mobile: true },
-  { href: '/monitoring', key: 'monitoring', icon: Activity, action: 'monitoring.view', mobile: true },
-  { href: '/audit', key: 'audit', icon: ScrollText, action: 'audit.view' },
+export interface NavSection {
+  key: 'workflow' | 'insight' | 'account';
+  items: NavItem[];
+}
+
+export const NAV_SECTIONS: NavSection[] = [
+  {
+    key: 'workflow',
+    items: [
+      { href: '/catalog', key: 'catalog', icon: Package, action: 'catalog.view' },
+      { href: '/strategy', key: 'strategy', icon: BarChart3, action: 'strategy.view' },
+      { href: '/simulation', key: 'simulation', icon: FlaskConical, action: 'simulation.use' },
+      { href: '/recommendations', key: 'recommendations', icon: Sparkles, action: 'recommendation.view', badge: 'pendingRecommendations' },
+      { href: '/deployment', key: 'deployment', icon: Send, action: 'deployment.view', mobile: true, badge: 'failedDeployments' },
+    ],
+  },
+  {
+    key: 'insight',
+    items: [
+      { href: '/monitoring', key: 'monitoring', icon: Activity, action: 'monitoring.view', mobile: true },
+      { href: '/audit', key: 'audit', icon: ScrollText, action: 'audit.view' },
+      { href: '/overview', key: 'overview', icon: LayoutDashboard, action: 'overview.view', mobile: true },
+    ],
+  },
+  {
+    key: 'account',
+    items: [
+      { href: '/design-system', key: 'designSystem', icon: Palette },
+      { href: '/settings', key: 'settings', icon: Settings },
+    ],
+  },
 ];
+
+/** Flat list kept for consumers that don't need grouping (CommandMenu, MobileNav). */
+export const NAV: NavItem[] = NAV_SECTIONS.flatMap((s) => s.items);
 
 export function isActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(href + '/');

@@ -12,7 +12,7 @@ const button = cva(
         ghost: 'text-fg hover:bg-subtle',
         destructive: 'bg-down text-brand-fg hover:opacity-90',
       },
-      size: { sm: 'h-7 px-2', md: 'h-9 px-3', icon: 'size-9' },
+      size: { sm: 'h-7 px-2', md: 'h-9 px-3', icon: 'size-9 max-sm:size-11' },
     },
     defaultVariants: { variant: 'primary', size: 'md' },
   },

@@ -17,7 +17,22 @@ export async function open(page: Page, path: string, role: RoleKey = 'analyst', 
 }
 
 export async function setRole(page: Page, role: RoleKey) {
-  await page.getByLabel(/Switch role|Ganti peran/).selectOption(role);
+  // Dev role switcher lives in the sidebar profile card (desktop) and the topbar
+  // user menu (all viewports). Prefer the profile card; fall back to the user menu
+  // (the Next.js dev overlay can cover the bottom-left trigger at md widths).
+  const profile = page.getByLabel(/Account menu|Menu akun/);
+  const userMenu = page.getByLabel(/User menu|Menu pengguna/);
+  const sel = page.getByLabel(/Switch role|Ganti peran/);
+  for (let attempt = 0; attempt < 4 && !(await sel.isVisible()); attempt++) {
+    try {
+      await profile.click({ timeout: 3_000 });
+    } catch {
+      await userMenu.click();
+    }
+    await page.waitForTimeout(200);
+  }
+  await sel.selectOption(role);
+  await page.keyboard.press('Escape');
 }
 
 /** Client-side navigation keeps in-memory store state; a full reload would reset the demo data. */

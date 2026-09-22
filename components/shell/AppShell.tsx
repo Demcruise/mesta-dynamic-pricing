@@ -40,7 +40,9 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
         )}
         <main id="main" tabIndex={-1} className="min-w-0 flex-1 p-4 pb-20 md:p-6 md:pb-6">
-          <RouteGuard>{children}</RouteGuard>
+          <div className="mx-auto w-full max-w-[1600px]">
+            <RouteGuard>{children}</RouteGuard>
+          </div>
         </main>
       </div>
       <MobileNav />

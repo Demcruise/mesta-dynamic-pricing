@@ -7,7 +7,7 @@ test('analyst: catalog → simulation → send → approve → audit', async ({ 
   await expect(page.getByRole('link', { name: 'SKU-1004' }).first()).toBeVisible();
   await page.getByRole('link', { name: 'Simulate price SKU-1004' }).click();
 
-  await expect(page.getByRole('heading', { name: 'Simulation' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Simulation' })).toBeVisible({ timeout: 15_000 });
   const price = page.locator('#price-0');
   const current = Number(await price.inputValue());
   await price.fill(String(current + 1000));

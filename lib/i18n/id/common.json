@@ -13,8 +13,23 @@
     "deployment": "Deployment",
     "monitoring": "Monitoring",
     "audit": "Audit",
+    "designSystem": "Sistem Desain",
+    "settings": "Pengaturan",
     "primary": "Navigasi utama",
-    "mobile": "Navigasi mobile"
+    "mobile": "Navigasi mobile",
+    "section": {
+      "workflow": "Alur Kerja",
+      "insight": "Wawasan",
+      "account": "Akun"
+    }
+  },
+  "crumb": {
+    "new": "Baru",
+    "edit": "Edit"
+  },
+  "settings": {
+    "subtitle": "Preferensi tampilan dan workspace",
+    "appearance": "Tampilan"
   },
   "role": {
     "analyst": "Analis",
@@ -113,7 +128,9 @@
     "kpi": "Metrik utama",
     "notifications": "Buka notifikasi",
     "help": "Buka glosarium",
-    "feedback": "Kirim masukan"
+    "feedback": "Kirim masukan",
+    "breadcrumb": "Breadcrumb",
+    "profile": "Menu akun"
   },
   "feedback": {
     "title": "Kirim masukan",
