@@ -8,8 +8,8 @@
   "iconLibrary": "lucide",
   "registries": {
     "@reactbits-pro": {
-      "url": "https://pro.reactbits.dev/r/{name}.json",
-      "headers": { "Authorization": "Bearer ${REACTBITS_PRO_TOKEN}" }
+      "url": "https://pro.reactbits.dev/api/r/pro/{name}.json",
+      "headers": { "Authorization": "Bearer ${REACTBITS_LICENSE_KEY}" }
     }
   }
 }

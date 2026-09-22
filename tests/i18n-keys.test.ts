@@ -46,7 +46,10 @@ describe('i18n key hygiene', () => {
   it('no raw English button/heading copy in JSX outside i18n (heuristic)', () => {
     const ALLOW = new Set(['Ctrl K']); // keyboard hint, not copy
     const offenders: string[] = [];
-    for (const f of files.filter((x) => /\.tsx$/.test(x) && !/design-system/.test(x))) {
+    // Raw React Bits Pro registry blocks (*-N.tsx under components/blocks) carry upstream
+    // demo copy that is replaced when each block is wrapped — exempt them, not wrappers.
+    const isRawBlock = (x: string) => /components[/\\]blocks[/\\][a-z0-9-]+-\d+\.tsx$/.test(x);
+    for (const f of files.filter((x) => /\.tsx$/.test(x) && !/design-system/.test(x) && !isRawBlock(x))) {
       const src = readFileSync(f, 'utf8');
       // >Some Capitalised Words< between tags, at least two words, not inside braces
       for (const m of src.matchAll(/>\s*([A-Z][a-z]+(?: [A-Za-z]+)+)\s*</g)) if (!ALLOW.has(m[1] as string)) offenders.push(`${f}: ${m[1]}`);
