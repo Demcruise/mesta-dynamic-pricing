@@ -1,0 +1,90 @@
+{
+  "page": {
+    "title": "Aturan harga",
+    "desc": "Aturan deterministik WHEN → THEN yang menghasilkan atau menjaga perubahan harga. Aturan berprioritas lebih tinggi menang saat proposal bentrok di SKU yang sama."
+  },
+  "table": {
+    "name": "Aturan",
+    "status": "Status",
+    "priority": "Prioritas",
+    "when": "Ketika",
+    "then": "Maka",
+    "scope": "Cakupan",
+    "updated": "Diperbarui",
+    "actions": "Aksi",
+    "matches": "{n} dari {total} SKU cocok"
+  },
+  "scope": {
+    "all": "Semua SKU",
+    "categories": "Kategori: {v}",
+    "regions": "Wilayah: {v}",
+    "skus": "SKU: {v}",
+    "categoriesLabel": "Kategori",
+    "regionsLabel": "Wilayah",
+    "skusLabel": "Filter SKU (dipisah koma)",
+    "allWhenEmpty": "Kosongkan untuk berlaku ke semua"
+  },
+  "when": {
+    "field": "Field",
+    "op": "Operator",
+    "value": "Nilai",
+    "add": "Tambah kondisi",
+    "title": "Ketika (semua kondisi harus terpenuhi)",
+    "field.competitor_gap_pct": "Selisih vs rata-rata kompetitor",
+    "field.margin_pct": "Margin %",
+    "field.stock_units": "Unit stok",
+    "field.days_since_change": "Hari sejak perubahan terakhir",
+    "op.gt": "lebih dari",
+    "op.lt": "kurang dari",
+    "op.gte": "minimal",
+    "op.lte": "maksimal",
+    "op.eq": "sama dengan",
+    "hint": "Semua nilai berupa angka — persen, unit, hari, atau harga."
+  },
+  "then": {
+    "title": "Maka",
+    "formula": "Formula",
+    "kind.delta_percent": "Sesuaikan harga sebesar %",
+    "kind.match_competitor": "Ikuti rata-rata kompetitor",
+    "kind.min_margin_pct": "Set harga untuk capai margin minimum %",
+    "preview": "Formula: {v}"
+  },
+  "builder": {
+    "new": "Aturan baru",
+    "edit": "Ubah aturan",
+    "nameLabel": "Nama",
+    "priorityLabel": "Prioritas (lebih kecil menang)",
+    "statusLabel": "Status",
+    "status.active": "Aktif",
+    "status.draft": "Draf",
+    "status.paused": "Dijeda",
+    "previewTitle": "Pratinjau terhadap katalog saat ini",
+    "previewEmpty": "Tidak ada SKU yang cocok dengan kondisi ini.",
+    "save": "Simpan aturan",
+    "validate": "Tambahkan minimal satu kondisi.",
+    "validated": "Tervalidasi"
+  },
+  "run": {
+    "cta": "Jalankan aturan",
+    "done": "Eksekusi aturan selesai: {n} rekomendasi dibuat",
+    "none": "Eksekusi aturan selesai: tidak ada SKU yang cocok",
+    "skipped": "{n} dilewati: guardrail batas harga akan gagal",
+    "conflict": "{n} dilewati: aturan berprioritas lebih tinggi sudah mencakup SKU"
+  },
+  "conflict": {
+    "title": "Konflik prioritas",
+    "desc": "Beberapa aturan aktif menargetkan SKU ini — hanya aturan berprioritas tertinggi yang akan berjalan:",
+    "row": "{sku}: {a} mengalahkan {b}"
+  },
+  "actions": {
+    "activate": "Aktifkan",
+    "pause": "Jeda",
+    "edit": "Ubah"
+  },
+  "err": {
+    "forbidden": "Peran Anda tidak dapat mengelola atau menjalankan aturan.",
+    "not_found": "Aturan tidak ditemukan."
+  },
+  "empty": "Belum ada aturan harga. Buat satu untuk mengotomatisasi proposal harga.",
+  "note": "Aturan bersifat deterministik dan dapat diaudit — setiap rekomendasi yang dihasilkan tertaut ke aturan pembuatnya."
+}

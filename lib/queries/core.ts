@@ -12,6 +12,7 @@ export const keys = {
   deployment: { all: ['deployment'] as const, list: () => ['deployment', 'list'] as const },
   audit: { all: ['audit'] as const, list: (actor: string, role: string) => ['audit', 'list', actor, role] as const },
   anomaly: { all: ['anomaly'] as const, list: () => ['anomaly', 'list'] as const },
+  rule: { all: ['rule'] as const, list: () => ['rule', 'list'] as const },
 };
 
 export interface ListResult<T> {
@@ -64,7 +65,7 @@ export function useItemQuery<T>(queryKey: readonly unknown[], read: () => T | un
   };
 }
 
-export type MestaDomain = 'sku' | 'recommendation' | 'strategy' | 'scenario' | 'deployment' | 'audit' | 'anomaly';
+export type MestaDomain = 'sku' | 'recommendation' | 'strategy' | 'scenario' | 'deployment' | 'audit' | 'anomaly' | 'rule';
 
 export function invalidateDomains(qc: QueryClient, domains: MestaDomain[]) {
   return Promise.all(domains.map((d) => qc.invalidateQueries({ queryKey: [d] })));

@@ -7,7 +7,11 @@ import {
 import { track } from '../telemetry';
 import { fail, ok } from './result';
 
-type Decision = Exclude<RecommendationStatus, 'pending'>;
+type Decision = 'approved' | 'rejected' | 'adjusted';
+/** Statuses still awaiting a decision — pending, or escalated (higher priority, same outcome set). */
+const DECIDABLE = new Set<RecommendationStatus>(['pending', 'escalated']);
+/** A pending/escalated rec lapses to `expired` after this long without a decision. */
+export const REC_TTL_MS = 7 * 86_400_000;
 const AUDIT_TYPE = {
   approved: 'recommendation_approve',
   rejected: 'recommendation_reject',
@@ -15,6 +19,9 @@ const AUDIT_TYPE = {
 } as const;
 
 const timers = new Map<string, ReturnType<typeof setTimeout>>();
+
+/** Store errors carry context (`invalid_transition:a->b`); strip it before i18n lookup. */
+const cleanError = (e: string) => e.split(':')[0] ?? e;
 
 export function cancelAllDecisionTimers() {
   timers.forEach((t) => clearTimeout(t));
@@ -77,15 +84,17 @@ function commit(recId: string) {
  * unless undone. Enforces RBAC, note and guardrail rules regardless of UI state.
  */
 export function stageDecision(
-  user: UserSession, recId: string, to: Decision, opts: { note?: string; proposedPrice?: number } = {},
+  user: UserSession, recId: string, to: Decision, opts: { note?: string; proposedPrice?: number; ackStale?: boolean } = {},
 ) {
   if (!can(user.role, 'recommendation.decide')) return fail('forbidden');
   const rec = useRecommendationStore.getState().items.find((r) => r.id === recId);
   if (!rec) return fail('not_found');
-  if (rec.status !== 'pending') return fail('not_pending');
+  if (!DECIDABLE.has(rec.status)) return fail('not_pending');
   if (useUndoStore.getState().staged[recId]) return fail('already_staged');
   const note = opts.note?.trim() ?? '';
   if ((to === 'rejected' || to === 'adjusted') && !note) return fail('note_required');
+  // Staleness re-check on approval: the product may have moved since the rec was formed.
+  if (to === 'approved' && recommendationHealth(rec).stale && !opts.ackStale) return fail('stale');
   if (to === 'adjusted') {
     const product = useProductCatalogStore.getState().products.find((p) => p.sku === rec.sku);
     const strategy = rec.strategyId ? useStrategyStore.getState().items.find((s) => s.id === rec.strategyId) ?? null : null;
@@ -118,7 +127,7 @@ export function bulkEligibility(recs: Recommendation[], minConfidence: number) {
   const eligible: Recommendation[] = [];
   const excluded: { rec: Recommendation; reason: 'stale' | 'breach' }[] = [];
   for (const r of recs) {
-    if (r.status !== 'pending' || staged[r.id] || r.confidence < minConfidence) continue;
+    if (!DECIDABLE.has(r.status) || staged[r.id] || r.confidence < minConfidence) continue;
     const h = recommendationHealth(r);
     if (h.stale) excluded.push({ rec: r, reason: 'stale' });
     else if (h.breach) excluded.push({ rec: r, reason: 'breach' });
@@ -151,4 +160,78 @@ export function bulkApprove(user: UserSession, recs: Recommendation[], minConfid
     });
   }
   return { ok: true as const, count };
+}
+
+/** Approver → Analyst: send a pending/escalated rec back with a note. Immediate — no undo window. */
+export function requestChanges(user: UserSession, recId: string, note: string) {
+  if (!can(user.role, 'recommendation.decide')) return fail('forbidden');
+  const rec = useRecommendationStore.getState().items.find((r) => r.id === recId);
+  if (!rec) return fail('not_found');
+  const res = useRecommendationStore.getState().decide(recId, 'changes_requested', { note });
+  if (!res.ok) return fail(cleanError(res.error));
+  useAuditStore.getState().record({
+    type: 'recommendation_request_changes', actorId: user.userId, actorRole: user.role, entityType: 'recommendation',
+    entityId: recId, sku: rec.sku, source: 'ui', note,
+  });
+  useNotificationStore.getState().push({
+    targetRole: 'analyst', groupKey: `rec_changes:${recId}`, messageKey: 'common.notify.recChanges',
+    params: { sku: rec.sku }, href: `/recommendations/${recId}`,
+  });
+  track('recommendation_changes_requested', { recId });
+  return ok();
+}
+
+/** Anyone who can decide may escalate — the rec stays decidable but jumps the inbox. */
+export function escalateRecommendation(user: UserSession, recId: string, note: string) {
+  if (!can(user.role, 'recommendation.decide')) return fail('forbidden');
+  const rec = useRecommendationStore.getState().items.find((r) => r.id === recId);
+  if (!rec) return fail('not_found');
+  const res = useRecommendationStore.getState().decide(recId, 'escalated', { note });
+  if (!res.ok) return fail(cleanError(res.error));
+  useAuditStore.getState().record({
+    type: 'recommendation_escalate', actorId: user.userId, actorRole: user.role, entityType: 'recommendation',
+    entityId: recId, sku: rec.sku, source: 'ui', note: note || null,
+  });
+  useNotificationStore.getState().push({
+    targetRole: 'manager', groupKey: `rec_escalated:${recId}`, messageKey: 'common.notify.recEscalated',
+    params: { sku: rec.sku }, href: `/recommendations/${recId}`,
+  });
+  track('recommendation_escalated', { recId });
+  return ok();
+}
+
+/** Returns a changes_requested/expired rec to pending. The re-check on approval then applies fresh. */
+export function resubmitRecommendation(user: UserSession, recId: string, note = '') {
+  if (!can(user.role, 'recommendation.decide')) return fail('forbidden');
+  const rec = useRecommendationStore.getState().items.find((r) => r.id === recId);
+  if (!rec) return fail('not_found');
+  const res = useRecommendationStore.getState().decide(recId, 'pending', { note });
+  if (!res.ok) return fail(cleanError(res.error));
+  useAuditStore.getState().record({
+    type: 'recommendation_resubmit', actorId: user.userId, actorRole: user.role, entityType: 'recommendation',
+    entityId: recId, sku: rec.sku, source: 'ui', note: note || null,
+  });
+  track('recommendation_resubmitted', { recId });
+  return ok();
+}
+
+/**
+ * Lapses recs that have waited longer than REC_TTL_MS into `expired`.
+ * Called from the approvals inbox mount and bootstrap — a system sweep, audited as such.
+ */
+export function expireStaleRecommendations(now = Date.now()): number {
+  const store = useRecommendationStore.getState();
+  let n = 0;
+  for (const r of store.items) {
+    if (!DECIDABLE.has(r.status) && r.status !== 'changes_requested') continue;
+    if (now - new Date(r.createdAt).getTime() < REC_TTL_MS) continue;
+    if (useRecommendationStore.getState().decide(r.id, 'expired').ok) {
+      n += 1;
+      useAuditStore.getState().record({
+        type: 'recommendation_expire', actorId: 'system', actorRole: 'compliance', entityType: 'recommendation',
+        entityId: r.id, sku: r.sku, source: 'system', note: `Undecided for more than ${Math.round(REC_TTL_MS / 86_400_000)} days`,
+      });
+    }
+  }
+  return n;
 }

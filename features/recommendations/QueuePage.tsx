@@ -10,7 +10,7 @@ import { inputCls } from '@/components/ui/field';
 import { recommendationHealth } from '@/lib/actions/recommendation';
 import { CATEGORIES } from '@/lib/categories';
 import { useTranslation } from '@/lib/i18n';
-import { useAnomalies, useRecommendations, useSkuList } from '@/lib/queries';
+import { useAnomalies, useScopedRecommendations, useScopedSkuSet, useSkuList } from '@/lib/queries';
 import { track } from '@/lib/telemetry';
 import { cn } from '@/lib/utils';
 import { BulkDialog } from './BulkDialog';
@@ -35,9 +35,14 @@ export function QueuePage() {
   const router = useRouter();
   const pathname = usePathname();
   const sp = useSearchParams();
-  const recs = useRecommendations();
+  const recs = useScopedRecommendations();
   const skus = useSkuList();
-  const anomalies = useAnomalies();
+  const anomaliesAll = useAnomalies();
+  const scopedSkuSet = useScopedSkuSet();
+  const anomalies = useMemo(
+    () => ({ ...anomaliesAll, data: scopedSkuSet ? anomaliesAll.data.filter((a) => scopedSkuSet.has(a.sku)) : anomaliesAll.data }),
+    [anomaliesAll, scopedSkuSet],
+  );
   const [shown, setShown] = useState(PAGE_SIZE);
   const [bulkOpen, setBulkOpen] = useState(false);
 

@@ -81,14 +81,14 @@ function DrawerDemo() {
 
 /** Static demo objects — a strategy-less rec so strategy-bound rows show the n/a state. */
 const DEMO_PRODUCT = {
-  sku: 'SKU-101', name: 'Demo product', category: 'Beverages', cost: 90000, price: 125000,
+  sku: 'SKU-101', name: 'Demo product', category: 'Beverages', region: 'Jawa', store: 'Jakarta HQ', cost: 90000, price: 125000,
   minPrice: 100000, maxPrice: 200000, mapPrice: 110000, competitorAvg: 128000, elasticity: -1.2,
   stockUnits: 140, stockStatus: 'in_stock' as const, lastChangeAt: '2026-09-20T09:00:00Z', priceHistory: [],
 };
 const DEMO_REC = {
   id: 'REC-DEMO', sku: 'SKU-101', currentPrice: 125000, proposedPrice: 118000, confidence: 86,
   source: 'agent' as const, status: 'pending' as const, rationale: [], projectedMarginImpact: 420000,
-  strategyId: null, scenarioId: null, createdAt: '2026-09-21T09:00:00Z', ownerId: 'agent', decidedAt: null, decisionNote: null, deployed: false,
+  strategyId: null, scenarioId: null, ruleId: null, createdAt: '2026-09-21T09:00:00Z', ownerId: 'agent', decidedAt: null, decisionNote: null, deployed: false,
 };
 
 function DialogDemo() {

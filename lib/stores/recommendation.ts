@@ -4,7 +4,12 @@ import type { Recommendation, RecommendationStatus } from '../ontology';
 export type TransitionResult = { ok: true } | { ok: false; error: string };
 
 const ALLOWED: Record<RecommendationStatus, RecommendationStatus[]> = {
-  pending: ['approved', 'rejected', 'adjusted'],
+  pending: ['approved', 'rejected', 'adjusted', 'changes_requested', 'escalated', 'expired'],
+  // Escalated is still undecided — it keeps the decision outcomes, plus expiry.
+  escalated: ['approved', 'rejected', 'adjusted', 'changes_requested', 'expired'],
+  // Sent back or lapsed — only a resubmission returns it to the queue.
+  changes_requested: ['pending', 'expired'],
+  expired: ['pending'],
   approved: [],
   rejected: [],
   adjusted: [],
@@ -18,7 +23,7 @@ interface RecommendationState {
   items: Recommendation[];
   hydrate: (items: Recommendation[]) => void;
   add: (r: Recommendation) => void;
-  decide: (id: string, to: Exclude<RecommendationStatus, 'pending'>, opts?: { note?: string; proposedPrice?: number }) => TransitionResult;
+  decide: (id: string, to: RecommendationStatus, opts?: { note?: string; proposedPrice?: number }) => TransitionResult;
   markDeployed: (id: string) => TransitionResult;
   /** Rollback path: the price went live once but was reverted — the rec becomes publishable again. */
   markUndeployed: (id: string) => void;
@@ -33,7 +38,7 @@ export const useRecommendationStore = create<RecommendationState>((set, get) => 
     const rec = get().items.find((x) => x.id === id);
     if (!rec) return { ok: false, error: 'not_found' };
     if (!canTransition(rec.status, to)) return { ok: false, error: `invalid_transition:${rec.status}->${to}` };
-    if ((to === 'rejected' || to === 'adjusted') && !opts.note?.trim()) return { ok: false, error: 'note_required' };
+    if ((to === 'rejected' || to === 'adjusted' || to === 'changes_requested') && !opts.note?.trim()) return { ok: false, error: 'note_required' };
     if (to === 'adjusted' && opts.proposedPrice == null) return { ok: false, error: 'price_required' };
     set((s) => ({
       items: s.items.map((x) =>

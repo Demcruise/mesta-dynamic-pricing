@@ -31,7 +31,7 @@ const auditFor = (id: string) => useAuditStore.getState().events.filter((e) => e
 describe('recommendation decisions with undo', () => {
   it('commits status and audit only after the undo window', () => {
     const r = pending();
-    expect(stageDecision(analyst, r.id, 'approved').ok).toBe(true);
+    expect(stageDecision(analyst, r.id, 'approved', { ackStale: true }).ok).toBe(true);
     expect(useRecommendationStore.getState().items.find((x) => x.id === r.id)?.status).toBe('pending');
     expect(auditFor(r.id)).toHaveLength(0);
     vi.advanceTimersByTime(UNDO_WINDOW_MS + 10);
@@ -51,7 +51,7 @@ describe('recommendation decisions with undo', () => {
 
   it('blocks overlapping actions while a decision is pending undo', () => {
     const r = pending();
-    stageDecision(analyst, r.id, 'approved');
+    stageDecision(analyst, r.id, 'approved', { ackStale: true });
     expect(stageDecision(analyst, r.id, 'rejected', { note: 'x' })).toEqual({ ok: false, error: 'already_staged' });
   });
 
@@ -261,7 +261,7 @@ describe('cross-role handoff notifications', () => {
 
   it('approve commit → ops_lead gets a ready-to-deploy notification', () => {
     const rec = pending();
-    stageDecision(manager, rec.id, 'approved');
+    stageDecision(manager, rec.id, 'approved', { ackStale: true });
     vi.advanceTimersByTime(UNDO_WINDOW_MS + 100);
     const n = notices('ops_lead').find((x) => x.messageKey === 'common.notify.recReadyDeploy');
     expect(n).toBeDefined();

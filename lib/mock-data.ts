@@ -3,9 +3,10 @@
  * Pages read data through lib/queries/* hooks.
  */
 import { CATEGORIES } from './categories';
+import { REGIONS, STORES_BY_REGION, type Region } from './scope';
 import type {
   AnomalyAlert, AuditEvent, Channel, CompetitorObservation, DeploymentRecord, Outcome, PriceEvent, Product,
-  PublishJob, RationaleFactor, Recommendation, Strategy,
+  PublishJob, RationaleFactor, Recommendation, Rule, Strategy,
 } from './ontology';
 
 export const NOW = Date.UTC(2026, 8, 21, 6, 0, 0);
@@ -52,6 +53,9 @@ export function generateProducts(count: number, seed = 42): Product[] {
     const competitorAvg = Math.round((price * (0.88 + r() * 0.24)) / 100) * 100;
     const stockUnits = r() < 0.04 ? 0 : Math.floor(r() * 600);
     const lastChangeAt = new Date(NOW - Math.floor(r() * 30 * DAY)).toISOString();
+    const region = REGIONS[i % REGIONS.length] as Region;
+    const storePool = STORES_BY_REGION[region];
+    const store = storePool[Math.floor(i / REGIONS.length) % storePool.length] as string;
     const priceHistory = Array.from({ length: 8 }, (_, k) => ({
       at: new Date(NOW - (7 - k) * 4 * DAY).toISOString(),
       price: Math.round((price * (0.95 + r() * 0.1)) / 100) * 100,
@@ -70,6 +74,8 @@ export function generateProducts(count: number, seed = 42): Product[] {
       elasticity: -Math.round((0.4 + r() * 2.2) * 10) / 10,
       stockUnits,
       stockStatus: stockUnits === 0 ? 'out_of_stock' : stockUnits < 40 ? 'low_stock' : 'in_stock',
+      region,
+      store,
       lastChangeAt,
       priceHistory,
     } satisfies Product;
@@ -108,11 +114,19 @@ export function generateRecommendations(products: Product[], count: number, seed
   const r = rng(seed);
   const out: Recommendation[] = [];
   const step = Math.max(1, Math.floor(products.length / count));
+  let ruleLinked = 0;
   for (let i = 0; i < count; i++) {
     const p = products[(i * step) % products.length] as Product;
     const dir = r() < 0.55 ? 1 : -1;
     const pct = 0.01 + r() * 0.07;
-    const proposed = Math.round((p.price * (1 + dir * pct)) / 100) * 100;
+    // Up to 3 recs are genuine RULE-001 outputs (match competitor when >5% above market):
+    // the proposed price is exactly what the rule's formula produces AND passes the same
+    // bounds check runRules applies — a seeded link must be a price the rule could emit.
+    const gapPct = p.competitorAvg > 0 ? (p.price / p.competitorAvg - 1) * 100 : 0;
+    const rulePrice = Math.round(p.competitorAvg / 100) * 100;
+    const ruleFired = ruleLinked < 3 && gapPct > 5 && rulePrice >= p.minPrice && rulePrice >= p.mapPrice && rulePrice <= p.maxPrice;
+    if (ruleFired) ruleLinked += 1;
+    const proposed = ruleFired ? Math.round(p.competitorAvg / 100) * 100 : Math.round((p.price * (1 + dir * pct)) / 100) * 100;
     const status = i < count * 0.6 ? 'pending' : i < count * 0.8 ? 'approved' : 'rejected';
     out.push({
       id: `REC-${String(1000 + i)}`,
@@ -122,12 +136,17 @@ export function generateRecommendations(products: Product[], count: number, seed
       confidence: Math.round(50 + r() * 49),
       source: 'agent',
       status,
-      rationale: rationale(p, r),
+      rationale: ruleFired
+        ? [{ key: 'rule', weight: 1, detail: `RULE-001: competitor_gap_pct > 5 (observed ${Math.round(gapPct * 10) / 10})` }]
+        : rationale(p, r),
       projectedMarginImpact: Math.round((proposed - p.price) * (20 + r() * 80)),
       strategyId: null,
       scenarioId: null,
+      ruleId: ruleFired ? 'RULE-001' : null,
       ownerId: 'agent',
-      createdAt: new Date(NOW - Math.floor(r() * 3 * DAY)).toISOString(),
+      // The second rec is seeded 8 days old — past the 7-day decision TTL — so the
+      // approvals inbox has a real `expired` row after the first expiry sweep.
+      createdAt: new Date(NOW - (i === 1 ? 8 : Math.floor(r() * 3)) * DAY).toISOString(),
       decidedAt: status === 'pending' ? null : new Date(NOW - Math.floor(r() * DAY)).toISOString(),
       decisionNote: status === 'rejected' ? 'Competitor data looked stale' : null,
       deployed: false,
@@ -148,6 +167,33 @@ export function generateStrategies(): Strategy[] {
       ...base, id: 'STR-002', name: 'Snack competitor match', objective: 'match_competitor', skuIds: [],
       categories: ['Snacks'], status: 'pending_manager_approval',
       guardrail: { minPrice: null, maxPrice: null, mapEnforced: true, maxChangePercent: 5, autoApproveThreshold: 85 },
+    },
+  ];
+}
+
+export function generateRules(): Rule[] {
+  const base = { ownerId: 'u-analyst-1', updatedAt: new Date(NOW - 4 * DAY).toISOString() };
+  return [
+    {
+      ...base, id: 'RULE-001', name: 'Match competitor when we are >5% above market', status: 'active', priority: 10,
+      scope: { categories: [], regions: [], skus: [] },
+      when: [{ field: 'competitor_gap_pct', op: 'gt', value: 5 }],
+      then: { kind: 'match_competitor', value: 0 },
+    },
+    {
+      ...base, id: 'RULE-002', name: 'Clear stock older than 20 days without a price move', status: 'active', priority: 20,
+      scope: { categories: [], regions: ['Jawa'], skus: [] },
+      when: [
+        { field: 'stock_units', op: 'gt', value: 300 },
+        { field: 'days_since_change', op: 'gt', value: 20 },
+      ],
+      then: { kind: 'delta_percent', value: -4 },
+    },
+    {
+      ...base, id: 'RULE-003', name: 'Hold a 15% margin floor on thin-margin SKUs', status: 'draft', priority: 30,
+      scope: { categories: [], regions: [], skus: [] },
+      when: [{ field: 'margin_pct', op: 'lt', value: 15 }],
+      then: { kind: 'min_margin_pct', value: 15 },
     },
   ];
 }

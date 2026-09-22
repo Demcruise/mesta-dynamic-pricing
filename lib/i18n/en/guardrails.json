@@ -1,0 +1,73 @@
+{
+  "page": {
+    "title": "Guardrail center",
+    "desc": "Every constraint the pricing engine enforces, with live coverage and breach counts for the current scope."
+  },
+  "catalog": {
+    "title": "Constraint catalog"
+  },
+  "constraint": {
+    "bounds": {
+      "name": "Price bounds",
+      "desc": "Per-SKU minimum and maximum price, intersected with the governing strategy's bounds."
+    },
+    "map": {
+      "name": "MAP policy",
+      "desc": "Minimum advertised price. A proposal below MAP is blocked wherever enforcement is on."
+    },
+    "max_change": {
+      "name": "Max change per cycle",
+      "desc": "Largest single-move price change an active strategy permits, applied around the current price.",
+      "detail": "up to ±{v}%"
+    },
+    "auto_approve": {
+      "name": "Auto-approve threshold",
+      "desc": "Confidence above which a strategy proposal can skip manual review. Observational here — enforced at decision time.",
+      "detail": "from {v}"
+    },
+    "margin_floor": {
+      "name": "Margin floor",
+      "desc": "Active min-margin rules that hold a SKU's price at or above the margin floor."
+    },
+    "staleness": {
+      "name": "Price staleness",
+      "desc": "Days since the last price change. Tracked for review queues — not an enforced bound.",
+      "detail": "oldest {v}d"
+    }
+  },
+  "enforced": "Enforced",
+  "observed": "Observed",
+  "breached": "{n} breached",
+  "covered": "{n} SKUs governed",
+  "breaches": {
+    "title": "Current breaches",
+    "none": "No SKU currently breaches a hard constraint."
+  },
+  "drill": {
+    "title": "Per-SKU drill-down",
+    "pick": "Pick a SKU",
+    "current": "Current price",
+    "rawBounds": "Product bounds",
+    "effectiveBounds": "Effective bounds",
+    "map": "MAP floor",
+    "mapOff": "Not enforced",
+    "margin": "Margin",
+    "headroom": "Headroom to max",
+    "lastChange": "Last change",
+    "daysAgo": "{n}d ago",
+    "check": "Current check",
+    "governedBy": "Governed by",
+    "strategy": "Strategy",
+    "noStrategy": "No active strategy — product bounds only",
+    "rules": "Rules",
+    "noRules": "No active rule covers this SKU"
+  },
+  "check": {
+    "ok": "Pass",
+    "invalid": "Invalid",
+    "below_min": "Below minimum",
+    "above_max": "Above maximum",
+    "map_breach": "MAP breach",
+    "exceeds_change": "Exceeds change limit"
+  }
+}

@@ -68,10 +68,10 @@ export function magnitudeOf(r: Recommendation): Magnitude {
 /** The bucket predicate for a queue tab — every clause derives from stored data. */
 export function tabMatches(tab: QueueTab, r: Recommendation, anomalySkus: Set<string>): boolean {
   switch (tab) {
-    case 'decide': return r.status === 'pending';
+    case 'decide': return r.status === 'pending' || r.status === 'escalated';
     case 'deploy': return (r.status === 'approved' || r.status === 'adjusted') && !r.deployed;
     case 'impact': return Math.abs(r.projectedMarginImpact) >= HIGH_IMPACT_IDR;
-    case 'stale': return r.status === 'pending' && recommendationHealth(r).stale;
+    case 'stale': return (r.status === 'pending' || r.status === 'escalated') && recommendationHealth(r).stale;
     case 'anomaly': return anomalySkus.has(r.sku);
     default: return true;
   }

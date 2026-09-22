@@ -11,7 +11,7 @@ import { recommendationHealth } from '@/lib/actions/recommendation';
 import { formatDate, formatPercent, formatPrice } from '@/lib/format';
 import { useTranslation } from '@/lib/i18n';
 import {
-  useAnomalies, useAuditLog, useDeploymentRecords, usePriceEvents, useRecommendations, useScenarios, useSkuList, useStrategies,
+  useAnomalies, useAuditLog, useDeploymentRecords, usePriceEvents, useScenarios, useScopedRecommendations, useScopedSkuList, useScopedSkuSet, useStrategies,
 } from '@/lib/queries';
 import { can } from '@/lib/rbac';
 import { useMonitoringStore, useSessionStore } from '@/lib/stores';
@@ -26,10 +26,15 @@ export function OverviewPage() {
   const { t, locale } = useTranslation();
   const user = useSessionStore((s) => s.user);
   const threshold = useMonitoringStore((s) => s.threshold);
-  const skus = useSkuList();
-  const recs = useRecommendations();
+  const skus = useScopedSkuList();
+  const recs = useScopedRecommendations();
+  const scopedSkuSet = useScopedSkuSet();
   const audit = useAuditLog();
-  const anomalies = useAnomalies();
+  const anomaliesAll = useAnomalies();
+  const anomalies = useMemo(
+    () => ({ ...anomaliesAll, data: scopedSkuSet ? anomaliesAll.data.filter((a) => scopedSkuSet.has(a.sku)) : anomaliesAll.data }),
+    [anomaliesAll, scopedSkuSet],
+  );
   const strategies = useStrategies();
   const scenarios = useScenarios();
   const deployments = useDeploymentRecords();

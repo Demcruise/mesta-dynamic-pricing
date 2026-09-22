@@ -1,0 +1,90 @@
+{
+  "page": {
+    "title": "Pricing rules",
+    "desc": "Deterministic WHEN → THEN rules that generate or guard price changes. Higher-priority rules win when proposals conflict on the same SKU."
+  },
+  "table": {
+    "name": "Rule",
+    "status": "Status",
+    "priority": "Priority",
+    "when": "When",
+    "then": "Then",
+    "scope": "Scope",
+    "updated": "Updated",
+    "actions": "Actions",
+    "matches": "{n} of {total} SKUs match"
+  },
+  "scope": {
+    "all": "All SKUs",
+    "categories": "Categories: {v}",
+    "regions": "Regions: {v}",
+    "skus": "SKUs: {v}",
+    "categoriesLabel": "Categories",
+    "regionsLabel": "Regions",
+    "skusLabel": "SKU filter (comma-separated)",
+    "allWhenEmpty": "Leave empty to apply to all"
+  },
+  "when": {
+    "field": "Field",
+    "op": "Operator",
+    "value": "Value",
+    "add": "Add condition",
+    "title": "When (all conditions must hold)",
+    "field.competitor_gap_pct": "Gap vs competitor avg",
+    "field.margin_pct": "Margin %",
+    "field.stock_units": "Stock units",
+    "field.days_since_change": "Days since last change",
+    "op.gt": "is greater than",
+    "op.lt": "is less than",
+    "op.gte": "is at least",
+    "op.lte": "is at most",
+    "op.eq": "equals",
+    "hint": "All values are numeric — percent, units, days, or price."
+  },
+  "then": {
+    "title": "Then",
+    "formula": "Formula",
+    "kind.delta_percent": "Adjust price by %",
+    "kind.match_competitor": "Match competitor average",
+    "kind.min_margin_pct": "Set price to reach min margin %",
+    "preview": "Formula: {v}"
+  },
+  "builder": {
+    "new": "New rule",
+    "edit": "Edit rule",
+    "nameLabel": "Name",
+    "priorityLabel": "Priority (lower wins)",
+    "statusLabel": "Status",
+    "status.active": "Active",
+    "status.draft": "Draft",
+    "status.paused": "Paused",
+    "previewTitle": "Preview against current catalog",
+    "previewEmpty": "No current SKUs match these conditions.",
+    "save": "Save rule",
+    "validate": "Add at least one condition.",
+    "validated": "Validated"
+  },
+  "run": {
+    "cta": "Run rules",
+    "done": "Rule run finished: {n} recommendations created",
+    "none": "Rule run finished: no SKUs matched",
+    "skipped": "{n} skipped: bounds guardrail would fail",
+    "conflict": "{n} skipped: higher-priority rule already covers the SKU"
+  },
+  "conflict": {
+    "title": "Priority conflicts",
+    "desc": "Multiple active rules target these SKUs — only the highest-priority rule will fire on each run:",
+    "row": "{sku}: {a} outranks {b}"
+  },
+  "actions": {
+    "activate": "Activate",
+    "pause": "Pause",
+    "edit": "Edit"
+  },
+  "err": {
+    "forbidden": "Your role cannot manage or run rules.",
+    "not_found": "Rule not found."
+  },
+  "empty": "No pricing rules yet. Create one to automate price proposals.",
+  "note": "Rules are deterministic and auditable — every generated recommendation links back to the rule that produced it."
+}

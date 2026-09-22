@@ -5,7 +5,7 @@ export const UNDO_WINDOW_MS = 10_000;
 
 export interface StagedDecision {
   recId: string;
-  to: Exclude<RecommendationStatus, 'pending'>;
+  to: 'approved' | 'rejected' | 'adjusted';
   note: string | null;
   proposedPrice: number | null;
   actorId: string;

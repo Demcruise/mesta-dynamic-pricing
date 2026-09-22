@@ -10,6 +10,7 @@ import {
 } from '@/lib/stores';
 import { useDevStore } from '@/lib/stores/dev';
 import { usePublishJobStore } from '@/lib/stores/publish';
+import { useRuleStore } from '@/lib/stores/rule';
 
 /** Any store write invalidates its query domain, so hooks never go stale. */
 function subscribeQueryInvalidation(qc: QueryClient) {
@@ -22,6 +23,7 @@ function subscribeQueryInvalidation(qc: QueryClient) {
     useScenarioStore.subscribe(inv('scenario')),
     useDeploymentStore.subscribe(inv('deployment')),
     usePublishJobStore.subscribe(inv('deployment')),
+    useRuleStore.subscribe(inv('rule')),
     useMonitoringStore.subscribe(inv('anomaly')),
     useMonitoringStore.subscribe(inv('sku')),
     useNotificationStore.subscribe(inv('notification')),

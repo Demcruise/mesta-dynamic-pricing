@@ -17,7 +17,7 @@ import { formatPercent, formatRelativeTime } from '@/lib/format';
 import { useTranslation } from '@/lib/i18n';
 import type { Product, Strategy } from '@/lib/ontology';
 import { BASE_UNITS, CI, project } from '@/lib/projection';
-import { useCompetitorObservations, useScenario, useScenarios, useSkuDetail, useSkuList, useStrategies } from '@/lib/queries';
+import { useCompetitorObservations, useScenario, useScenarios, useScopedSkuList, useSkuDetail, useSkuList, useStrategies } from '@/lib/queries';
 import { skusInScope } from '@/lib/strategy-rules';
 import { useSessionStore, useToastStore } from '@/lib/stores';
 import { DemandChart } from './DemandChart';
@@ -267,7 +267,7 @@ function StrategySelect({ product, strategyId }: { product: Product; strategyId:
 function SkuPicker({ strategyId }: { strategyId: string | null }) {
   const { t } = useTranslation();
   const router = useRouter();
-  const products = useSkuList().data;
+  const products = useScopedSkuList().data;
   const [q, setQ] = useState('');
   const hits = useMemo(() => {
     const n = q.trim().toLowerCase();

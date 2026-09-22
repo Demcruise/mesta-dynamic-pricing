@@ -13,7 +13,7 @@ import { formatPercent } from '@/lib/format';
 import { useCan } from '@/lib/hooks';
 import { useTranslation } from '@/lib/i18n';
 import type { Product } from '@/lib/ontology';
-import { useRecommendations, useSkuList } from '@/lib/queries';
+import { useRecommendations, useScopedSkuList } from '@/lib/queries';
 import { useCatalogSelectionStore, useUiStore } from '@/lib/stores';
 import { useDevStore } from '@/lib/stores/dev';
 import { CatalogTable } from './CatalogTable';
@@ -33,7 +33,7 @@ export function CatalogPage() {
   const router = useRouter();
   const pathname = usePathname();
   const sp = useSearchParams();
-  const skus = useSkuList();
+  const skus = useScopedSkuList();
   const recs = useRecommendations();
   const density = useUiStore((s) => s.density);
   const setDensity = useUiStore((s) => s.setDensity);

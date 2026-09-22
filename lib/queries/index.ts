@@ -3,6 +3,7 @@
 import { useSessionStore } from '../stores/session';
 import { useProductCatalogStore } from '../stores/catalog';
 import { useRecommendationStore } from '../stores/recommendation';
+import { useRuleStore } from '../stores/rule';
 import { useStrategyStore } from '../stores/strategy';
 import { useAuditStore } from '../stores/audit';
 import { useScenarioStore } from '../stores/scenario';
@@ -10,12 +11,43 @@ import { useDeploymentStore } from '../stores/deployment';
 import { usePublishJobStore } from '../stores/publish';
 import { useMonitoringStore } from '../stores/monitoring';
 import { useNotificationStore } from '../stores/notification';
+import { useUiStore } from '../stores/ui';
 import { selectAuditForUser } from '../audit-scope';
+import { inScope, inScopeSkus } from '../scope';
+import { useMemo } from 'react';
 import { keys, useItemQuery, useListQuery } from './core';
 
 export * from './core';
 
 export const useSkuList = () => useListQuery(keys.sku.list(), () => useProductCatalogStore.getState().products);
+
+/** Products in the current Org → Region → Store scope (ui store). Unscoped = whole org. */
+export const useScopedSkuList = () => {
+  const scope = useUiStore((s) => s.scope);
+  const all = useSkuList();
+  const data = useMemo(() => all.data.filter((p) => inScope(p, scope)), [all.data, scope]);
+  return { ...all, data };
+};
+
+/** In-scope SKU set — null when unscoped, so callers can skip filtering cheaply. */
+export const useScopedSkuSet = (): Set<string> | null => {
+  const scope = useUiStore((s) => s.scope);
+  const products = useProductCatalogStore((s) => s.products);
+  return useMemo(() => {
+    if (!scope.region && !scope.store) return null;
+    return new Set(products.filter((p) => inScope(p, scope)).map((p) => p.sku));
+  }, [products, scope]);
+};
+
+/** Recommendations whose SKU is in scope — queue/overview/deploy consume this. */
+export const useScopedRecommendations = () => {
+  const scope = useUiStore((s) => s.scope);
+  const all = useRecommendations();
+  const products = useProductCatalogStore((s) => s.products);
+  const map = useMemo(() => new Map(products.map((p) => [p.sku, p])), [products]);
+  const data = useMemo(() => inScopeSkus(all.data, map, scope), [all.data, map, scope]);
+  return { ...all, data };
+};
 export const useSkuDetail = (sku: string) =>
   useItemQuery(keys.sku.detail(sku), () => useProductCatalogStore.getState().products.find((p) => p.sku === sku));
 
@@ -29,6 +61,7 @@ export const useRecommendations = () =>
 export const useRecommendation = (id: string) =>
   useItemQuery(keys.recommendation.detail(id), () => useRecommendationStore.getState().items.find((r) => r.id === id));
 
+export const useRules = () => useListQuery(keys.rule.list(), () => useRuleStore.getState().items);
 export const useStrategies = () => useListQuery(keys.strategy.list(), () => useStrategyStore.getState().items);
 export const useStrategy = (id: string) =>
   useItemQuery(keys.strategy.detail(id), () => useStrategyStore.getState().items.find((s) => s.id === id));

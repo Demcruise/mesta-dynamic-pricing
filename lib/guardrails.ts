@@ -30,6 +30,11 @@ export function priceBounds(p: Product, strategy: Pick<Strategy, 'guardrail'> | 
   return { min, max, mapEnforced };
 }
 
+/** The active strategy whose scope covers this SKU — the same resolution runRules uses. */
+export function governingStrategy(p: Pick<Product, 'sku' | 'category'>, strategies: Strategy[]): Strategy | null {
+  return strategies.find((s) => s.status === 'active' && (s.skuIds.includes(p.sku) || s.categories.includes(p.category))) ?? null;
+}
+
 export function checkPrice(p: Product, strategy: Pick<Strategy, 'guardrail'> | null, price: number): PriceCheck {
   if (!Number.isFinite(price) || price <= 0) return 'invalid';
   if (price < p.minPrice) return 'below_min';

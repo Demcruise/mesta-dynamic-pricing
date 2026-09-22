@@ -35,6 +35,12 @@ export function RecommendationDetailPage({ recId }: { recId: string }) {
             <section className="rounded-card border border-line bg-surface p-card shadow-e1">
               <h2 className="mb-2 text-sm font-semibold">{t('recommendations.rules.title')}</h2>
               <RuleEvaluation rec={q.data} product={product} />
+              {q.data.ruleId && (
+                <p className="mt-2 text-xs text-muted">
+                  {t('recommendations.rules.generatedBy')}{' '}
+                  <Link href="/rules" className="font-medium text-brand underline-offset-2 hover:underline">{q.data.ruleId}</Link>
+                </p>
+              )}
             </section>
             {q.data.status === 'pending' && (
               <section className="rounded-card border border-line bg-surface p-card shadow-e1">

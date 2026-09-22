@@ -37,9 +37,10 @@ export function RecommendationCard({ rec, product, defaultOpen = false, showStat
   const [dialog, setDialog] = useState<DialogMode>(null);
   const health = recommendationHealth(rec);
   const topReason = [...rec.rationale].sort((a, b) => b.weight - a.weight)[0]?.detail;
-  const pending = rec.status === 'pending';
+  const decidable = rec.status === 'pending' || rec.status === 'escalated';
   const locked = !!staged;
-  const canDecide = pending && !locked && can('recommendation.decide');
+  const canDecide = decidable && !locked && can('recommendation.decide');
+  const [staleAck, setStaleAck] = useState(false);
 
   const latestObs = competitors
     .filter((c) => c.sku === rec.sku)
@@ -64,7 +65,7 @@ export function RecommendationCard({ rec, product, defaultOpen = false, showStat
   ];
 
   const approve = () => {
-    const r = stageDecision(user, rec.id, 'approved');
+    const r = stageDecision(user, rec.id, 'approved', health.stale ? { ackStale: staleAck } : {});
     if (!r.ok) toast(t(`recommendations.err.${r.error}`));
   };
 
@@ -85,7 +86,7 @@ export function RecommendationCard({ rec, product, defaultOpen = false, showStat
         </div>
         <div className="flex flex-wrap items-center gap-2">
           {showStatus && <StatusChip status={rec.status} />}
-          {pending && health.stale && <StatusChip status="stale" />}
+          {decidable && health.stale && <StatusChip status="stale" />}
         </div>
       </header>
 
@@ -105,10 +106,10 @@ export function RecommendationCard({ rec, product, defaultOpen = false, showStat
         <ConfidenceBar value={rec.confidence} />
       </div>
 
-      {pending && health.stale && (
+      {decidable && health.stale && (
         <p role="note" className="flex items-center gap-1.5 text-xs text-warn"><TriangleAlert className="size-3.5" aria-hidden />{t('recommendations.card.stale')}</p>
       )}
-      {pending && health.breach && (
+      {decidable && health.breach && (
         <p role="note" className="flex items-center gap-1.5 text-xs text-critical"><TriangleAlert className="size-3.5" aria-hidden />{t('recommendations.card.breach')}</p>
       )}
 
@@ -150,10 +151,20 @@ export function RecommendationCard({ rec, product, defaultOpen = false, showStat
       )}
 
       <RoleGate action="recommendation.decide">
-        <div className="flex flex-wrap gap-2">
-          <Button size="sm" disabled={!canDecide} onClick={approve}>{t('recommendations.action.approve')}</Button>
+        <div className="flex flex-wrap items-center gap-2">
+          {canDecide && health.stale && (
+            <label className="flex items-center gap-1.5 text-xs text-warn">
+              <input type="checkbox" checked={staleAck} onChange={(e) => setStaleAck(e.target.checked)} />
+              {t('recommendations.card.staleAck')}
+            </label>
+          )}
+          <Button size="sm" disabled={!canDecide || (health.stale && !staleAck)} onClick={approve}>{t('recommendations.action.approve')}</Button>
           <Button size="sm" variant="secondary" disabled={!canDecide} onClick={() => setDialog('adjust')}>{t('recommendations.action.adjust')}</Button>
           <Button size="sm" variant="secondary" disabled={!canDecide} onClick={() => setDialog('reject')}>{t('recommendations.action.reject')}</Button>
+          <Button size="sm" variant="ghost" disabled={!canDecide} onClick={() => setDialog('request')}>{t('recommendations.action.requestChanges')}</Button>
+          {rec.status === 'pending' && (
+            <Button size="sm" variant="ghost" disabled={!canDecide} onClick={() => setDialog('escalate')}>{t('recommendations.action.escalate')}</Button>
+          )}
         </div>
       </RoleGate>
 

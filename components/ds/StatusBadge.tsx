@@ -15,9 +15,9 @@ import { cn } from '@/lib/utils';
  * STATUS_CLS) all resolve through this map so the language stays consistent.
  */
 export type MestaStatus =
-  // Workflow lifecycle — recommendations, strategies, approvals
+  // Workflow lifecycle — recommendations, strategies, rules, approvals
   | 'draft' | 'pending' | 'approved' | 'rejected' | 'adjusted' | 'changes_requested'
-  | 'escalated' | 'expired' | 'stale'
+  | 'escalated' | 'expired' | 'stale' | 'active'
   // Execution — publish/deploy jobs
   | 'queued' | 'scheduled' | 'in_flight' | 'publishing' | 'published' | 'synced'
   | 'failed' | 'rolled_back' | 'cancelled' | 'partial'
@@ -38,6 +38,7 @@ const MAP: Record<MestaStatus, { icon: LucideIcon; cls: string; spin?: boolean }
   escalated: { icon: OctagonAlert, cls: 'bg-warn-soft text-warn' },
   expired: { icon: TimerOff, cls: 'bg-warn-soft text-warn' },
   stale: { icon: TriangleAlert, cls: 'bg-warn-soft text-warn' },
+  active: { icon: CircleCheck, cls: 'bg-up-soft text-up' },
   queued: { icon: Hourglass, cls: 'bg-subtle text-muted' },
   scheduled: { icon: CalendarClock, cls: 'bg-info-soft text-info' },
   in_flight: { icon: LoaderCircle, cls: 'bg-info-soft text-info', spin: true },

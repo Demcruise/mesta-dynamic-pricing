@@ -8,8 +8,11 @@
     "overview": "Ringkasan",
     "catalog": "Katalog",
     "strategy": "Strategi",
+    "rules": "Aturan",
+    "guardrails": "Guardrail",
     "simulation": "Simulasi",
     "recommendations": "Rekomendasi",
+    "approvals": "Persetujuan",
     "deployment": "Deployment",
     "monitoring": "Monitoring",
     "audit": "Audit",
@@ -85,6 +88,16 @@
     "comfortable": "Nyaman",
     "compact": "Ringkas"
   },
+  "scope": {
+    "label": "Cakupan",
+    "region": "Wilayah",
+    "store": "Toko",
+    "allBus": "Semua BU",
+    "allRegions": "Semua wilayah",
+    "allStores": "Semua toko",
+    "allStoresInRegion": "Semua toko di wilayah",
+    "reset": "Atur ulang cakupan"
+  },
   "cmd": {
     "open": "Cari atau lompat ke…",
     "placeholder": "Cari SKU, strategi, rekomendasi…",
@@ -108,6 +121,7 @@
     "escalated": "Dieskalasi",
     "expired": "Kedaluwarsa",
     "stale": "Usang",
+    "active": "Aktif",
     "queued": "Antre",
     "scheduled": "Terjadwal",
     "in_flight": "Dalam proses",
@@ -164,10 +178,13 @@
     "recPending": "Rekomendasi {sku} menunggu keputusan",
     "recReadyDeploy": "{sku} disetujui — siap dideploy",
     "recBulkReady": "{n} rekomendasi disetujui — siap dideploy",
+    "recChanges": "Perubahan diminta untuk {sku}",
+    "recEscalated": "{sku} dieskalasi untuk tinjauan prioritas",
     "deployed": "Harga {sku} tayang di semua kanal",
     "deployFailed": "{sku} gagal di {channel}",
     "rolledBack": "Publikasi {sku} dikembalikan ke harga sebelumnya",
     "flagged": "{sku} ditandai untuk tinjauan model",
+    "ruleRun": "Eksekusi aturan: {n} rekomendasi baru",
     "grouped": "{n} serupa"
   },
   "a11y": {
@@ -207,6 +224,10 @@
     "recommendation_approve": "Rekomendasi disetujui",
     "recommendation_reject": "Rekomendasi ditolak",
     "recommendation_adjust": "Rekomendasi disesuaikan",
+    "recommendation_request_changes": "Perubahan diminta",
+    "recommendation_escalate": "Rekomendasi dieskalasi",
+    "recommendation_expire": "Rekomendasi kedaluwarsa",
+    "recommendation_resubmit": "Rekomendasi dikirim ulang",
     "deployment_success": "Deployment berhasil",
     "deployment_failure": "Deployment gagal",
     "deployment_retry": "Deployment diulang",
@@ -215,7 +236,9 @@
     "publish_cancelled": "Publikasi terjadwal dibatalkan",
     "model_review_feedback": "Ditandai untuk tinjauan model",
     "manual_override": "Override manual",
-    "strategy_rollback": "Strategi dikembalikan"
+    "strategy_rollback": "Strategi dikembalikan",
+    "rule_run": "Eksekusi aturan dijalankan",
+    "rule_save": "Aturan disimpan"
   },
   "channel": {
     "pos": "POS",
@@ -234,7 +257,10 @@
     "system": "Sistem"
   },
   "action": {
-    "viewAudit": "Lihat jejak audit"
+    "viewAudit": "Lihat jejak audit",
+    "cancel": "Batal",
+    "remove": "Hapus",
+    "save": "Simpan"
   },
   "freshness": {
     "updated": "Diperbarui {at}",

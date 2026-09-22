@@ -20,7 +20,7 @@ import { formatDate, formatPercent, formatRelativeTime } from '@/lib/format';
 import { useCan } from '@/lib/hooks';
 import { useTranslation } from '@/lib/i18n';
 import type { DeploymentRecord, DeploymentStatus, PublishJob, Recommendation } from '@/lib/ontology';
-import { useAuditLog, useDeploymentRecords, usePublishJobs, useRecommendations, useSkuList } from '@/lib/queries';
+import { useAuditLog, useDeploymentRecords, usePublishJobs, useScopedRecommendations, useScopedSkuSet, useSkuList } from '@/lib/queries';
 import { useSessionStore, useToastStore } from '@/lib/stores';
 import { cn } from '@/lib/utils';
 import { PublishDialog } from './PublishDialog';
@@ -40,9 +40,14 @@ export function DeploymentPage() {
   const user = useSessionStore((s) => s.user);
   const toast = useToastStore((s) => s.push);
   const can = useCan();
-  const recs = useRecommendations();
+  const recs = useScopedRecommendations();
   const recsData = recs.data;
-  const records = useDeploymentRecords();
+  const scopedSkuSet = useScopedSkuSet();
+  const recordsAll = useDeploymentRecords();
+  const records = useMemo(
+    () => ({ ...recordsAll, data: scopedSkuSet ? recordsAll.data.filter((r) => scopedSkuSet.has(r.sku)) : recordsAll.data }),
+    [recordsAll, scopedSkuSet],
+  );
   const skus = useSkuList();
   const audit = useAuditLog();
   const jobs = usePublishJobs();
@@ -56,6 +61,7 @@ export function DeploymentPage() {
   const names = useMemo(() => new Map(skus.data.map((p) => [p.sku, p.name])), [skus.data]);
   const activeJobRecIds = useMemo(
     () => new Set(jobs.data.filter((j) => ['scheduled', 'publishing', 'partial', 'failed'].includes(liveJobStatus(j))).map((j) => j.recommendationId)),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [jobs.data, records.data],
   );
   const awaiting = useMemo(
@@ -63,9 +69,10 @@ export function DeploymentPage() {
     [recsData, activeJobRecIds],
   );
   const jobRows = useMemo(
-    () => jobs.data.map((j) => ({ job: j, live: liveJobStatus(j), rs: records.data.filter((r) => r.jobId === j.id) }))
+    () => jobs.data.filter((j) => !scopedSkuSet || scopedSkuSet.has(j.sku))
+      .map((j) => ({ job: j, live: liveJobStatus(j), rs: records.data.filter((r) => r.jobId === j.id) }))
       .sort((a, b) => b.job.updatedAt.localeCompare(a.job.updatedAt)),
-    [jobs.data, records.data],
+    [jobs.data, records.data, scopedSkuSet],
   );
   const rows = useMemo(
     () => records.data.filter((r) => !status || r.status === status)

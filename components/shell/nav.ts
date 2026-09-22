@@ -1,5 +1,5 @@
 import {
-  Activity, BarChart3, FlaskConical, LayoutDashboard, Package, Palette, ScrollText, Send, Settings, Sparkles,
+  Activity, BarChart3, FlaskConical, Inbox, LayoutDashboard, ListChecks, Package, Palette, ScrollText, Send, Settings, ShieldCheck, Sparkles,
   type LucideIcon,
 } from 'lucide-react';
 import type { Action } from '@/lib/rbac';
@@ -7,7 +7,7 @@ import type { Action } from '@/lib/rbac';
 export interface NavItem {
   href: string;
   key:
-    | 'overview' | 'catalog' | 'strategy' | 'simulation' | 'recommendations' | 'deployment' | 'monitoring' | 'audit'
+    | 'overview' | 'catalog' | 'strategy' | 'rules' | 'guardrails' | 'simulation' | 'recommendations' | 'approvals' | 'deployment' | 'monitoring' | 'audit'
     | 'designSystem' | 'settings';
   icon: LucideIcon;
   /** Absent = visible to every role (open routes). */
@@ -28,8 +28,11 @@ export const NAV_SECTIONS: NavSection[] = [
     items: [
       { href: '/catalog', key: 'catalog', icon: Package, action: 'catalog.view' },
       { href: '/strategy', key: 'strategy', icon: BarChart3, action: 'strategy.view' },
+      { href: '/rules', key: 'rules', icon: ListChecks, action: 'rule.view' },
+      { href: '/guardrails', key: 'guardrails', icon: ShieldCheck, action: 'guardrail.view' },
       { href: '/simulation', key: 'simulation', icon: FlaskConical, action: 'simulation.use' },
       { href: '/recommendations', key: 'recommendations', icon: Sparkles, action: 'recommendation.view', badge: 'pendingRecommendations' },
+      { href: '/approvals', key: 'approvals', icon: Inbox, action: 'recommendation.decide' },
       { href: '/deployment', key: 'deployment', icon: Send, action: 'deployment.view', mobile: true, badge: 'failedDeployments' },
     ],
   },

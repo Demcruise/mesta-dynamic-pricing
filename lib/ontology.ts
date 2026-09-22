@@ -14,6 +14,9 @@ export interface Product {
   sku: string;
   name: string;
   category: string;
+  /** Org → BU → Region → Store scope (BU derived via buOf). */
+  region: string;
+  store: string;
   cost: number;
   price: number;
   minPrice: number;
@@ -69,15 +72,39 @@ export interface Scenario {
   recommendationId: string | null;
 }
 
-export type RationaleFactorKey = 'competitor' | 'elasticity' | 'stock' | 'seasonality';
+export type RationaleFactorKey = 'competitor' | 'elasticity' | 'stock' | 'seasonality' | 'rule';
 export interface RationaleFactor {
   key: RationaleFactorKey;
   weight: number; // 0-1, sums to ~1
   detail: string;
 }
 
-export type RecommendationStatus = 'pending' | 'approved' | 'rejected' | 'adjusted';
+export type RecommendationStatus = 'pending' | 'approved' | 'rejected' | 'adjusted' | 'changes_requested' | 'escalated' | 'expired';
 export type RecommendationSource = 'agent' | 'simulation' | 'manual';
+
+/** WHEN condition fields — every value derivable from stored product data. */
+export type RuleConditionField = 'competitor_gap_pct' | 'margin_pct' | 'stock_units' | 'days_since_change';
+export type ConditionOp = 'lt' | 'lte' | 'gt' | 'gte' | 'eq';
+export interface RuleCondition { field: RuleConditionField; op: ConditionOp; value: number }
+/** THEN formulas: what price the rule proposes when it fires. */
+export type RuleFormulaKind = 'match_competitor' | 'delta_percent' | 'min_margin_pct';
+export interface RuleFormula { kind: RuleFormulaKind; value: number }
+export type RuleStatus = 'active' | 'draft' | 'paused';
+/** Where a rule applies — empty arrays mean "all". */
+export interface RuleScope { categories: string[]; regions: string[]; skus: string[] }
+
+/** WHEN/AND/THEN pricing rule (enterprise EPIC 06). Lower priority wins; ties are conflicts. */
+export interface Rule {
+  id: string;
+  name: string;
+  status: RuleStatus;
+  priority: number;
+  scope: RuleScope;
+  when: RuleCondition[];
+  then: RuleFormula;
+  ownerId: string;
+  updatedAt: string;
+}
 
 export interface Recommendation {
   id: string;
@@ -91,6 +118,8 @@ export interface Recommendation {
   projectedMarginImpact: number; // IDR
   strategyId: string | null;
   scenarioId: string | null;
+  /** Set when the rec was produced by a WHEN/AND/THEN rule run. */
+  ruleId: string | null;
   createdAt: string;
   /** Who produced the recommendation — 'agent' for generated ones, a user id for simulation sends. */
   ownerId: string;
@@ -157,8 +186,10 @@ export type AuditEventType =
   | 'strategy_submit' | 'strategy_activate' | 'strategy_reject' | 'strategy_rollback'
   | 'scenario_sent'
   | 'recommendation_approve' | 'recommendation_reject' | 'recommendation_adjust'
+  | 'recommendation_request_changes' | 'recommendation_escalate' | 'recommendation_expire' | 'recommendation_resubmit'
   | 'deployment_success' | 'deployment_failure' | 'deployment_retry' | 'deployment_rollback'
   | 'publish_scheduled' | 'publish_cancelled'
+  | 'rule_save' | 'rule_run'
   | 'model_review_feedback' | 'manual_override';
 
 export interface AuditEvent {
@@ -166,7 +197,7 @@ export interface AuditEvent {
   type: AuditEventType;
   actorId: string;
   actorRole: Role;
-  entityType: 'strategy' | 'scenario' | 'recommendation' | 'deployment' | 'anomaly' | 'product';
+  entityType: 'strategy' | 'scenario' | 'recommendation' | 'deployment' | 'anomaly' | 'product' | 'rule';
   entityId: string;
   sku: string | null;
   source: 'ui' | 'agent' | 'system';

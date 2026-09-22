@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { Locale } from '../format';
+import { ORG_SCOPE, type ScopeSelection } from '../scope';
 
 export type Density = 'compact' | 'comfortable';
 export type Theme = 'light' | 'dark';
@@ -10,9 +11,12 @@ interface UiState {
   theme: Theme;
   locale: Locale;
   sidebarCollapsed: boolean;
+  /** Org → Region → Store slice every scoped page filters by. */
+  scope: ScopeSelection;
   setDensity: (d: Density) => void;
   setTheme: (t: Theme) => void;
   setLocale: (l: Locale) => void;
+  setScope: (s: ScopeSelection) => void;
   toggleSidebar: () => void;
 }
 
@@ -27,9 +31,11 @@ export const useUiStore = create<UiState>()(
       theme: 'light',
       locale: 'id',
       sidebarCollapsed: false,
+      scope: ORG_SCOPE,
       setDensity: (density) => set({ density }),
       setTheme: (theme) => set({ theme }),
       setLocale: (locale) => set({ locale }),
+      setScope: (scope) => set({ scope }),
       toggleSidebar: () => set((s) => ({ sidebarCollapsed: !s.sidebarCollapsed })),
     }),
     { name: 'mesta-ui', skipHydration: true },

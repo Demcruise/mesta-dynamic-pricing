@@ -1,0 +1,29 @@
+{
+  "page": {
+    "title": "Kotak persetujuan",
+    "desc": "Rekomendasi yang keluar dari antrean normal — eskalasi, permintaan perubahan, dan item kedaluwarsa. Item eskalasi tetap dapat diputuskan di sini."
+  },
+  "empty": "Kotak kosong — tidak ada yang dieskalasi, dikembalikan, atau kedaluwarsa.",
+  "escalated": {
+    "title": "Dieskalasi",
+    "desc": "Ditandai untuk tinjauan prioritas. Tetap dapat diputuskan — setujui, sesuaikan, tolak, atau kembalikan."
+  },
+  "changes": {
+    "title": "Perubahan diminta",
+    "desc": "Dikembalikan untuk perbaikan. Mengirim ulang mengembalikan rekomendasi ke antrean sebagai pending."
+  },
+  "expired": {
+    "title": "Kedaluwarsa",
+    "desc": "Tidak diputuskan melewati TTL 7 hari. Buka kembali hanya setelah memastikan data masih terkini.",
+    "note": "Rekomendasi kedaluwarsa otomatis — membuka kembali menjalankan ulang pemeriksaan keusangan saat persetujuan."
+  },
+  "action": {
+    "resubmit": "Kirim ulang",
+    "reopen": "Buka kembali"
+  },
+  "resubmit": {
+    "title": "Kirim ulang rekomendasi",
+    "noteLabel": "Catatan (konteks opsional)",
+    "staleNote": "Data pendukung berubah sejak rekomendasi dibuat — pemeriksaan keusangan baru berjalan saat persetujuan."
+  }
+}

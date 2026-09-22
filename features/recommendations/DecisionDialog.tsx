@@ -5,27 +5,34 @@ import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { Field, Input } from '@/components/ui/field';
 import { ConsequencePreview } from '@/components/ds/trust';
-import { stageDecision } from '@/lib/actions/recommendation';
+import { escalateRecommendation, requestChanges, stageDecision } from '@/lib/actions/recommendation';
 import { checkPrice } from '@/lib/guardrails';
 import { formatPrice } from '@/lib/format';
 import { useTranslation } from '@/lib/i18n';
 import type { Product, Recommendation } from '@/lib/ontology';
 import { useSessionStore, useStrategyStore, useToastStore } from '@/lib/stores';
 
-export type DialogMode = 'reject' | 'adjust' | null;
+export type DialogMode = 'reject' | 'adjust' | 'request' | 'escalate' | null;
+
+const TITLES: Record<NonNullable<DialogMode>, string> = {
+  adjust: 'recommendations.dialog.adjustTitle',
+  reject: 'recommendations.dialog.rejectTitle',
+  request: 'recommendations.dialog.requestTitle',
+  escalate: 'recommendations.dialog.escalateTitle',
+};
 
 export function DecisionDialog({ rec, product, mode, onClose }: {
   rec: Recommendation; product: Product | undefined; mode: DialogMode; onClose: () => void;
 }) {
   const { t } = useTranslation();
   return (
-    <Dialog open={mode !== null} onClose={onClose} title={t(mode === 'adjust' ? 'recommendations.dialog.adjustTitle' : 'recommendations.dialog.rejectTitle')}>
+    <Dialog open={mode !== null} onClose={onClose} title={t(mode ? TITLES[mode] : '')}>
       {mode && <Form key={mode} rec={rec} product={product} mode={mode} onClose={onClose} />}
     </Dialog>
   );
 }
 
-function Form({ rec, product, mode, onClose }: { rec: Recommendation; product: Product | undefined; mode: 'reject' | 'adjust'; onClose: () => void }) {
+function Form({ rec, product, mode, onClose }: { rec: Recommendation; product: Product | undefined; mode: NonNullable<DialogMode>; onClose: () => void }) {
   const { t, locale } = useTranslation();
   const user = useSessionStore((s) => s.user);
   const toast = useToastStore((s) => s.push);
@@ -41,12 +48,16 @@ function Form({ rec, product, mode, onClose }: { rec: Recommendation; product: P
     : null;
   const noteErr = note.trim() ? undefined : t('recommendations.err.note_required');
   const priceErr = priceCheck === 'ok' ? undefined : t(`recommendations.err.${priceCheck}`);
+  // Escalation note is optional context; request/reject/adjust all require one.
+  const noteRequired = mode !== 'escalate';
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitted(true);
-    if (noteErr || priceErr) return;
-    const r = stageDecision(user, rec.id, mode === 'adjust' ? 'adjusted' : 'rejected', { note, proposedPrice: Number(price) });
+    if ((noteRequired && noteErr) || priceErr) return;
+    const r = mode === 'request' ? requestChanges(user, rec.id, note)
+      : mode === 'escalate' ? escalateRecommendation(user, rec.id, note)
+      : stageDecision(user, rec.id, mode === 'adjust' ? 'adjusted' : 'rejected', { note, proposedPrice: Number(price) });
     if (!r.ok) { toast(t(`recommendations.err.${r.error}`)); return; }
     onClose();
   };
@@ -73,7 +84,7 @@ function Form({ rec, product, mode, onClose }: { rec: Recommendation; product: P
           )}
         </>
       )}
-      <Field label={t('recommendations.dialog.note')} error={submitted ? noteErr : undefined}>
+      <Field label={t(mode === 'escalate' ? 'recommendations.dialog.noteOptional' : 'recommendations.dialog.note')} error={submitted && noteRequired ? noteErr : undefined}>
         {(p) => <Input {...p} value={note} onChange={(e) => setNote(e.target.value)} />}
       </Field>
       <div className="flex justify-end gap-2">

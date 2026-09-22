@@ -1,6 +1,6 @@
 import {
   applySeedDeployments, generateAnomalies, generateAudit, generateCompetitors, generateDeployments,
-  generateProducts, generateRecommendations, generateStrategies,
+  generateProducts, generateRecommendations, generateRules, generateStrategies,
 } from './mock-data';
 import { cancelAllDecisionTimers } from './actions/recommendation';
 import {
@@ -8,6 +8,8 @@ import {
   useProductCatalogStore, useRecommendationStore, useScenarioStore, useStrategyStore,
 } from './stores';
 import { usePublishJobStore } from './stores/publish';
+import { useRuleStore } from './stores/rule';
+import { expireStaleRecommendations } from './actions/recommendation';
 
 export const DEFAULT_PRODUCT_COUNT = 500;
 export const STRESS_PRODUCT_COUNT = 5000;
@@ -37,7 +39,9 @@ export function bootstrapMestaData({ productCount = DEFAULT_PRODUCT_COUNT, force
   usePublishJobStore.getState().hydrate(deploymentSeed.jobs);
   useMonitoringStore.getState().hydrate(generateAnomalies(seeded.products), seeded.outcomes);
   useStrategyStore.getState().hydrate(generateStrategies());
+  useRuleStore.getState().hydrate(generateRules());
   useAuditStore.getState().hydrate(generateAudit(recs));
+  expireStaleRecommendations();
   useNotificationStore.getState().reset();
   useScenarioStore.getState().reset();
   cancelAllDecisionTimers();

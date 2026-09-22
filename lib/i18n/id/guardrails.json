@@ -1,0 +1,73 @@
+{
+  "page": {
+    "title": "Pusat guardrail",
+    "desc": "Semua batasan yang ditegakkan mesin harga, dengan cakupan langsung dan jumlah pelanggaran untuk cakupan saat ini."
+  },
+  "catalog": {
+    "title": "Katalog batasan"
+  },
+  "constraint": {
+    "bounds": {
+      "name": "Batas harga",
+      "desc": "Harga minimum dan maksimum per SKU, diiriskan dengan batas strategi yang mengatur."
+    },
+    "map": {
+      "name": "Kebijakan MAP",
+      "desc": "Harga iklan minimum. Proposal di bawah MAP diblokir di mana pun penegakan aktif."
+    },
+    "max_change": {
+      "name": "Perubahan maks per siklus",
+      "desc": "Perubahan harga satu langkah terbesar yang diizinkan strategi aktif, dihitung dari harga saat ini.",
+      "detail": "hingga ±{v}%"
+    },
+    "auto_approve": {
+      "name": "Ambang auto-approve",
+      "desc": "Keyakinan di mana proposal strategi dapat melewati tinjauan manual. Observasional di sini — ditegakkan saat keputusan.",
+      "detail": "mulai {v}"
+    },
+    "margin_floor": {
+      "name": "Batas bawah margin",
+      "desc": "Aturan margin-minimum aktif yang menahan harga SKU di atau di atas batas margin."
+    },
+    "staleness": {
+      "name": "Keusangan harga",
+      "desc": "Hari sejak perubahan harga terakhir. Dilacak untuk antrean tinjauan — bukan batas yang ditegakkan.",
+      "detail": "tertua {v}h"
+    }
+  },
+  "enforced": "Ditegakkan",
+  "observed": "Diamati",
+  "breached": "{n} melanggar",
+  "covered": "{n} SKU diatur",
+  "breaches": {
+    "title": "Pelanggaran saat ini",
+    "none": "Tidak ada SKU yang melanggar batasan keras saat ini."
+  },
+  "drill": {
+    "title": "Rincian per SKU",
+    "pick": "Pilih SKU",
+    "current": "Harga saat ini",
+    "rawBounds": "Batas produk",
+    "effectiveBounds": "Batas efektif",
+    "map": "Batas MAP",
+    "mapOff": "Tidak ditegakkan",
+    "margin": "Margin",
+    "headroom": "Ruang ke maks",
+    "lastChange": "Perubahan terakhir",
+    "daysAgo": "{n}h lalu",
+    "check": "Pemeriksaan saat ini",
+    "governedBy": "Diatur oleh",
+    "strategy": "Strategi",
+    "noStrategy": "Tanpa strategi aktif — hanya batas produk",
+    "rules": "Aturan",
+    "noRules": "Tidak ada aturan aktif yang mencakup SKU ini"
+  },
+  "check": {
+    "ok": "Lulus",
+    "invalid": "Tidak valid",
+    "below_min": "Di bawah minimum",
+    "above_max": "Di atas maksimum",
+    "map_breach": "Pelanggaran MAP",
+    "exceeds_change": "Melebihi batas perubahan"
+  }
+}

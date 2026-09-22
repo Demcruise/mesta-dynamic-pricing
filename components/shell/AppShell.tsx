@@ -9,6 +9,7 @@ import { FeedbackDialog } from './FeedbackDialog';
 import { GlossaryDialog } from './Glossary';
 import { RouteGuard, useGuardStore } from './guard';
 import { MobileNav } from './MobileNav';
+import { ScopeSelector } from './ScopeSelector';
 import { Sidebar } from './Sidebar';
 import { ToastHost } from './ToastHost';
 import { TopBar } from './TopBar';
@@ -33,6 +34,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col">
         <TopBar />
+        <ScopeSelector />
         {deniedFrom && pathname === '/overview' && (
           <div role="status" className="flex items-center justify-between gap-3 bg-warn-soft px-4 py-2 text-sm text-warn">
             <span>{t('common.perm.notice')}</span>

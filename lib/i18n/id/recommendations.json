@@ -7,16 +7,18 @@
     "current": "Saat ini", "proposed": "Usulan", "competitor": "Rata-rata kompetitor", "impact": "Dampak margin proyeksi", "created": "Dibuat",
     "evidence": "Bukti", "trend": "Tren harga terbaru", "simulate": "Buka simulasi", "detail": "Buka detail", "stale": "Usang: harga atau data kompetitor berubah sejak dibuat",
     "breach": "Pelanggaran guardrail: harga usulan di luar batas yang diizinkan", "pendingUndo": "Keputusan tertunda: {s} dtk untuk batal", "decision": "Catatan keputusan", "decidedAt": "Diputuskan",
-    "owner": "Pemilik", "reason": "Pendorong utama"
+    "owner": "Pemilik", "reason": "Pendorong utama",
+    "staleAck": "Saya sudah memeriksa ulang data terkini"
   },
   "tabs": {
     "label": "Antrean kerja", "all": "Semua", "decide": "Perlu keputusan", "deploy": "Siap deploy",
     "impact": "Dampak tinggi", "stale": "Usang", "anomaly": "SKU anomali",
     "impactHint": "Proyeksi dampak margin ≥ IDR {n}"
   },
-  "action": { "approve": "Setujui", "reject": "Tolak", "adjust": "Sesuaikan", "undo": "Batalkan", "confirm": "Konfirmasi", "cancel": "Batal", "bulk": "Setujui massal", "more": "Tampilkan lagi ({n} tersisa)" },
+  "action": { "approve": "Setujui", "reject": "Tolak", "adjust": "Sesuaikan", "undo": "Batalkan", "confirm": "Konfirmasi", "cancel": "Batal", "bulk": "Setujui massal", "more": "Tampilkan lagi ({n} tersisa)", "requestChanges": "Minta perubahan", "escalate": "Eskalasi" },
   "dialog": {
     "rejectTitle": "Tolak rekomendasi", "adjustTitle": "Sesuaikan harga usulan", "note": "Catatan (wajib)", "newPrice": "Harga disesuaikan", "delta": "Perubahan vs saat ini",
+    "requestTitle": "Minta perubahan", "escalateTitle": "Eskalasi untuk tinjauan prioritas", "noteOptional": "Catatan (opsional)",
     "bulkTitle": "Setujui massal", "threshold": "Keyakinan minimum", "targets": "{n} rekomendasi akan disetujui", "impact": "Total dampak margin proyeksi",
     "excluded": "{n} dikecualikan ({stale} usang, {breach} melanggar guardrail)", "none": "Tidak ada yang memenuhi ambang ini.", "confirmBulk": "Setujui {n}",
     "checklist": "Pilih rekomendasi untuk disetujui", "excludedList": "Tampilkan yang dikecualikan ({n})", "excludedShort": "{n} dikecualikan", "targetsShort": "{n} rekomendasi",
@@ -43,7 +45,9 @@
   "err": {
     "forbidden": "Peran Anda tidak dapat memutuskan rekomendasi.", "not_found": "Rekomendasi tidak ditemukan.", "not_pending": "Rekomendasi ini sudah diputuskan.",
     "already_staged": "Keputusan sedang menunggu pembatalan.", "note_required": "Catatan wajib diisi.", "invalid": "Masukkan harga yang valid.",
-    "below_min": "Harga di bawah minimum.", "above_max": "Harga di atas maksimum.", "map_breach": "Harga melanggar MAP.", "exceeds_change": "Harga di luar guardrail strategi."
+    "below_min": "Harga di bawah minimum.", "above_max": "Harga di atas maksimum.", "map_breach": "Harga melanggar MAP.", "exceeds_change": "Harga di luar guardrail strategi.",
+    "stale": "Data berubah sejak rekomendasi dibuat — konfirmasi pemeriksaan keusangan untuk tetap menyetujui.",
+    "invalid_transition": "Perubahan status itu tidak diizinkan."
   },
   "notFound": "Rekomendasi tidak ditemukan.",
   "back": "Kembali ke antrean",
@@ -53,6 +57,7 @@
     "caption": "Bagaimana harga usulan dinilai terhadap setiap pemeriksaan",
     "check": "Pemeriksaan", "expected": "Diharapkan", "actual": "Aktual", "result": "Hasil",
     "pass": "Lulus", "fail": "Gagal", "na": "n/a",
+    "generatedBy": "Dihasilkan oleh aturan",
     "rows": {
       "min_price": "Harga minimum",
       "max_price": "Harga maksimum",

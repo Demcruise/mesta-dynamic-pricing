@@ -38,7 +38,7 @@ describe('undo toast', () => {
   it('shows a countdown and Undo cancels the decision without an audit event', () => {
     const rec = pending();
     const user = useSessionStore.getState().user;
-    stageDecision(user, rec.id, 'approved');
+    stageDecision(user, rec.id, 'approved', { ackStale: true });
     render(<ToastHost />);
     expect(screen.getByText(/approved/i)).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }));

@@ -8,8 +8,11 @@
     "overview": "Overview",
     "catalog": "Catalog",
     "strategy": "Strategy",
+    "rules": "Rules",
+    "guardrails": "Guardrails",
     "simulation": "Simulation",
     "recommendations": "Recommendations",
+    "approvals": "Approvals",
     "deployment": "Deployment",
     "monitoring": "Monitoring",
     "audit": "Audit",
@@ -85,6 +88,16 @@
     "comfortable": "Comfortable",
     "compact": "Compact"
   },
+  "scope": {
+    "label": "Scope",
+    "region": "Region",
+    "store": "Store",
+    "allBus": "All BUs",
+    "allRegions": "All regions",
+    "allStores": "All stores",
+    "allStoresInRegion": "All stores in region",
+    "reset": "Reset scope"
+  },
   "cmd": {
     "open": "Search or jump to…",
     "placeholder": "Search SKUs, strategies, recommendations…",
@@ -108,6 +121,7 @@
     "escalated": "Escalated",
     "expired": "Expired",
     "stale": "Stale",
+    "active": "Active",
     "queued": "Queued",
     "scheduled": "Scheduled",
     "in_flight": "In flight",
@@ -164,10 +178,13 @@
     "recPending": "{sku} recommendation awaits a decision",
     "recReadyDeploy": "{sku} approved — ready to deploy",
     "recBulkReady": "{n} recommendations approved — ready to deploy",
+    "recChanges": "Changes requested on {sku}",
+    "recEscalated": "{sku} was escalated for priority review",
     "deployed": "{sku} price is live on all channels",
     "deployFailed": "{sku} failed on {channel}",
     "rolledBack": "{sku} publish rolled back to the previous price",
     "flagged": "{sku} flagged for model review",
+    "ruleRun": "Rule run: {n} new recommendations",
     "grouped": "{n} similar"
   },
   "a11y": {
@@ -207,6 +224,10 @@
     "recommendation_approve": "Recommendation approved",
     "recommendation_reject": "Recommendation rejected",
     "recommendation_adjust": "Recommendation adjusted",
+    "recommendation_request_changes": "Changes requested",
+    "recommendation_escalate": "Recommendation escalated",
+    "recommendation_expire": "Recommendation expired",
+    "recommendation_resubmit": "Recommendation resubmitted",
     "deployment_success": "Deployment succeeded",
     "deployment_failure": "Deployment failed",
     "deployment_retry": "Deployment retried",
@@ -215,7 +236,9 @@
     "publish_cancelled": "Scheduled publish cancelled",
     "model_review_feedback": "Flagged for model review",
     "manual_override": "Manual override",
-    "strategy_rollback": "Strategy rolled back"
+    "strategy_rollback": "Strategy rolled back",
+    "rule_run": "Rule run executed",
+    "rule_save": "Rule saved"
   },
   "channel": {
     "pos": "POS",
@@ -234,7 +257,10 @@
     "system": "System"
   },
   "action": {
-    "viewAudit": "View audit trail"
+    "viewAudit": "View audit trail",
+    "cancel": "Cancel",
+    "remove": "Remove",
+    "save": "Save"
   },
   "freshness": {
     "updated": "Updated {at}",

@@ -60,6 +60,7 @@ export function sendScenario(user: UserSession, scenarioId: string): (Ok & { rec
     projectedMarginImpact: Math.round(proj.grossMargin - base.grossMargin),
     strategyId: sc.strategyId,
     scenarioId: sc.id,
+    ruleId: null,
     ownerId: user.userId,
     createdAt: new Date().toISOString(),
     decidedAt: null,

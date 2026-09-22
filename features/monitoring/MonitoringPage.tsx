@@ -16,7 +16,7 @@ import { flagForModelReview, groupAnomalies } from '@/lib/actions/monitoring';
 import { formatRelativeTime } from '@/lib/format';
 import { useTranslation } from '@/lib/i18n';
 import type { AnomalyAlert } from '@/lib/ontology';
-import { useAnomalies, useOutcomes } from '@/lib/queries';
+import { useAnomalies, useOutcomes, useScopedSkuSet } from '@/lib/queries';
 import { useMonitoringStore, useSessionStore, useToastStore } from '@/lib/stores';
 import { cn } from '@/lib/utils';
 
@@ -28,8 +28,17 @@ type Metric = 'revenue' | 'margin' | 'units';
 
 export function MonitoringPage() {
   const { t, locale } = useTranslation();
-  const outcomes = useOutcomes();
-  const anomalies = useAnomalies();
+  const outcomesAll = useOutcomes();
+  const anomaliesAll = useAnomalies();
+  const scopedSkuSet = useScopedSkuSet();
+  const outcomes = useMemo(
+    () => ({ ...outcomesAll, data: scopedSkuSet ? outcomesAll.data.filter((o) => scopedSkuSet.has(o.sku)) : outcomesAll.data }),
+    [outcomesAll, scopedSkuSet],
+  );
+  const anomalies = useMemo(
+    () => ({ ...anomaliesAll, data: scopedSkuSet ? anomaliesAll.data.filter((a) => scopedSkuSet.has(a.sku)) : anomaliesAll.data }),
+    [anomaliesAll, scopedSkuSet],
+  );
   const threshold = useMonitoringStore((s) => s.threshold);
   const setThreshold = useMonitoringStore((s) => s.setThreshold);
   const user = useSessionStore((s) => s.user);

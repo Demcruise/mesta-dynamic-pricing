@@ -1,0 +1,29 @@
+{
+  "page": {
+    "title": "Approval inbox",
+    "desc": "Recommendations that left the normal queue — escalations, change requests, and lapsed items. Escalated items stay decidable here."
+  },
+  "empty": "Inbox zero — nothing escalated, returned, or expired.",
+  "escalated": {
+    "title": "Escalated",
+    "desc": "Flagged for priority review. These remain fully decidable — approve, adjust, reject, or send back."
+  },
+  "changes": {
+    "title": "Changes requested",
+    "desc": "Sent back for rework. Resubmitting returns the recommendation to the queue as pending."
+  },
+  "expired": {
+    "title": "Expired",
+    "desc": "Undecided past the 7-day TTL. Reopen only after confirming the inputs are still current.",
+    "note": "Expired recommendations lapse automatically — reopening re-runs the staleness check at approval."
+  },
+  "action": {
+    "resubmit": "Resubmit",
+    "reopen": "Reopen"
+  },
+  "resubmit": {
+    "title": "Resubmit recommendation",
+    "noteLabel": "Note (optional context)",
+    "staleNote": "The underlying data moved since this recommendation was formed — a fresh staleness check runs on approval."
+  }
+}

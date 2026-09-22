@@ -35,7 +35,7 @@ const jobRecs = (jobId: string) => recs().filter((r) => r.jobId === jobId);
 
 /** Approves a pending rec through the undo window. */
 function approve(r: Recommendation) {
-  expect(stageDecision(analyst, r.id, 'approved').ok).toBe(true);
+  expect(stageDecision(analyst, r.id, 'approved', { ackStale: true }).ok).toBe(true);
   vi.advanceTimersByTime(UNDO_WINDOW_MS + 10);
   expect(useRecommendationStore.getState().items.find((x) => x.id === r.id)?.status).toBe('approved');
 }

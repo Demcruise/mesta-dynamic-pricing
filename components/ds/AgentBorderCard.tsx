@@ -5,7 +5,7 @@ import { useTranslation } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
 
 export type Actor = 'agent' | 'human' | 'rule';
-export type DecisionState = 'pending' | 'approved' | 'rejected' | 'adjusted';
+export type DecisionState = 'pending' | 'approved' | 'rejected' | 'adjusted' | 'changes_requested' | 'escalated' | 'expired';
 
 const BORDER: Record<Actor, string> = {
   agent: 'border-l-agent',
@@ -19,6 +19,9 @@ const STATE_BORDER: Record<DecisionState, string> = {
   approved: 'border-l-up',
   rejected: 'border-l-down',
   adjusted: 'border-l-brand',
+  changes_requested: 'border-l-warn',
+  escalated: 'border-l-warn',
+  expired: 'border-l-line',
 };
 
 export function AgentBorderCard({ actor, status, children, className }: {
