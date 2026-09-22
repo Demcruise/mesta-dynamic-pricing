@@ -134,6 +134,7 @@
     "title": "Notifikasi",
     "empty": "Tidak ada notifikasi.",
     "markAll": "Tandai semua dibaca",
+    "dismiss": "Tutup",
     "strategyPending": "{name} menunggu aktivasi",
     "strategyActive": "{name} kini aktif",
     "strategyRejected": "{name} dikembalikan: {note}",

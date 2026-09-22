@@ -1,19 +1,35 @@
 'use client';
 
-import { Lock } from 'lucide-react';
+import { CheckCircle2, FilterX, Inbox, Lock, type LucideIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { useTranslation } from '@/lib/i18n';
 import { useSessionStore } from '@/lib/stores/session';
+import { useCountUp } from '@/lib/use-count-up';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { DeltaBadge } from './DeltaBadge';
 import { Sparkline } from './Sparkline';
 
+const EMPTY_ICONS: Record<string, { icon: LucideIcon; cls: string }> = {
+  empty: { icon: Inbox, cls: 'bg-subtle text-faint' },
+  filter: { icon: FilterX, cls: 'bg-info-soft text-info' },
+  caughtUp: { icon: CheckCircle2, cls: 'bg-up-soft text-up' },
+};
+
 export function EmptyState({
-  title, action, className, children,
-}: { title: string; action?: { label: string; onClick: () => void }; className?: string; children?: ReactNode }) {
+  title, action, className, children, variant = 'empty',
+}: {
+  title: string;
+  action?: { label: string; onClick: () => void };
+  className?: string;
+  children?: ReactNode;
+  /** Icon treatment per context: no data yet, filters excluded everything, or work is done. */
+  variant?: 'empty' | 'filter' | 'caughtUp';
+}) {
+  const { icon: Icon, cls } = EMPTY_ICONS[variant]!;
   return (
     <div className={cn('flex flex-col items-center gap-3 rounded-card border border-dashed border-line p-10 text-center', className)}>
+      <span aria-hidden className={cn('grid size-10 place-items-center rounded-full', cls)}><Icon className="size-5" /></span>
       <p className="text-sm text-muted">{title}</p>
       {children}
       {action && <Button variant="secondary" onClick={action.onClick}>{action.label}</Button>}
@@ -56,20 +72,25 @@ export function PageHeader({ title, subtitle, actions }: { title: string; subtit
   );
 }
 
-export function KpiCard({ label, value, hint, spark, delta }: {
-  label: string; value: ReactNode; hint?: ReactNode;
+export function KpiCard({ label, value, format, hint, spark, delta }: {
+  label: string; value: number | ReactNode; hint?: ReactNode;
+  /** Formats the animated number (e.g. percent/currency). Defaults to rounded integer. */
+  format?: (value: number) => string;
   /** Per-period series for the inline sparkline (same source as the KPI value). */
   spark?: number[];
   /** Ratio change between the last two periods — icon+label badge, never colour alone. */
   delta?: number;
 }) {
+  const numeric = typeof value === 'number';
+  const animated = useCountUp(numeric ? value : 0, numeric);
+  const shown = numeric ? (format ? format(animated) : String(Math.round(animated))) : value;
   return (
     <div className="rounded-card border border-line bg-surface p-card shadow-e1">
       <div className="flex items-start justify-between gap-2">
         <p className="text-xs text-muted">{label}</p>
         {spark && spark.length > 1 && <Sparkline points={spark} className="h-7 w-16 shrink-0 text-faint" />}
       </div>
-      <p className="tabular mt-1 break-words text-xl font-semibold text-fg sm:text-2xl">{value}</p>
+      <p className="tabular mt-1 break-words text-xl font-semibold text-fg sm:text-2xl">{shown}</p>
       {(delta !== undefined || hint) && (
         <p className="mt-1 flex items-center gap-2 text-xs text-faint">
           {delta !== undefined && <DeltaBadge value={delta} />}

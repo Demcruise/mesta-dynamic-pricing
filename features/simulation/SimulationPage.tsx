@@ -141,7 +141,7 @@ function Simulator({ sku, strategyId, initial, basePrice }: {
               <div className="mb-2 flex items-center justify-between">
                 <h2 className="text-sm font-semibold">{t('simulation.scenario', { n: i + 1 })}</h2>
                 {scenarios.length > 1 && !s.sentRec && (
-                  <button type="button" aria-label={t('simulation.controls.remove', { n: i + 1 })} className="text-muted hover:text-fg"
+                  <button type="button" aria-label={t('simulation.controls.remove', { n: i + 1 })} className="text-muted transition-colors duration-fast hover:text-fg"
                     onClick={() => setScenarios((all) => all.filter((x) => x.key !== s.key))}>×</button>
                 )}
               </div>
@@ -173,7 +173,7 @@ function Simulator({ sku, strategyId, initial, basePrice }: {
         {scenarios.length < MAX_SCENARIOS && (
           <button
             type="button"
-            className="rounded-card border border-dashed border-line p-4 text-sm text-muted hover:bg-subtle"
+            className="rounded-card border border-dashed border-line p-4 text-sm text-muted transition-colors duration-fast hover:bg-subtle"
             onClick={() => { setScenarios((all) => [...all, { key: seq, price: String(product.price), savedId: null, sentRec: null, dirty: true }]); setSeq(seq + 1); }}
           >
             + {t('simulation.controls.add')}
@@ -266,7 +266,7 @@ function SkuPicker({ strategyId }: { strategyId: string | null }) {
         <ul className="mt-2 divide-y divide-line rounded-card border border-line bg-surface shadow-e1">
           {hits.map((p) => (
             <li key={p.sku}>
-              <button type="button" className="flex w-full items-center justify-between px-3 py-2 text-left text-sm hover:bg-subtle"
+              <button type="button" className="flex w-full items-center justify-between px-3 py-2 text-left text-sm transition-colors duration-fast hover:bg-subtle"
                 onClick={() => router.push(`/simulation?sku=${p.sku}${strategyId ? `&strategyId=${strategyId}` : ''}`)}>
                 <span><span className="tabular">{p.sku}</span> · {p.name}</span>
                 <PriceValue value={p.price} muted />

@@ -75,7 +75,12 @@ export function OverviewPage() {
           <section aria-label={t('common.a11y.kpi')} className="mb-4 grid grid-cols-1 gap-3 min-[420px]:grid-cols-2 lg:grid-cols-4">
             {view.kpis.map((k) => (
               <Link key={k.key} href={k.href ?? '/overview'} onClick={() => quick(k.href ?? '/overview')} className="block rounded-card transition-opacity duration-fast hover:opacity-90">
-                <KpiCard label={t(`overview.kpi.${k.key}`)} value={fmt(k)} spark={k.spark} delta={k.delta} />
+                <KpiCard
+                  label={t(`overview.kpi.${k.key}`)}
+                  value={typeof k.value === 'number' ? k.value : fmt(k)}
+                  format={k.kind === 'money' ? (n) => formatPrice(n, locale) : k.kind === 'percent' ? (n) => formatPercent(n, locale) : undefined}
+                  spark={k.spark} delta={k.delta}
+                />
               </Link>
             ))}
           </section>

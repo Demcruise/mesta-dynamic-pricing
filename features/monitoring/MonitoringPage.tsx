@@ -78,7 +78,7 @@ export function MonitoringPage() {
               ))}
             </div>
           </div>
-          {sorted.length === 0 ? <EmptyState title={t('monitoring.forecast.empty')} /> : (
+          {sorted.length === 0 ? <EmptyState variant="caughtUp" title={t('monitoring.forecast.empty')} /> : (
             <>
               <ForecastCharts outcomes={sorted} metric={metric} />
               <div className="mt-4 overflow-x-auto rounded-card border border-line bg-surface shadow-e1">
@@ -128,7 +128,7 @@ export function MonitoringPage() {
               </div>
             </div>
 
-            {visible.length === 0 ? <EmptyState title={t('monitoring.anomaly.empty')} /> : mode === 'digest' ? (
+            {visible.length === 0 ? <EmptyState variant="caughtUp" title={t('monitoring.anomaly.empty')} /> : mode === 'digest' ? (
               <ul className="flex flex-col gap-2">
                 {groups.map((g) => (
                   <li key={g.category} className="rounded-card border border-line bg-surface p-3 shadow-e1">

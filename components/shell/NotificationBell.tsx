@@ -47,9 +47,15 @@ export function NotificationBell() {
             <ul className="max-h-72 divide-y divide-line overflow-auto text-sm">
               {groups.map(({ groupKey, latest, count }) => (
                 <li key={groupKey} className={cn('py-2', latest.read && 'text-muted')}>
-                  <Link href={latest.href ?? '/overview'} onClick={() => { useNotificationStore.getState().markRead(latest.id); setOpen(false); }} className="hover:underline">
-                    {t(latest.messageKey, latest.params)}
-                  </Link>
+                  {latest.href ? (
+                    <Link href={latest.href} onClick={() => { useNotificationStore.getState().markRead(latest.id); setOpen(false); }} className="hover:underline">
+                      {latest.message ?? t(latest.messageKey, latest.params)}
+                    </Link>
+                  ) : (
+                    <button type="button" onClick={() => useNotificationStore.getState().markRead(latest.id)} className="text-left">
+                      {latest.message ?? t(latest.messageKey, latest.params)}
+                    </button>
+                  )}
                   {count > 1 && <span className="ml-2 rounded-full bg-subtle px-1.5 text-xs">{t('common.notify.grouped', { n: count })}</span>}
                 </li>
               ))}

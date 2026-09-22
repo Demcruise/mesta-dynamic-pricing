@@ -17,7 +17,7 @@ export function RecommendationDetailPage({ recId }: { recId: string }) {
 
   return (
     <>
-      <Link href="/recommendations" className="mb-3 inline-flex items-center gap-1 text-sm text-muted hover:text-fg">
+      <Link href="/recommendations" className="mb-3 inline-flex items-center gap-1 text-sm text-muted transition-colors duration-fast hover:text-fg">
         <ArrowLeft className="size-4" aria-hidden />{t('recommendations.back')}
       </Link>
       {q.isLoading ? <LoadingRows rows={3} rowHeight={120} /> : q.isError ? (

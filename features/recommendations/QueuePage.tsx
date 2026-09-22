@@ -135,6 +135,7 @@ export function QueuePage() {
         <ErrorState title={t('common.state.error')} onRetry={recs.refetch} />
       ) : rows.length === 0 ? (
         <EmptyState
+          variant={isDefaultFilters(filters) && pendingTotal === 0 ? 'caughtUp' : 'filter'}
           title={isDefaultFilters(filters) && pendingTotal === 0 ? t('recommendations.empty.caughtUp') : t('recommendations.empty.noMatch')}
           {...(!isDefaultFilters(filters) ? { action: { label: t('common.state.clearFilters'), onClick: () => setFilters(DEFAULT_QUEUE_FILTERS) } } : {})}
         />

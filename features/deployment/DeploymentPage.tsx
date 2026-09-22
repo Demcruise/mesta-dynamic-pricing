@@ -151,7 +151,7 @@ export function DeploymentPage() {
           <section className="mb-5">
             <h2 className="mb-2 text-sm font-semibold">{t('deployment.queue.title')}</h2>
             {awaiting.length === 0 ? (
-              <EmptyState title={t('deployment.queue.empty')} />
+              <EmptyState variant="caughtUp" title={t('deployment.queue.empty')} />
             ) : (
               <ul className="grid gap-2 md:grid-cols-2">
                 {awaiting.map((r) => (
@@ -178,7 +178,7 @@ export function DeploymentPage() {
               </select>
             </div>
             {rows.length === 0 ? (
-              <EmptyState title={t('deployment.table.empty')} {...(status ? { action: { label: t('common.state.clearFilters'), onClick: () => setStatus('') } } : {})} />
+              <EmptyState variant="filter" title={t('deployment.table.empty')} {...(status ? { action: { label: t('common.state.clearFilters'), onClick: () => setStatus('') } } : {})} />
             ) : (
               <MestaDataTable
                 tableId="deployment"

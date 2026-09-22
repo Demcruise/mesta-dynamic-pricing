@@ -6,8 +6,10 @@ export interface Notification {
   targetRole: Role | 'all';
   /** Same groupKey collapses into one row in digest views. */
   groupKey: string;
-  /** i18n key under "common.notify.*"; params are interpolated at render time. */
+  /** i18n key under "common.notify.*"; params are interpolated at render time. Empty when `message` carries literal text. */
   messageKey: string;
+  /** Literal already-translated text (used for toast-originated entries). */
+  message?: string;
   params?: Record<string, string | number>;
   href?: string;
   read: boolean;

@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { undoDecision } from '@/lib/actions/recommendation';
@@ -35,6 +36,7 @@ export function ToastHost() {
   const { t } = useTranslation();
   const staged = useUndoStore((s) => s.staged);
   const toasts = useToastStore((s) => s.toasts);
+  const dismiss = useToastStore((s) => s.dismiss);
   const [now, setNow] = useState(() => Date.now());
   const stagedList = Object.values(staged);
 
@@ -57,7 +59,10 @@ export function ToastHost() {
         </div>
       ))}
       {toasts.map((x) => (
-        <div key={x.id} className="glass rounded-card border border-line p-3 text-sm shadow-e3">{x.message}</div>
+        <div key={x.id} className="glass flex animate-drawer-in items-center gap-2 rounded-card border border-line p-3 text-sm shadow-e3">
+          <span className="flex-1">{x.href ? <Link href={x.href} className="text-brand hover:underline">{x.message}</Link> : x.message}</span>
+          <button type="button" aria-label={t('common.notify.dismiss')} onClick={() => dismiss(x.id)} className="grid size-5 shrink-0 place-items-center rounded text-faint transition-colors duration-fast hover:bg-subtle hover:text-fg">×</button>
+        </div>
       ))}
     </div>
   );

@@ -19,7 +19,7 @@ function MultiSelect<T extends string>({
       <fieldset className="glass absolute left-0 top-10 z-20 min-w-44 rounded-card border border-line p-2 shadow-e3 max-sm:static max-sm:mt-1 max-sm:w-full">
         <legend className="sr-only">{label}</legend>
         {options.map((o) => (
-          <label key={o.value} className="flex cursor-pointer items-center gap-2 rounded px-2 py-1 text-sm hover:bg-subtle">
+          <label key={o.value} className="flex cursor-pointer items-center gap-2 rounded px-2 py-1 text-sm transition-colors duration-fast hover:bg-subtle">
             <input
               type="checkbox"
               checked={value.includes(o.value)}

@@ -42,7 +42,7 @@ export function SkuDrawer({ product, pendingSkus, detailQuery = '', onClose, onO
           <dl className="grid grid-cols-2 gap-x-4 gap-y-2">
             <div><dt className="text-xs text-muted">{t('catalog.col.category')}</dt><dd>{product.category}</dd></div>
             <div><dt className="text-xs text-muted">{t('catalog.col.stock')}</dt><dd className="tabular">{product.stockUnits} <span className="text-xs text-muted">({t(`catalog.stock.${product.stockStatus}`)})</span></dd></div>
-            <div><dt className="text-xs text-muted">{t('catalog.col.price')}</dt><dd><PriceValue value={product.price} /></dd></div>
+            <div><dt className="text-xs text-muted">{t('catalog.col.price')}</dt><dd><PriceValue value={product.price} animate /></dd></div>
             <div><dt className="text-xs text-muted">{t('catalog.col.cost')}</dt><dd><PriceValue value={product.cost} muted /></dd></div>
             <div>
               <dt className="text-xs text-muted">{t('catalog.col.margin')}</dt>

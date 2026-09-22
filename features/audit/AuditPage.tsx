@@ -126,7 +126,7 @@ export function AuditPage() {
       {log.isLoading ? <LoadingRows rows={8} /> : log.isError ? (
         <ErrorState title={t('common.state.error')} onRetry={log.refetch} />
       ) : rows.length === 0 ? (
-        <EmptyState title={t('audit.list.empty')} />
+        <EmptyState variant="filter" title={t('audit.list.empty')} />
       ) : view === 'timeline' ? (
         <>
           <AuditTimeline events={rows.slice(0, shown)} onSelect={setSelected} />

@@ -58,7 +58,7 @@ function Detail({ p }: { p: Product }) {
       <div className="grid gap-4 lg:grid-cols-2">
         <Card title={t('catalog.detail.identity')}>
           <dl className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
-            <dt className="text-muted">{t('catalog.col.price')}</dt><dd><PriceValue value={p.price} /></dd>
+            <dt className="text-muted">{t('catalog.col.price')}</dt><dd><PriceValue value={p.price} animate /></dd>
             <dt className="text-muted">{t('catalog.col.cost')}</dt><dd><PriceValue value={p.cost} /></dd>
             <dt className="text-muted"><Term k="margin" /></dt>
             <dd className="tabular">{formatPercent(marginPct(p), locale)} ({t(`catalog.health.${health}`)})</dd>

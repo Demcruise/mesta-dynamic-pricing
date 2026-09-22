@@ -69,9 +69,9 @@ export function CatalogTable({
           aria-label={`${t('catalog.action.override')} ${p.sku}`}
           className="-mx-1 rounded px-1 transition-colors duration-fast hover:bg-subtle"
         >
-          <PriceValue value={p.price} />
+          <PriceValue value={p.price} animate />
         </button>
-      ) : <PriceValue value={p.price} />,
+      ) : <PriceValue value={p.price} animate />,
     },
     {
       id: 'competitor', header: t('catalog.col.competitor'), sortKey: 'competitorAvg', align: 'right',

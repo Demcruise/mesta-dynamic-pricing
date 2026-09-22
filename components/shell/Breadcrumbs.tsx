@@ -35,7 +35,7 @@ export function Breadcrumbs() {
           const linkable = !last && SECTION_LABEL.has(seg);
           const href = `/${segs.slice(0, i + 1).join('/')}`;
           const body = (
-            <span className={cn('truncate', !known && 'tabular', last ? 'font-medium text-fg' : 'text-muted', !last && linkable && 'hover:text-fg')}>
+            <span className={cn('truncate', !known && 'tabular', last ? 'font-medium text-fg' : 'text-muted', !last && linkable && 'transition-colors duration-fast hover:text-fg')}>
               {crumbLabel(seg, t)}
             </span>
           );

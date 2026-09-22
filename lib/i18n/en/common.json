@@ -134,6 +134,7 @@
     "title": "Notifications",
     "empty": "No notifications.",
     "markAll": "Mark all read",
+    "dismiss": "Dismiss",
     "strategyPending": "{name} awaits activation",
     "strategyActive": "{name} is now active",
     "strategyRejected": "{name} was returned: {note}",

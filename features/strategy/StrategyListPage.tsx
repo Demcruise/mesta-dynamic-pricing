@@ -82,7 +82,7 @@ export function StrategyListPage() {
       {q.isLoading ? <LoadingRows rows={4} rowHeight={72} /> : q.isError ? (
         <ErrorState title={t('common.state.error')} onRetry={q.refetch} />
       ) : rows.length === 0 ? (
-        <EmptyState title={q.data.length ? t('strategy.list.empty') : t('strategy.list.none')} />
+        <EmptyState variant={q.data.length ? 'filter' : 'empty'} title={q.data.length ? t('strategy.list.empty') : t('strategy.list.none')} />
       ) : (
         <ul className="grid gap-3 lg:grid-cols-2">
           {rows.map((s) => (

@@ -105,10 +105,10 @@ export function CatalogPage() {
       />
 
       <section aria-label={t('common.a11y.kpi')} className="mb-4 grid grid-cols-1 gap-3 min-[420px]:grid-cols-2 lg:grid-cols-4">
-        <KpiCard label={t('catalog.kpi.avgMargin')} value={formatPercent(kpis.avgMargin, locale)} />
+        <KpiCard label={t('catalog.kpi.avgMargin')} value={kpis.avgMargin} format={(n) => formatPercent(n, locale)} />
         <KpiCard label={t('catalog.kpi.belowMap')} value={kpis.belowMap} />
         <KpiCard label={t('catalog.kpi.pendingAi')} value={kpis.pendingAi} />
-        <KpiCard label={t('catalog.kpi.avgGap')} value={formatPercent(kpis.avgGap, locale)} />
+        <KpiCard label={t('catalog.kpi.avgGap')} value={kpis.avgGap} format={(n) => formatPercent(n, locale)} />
       </section>
 
       <FilterBar
@@ -123,6 +123,7 @@ export function CatalogPage() {
         <ErrorState title={t('catalog.error')} onRetry={() => { skus.refetch(); recs.refetch(); }} />
       ) : rows.length === 0 ? (
         <EmptyState
+          variant="filter"
           title={t('catalog.empty')}
           action={{ label: t('common.state.clearFilters'), onClick: () => setFilters({ ...EMPTY_FILTERS }) }}
         />
@@ -173,7 +174,7 @@ export function CatalogPage() {
             <RoleGate action="catalog.apply_strategy">
               <Link
                 href="/strategy/new"
-                className="inline-flex h-9 items-center rounded-input bg-brand px-3 text-sm font-medium text-brand-fg hover:opacity-90"
+                className="inline-flex h-9 items-center rounded-input bg-brand px-3 text-sm font-medium text-brand-fg transition-opacity duration-fast hover:opacity-90"
               >
                 {t('catalog.action.applyStrategy')}
               </Link>
