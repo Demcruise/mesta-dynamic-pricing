@@ -1,0 +1,32 @@
+{
+  "title": "Rekomendasi AI",
+  "subtitle": "{count} dari {total} rekomendasi",
+  "source": { "agent": "Agen", "simulation": "Simulasi", "manual": "Manual", "label": "Sumber" },
+  "factor": { "competitor": "Kompetitor", "elasticity": "Elastisitas", "stock": "Stok", "seasonality": "Musiman", "title": "Mengapa harga ini" },
+  "card": {
+    "current": "Saat ini", "proposed": "Usulan", "competitor": "Rata-rata kompetitor", "impact": "Dampak margin proyeksi", "created": "Dibuat",
+    "evidence": "Bukti", "trend": "Tren harga terbaru", "simulate": "Buka simulasi", "detail": "Buka detail", "stale": "Usang: harga atau data kompetitor berubah sejak dibuat",
+    "breach": "Pelanggaran guardrail: harga usulan di luar batas yang diizinkan", "pendingUndo": "Keputusan tertunda: {s} dtk untuk batal", "decision": "Catatan keputusan", "decidedAt": "Diputuskan"
+  },
+  "action": { "approve": "Setujui", "reject": "Tolak", "adjust": "Sesuaikan", "undo": "Batalkan", "confirm": "Konfirmasi", "cancel": "Batal", "bulk": "Setujui massal", "more": "Tampilkan lagi ({n} tersisa)" },
+  "dialog": {
+    "rejectTitle": "Tolak rekomendasi", "adjustTitle": "Sesuaikan harga usulan", "note": "Catatan (wajib)", "newPrice": "Harga disesuaikan",
+    "bulkTitle": "Setujui massal", "threshold": "Keyakinan minimum", "targets": "{n} rekomendasi akan disetujui", "impact": "Total dampak margin proyeksi",
+    "excluded": "{n} dikecualikan ({stale} usang, {breach} melanggar guardrail)", "none": "Tidak ada yang memenuhi ambang ini.", "confirmBulk": "Setujui {n}"
+  },
+  "toast": { "approved": "{id} disetujui", "rejected": "{id} ditolak", "adjusted": "{id} disesuaikan", "bulk": "{n} rekomendasi disetujui" },
+  "filter": {
+    "category": "Kategori", "source": "Sumber", "status": "Status", "confidence": "Keyakinan", "magnitude": "Besar perubahan", "sort": "Urutkan", "all": "Semua",
+    "mag": { "small": "Kecil (<3%)", "medium": "Sedang (3–6%)", "large": "Besar (>6%)" }
+  },
+  "sort": { "confidence": "Keyakinan", "impact": "Dampak margin", "age": "Terbaru", "category": "Kategori" },
+  "empty": { "caughtUp": "Semua sudah ditinjau. Tidak ada rekomendasi tertunda.", "staleOnly": "Hanya tersisa rekomendasi usang. Tinjau satu per satu.", "noMatch": "Tidak ada rekomendasi yang cocok dengan filter." },
+  "err": {
+    "forbidden": "Peran Anda tidak dapat memutuskan rekomendasi.", "not_found": "Rekomendasi tidak ditemukan.", "not_pending": "Rekomendasi ini sudah diputuskan.",
+    "already_staged": "Keputusan sedang menunggu pembatalan.", "note_required": "Catatan wajib diisi.", "invalid": "Masukkan harga yang valid.",
+    "below_min": "Harga di bawah minimum.", "above_max": "Harga di atas maksimum.", "map_breach": "Harga melanggar MAP.", "exceeds_change": "Harga di luar guardrail strategi."
+  },
+  "notFound": "Rekomendasi tidak ditemukan.",
+  "back": "Kembali ke antrean",
+  "audit": "Jejak audit"
+}

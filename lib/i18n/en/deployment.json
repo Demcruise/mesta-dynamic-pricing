@@ -1,0 +1,10 @@
+{
+  "title": "Deployment",
+  "subtitle": "Push approved prices to sales channels",
+  "board": { "title": "Channel status", "synced": "Synced", "pending": "Pending", "failed": "Failed", "in_flight": "In progress", "updated": "Last update" },
+  "status": { "all": "All statuses", "pending": "Pending", "in_flight": "In progress", "synced": "Synced", "failed": "Failed" },
+  "queue": { "title": "Awaiting deployment", "empty": "Nothing waiting. Approved recommendations appear here.", "deploy": "Deploy to all channels", "proposed": "New price", "approved": "Approved" },
+  "table": { "title": "Deployment records", "caption": "Deployment records per channel", "sku": "SKU", "channel": "Channel", "status": "Status", "retries": "Retries", "updated": "Updated", "actions": "Actions", "retry": "Retry", "expand": "Details {id}", "error": "Error", "empty": "No deployment records match.", "recommendation": "Recommendation" },
+  "err": { "forbidden": "Only an Ops Lead can deploy.", "locked": "This row is already in progress.", "not_deployable": "This recommendation cannot be deployed.", "not_found": "Not found." },
+  "toast": { "started": "Deployment started for {id}" }
+}

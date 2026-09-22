@@ -1,0 +1,16 @@
+{
+  "title": "Ringkasan",
+  "greeting": "Masuk sebagai {name} ({role})",
+  "kpi": {
+    "pendingApprovals": "Persetujuan tertunda", "reviewed": "Ditinjau oleh Anda", "activeAnomalies": "Anomali aktif", "marginImpact": "Dampak margin yang disetujui", "overrideRate": "Tingkat override manual",
+    "strategyHealth": "Strategi aktif", "pendingStrategies": "Strategi menunggu persetujuan", "channelFailures": "Kegagalan kanal", "pendingSyncs": "Sinkron tertunda", "lastDeployment": "Deployment terakhir",
+    "auditVolume": "Kejadian audit", "manualOverrides": "Override manual", "guardrailExceptions": "Pengecualian guardrail", "none": "Belum ada"
+  },
+  "links": { "pending": "Tinjau persetujuan tertunda", "breach": "Tinjau pelanggaran guardrail", "failures": "Buka kegagalan deployment", "strategies": "Tinjau strategi", "audit": "Buka log audit", "monitoring": "Buka monitoring" },
+  "charts": {
+    "marginTrend": "Tren margin rata-rata", "volume": "Keputusan perubahan harga per kategori", "gap": "Selisih kompetitor per kategori", "period": "Periode {n}", "category": "Kategori", "value": "Nilai", "chart": "Grafik", "table": "Tabel data",
+    "marginCaption": "Margin rata-rata per periode", "volumeCaption": "Keputusan per kategori", "gapCaption": "Rata-rata selisih kompetitor per kategori", "cheaper": "Lebih murah dari kompetitor", "pricier": "Lebih mahal dari kompetitor"
+  },
+  "activity": { "title": "Aktivitas terbaru", "empty": "Belum ada aktivitas." },
+  "glossary": "Glosarium"
+}

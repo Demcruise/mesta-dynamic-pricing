@@ -1,0 +1,130 @@
+'use client';
+
+import { TriangleAlert } from 'lucide-react';
+import Link from 'next/link';
+import { useState } from 'react';
+import { AgentBorderCard } from '@/components/ds/AgentBorderCard';
+import { ConfidenceBar } from '@/components/ds/ConfidenceBar';
+import { DeltaBadge } from '@/components/ds/DeltaBadge';
+import { PriceValue } from '@/components/ds/PriceValue';
+import { RationaleBreakdown } from '@/components/ds/RationaleBreakdown';
+import { Sparkline } from '@/components/ds/Sparkline';
+import { StatusChip } from '@/components/ds/StatusChip';
+import { RoleGate } from '@/components/shell/RoleGate';
+import { Button } from '@/components/ui/button';
+import { recommendationHealth, stageDecision } from '@/lib/actions/recommendation';
+import { formatDate } from '@/lib/format';
+import { useCan } from '@/lib/hooks';
+import { useTranslation } from '@/lib/i18n';
+import type { Product, Recommendation } from '@/lib/ontology';
+import { useSessionStore, useToastStore, useUndoStore } from '@/lib/stores';
+import { DecisionDialog, type DialogMode } from './DecisionDialog';
+import { changeRatio } from './filters';
+
+export function RecommendationCard({ rec, product, defaultOpen = false }: {
+  rec: Recommendation; product: Product | undefined; defaultOpen?: boolean;
+}) {
+  const { t, locale } = useTranslation();
+  const user = useSessionStore((s) => s.user);
+  const can = useCan();
+  const toast = useToastStore((s) => s.push);
+  const staged = useUndoStore((s) => s.staged[rec.id]);
+  const [dialog, setDialog] = useState<DialogMode>(null);
+  const health = recommendationHealth(rec);
+  const pending = rec.status === 'pending';
+  const locked = !!staged;
+  const canDecide = pending && !locked && can('recommendation.decide');
+
+  const approve = () => {
+    const r = stageDecision(user, rec.id, 'approved');
+    if (!r.ok) toast(t(`recommendations.err.${r.error}`));
+  };
+
+  return (
+    <AgentBorderCard actor={rec.source === 'agent' ? 'agent' : 'human'} className="flex flex-col gap-3">
+      <header className="flex flex-wrap items-start justify-between gap-2">
+        <div>
+          <h2 className="text-sm font-semibold">
+            <Link href={`/catalog/${rec.sku}`} className="tabular text-brand hover:underline">{rec.sku}</Link>
+            {product && <span className="ml-2 font-normal">{product.name}</span>}
+          </h2>
+          <p className="text-xs text-muted">
+            <Link href={`/recommendations/${rec.id}`} className="tabular hover:underline">{rec.id}</Link>
+            {' · '}{t(`recommendations.source.${rec.source}`)} · {formatDate(rec.createdAt, locale)}
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <StatusChip status={rec.status} />
+          {pending && health.stale && <StatusChip status="stale" />}
+        </div>
+      </header>
+
+      <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">
+        <div>
+          <p className="text-xs text-muted">{t('recommendations.card.current')}</p>
+          <PriceValue value={rec.currentPrice} muted />
+        </div>
+        <div>
+          <p className="text-xs text-muted">{t('recommendations.card.proposed')}</p>
+          <span className="flex items-center gap-2"><PriceValue value={rec.proposedPrice} /><DeltaBadge value={changeRatio(rec)} /></span>
+        </div>
+        <div>
+          <p className="text-xs text-muted">{t('recommendations.card.impact')}</p>
+          <PriceValue value={rec.projectedMarginImpact} />
+        </div>
+        <ConfidenceBar value={rec.confidence} />
+      </div>
+
+      {pending && health.stale && (
+        <p role="note" className="flex items-center gap-1.5 text-xs text-warn"><TriangleAlert className="size-3.5" aria-hidden />{t('recommendations.card.stale')}</p>
+      )}
+      {pending && health.breach && (
+        <p role="note" className="flex items-center gap-1.5 text-xs text-critical"><TriangleAlert className="size-3.5" aria-hidden />{t('recommendations.card.breach')}</p>
+      )}
+
+      <RationaleBreakdown factors={rec.rationale} />
+
+      <details open={defaultOpen} className="text-sm">
+        <summary className="cursor-pointer text-xs font-medium text-muted">{t('recommendations.card.evidence')}</summary>
+        {product && (
+          <div className="mt-2 grid gap-3 sm:grid-cols-2">
+            <div>
+              <p className="mb-1 text-xs text-muted">{t('recommendations.card.trend')}</p>
+              <Sparkline points={product.priceHistory.map((h) => h.price)} className="h-10 w-full text-brand" />
+            </div>
+            <dl className="grid grid-cols-2 gap-1 text-xs">
+              <dt className="text-muted">{t('recommendations.card.current')}</dt><dd><PriceValue value={product.price} /></dd>
+              <dt className="text-muted">{t('recommendations.card.proposed')}</dt><dd><PriceValue value={rec.proposedPrice} /></dd>
+              <dt className="text-muted">{t('recommendations.card.competitor')}</dt><dd><PriceValue value={product.competitorAvg} /></dd>
+            </dl>
+          </div>
+        )}
+        <RoleGate action="simulation.use">
+          <Link href={rec.scenarioId ? `/simulation/${rec.scenarioId}` : `/simulation?sku=${rec.sku}`} className="mt-2 inline-block text-xs text-brand underline">
+            {t('recommendations.card.simulate')}
+          </Link>
+        </RoleGate>
+      </details>
+
+      {rec.decisionNote && (
+        <p className="text-xs text-muted"><strong>{t('recommendations.card.decision')}:</strong> {rec.decisionNote}</p>
+      )}
+
+      {locked && (
+        <p role="status" className="text-xs text-info">
+          {t('recommendations.card.pendingUndo', { s: Math.max(0, Math.ceil((staged.expiresAt - Date.now()) / 1000)) })}
+        </p>
+      )}
+
+      <RoleGate action="recommendation.decide">
+        <div className="flex flex-wrap gap-2">
+          <Button size="sm" disabled={!canDecide} onClick={approve}>{t('recommendations.action.approve')}</Button>
+          <Button size="sm" variant="secondary" disabled={!canDecide} onClick={() => setDialog('adjust')}>{t('recommendations.action.adjust')}</Button>
+          <Button size="sm" variant="secondary" disabled={!canDecide} onClick={() => setDialog('reject')}>{t('recommendations.action.reject')}</Button>
+        </div>
+      </RoleGate>
+
+      <DecisionDialog rec={rec} product={product} mode={dialog} onClose={() => setDialog(null)} />
+    </AgentBorderCard>
+  );
+}

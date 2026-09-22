@@ -1,0 +1,16 @@
+{
+  "title": "Overview",
+  "greeting": "Signed in as {name} ({role})",
+  "kpi": {
+    "pendingApprovals": "Pending approvals", "reviewed": "Reviewed by you", "activeAnomalies": "Active anomalies", "marginImpact": "Approved margin impact", "overrideRate": "Manual override rate",
+    "strategyHealth": "Active strategies", "pendingStrategies": "Strategies awaiting approval", "channelFailures": "Channel failures", "pendingSyncs": "Pending syncs", "lastDeployment": "Last deployment",
+    "auditVolume": "Audit events", "manualOverrides": "Manual overrides", "guardrailExceptions": "Guardrail exceptions", "none": "None yet"
+  },
+  "links": { "pending": "Review pending approvals", "breach": "Review guardrail breaches", "failures": "Open deployment failures", "strategies": "Review strategies", "audit": "Open audit log", "monitoring": "Open monitoring" },
+  "charts": {
+    "marginTrend": "Average margin trend", "volume": "Price-change decisions by category", "gap": "Competitor gap by category", "period": "Period {n}", "category": "Category", "value": "Value", "chart": "Chart", "table": "Data table",
+    "marginCaption": "Average margin by period", "volumeCaption": "Decisions by category", "gapCaption": "Average competitor gap by category", "cheaper": "Cheaper than competitors", "pricier": "Pricier than competitors"
+  },
+  "activity": { "title": "Recent activity", "empty": "No activity yet." },
+  "glossary": "Glossary"
+}

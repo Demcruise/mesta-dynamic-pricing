@@ -1,0 +1,36 @@
+{
+  "title": "SKU catalog",
+  "subtitle": "{count} of {total} SKUs",
+  "search": "Search SKU or name",
+  "kpi": { "avgMargin": "Avg margin", "belowMap": "SKUs below MAP", "pendingAi": "Pending AI recommendations", "avgGap": "Avg competitor price gap" },
+  "col": {
+    "select": "Select", "sku": "SKU", "name": "Name", "category": "Category", "cost": "Cost", "price": "Price", "competitor": "Competitor avg",
+    "margin": "Margin", "elasticity": "Elasticity", "stock": "Stock", "lastChange": "Last change", "ai": "AI", "actions": "Actions"
+  },
+  "elasticity": { "inelastic": "Inelastic", "moderate": "Moderate", "elastic": "Elastic" },
+  "stock": { "in_stock": "In stock", "low_stock": "Low stock", "out_of_stock": "Out of stock" },
+  "health": { "healthy": "Healthy", "thin": "Thin", "critical": "Critical" },
+  "filter": {
+    "category": "Category", "elasticity": "Elasticity", "margin": "Margin health", "stock": "Stock status", "gapMin": "Gap min (%)", "gapMax": "Gap max (%)",
+    "presets": "Filter presets", "savePreset": "Save preset", "presetName": "Preset name", "count": "{n} active filters", "all": "All",
+    "presetRisk": "High-risk margin", "presetUndercut": "Competitor undercut"
+  },
+  "density": { "compact": "Compact", "comfortable": "Comfortable", "label": "Density" },
+  "action": {
+    "view": "View detail", "simulate": "Simulate price", "override": "Override price", "audit": "View audit trail", "applyStrategy": "Apply strategy",
+    "selected": "{n} SKUs selected", "clearSelection": "Clear selection"
+  },
+  "override": {
+    "title": "Manual price override", "newPrice": "New price", "reason": "Reason", "submit": "Apply", "cancel": "Cancel",
+    "err": { "invalid": "Enter a valid price.", "below_min": "Price is below the minimum.", "above_max": "Price is above the maximum.", "map_breach": "Price breaches MAP.", "reason": "A reason is required." }
+  },
+  "empty": "No SKUs match the current filters.",
+  "error": "Failed to load the catalog.",
+  "simulateError": "Simulate error",
+  "ai": { "pending": "Has recommendation", "none": "—" },
+  "detail": {
+    "identity": "Identity", "history": "Price history", "competitors": "Competitor comparison", "recs": "Related recommendations", "audit": "Related audit events",
+    "notFound": "SKU not found.", "backToCatalog": "Back to catalog", "none": "No data yet.", "gap": "Gap vs competitor avg",
+    "minMax": "Price bounds", "map": "MAP", "date": "Date", "price": "Price", "competitor": "Competitor", "observed": "Observed"
+  }
+}
