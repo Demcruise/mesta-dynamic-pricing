@@ -47,7 +47,12 @@
     "aiLimitBody": "The engine assumes constant elasticity within each band: the same percentage price change is expected to have the same demand effect near the band edges as in the middle. Confidence reflects data freshness and observed response, not a guarantee of realized margin.",
     "aiVolume": "Recommendation volume",
     "aiVolumeBody": "{total} recommendations generated — {pending} awaiting human review, {decided} decided by humans.",
-    "aiVolumeSources": "{agent} agent-generated · {simulation} from simulation · {manual} manual"
+    "aiVolumeSources": "{agent} agent-generated · {simulation} from simulation · {manual} manual",
+    "access": "Access control",
+    "accessBody": "Role × action policy matrix — read-only; policy changes require a code change in lib/rbac.ts.",
+    "accessAction": "Action",
+    "accessYes": "Allowed",
+    "accessNo": "Not allowed"
   },
   "role": {
     "analyst": "Analyst",
@@ -112,6 +117,8 @@
     "sku": "SKU",
     "strategy": "Strategy",
     "recommendation": "Recommendation",
+    "rule": "Rule",
+    "experiment": "Experiment",
     "actions": "Quick actions",
     "createStrategy": "Create strategy",
     "pendingApprovals": "Open pending approvals",

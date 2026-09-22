@@ -93,5 +93,11 @@
     "desc": "Aturan ini berubah sejak Anda membukanya. Muat ulang untuk membuang editan Anda, atau timpa versi lain.",
     "reload": "Muat terbaru",
     "overwrite": "Timpa"
+  },
+  "discard": {
+    "title": "Buang perubahan yang belum disimpan?",
+    "desc": "Editan Anda pada aturan ini belum disimpan.",
+    "keep": "Lanjutkan mengedit",
+    "confirm": "Buang perubahan"
   }
 }

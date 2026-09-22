@@ -47,7 +47,12 @@
     "aiLimitBody": "Mesin mengasumsikan elastisitas konstan dalam tiap rentang: perubahan harga dengan persentase sama diperkirakan berdampak sama di tepi maupun di tengah rentang. Keyakinan mencerminkan kesegaran data dan respons yang teramati, bukan jaminan margin terealisasi.",
     "aiVolume": "Volume rekomendasi",
     "aiVolumeBody": "{total} rekomendasi dihasilkan — {pending} menunggu tinjauan manusia, {decided} diputuskan manusia.",
-    "aiVolumeSources": "{agent} dari agen · {simulation} dari simulasi · {manual} manual"
+    "aiVolumeSources": "{agent} dari agen · {simulation} dari simulasi · {manual} manual",
+    "access": "Kontrol akses",
+    "accessBody": "Matriks kebijakan peran × aksi — hanya-baca; perubahan kebijakan memerlukan perubahan kode di lib/rbac.ts.",
+    "accessAction": "Aksi",
+    "accessYes": "Diizinkan",
+    "accessNo": "Tidak diizinkan"
   },
   "role": {
     "analyst": "Analis",
@@ -112,6 +117,8 @@
     "sku": "SKU",
     "strategy": "Strategi",
     "recommendation": "Rekomendasi",
+    "rule": "Aturan",
+    "experiment": "Eksperimen",
     "actions": "Aksi cepat",
     "createStrategy": "Buat strategi",
     "pendingApprovals": "Buka persetujuan tertunda",

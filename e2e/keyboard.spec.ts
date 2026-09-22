@@ -9,7 +9,12 @@ test('@smoke keyboard: Ctrl+K search → open SKU → back', async ({ page }) =>
     await page.waitForTimeout(300);
   }
   await expect(page.getByRole('dialog')).toBeVisible();
-  await page.getByRole('combobox', { name: 'Search or jump to…' }).fill('SKU-1004');
+  const box = page.getByRole('combobox', { name: 'Search or jump to…' });
+  await box.fill('RULE-001');
+  await expect(page.getByRole('option', { name: /RULE-001/ }).first()).toBeVisible();
+  await box.fill('EXP-002');
+  await expect(page.getByRole('option', { name: /EXP-002/ }).first()).toBeVisible();
+  await box.fill('SKU-1004');
   await expect(page.getByRole('option', { name: /SKU-1004/ }).first()).toBeVisible();
   await page.keyboard.press('Enter');
   await expect(page).toHaveURL(/\/catalog\/SKU-1004/, { timeout: 15_000 });

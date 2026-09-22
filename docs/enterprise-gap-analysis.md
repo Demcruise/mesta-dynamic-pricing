@@ -32,7 +32,7 @@ Legend: ✅ exists · 🟡 partial / different shape · ❌ missing · ⚖️ de
 | P-16 Pricing Analytics | `/analytics` | ✅ | Acceptance rate, price index, margin leakage, decision latency, deploy success — all derivable (D.5) |
 | P-17 Experiments | `/experiments` | ✅ | Builder, start (applies treatment prices + emits real outcomes), conclude, expected-vs-observed with honest framing (E.1) |
 | P-18 Exceptions | `/exceptions` | ✅ | Unified queue (breach/stale/override/missing-input/stale-price), override-request workflow, override history (D.2) |
-| P-19 Access Control | `lib/rbac.ts` | 🟡 | Action-level RBAC (4 roles) enforced in actions + routes. Missing: policy management UI |
+| P-19 Access Control | `lib/rbac.ts` + `/settings` | ✅ | Action-level RBAC (4 roles) enforced in actions + routes; read-only role×action policy matrix on /settings derived from PERMISSIONS — edits are intentionally code-only |
 | P-20 Onboarding | `/overview` checklist | ✅ | 7-step setup, role-aware via RBAC gating, sample-workspace framing note (E.2) |
 
 ## 2. Foundation epics
@@ -46,7 +46,7 @@ Legend: ✅ exists · 🟡 partial / different shape · ❌ missing · ⚖️ de
 | DS-005 unified StatusBadge | ✅ | `StatusBadge` + `MestaStatus` union covers workflow/execution/health/governance/severity; chip components are aliases (A.1) |
 | APP-001 shell | ✅ | Sidebar+TopBar+breadcrumbs+command menu+notifications+settings+ScopeSelector |
 | APP-002 global scope | ✅ | Org→BU→Region→Store on `Product`, `ScopeSelector` in shell, scoped query hooks (C.1). Channel still not modeled — honest subset |
-| APP-003 global search | 🟡 | Command menu searches nav/SKUs/strategies; not all entity types |
+| APP-003 global search | ✅ | Command menu searches nav/quick-actions/SKUs/strategies/recommendations/rules/experiments + recents; rules/experiments deep-link to their pages (no detail routes) |
 | TR-001/002 content standard | ✅ | `ActionSummary`, `ConsequencePreview`, `RecoveryNotice` on bulk approve, publish, rollback, override, experiment start (A.2) |
 | TR-003 system status vocabulary | ✅ | `FreshnessBadge`, `SyncStatus`, `JobProgress`, `ExecutionTimeline` wired into deployment/simulation/monitoring (A.3) |
 | TR-004 high-risk action pattern | ✅ | Consequence preview + recovery notice + undo window + acknowledge-stale pattern on risky CTAs |
@@ -59,12 +59,12 @@ Legend: ✅ exists · 🟡 partial / different shape · ❌ missing · ⚖️ de
 |---|---|---|
 | Table standards | 🟡 | MestaDataTable: sort/filter/select/sticky/density/virtualize/detail/export. Missing: column resize, grouping, pagination alternative |
 | Filter system | ✅ | URL-serialized filters, chips, saved views + cross-page Org→BU→Region→Store scope filter (C.1) |
-| Chart requirements | 🟡 | Charts have title/caption/table twin; simulation carries run-state/freshness line. Still missing: explicit unit/date-range/baseline metadata |
+| Chart requirements | ✅ | Title/caption/table twin + `meta` line carrying explicit unit/window metadata on overview charts; simulation carries run-state/freshness line |
 | Data trust block | ✅ | `MetricDefinition` popover (definition/scope/source/updated) on overview + analytics KPIs (A.2, D.5) |
 | UX state matrix | ✅ | Loading/error/empty/stale/blocked/conflict all first-class; conflict state lands via optimistic-concurrency UI (E.4) |
 | Error & recovery copy | ✅ | `RecoveryNotice` + `FreshnessBadge` ("synced X ago") + execution traces on deployments |
 | Bulk confirmation anatomy | ✅ | Checklist + eligible/excluded counts + per-reason breakdown + immediate-apply disclosure |
-| Nav rules (context/deep-link/dirty-guard) | 🟡 | URL state + deep links + beforeunload on undo. Missing: dirty-guard on wizard/builder forms |
+| Nav rules (context/deep-link/dirty-guard) | ✅ | URL state + deep links + beforeunload on undo; rule builder has a two-step discard-confirm on unsaved edits; strategy wizard autosaves drafts to a persisted store (restore notice on return) — stronger than a guard |
 
 ## 4. Recommended delta plan (mapped onto current stack)
 

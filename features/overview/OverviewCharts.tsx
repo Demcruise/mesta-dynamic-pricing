@@ -30,6 +30,7 @@ export function OverviewCharts({ products, volume, gap }: Props) {
       <ChartWithTable
         title={t('overview.charts.marginTrend')}
         caption={t('overview.charts.marginCaption')}
+        meta={t('overview.charts.metaMargin', { days: PERIODS[period] })}
         controls={
           <select
             aria-label={t('overview.charts.periodLabel')}
@@ -56,6 +57,7 @@ export function OverviewCharts({ products, volume, gap }: Props) {
         <ChartWithTable
           title={t('overview.charts.volume')}
           caption={t('overview.charts.volumeCaption')}
+          meta={t('overview.charts.metaVolume')}
           chart={<BarChart label={t('overview.charts.volume')} items={volume} format={(v) => String(v)} />}
           columns={[t('overview.charts.category'), t('overview.charts.value')]}
           rows={volume.map((v) => [v.label, String(v.value)])}
@@ -63,6 +65,7 @@ export function OverviewCharts({ products, volume, gap }: Props) {
         <ChartWithTable
           title={t('overview.charts.gap')}
           caption={t('overview.charts.gapCaption')}
+          meta={t('overview.charts.metaGap')}
           chart={
             <>
               <BarChart label={t('overview.charts.gap')} items={gap} format={pct} />

@@ -75,6 +75,8 @@ export function RuleBuilderDialog({ rule, open, onClose }: { rule: Rule | null; 
   const [err, setErr] = useState('');
   // Set when the stored rule changed since the dialog opened — offers reload/overwrite.
   const [conflict, setConflict] = useState(false);
+  // Two-step close: first attempt with unsaved edits asks for confirmation.
+  const [discardConfirm, setDiscardConfirm] = useState(false);
 
   // Sync incoming rule → local draft whenever the dialog opens for a different rule.
   const current = open ? (draft ?? (rule ? { ...rule } : {
@@ -107,8 +109,14 @@ export function RuleBuilderDialog({ rule, open, onClose }: { rule: Rule | null; 
     setConflict(false);
   };
 
+  // draft is only set after an edit — non-null means there are unsaved changes.
+  const tryClose = () => {
+    if (draft && !discardConfirm) { setDiscardConfirm(true); return; }
+    setDraft(null); setConflict(false); setDiscardConfirm(false); onClose();
+  };
+
   return (
-    <Dialog open={open} onClose={() => { setDraft(null); onClose(); }} title={rule ? t('rules.builder.edit') : t('rules.builder.new')} className="max-w-2xl">
+    <Dialog open={open} onClose={tryClose} title={rule ? t('rules.builder.edit') : t('rules.builder.new')} className="max-w-2xl">
       <div className="flex max-h-[70vh] flex-col gap-4 overflow-y-auto pe-1">
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
           <Field label={t('rules.builder.nameLabel')}>
@@ -203,9 +211,19 @@ export function RuleBuilderDialog({ rule, open, onClose }: { rule: Rule | null; 
             </div>
           </div>
         )}
+        {discardConfirm && (
+          <div role="alert" className="rounded-card border border-warn bg-warn-soft p-3 text-xs">
+            <p className="font-medium text-warn">{t('rules.discard.title')}</p>
+            <p className="mt-0.5 text-muted">{t('rules.discard.desc')}</p>
+            <div className="mt-2 flex gap-2">
+              <Button size="sm" variant="secondary" onClick={() => setDiscardConfirm(false)}>{t('rules.discard.keep')}</Button>
+              <Button size="sm" variant="secondary" onClick={() => { setDraft(null); setDiscardConfirm(false); setConflict(false); onClose(); }}>{t('rules.discard.confirm')}</Button>
+            </div>
+          </div>
+        )}
         {err && <p role="alert" className="text-xs text-critical">{err}</p>}
         <div className="flex justify-end gap-2">
-          <Button variant="secondary" onClick={() => { setDraft(null); onClose(); }}>{t('common.action.cancel')}</Button>
+          <Button variant="secondary" onClick={tryClose}>{t('common.action.cancel')}</Button>
           <Button onClick={() => save()}>{t('rules.builder.save')}</Button>
         </div>
       </div>

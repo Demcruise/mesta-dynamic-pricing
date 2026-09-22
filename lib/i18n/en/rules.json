@@ -93,5 +93,11 @@
     "desc": "This rule changed since you opened it. Reload to discard your edits, or overwrite the other version.",
     "reload": "Reload latest",
     "overwrite": "Overwrite"
+  },
+  "discard": {
+    "title": "Discard unsaved changes?",
+    "desc": "Your edits to this rule haven't been saved.",
+    "keep": "Keep editing",
+    "confirm": "Discard changes"
   }
 }

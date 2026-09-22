@@ -29,6 +29,7 @@
   "charts": {
     "marginTrend": "Average margin trend", "volume": "Price-change decisions by category", "gap": "Competitor gap by category", "period": "Period {n}", "category": "Category", "value": "Value", "chart": "Chart", "table": "Data table",
     "marginCaption": "Average margin by period", "volumeCaption": "Decisions by category", "gapCaption": "Average competitor gap by category", "cheaper": "Cheaper than competitors", "pricier": "Pricier than competitors",
+    "metaMargin": "Unit: margin % · {days}-day window", "metaVolume": "Unit: SKU count · grouped by category", "metaGap": "Unit: % gap vs competitor average · by category",
     "periodLabel": "Chart period", "weekly": "Weekly", "monthly": "Monthly", "quarterly": "Quarterly", "avgMargin": "average margin"
   },
   "movers": { "title": "Top price movers", "live": "Live", "empty": "No price movement yet.", "margin": "Margin" },

@@ -71,19 +71,24 @@ export function BarChart({ items, format, label }: { items: { label: string; val
 }
 
 /** Every chart ships with the same data as an accessible table (screen readers, print, precision). */
-export function ChartWithTable({ title, caption, chart, columns, rows, controls, headline }: {
+export function ChartWithTable({ title, caption, chart, columns, rows, controls, headline, meta }: {
   title: string; caption: string; chart: ReactNode; columns: string[]; rows: ReactNode[][];
   /** Extra header controls rendered left of the chart/table toggle (e.g. a period selector). */
   controls?: ReactNode;
   /** Headline figure rendered above the chart/table content. */
   headline?: ReactNode;
+  /** Visible unit/date-range metadata line rendered under the title. */
+  meta?: ReactNode;
 }) {
   const { t } = useTranslation();
   const [view, setView] = useState<'chart' | 'table'>('chart');
   return (
     <section className="rounded-card border border-line bg-surface p-card shadow-e1">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-sm font-semibold">{title}</h2>
+        <div>
+          <h2 className="text-sm font-semibold">{title}</h2>
+          {meta && <p className="mt-0.5 text-xs text-faint">{meta}</p>}
+        </div>
         <div className="flex items-center gap-2">
           {controls}
           <div role="group" aria-label={title} className="flex gap-1">

@@ -5,7 +5,7 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Dialog } from '@/components/ui/dialog';
 import { useCan } from '@/lib/hooks';
 import { useTranslation } from '@/lib/i18n';
-import { useSkuList, useStrategies, useRecommendations } from '@/lib/queries';
+import { useExperiments, useSkuList, useStrategies, useRecommendations, useRules } from '@/lib/queries';
 import { useCommandStore } from './command-store';
 import { NAV } from './nav';
 
@@ -48,6 +48,8 @@ export function CommandMenu() {
   const skus = useSkuList().data;
   const strategies = useStrategies().data;
   const recs = useRecommendations().data;
+  const rules = useRules().data;
+  const experiments = useExperiments().data;
   const [q, setQ] = useState('');
   const [cursor, setCursor] = useState(0);
   const listRef = useRef<HTMLUListElement>(null);
@@ -97,10 +99,22 @@ export function CommandMenu() {
       .filter((r) => match(r.id) || match(r.sku))
       .slice(0, MAX_PER_GROUP)
       .map((r) => ({ id: r.id, group: t('common.cmd.recommendation'), label: r.id, hint: r.sku, href: `/recommendations/${r.id}` }));
-    if (needle) return [...skuHits.sort(rank(needle)), ...strHits.sort(rank(needle)), ...recHits.sort(rank(needle)), ...filteredQuick.sort(rank(needle))];
+    // Rules and experiments have no detail route — hits deep-link to their pages.
+    const ruleHits = rules
+      .filter((r) => match(r.name) || match(r.id))
+      .slice(0, MAX_PER_GROUP)
+      .map((r) => ({ id: r.id, group: t('common.cmd.rule'), label: r.name, hint: r.id, href: '/rules' }));
+    const expHits = experiments
+      .filter((e) => match(e.name) || match(e.id))
+      .slice(0, MAX_PER_GROUP)
+      .map((e) => ({ id: e.id, group: t('common.cmd.experiment'), label: e.name, hint: e.id, href: '/experiments' }));
+    if (needle) {
+      return [...skuHits.sort(rank(needle)), ...strHits.sort(rank(needle)), ...recHits.sort(rank(needle)),
+        ...ruleHits.sort(rank(needle)), ...expHits.sort(rank(needle)), ...filteredQuick.sort(rank(needle))];
+    }
     const recentItems = recent.map((r) => ({ ...r, id: `recent-${r.id}`, group: t('common.cmd.recent') }));
     return [...recentItems, ...filteredQuick, ...skuHits.slice(0, 3)];
-  }, [q, skus, strategies, recs, can, t, recent]);
+  }, [q, skus, strategies, recs, rules, experiments, can, t, recent]);
 
   useEffect(() => { setCursor(0); }, [q]);
   useEffect(() => {

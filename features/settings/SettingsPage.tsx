@@ -1,8 +1,10 @@
 'use client';
 
+import { Check } from 'lucide-react';
 import { PageHeader } from '@/components/ds/states';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from '@/lib/i18n';
+import { PERMISSIONS, ROLES, can, type Action } from '@/lib/rbac';
 import { useRecommendationStore, useUiStore } from '@/lib/stores';
 import type { Locale } from '@/lib/format';
 
@@ -75,6 +77,37 @@ export function SettingsPage() {
             <dd className="mt-0.5 text-muted">{t('common.settings.aiLimitBody')}</dd>
           </div>
         </dl>
+      </section>
+      <section aria-label={t('common.settings.access')} className="mt-6 rounded-card border border-line bg-surface p-card shadow-e1">
+        <h2 className="text-sm font-semibold">{t('common.settings.access')}</h2>
+        <p className="mt-1 text-xs text-muted">{t('common.settings.accessBody')}</p>
+        <div className="mt-3 max-h-96 overflow-auto rounded-input border border-line" tabIndex={0}>
+          <table className="w-full text-xs">
+            <caption className="sr-only">{t('common.settings.access')}</caption>
+            <thead className="sticky top-0 bg-surface text-muted">
+              <tr className="border-b border-line">
+                <th scope="col" className="py-1.5 pe-2 ps-3 text-left font-medium">{t('common.settings.accessAction')}</th>
+                {ROLES.map((r) => (
+                  <th key={r} scope="col" className="py-1.5 pe-3 text-center font-medium">{t(`common.role.${r}`)}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {(Object.keys(PERMISSIONS) as Action[]).map((a) => (
+                <tr key={a} className="border-b border-line last:border-0">
+                  <th scope="row" className="py-1.5 pe-2 ps-3 text-left font-normal text-muted"><code>{a}</code></th>
+                  {ROLES.map((r) => (
+                    <td key={r} className="py-1.5 pe-3 text-center">
+                      {can(r, a)
+                        ? <Check className="mx-auto size-3.5 text-ok" aria-label={t('common.settings.accessYes')} />
+                        : <span aria-label={t('common.settings.accessNo')} className="text-faint">—</span>}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </section>
     </>
   );
