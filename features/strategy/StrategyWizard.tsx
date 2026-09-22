@@ -1,5 +1,6 @@
 'use client';
 
+import { Check, TriangleAlert } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { EmptyState, LoadingRows, PageHeader } from '@/components/ds/states';
@@ -91,6 +92,8 @@ function Wizard({ strategyId, initial, status }: { strategyId: string | null; in
   const [restored] = useState(!!stored);
   const [skuInput, setSkuInput] = useState('');
   const [skuErr, setSkuErr] = useState(false);
+  // Set when the user jumps from the review step to fix one section: offers a one-click return.
+  const [fromReview, setFromReview] = useState(false);
 
   // Autosave to the local draft store on every change.
   useEffect(() => { useStrategyDraftStore.getState().setDraft(key, { draft, step }); }, [key, draft, step]);
@@ -134,6 +137,18 @@ function Wizard({ strategyId, initial, status }: { strategyId: string | null; in
 
   const g = draft.guardrail;
   const scopeText = t('strategy.review.scopeText', { skus: draft.skuIds.length, cats: draft.categories.length });
+  const guardrailText = t('strategy.list.guardrail', {
+    change: g.maxChangePercent,
+    threshold: g.autoApproveThreshold,
+    map: g.mapEnforced ? t('strategy.list.map') : '',
+  });
+  const stepSummaries = [
+    draft.name || '—',
+    scopeText,
+    guardrailText,
+    '—',
+  ];
+  const go = (i: number, review = false) => { setStep(i); setFromReview(review); };
   const summary = t('strategy.review.plain', {
     objective: t(`strategy.objective.${draft.objective}`).toLowerCase(),
     scope: scopeText,
@@ -148,21 +163,43 @@ function Wizard({ strategyId, initial, status }: { strategyId: string | null; in
       <PageHeader title={strategyId ? t('strategy.edit') : t('strategy.new')} subtitle={t('strategy.step.progress', { n: step + 1, total: STEPS.length })} />
       {restored && <p role="status" className="mb-3 rounded-input bg-info-soft px-3 py-2 text-sm text-info">{t('strategy.draftRestored')}</p>}
 
-      <ol className="mb-4 flex flex-wrap gap-2" aria-label={t('strategy.step.progress', { n: step + 1, total: STEPS.length })}>
-        {STEPS.map((s, i) => (
-          <li key={s} aria-current={i === step ? 'step' : undefined}>
-            <button
-              type="button"
-              onClick={() => setStep(i)}
-              className={cn('rounded-full border px-3 py-1 text-sm', i === step ? 'border-brand bg-brand-soft text-brand' : 'border-line text-muted')}
-            >
-              {i + 1}. {t(`strategy.step.${s}`)}
-            </button>
-          </li>
-        ))}
-      </ol>
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[17rem_1fr]">
+        <nav aria-label={t('strategy.step.progress', { n: step + 1, total: STEPS.length })} className="min-w-0 rounded-card border border-line bg-surface p-3 shadow-e1 lg:self-start">
+          <ol className="flex gap-1 overflow-x-auto lg:flex-col lg:gap-0 lg:overflow-visible">
+            {STEPS.map((s, i) => {
+              const blocked = stepBlocked(i);
+              const done = i < step && !blocked;
+              return (
+                <li key={s} className="lg:border-l lg:border-line lg:first:border-transparent" aria-current={i === step ? 'step' : undefined}>
+                  <button
+                    type="button"
+                    onClick={() => go(i)}
+                    className={cn(
+                      'flex w-full items-start gap-3 rounded-input px-3 py-2 text-left transition-colors duration-fast',
+                      i === step ? 'bg-brand-soft text-brand' : 'text-fg hover:bg-subtle',
+                    )}
+                  >
+                    <span
+                      aria-hidden
+                      className={cn(
+                        'mt-0.5 grid size-6 shrink-0 place-items-center rounded-full border text-xs font-semibold',
+                        i === step ? 'border-brand bg-brand text-brand-fg' : done ? 'border-up bg-up-soft text-up' : blocked ? 'border-critical bg-critical-soft text-critical' : 'border-line text-muted',
+                      )}
+                    >
+                      {done ? <Check className="size-3.5" /> : blocked ? <TriangleAlert className="size-3.5" /> : i + 1}
+                    </span>
+                    <span className="min-w-0">
+                      <span className="block text-sm font-medium">{t(`strategy.step.${s}`)}</span>
+                      <span className={cn('block truncate text-xs', i === step ? 'text-brand' : 'text-faint')}>{stepSummaries[i]}</span>
+                    </span>
+                  </button>
+                </li>
+              );
+            })}
+          </ol>
+        </nav>
 
-      <section className="max-w-2xl rounded-card border border-line bg-surface p-5 shadow-e1">
+        <section className="min-w-0 rounded-card border border-line bg-surface p-5 shadow-e1">
         {step === 0 && (
           <div className="flex flex-col gap-4">
             <Field label={t('strategy.field.name')} error={stepBlocked(0) && draft.name === '' ? issueText({ severity: 'blocker', code: 'name_required' }) : undefined}>
@@ -267,14 +304,23 @@ function Wizard({ strategyId, initial, status }: { strategyId: string | null; in
 
         {step === 3 && (
           <div className="flex flex-col gap-4">
-            <div>
-              <h2 className="mb-1 text-sm font-semibold">{t('strategy.review.title')}</h2>
-              <p className="text-sm"><strong>{draft.name || '—'}</strong></p>
-              <p className="mt-2 text-sm text-muted">{summary}</p>
-              {g.minPrice !== null && g.maxPrice !== null && (
-                <p className="mt-1 text-xs text-faint"><PriceValue value={g.minPrice} /> – <PriceValue value={g.maxPrice} /></p>
-              )}
+            <h2 className="text-sm font-semibold">{t('strategy.review.title')}</h2>
+            <div className="grid gap-3 sm:grid-cols-3">
+              {([
+                { i: 0, title: t('strategy.step.objective'), body: <><strong>{draft.name || '—'}</strong><br />{t(`strategy.objective.${draft.objective}`)}</> },
+                { i: 1, title: t('strategy.step.scope'), body: scopeText },
+                { i: 2, title: t('strategy.step.guardrail'), body: <>{guardrailText}{g.minPrice !== null && g.maxPrice !== null && <><br /><PriceValue value={g.minPrice} /> – <PriceValue value={g.maxPrice} /></>}</> },
+              ]).map((sec) => (
+                <section key={sec.i} className="rounded-input border border-line p-3">
+                  <div className="mb-1 flex items-center justify-between gap-2">
+                    <h3 className="text-xs font-semibold uppercase tracking-wide text-muted">{sec.title}</h3>
+                    <Button size="sm" variant="ghost" onClick={() => go(sec.i, true)}>{t('strategy.action.edit')}</Button>
+                  </div>
+                  <p className="text-sm">{sec.body}</p>
+                </section>
+              ))}
             </div>
+            <p className="text-sm text-muted">{summary}</p>
             {issues.length > 0 && (
               <ul className="flex flex-col gap-1" aria-label={t('strategy.issue.warning')}>
                 {issues.map((i) => (
@@ -288,9 +334,11 @@ function Wizard({ strategyId, initial, status }: { strategyId: string | null; in
         )}
 
         <div className="mt-5 flex flex-wrap justify-between gap-2">
-          <Button variant="secondary" disabled={step === 0} onClick={() => setStep(step - 1)}>{t('strategy.action.back')}</Button>
-          {step < STEPS.length - 1 ? (
-            <Button disabled={stepBlocked(step)} onClick={() => setStep(step + 1)}>{t('strategy.action.next')}</Button>
+          <Button variant="secondary" disabled={step === 0} onClick={() => go(step - 1)}>{t('strategy.action.back')}</Button>
+          {fromReview && step < STEPS.length - 1 ? (
+            <Button disabled={stepBlocked(step)} onClick={() => go(STEPS.length - 1)}>{t('strategy.action.backToReview')}</Button>
+          ) : step < STEPS.length - 1 ? (
+            <Button disabled={stepBlocked(step)} onClick={() => go(step + 1)}>{t('strategy.action.next')}</Button>
           ) : (
             <div className="flex flex-wrap gap-2">
               {can('strategy.create') && <Button variant="secondary" onClick={() => finish('draft')}>{t('strategy.action.saveDraft')}</Button>}
@@ -303,7 +351,8 @@ function Wizard({ strategyId, initial, status }: { strategyId: string | null; in
             </div>
           )}
         </div>
-      </section>
+        </section>
+      </div>
     </>
   );
 }

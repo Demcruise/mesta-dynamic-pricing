@@ -1,5 +1,6 @@
 'use client';
 
+import { X } from 'lucide-react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useMemo, useState } from 'react';
 import { EmptyState, ErrorState, LoadingRows, PageHeader } from '@/components/ds/states';
@@ -46,6 +47,24 @@ export function QueuePage() {
   }, [router, pathname]);
   const patch = (p: Partial<QueueFilters>) => setFilters({ ...filters, ...p });
 
+  // Active facets rendered as removable chips — the "query builder" read-out.
+  const chips = useMemo(() => {
+    const out: { key: string; label: string; remove: () => void }[] = [];
+    if (filters.status !== 'pending') {
+      out.push({
+        key: 'status',
+        label: `${t('recommendations.filter.status')}: ${filters.status === 'all' ? t('recommendations.filter.all') : t(`common.status.${filters.status}`)}`,
+        remove: () => patch({ status: 'pending' }),
+      });
+    }
+    if (filters.category) out.push({ key: 'cat', label: `${t('recommendations.filter.category')}: ${filters.category}`, remove: () => patch({ category: '' }) });
+    if (filters.source) out.push({ key: 'src', label: `${t('recommendations.filter.source')}: ${t(`recommendations.source.${filters.source}`)}`, remove: () => patch({ source: '' }) });
+    if (filters.tier) out.push({ key: 'tier', label: `${t('recommendations.filter.confidence')}: ${t(`common.confidence.${filters.tier}`)}`, remove: () => patch({ tier: '' }) });
+    if (filters.magnitude) out.push({ key: 'mag', label: `${t('recommendations.filter.magnitude')}: ${t(`recommendations.filter.mag.${filters.magnitude}`)}`, remove: () => patch({ magnitude: '' }) });
+    return out;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters, t]);
+
   const productMap = useMemo(() => new Map(skus.data.map((p) => [p.sku, p])), [skus.data]);
   const rows = useMemo(() => filterAndSort(recs.data, productMap, filters), [recs.data, productMap, filters]);
   const pendingTotal = recs.data.filter((r) => r.status === 'pending').length;
@@ -89,8 +108,26 @@ export function QueuePage() {
         <Select label={t('recommendations.filter.sort')} value={filters.sort} onChange={(v) => patch({ sort: v as QueueFilters['sort'] })}>
           {(['confidence', 'impact', 'age', 'category'] as const).map((s) => <option key={s} value={s}>{t(`recommendations.sort.${s}`)}</option>)}
         </Select>
-        {!isDefaultFilters(filters) && <Button variant="ghost" onClick={() => setFilters(DEFAULT_QUEUE_FILTERS)}>{t('common.state.clearFilters')}</Button>}
       </div>
+
+      {chips.length > 0 && (
+        <div className="mb-3 flex flex-wrap items-center gap-1.5" aria-label={t('recommendations.filter.active')}>
+          {chips.map((c) => (
+            <span key={c.key} className="inline-flex items-center gap-1 rounded-full bg-brand-soft py-0.5 pl-2.5 pr-1 text-xs font-medium text-brand">
+              {c.label}
+              <button
+                type="button"
+                aria-label={t('recommendations.filter.remove', { label: c.label })}
+                onClick={c.remove}
+                className="grid size-4 place-items-center rounded-full transition-colors duration-fast hover:bg-brand/20"
+              >
+                <X className="size-3" aria-hidden />
+              </button>
+            </span>
+          ))}
+          <Button variant="ghost" size="sm" onClick={() => setFilters(DEFAULT_QUEUE_FILTERS)}>{t('common.state.clearFilters')}</Button>
+        </div>
+      )}
 
       {loading ? (
         <LoadingRows rows={4} rowHeight={120} />

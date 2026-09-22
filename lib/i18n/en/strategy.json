@@ -41,7 +41,8 @@
     "next": "Next",
     "cancel": "Cancel",
     "rejectNote": "Reason for rejection",
-    "confirmReject": "Reject strategy"
+    "confirmReject": "Reject strategy",
+    "backToReview": "Back to review"
   },
   "step": {
     "objective": "Objective",

@@ -28,6 +28,7 @@
   "toast": { "approved": "{id} approved", "rejected": "{id} rejected", "adjusted": "{id} adjusted", "bulk": "{n} recommendations approved" },
   "filter": {
     "category": "Category", "source": "Source", "status": "Status", "confidence": "Confidence", "magnitude": "Change size", "sort": "Sort by", "all": "All",
+    "active": "Active filters", "remove": "Remove filter {label}",
     "mag": { "small": "Small (<3%)", "medium": "Medium (3–6%)", "large": "Large (>6%)" }
   },
   "sort": { "confidence": "Confidence", "impact": "Margin impact", "age": "Newest", "category": "Category" },

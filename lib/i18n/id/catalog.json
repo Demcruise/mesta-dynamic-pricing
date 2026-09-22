@@ -30,6 +30,7 @@
   "detail": {
     "identity": "Identitas", "history": "Riwayat harga", "competitors": "Perbandingan kompetitor", "recs": "Rekomendasi terkait", "audit": "Audit terkait",
     "notFound": "SKU tidak ditemukan.", "backToCatalog": "Kembali ke katalog", "none": "Belum ada data.", "gap": "Selisih vs rata-rata kompetitor",
-    "minMax": "Batas harga", "map": "MAP", "date": "Tanggal", "price": "Harga", "competitor": "Kompetitor", "observed": "Diamati"
+    "minMax": "Batas harga", "map": "MAP", "date": "Tanggal", "price": "Harga", "competitor": "Kompetitor", "observed": "Diamati",
+    "skuNav": "Navigasi SKU", "prev": "Sebelumnya: {sku}", "next": "Berikutnya: {sku}", "position": "{i} dari {n}"
   }
 }

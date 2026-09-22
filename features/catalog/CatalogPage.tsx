@@ -139,6 +139,7 @@ export function CatalogPage() {
           onToggleAll={onToggleAll}
           onOverride={setOverrideTarget}
           onRowClick={setDrawerTarget}
+          detailQuery={query}
           visibility={columnVis}
           toolbar={
             <SavedViewMenu
@@ -182,7 +183,7 @@ export function CatalogPage() {
         </div>
       )}
 
-      <SkuDrawer product={drawerTarget} pendingSkus={pendingSkus} onClose={() => setDrawerTarget(null)} onOverride={setOverrideTarget} />
+      <SkuDrawer product={drawerTarget} pendingSkus={pendingSkus} detailQuery={query} onClose={() => setDrawerTarget(null)} onOverride={setOverrideTarget} />
       <OverrideDialog product={overrideTarget} onClose={() => setOverrideTarget(null)} />
     </>
   );

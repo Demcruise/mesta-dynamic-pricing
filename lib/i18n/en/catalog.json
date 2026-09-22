@@ -30,6 +30,7 @@
   "detail": {
     "identity": "Identity", "history": "Price history", "competitors": "Competitor comparison", "recs": "Related recommendations", "audit": "Related audit events",
     "notFound": "SKU not found.", "backToCatalog": "Back to catalog", "none": "No data yet.", "gap": "Gap vs competitor avg",
-    "minMax": "Price bounds", "map": "MAP", "date": "Date", "price": "Price", "competitor": "Competitor", "observed": "Observed"
+    "minMax": "Price bounds", "map": "MAP", "date": "Date", "price": "Price", "competitor": "Competitor", "observed": "Observed",
+    "skuNav": "SKU navigation", "prev": "Previous: {sku}", "next": "Next: {sku}", "position": "{i} of {n}"
   }
 }

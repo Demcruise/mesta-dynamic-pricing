@@ -16,9 +16,11 @@ import { cn } from '@/lib/utils';
 const HEALTH_CLS = { healthy: 'text-up', thin: 'text-warn', critical: 'text-down' } as const;
 
 /** Quick-view side drawer for a catalog row; the full SKU page remains one click away. */
-export function SkuDrawer({ product, pendingSkus, onClose, onOverride }: {
+export function SkuDrawer({ product, pendingSkus, detailQuery = '', onClose, onOverride }: {
   product: Product | null;
   pendingSkus: Set<string>;
+  /** Serialized catalog filters so the full page keeps the analyst's current result set. */
+  detailQuery?: string;
   onClose: () => void;
   onOverride: (p: Product) => void;
 }) {
@@ -28,7 +30,7 @@ export function SkuDrawer({ product, pendingSkus, onClose, onOverride }: {
       open={product !== null}
       onClose={onClose}
       title={product ? `${product.sku} — ${product.name}` : ''}
-      href={product ? `/catalog/${product.sku}` : undefined}
+      href={product ? `/catalog/${product.sku}${detailQuery ? `?${detailQuery}` : ''}` : undefined}
     >
       {product && (
         <div className="flex flex-col gap-4 text-sm">

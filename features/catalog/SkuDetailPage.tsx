@@ -1,7 +1,9 @@
 'use client';
 
-import { ArrowLeft, FlaskConical, ScrollText } from 'lucide-react';
+import { ArrowLeft, ChevronLeft, ChevronRight, FlaskConical, ScrollText } from 'lucide-react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
+import { useMemo } from 'react';
 import { DeltaBadge } from '@/components/ds/DeltaBadge';
 import { ConfidenceBar } from '@/components/ds/ConfidenceBar';
 import { PriceValue } from '@/components/ds/PriceValue';
@@ -14,7 +16,8 @@ import { competitorGap, elasticityBand, marginHealth, marginPct } from '@/lib/do
 import { formatDate, formatPercent } from '@/lib/format';
 import { useTranslation } from '@/lib/i18n';
 import type { Product } from '@/lib/ontology';
-import { useAuditLog, useCompetitorObservations, useRecommendations, useSkuDetail } from '@/lib/queries';
+import { useAuditLog, useCompetitorObservations, useRecommendations, useSkuDetail, useSkuList } from '@/lib/queries';
+import { applyFilters, parseFilters, sortProducts } from './filters';
 
 function Card({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -155,11 +158,48 @@ function Detail({ p }: { p: Product }) {
 export function SkuDetailPage({ sku }: { sku: string }) {
   const { t } = useTranslation();
   const q = useSkuDetail(sku);
+  const products = useSkuList();
+  const sp = useSearchParams();
+
+  // The catalog forwards its serialized filters so prev/next walk the analyst's current result set.
+  const query = sp.toString();
+  const nav = useMemo(() => {
+    const f = parseFilters(new URLSearchParams(query));
+    const ordered = sortProducts(applyFilters(products.data, f), f.sort, f.dir).map((p) => p.sku);
+    const i = ordered.indexOf(sku);
+    return {
+      index: i,
+      total: ordered.length,
+      prev: i > 0 ? ordered[i - 1]! : null,
+      next: i >= 0 && i < ordered.length - 1 ? ordered[i + 1]! : null,
+    };
+  }, [products.data, query, sku]);
+
+  const href = (s: string) => `/catalog/${s}${query ? `?${query}` : ''}`;
+  const navBtn = 'inline-flex h-8 w-8 items-center justify-center rounded-input border border-line bg-surface text-muted transition-colors duration-fast hover:text-fg disabled:opacity-40';
+
   return (
     <>
-      <Link href="/catalog" className="mb-3 inline-flex items-center gap-1 text-sm text-muted hover:text-fg">
-        <ArrowLeft className="size-4" aria-hidden />{t('catalog.detail.backToCatalog')}
-      </Link>
+      <div className="mb-3 flex flex-wrap items-center gap-3">
+        <Link href={`/catalog${query ? `?${query}` : ''}`} className="inline-flex items-center gap-1 text-sm text-muted transition-colors duration-fast hover:text-fg">
+          <ArrowLeft className="size-4" aria-hidden />{t('catalog.detail.backToCatalog')}
+        </Link>
+        {nav.index >= 0 && (
+          <nav aria-label={t('catalog.detail.skuNav')} className="ml-auto flex items-center gap-2 text-sm">
+            {nav.prev ? (
+              <Link href={href(nav.prev)} aria-label={t('catalog.detail.prev', { sku: nav.prev })} title={nav.prev} className={navBtn}><ChevronLeft className="size-4" aria-hidden /></Link>
+            ) : (
+              <span aria-hidden className={navBtn}><ChevronLeft className="size-4" /></span>
+            )}
+            <span className="tabular text-xs text-faint">{t('catalog.detail.position', { i: nav.index + 1, n: nav.total })}</span>
+            {nav.next ? (
+              <Link href={href(nav.next)} aria-label={t('catalog.detail.next', { sku: nav.next })} title={nav.next} className={navBtn}><ChevronRight className="size-4" aria-hidden /></Link>
+            ) : (
+              <span aria-hidden className={navBtn}><ChevronRight className="size-4" /></span>
+            )}
+          </nav>
+        )}
+      </div>
       {q.isLoading ? <LoadingRows rows={4} /> : q.isError ? (
         <ErrorState title={t('catalog.error')} onRetry={q.refetch} />
       ) : q.data ? <Detail p={q.data} /> : <EmptyState title={t('catalog.detail.notFound')} />}

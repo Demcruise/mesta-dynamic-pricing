@@ -5,6 +5,8 @@
   "filter": { "from": "Dari", "to": "Sampai", "actor": "Pelaku", "source": "Sumber", "type": "Jenis kejadian", "sku": "SKU", "all": "Semua", "search": "Filter berdasarkan SKU" },
   "export": "Ekspor CSV", "exported": "{n} kejadian diekspor",
   "list": { "caption": "Kejadian audit", "time": "Waktu", "event": "Kejadian", "actor": "Pelaku", "source": "Sumber", "entity": "Entitas", "empty": "Tidak ada kejadian audit yang cocok.", "open": "Detail {id}" },
+  "view": { "label": "Tampilan", "list": "Daftar", "timeline": "Lini masa" },
+  "timeline": { "count": "{n} kejadian" },
   "detail": {
     "title": "Detail kejadian", "close": "Tutup", "price": "Perubahan harga", "before": "Sebelum", "after": "Sesudah", "note": "Catatan", "rationale": "Cuplikan alasan", "links": "Terkait",
     "sku": "SKU", "recommendation": "Rekomendasi", "deployment": "Deployment", "strategy": "Strategi", "scenario": "Skenario", "noSnapshot": "Tidak ada cuplikan harga untuk kejadian ini.", "none": "Tidak ada"

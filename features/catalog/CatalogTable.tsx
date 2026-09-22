@@ -28,6 +28,8 @@ interface Props {
   onToggleAll: () => void;
   onOverride: (p: Product) => void;
   onRowClick?: (p: Product) => void;
+  /** Serialized catalog filters appended to detail links so the SKU page can offer prev/next in context. */
+  detailQuery?: string;
   visibility?: ColumnVisibility;
   toolbar?: ReactNode;
   csv?: CsvExport<Product>;
@@ -42,16 +44,17 @@ const HEALTH_BAR = { healthy: 'bg-up', thin: 'bg-warn', critical: 'bg-down' } as
 
 export function CatalogTable({
   rows, rowHeight, selected, pendingSkus, sort, dir, onSort, onToggle, onToggleAll, onOverride,
-  onRowClick, visibility, toolbar, csv,
+  onRowClick, detailQuery = '', visibility, toolbar, csv,
 }: Props) {
   const { t, locale } = useTranslation();
   const can = useCan();
   const canOverride = can('catalog.override_price');
+  const detailHref = (sku: string) => `/catalog/${sku}${detailQuery ? `?${detailQuery}` : ''}`;
 
   const columns = useMemo<DataColumn<Product>[]>(() => [
     {
       id: 'sku', header: t('catalog.col.sku'), sortKey: 'sku', required: true,
-      cell: (p) => <Link className="tabular text-brand hover:underline" href={`/catalog/${p.sku}`}>{p.sku}</Link>,
+      cell: (p) => <Link className="tabular text-brand hover:underline" href={detailHref(p.sku)}>{p.sku}</Link>,
     },
     { id: 'name', header: t('catalog.col.name'), sortKey: 'name', cell: (p) => <span className="block max-w-56 truncate">{p.name}</span> },
     { id: 'category', header: t('catalog.col.category'), sortKey: 'category', cell: (p) => <span className="text-muted">{p.category}</span> },
@@ -119,7 +122,7 @@ export function CatalogTable({
       id: 'actions', header: t('catalog.col.actions'), required: true,
       cell: (p) => (
         <div className="flex items-center gap-1">
-          <Link href={`/catalog/${p.sku}`} aria-label={`${t('catalog.action.view')} ${p.sku}`} title={t('catalog.action.view')} className="grid size-7 place-items-center rounded transition-colors duration-fast hover:bg-subtle"><Eye className="size-4" aria-hidden /></Link>
+          <Link href={detailHref(p.sku)} aria-label={`${t('catalog.action.view')} ${p.sku}`} title={t('catalog.action.view')} className="grid size-7 place-items-center rounded transition-colors duration-fast hover:bg-subtle"><Eye className="size-4" aria-hidden /></Link>
           <RoleGate action="simulation.use">
             <Link href={`/simulation?sku=${p.sku}`} aria-label={`${t('catalog.action.simulate')} ${p.sku}`} title={t('catalog.action.simulate')} className="grid size-7 place-items-center rounded transition-colors duration-fast hover:bg-subtle"><FlaskConical className="size-4" aria-hidden /></Link>
           </RoleGate>
@@ -130,7 +133,7 @@ export function CatalogTable({
         </div>
       ),
     },
-  ], [t, locale, canOverride, pendingSkus, onOverride]);
+  ], [t, locale, canOverride, pendingSkus, onOverride, detailQuery]);
 
   return (
     <MestaDataTable

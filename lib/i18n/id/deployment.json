@@ -1,7 +1,7 @@
 {
   "title": "Deployment",
   "subtitle": "Terapkan harga yang disetujui ke kanal penjualan",
-  "board": { "title": "Status kanal", "synced": "Tersinkron", "pending": "Tertunda", "failed": "Gagal", "in_flight": "Berjalan", "updated": "Pembaruan terakhir" },
+  "board": { "title": "Status kanal", "synced": "Tersinkron", "pending": "Tertunda", "failed": "Gagal", "in_flight": "Berjalan", "updated": "Sinkron terakhir", "successRate": "Sukses", "avgRetries": "Rerata retry", "recent": "Aktivitas terbaru", "retry": "Coba ulang" },
   "status": { "all": "Semua status", "pending": "Tertunda", "in_flight": "Berjalan", "synced": "Tersinkron", "failed": "Gagal" },
   "queue": { "title": "Menunggu deployment", "empty": "Tidak ada antrean. Rekomendasi yang disetujui muncul di sini.", "deploy": "Deploy ke semua kanal", "proposed": "Harga baru", "approved": "Disetujui" },
   "table": { "title": "Catatan deployment", "caption": "Catatan deployment per kanal", "sku": "SKU", "channel": "Kanal", "status": "Status", "retries": "Percobaan ulang", "updated": "Diperbarui", "actions": "Aksi", "retry": "Ulangi", "expand": "Detail {id}", "error": "Kesalahan", "empty": "Tidak ada catatan deployment yang cocok.", "recommendation": "Rekomendasi", "openFull": "Buka rekomendasi" },

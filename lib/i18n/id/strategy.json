@@ -41,7 +41,8 @@
     "next": "Lanjut",
     "cancel": "Batal",
     "rejectNote": "Alasan penolakan",
-    "confirmReject": "Tolak strategi"
+    "confirmReject": "Tolak strategi",
+    "backToReview": "Kembali ke tinjauan"
   },
   "step": {
     "objective": "Tujuan",

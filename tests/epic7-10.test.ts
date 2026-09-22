@@ -7,7 +7,7 @@ import type { AuditEvent, Role, UserSession } from '@/lib/ontology';
 import {
   useAuditStore, useDeploymentStore, useMonitoringStore, useNotificationStore, useProductCatalogStore, useRecommendationStore,
 } from '@/lib/stores';
-import { eventLinks, filterAudit, toCsv, EMPTY_AUDIT_FILTERS } from '@/features/audit/audit-utils';
+import { eventLinks, eventTone, filterAudit, groupEventsByDay, toCsv, EMPTY_AUDIT_FILTERS } from '@/features/audit/audit-utils';
 import { decisionsByCategory, gapByCategory, marginTrend, roleKpis } from '@/features/overview/kpis';
 import { applyFilters, EMPTY_FILTERS, sortProducts } from '@/features/catalog/filters';
 import { generateProducts } from '@/lib/mock-data';
@@ -139,6 +139,26 @@ describe('audit scope and utilities', () => {
     expect(filterAudit(events, { ...EMPTY_AUDIT_FILTERS, from: '2026-09-21' })).toHaveLength(0);
     expect(filterAudit(events, { ...EMPTY_AUDIT_FILTERS, type: 'deployment_success' })).toHaveLength(1);
   });
+  it('timeline groups events by local day, newest day first', () => {
+    const g = groupEventsByDay([
+      ev({ id: 'a', timestamp: '2026-09-22T12:00:00.000Z' }),
+      ev({ id: 'b', timestamp: '2026-09-22T13:00:00.000Z' }),
+      ev({ id: 'c', timestamp: '2026-09-20T10:00:00.000Z' }),
+    ], 'en');
+    expect(g.map((x) => x.day)).toEqual(['2026-09-22', '2026-09-20']);
+    expect(g[0]?.events.map((x) => x.id)).toEqual(['a', 'b']);
+    expect(g[0]?.label.length).toBeGreaterThan(0);
+  });
+
+  it('event tones distinguish families without reading labels', () => {
+    expect(eventTone('strategy_submit')).toBe('brand');
+    expect(eventTone('recommendation_approve')).toBe('up');
+    expect(eventTone('recommendation_reject')).toBe('down');
+    expect(eventTone('deployment_failure')).toBe('down');
+    expect(eventTone('manual_override')).toBe('warn');
+    expect(new Set(['strategy_submit', 'recommendation_approve', 'deployment_success', 'manual_override', 'model_review_feedback'] as const).size).toBe(5);
+  });
+
   it('csv escapes quotes and commas; links follow entity type', () => {
     const csv = toCsv([ev({ note: 'said "hi", ok' })]);
     expect(csv.split('\n')[1]).toContain('"said ""hi"", ok"');

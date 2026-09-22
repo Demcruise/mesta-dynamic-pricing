@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { LayoutList, ListTree } from 'lucide-react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import { Drawer } from '@/components/ds/Drawer';
@@ -19,6 +20,7 @@ import { useAuditLog, useRecommendations } from '@/lib/queries';
 import { useSessionStore } from '@/lib/stores';
 import { actionForPath } from '@/lib/rbac';
 import { track } from '@/lib/telemetry';
+import { AuditTimeline } from './AuditTimeline';
 import { eventLinks, filterAudit, parseAuditFilters, serializeAuditFilters, type AuditFilters } from './audit-utils';
 
 const TYPES: AuditEventType[] = [
@@ -43,10 +45,19 @@ export function AuditPage() {
   // Filters live in the URL so saved views and shared links agree.
   const query = sp.toString();
   const filters = useMemo(() => parseAuditFilters(new URLSearchParams(query)), [query]);
+  const view = sp.get('view') === 'timeline' ? 'timeline' : 'list';
   const set = (p: Partial<AuditFilters>) => {
     setShown(PAGE);
-    const s = serializeAuditFilters({ ...filters, ...p }).toString();
-    router.replace(s ? `${pathname}?${s}` : pathname, { scroll: false });
+    const s = serializeAuditFilters({ ...filters, ...p });
+    if (view === 'timeline') s.set('view', 'timeline');
+    const q = s.toString();
+    router.replace(q ? `${pathname}?${q}` : pathname, { scroll: false });
+  };
+  const setView = (v: 'list' | 'timeline') => {
+    const s = serializeAuditFilters(filters);
+    if (v === 'timeline') s.set('view', 'timeline');
+    const q = s.toString();
+    router.replace(q ? `${pathname}?${q}` : pathname, { scroll: false });
   };
 
   const rows = useMemo(() => filterAudit(log.data, filters), [log.data, filters]);
@@ -98,13 +109,29 @@ export function AuditPage() {
           {TYPES.map((x) => <option key={x} value={x}>{t(`common.event.${x}`)}</option>)}
         </select>
         <Input type="search" aria-label={t('audit.filter.sku')} placeholder={t('audit.filter.search')} className="w-40" value={filters.sku} onChange={(e) => set({ sku: e.target.value })} />
-        <Button variant="ghost" onClick={() => { setShown(PAGE); router.replace(pathname, { scroll: false }); }}>{t('common.state.clearFilters')}</Button>
+        <Button variant="ghost" onClick={() => { setShown(PAGE); setView(view); }}>{t('common.state.clearFilters')}</Button>
+        <div role="group" aria-label={t('audit.view.label')} className="ml-auto flex gap-1">
+          {(['list', 'timeline'] as const).map((v) => (
+            <Button
+              key={v} size="sm" variant={view === v ? 'primary' : 'secondary'} aria-pressed={view === v}
+              onClick={() => setView(v)}
+            >
+              {v === 'list' ? <LayoutList className="size-4" aria-hidden /> : <ListTree className="size-4" aria-hidden />}
+              {t(`audit.view.${v}`)}
+            </Button>
+          ))}
+        </div>
       </div>
 
       {log.isLoading ? <LoadingRows rows={8} /> : log.isError ? (
         <ErrorState title={t('common.state.error')} onRetry={log.refetch} />
       ) : rows.length === 0 ? (
         <EmptyState title={t('audit.list.empty')} />
+      ) : view === 'timeline' ? (
+        <>
+          <AuditTimeline events={rows.slice(0, shown)} onSelect={setSelected} />
+          {rows.length > shown && <div className="mt-3 text-center"><Button variant="secondary" onClick={() => setShown(shown + PAGE)}>{t('recommendations.action.more', { n: rows.length - shown })}</Button></div>}
+        </>
       ) : (
         <>
           <MestaDataTable

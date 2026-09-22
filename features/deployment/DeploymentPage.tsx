@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { inputCls } from '@/components/ui/field';
 import { retryDeployment, triggerDeployment } from '@/lib/actions/deployment';
 import { CHANNELS } from '@/lib/stores/deployment';
-import { formatRelativeTime } from '@/lib/format';
+import { formatPercent, formatRelativeTime } from '@/lib/format';
 import { useCan } from '@/lib/hooks';
 import { useTranslation } from '@/lib/i18n';
 import type { DeploymentRecord, DeploymentStatus } from '@/lib/ontology';
@@ -55,7 +55,19 @@ export function DeploymentPage() {
   const board = CHANNELS.map((channel) => {
     const rs = records.data.filter((r) => r.channel === channel);
     const count = (s: DeploymentStatus) => rs.filter((r) => r.status === s).length;
-    return { channel, synced: count('synced'), pending: count('pending') + count('in_flight'), failed: count('failed'), last: rs.map((r) => r.updatedAt).sort().at(-1) ?? null };
+    const failed = rs.filter((r) => r.status === 'failed');
+    const recent = [...rs].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)).slice(0, 3);
+    return {
+      channel,
+      synced: count('synced'),
+      pending: count('pending') + count('in_flight'),
+      failed: failed.length,
+      lastFailed: failed.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))[0] ?? null,
+      successRate: rs.length ? count('synced') / rs.length : null,
+      avgRetries: rs.length ? rs.reduce((n, r) => n + r.retryCount, 0) / rs.length : null,
+      last: rs.map((r) => r.updatedAt).sort().at(-1) ?? null,
+      recent,
+    };
   });
 
   const run = (r: { ok: boolean; error?: string }, id?: string) => {
@@ -99,14 +111,39 @@ export function DeploymentPage() {
         <>
           <section aria-label={t('deployment.board.title')} className="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
             {board.map((b) => (
-              <div key={b.channel} className="rounded-card border border-line bg-surface p-card shadow-e1">
-                <h2 className="mb-2 text-sm font-semibold">{t(`common.channel.${b.channel}`)}</h2>
+              <div key={b.channel} className="flex flex-col rounded-card border border-line bg-surface p-card shadow-e1">
+                <div className="mb-2 flex items-center justify-between gap-2">
+                  <h2 className="text-sm font-semibold">{t(`common.channel.${b.channel}`)}</h2>
+                  <RoleGate action="deployment.execute">
+                    {b.lastFailed && (
+                      <Button size="sm" variant="secondary" onClick={() => run(retryDeployment(user, b.lastFailed!.id))}>
+                        {t('deployment.board.retry')}
+                      </Button>
+                    )}
+                  </RoleGate>
+                </div>
                 <dl className="grid grid-cols-3 gap-1 text-center text-xs">
                   <div className="rounded bg-up-soft p-1.5 text-up"><dd className="tabular text-lg font-semibold">{b.synced}</dd><dt>{t('deployment.board.synced')}</dt></div>
                   <div className="rounded bg-info-soft p-1.5 text-info"><dd className="tabular text-lg font-semibold">{b.pending}</dd><dt>{t('deployment.board.pending')}</dt></div>
                   <div className="rounded bg-down-soft p-1.5 text-down"><dd className="tabular text-lg font-semibold">{b.failed}</dd><dt>{t('deployment.board.failed')}</dt></div>
                 </dl>
-                <p className="mt-2 text-xs text-faint">{t('deployment.board.updated')}: {b.last ? formatRelativeTime(b.last, locale) : '—'}</p>
+                <dl className="mt-2 grid grid-cols-3 gap-1 border-t border-line pt-2 text-xs">
+                  <div><dt className="text-faint">{t('deployment.board.updated')}</dt><dd className="tabular">{b.last ? formatRelativeTime(b.last, locale) : '—'}</dd></div>
+                  <div><dt className="text-faint">{t('deployment.board.successRate')}</dt><dd className="tabular">{b.successRate === null ? '—' : formatPercent(b.successRate, locale)}</dd></div>
+                  <div><dt className="text-faint">{t('deployment.board.avgRetries')}</dt><dd className="tabular">{b.avgRetries === null ? '—' : b.avgRetries.toFixed(1)}</dd></div>
+                </dl>
+                {b.recent.length > 0 && (
+                  <ul aria-label={t('deployment.board.recent')} className="mt-2 flex flex-col gap-1 border-t border-line pt-2 text-xs">
+                    {b.recent.map((r) => (
+                      <li key={r.id} className="flex items-center gap-2">
+                        <span aria-hidden className={cn('size-1.5 shrink-0 rounded-full', STATUS_CLS[r.status].split(' ')[0])} />
+                        <span className="tabular min-w-0 flex-1 truncate">{r.sku}</span>
+                        <span className={cn('rounded-full px-1.5 py-px font-medium', STATUS_CLS[r.status])}>{t(`deployment.status.${r.status}`)}</span>
+                        <span className="tabular shrink-0 text-faint">{formatRelativeTime(r.updatedAt, locale)}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
             ))}
           </section>

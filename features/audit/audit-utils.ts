@@ -1,4 +1,4 @@
-import type { AuditEvent } from '@/lib/ontology';
+import type { AuditEvent, AuditEventType } from '@/lib/ontology';
 
 export interface AuditFilters {
   from: string; // yyyy-mm-dd
@@ -54,6 +54,39 @@ export function toCsv(events: AuditEvent[]): string {
   const head = ['id', 'timestamp', 'type', 'actorId', 'actorRole', 'entityType', 'entityId', 'sku', 'source', 'oldPrice', 'newPrice', 'note'];
   const rows = events.map((e) => [e.id, e.timestamp, e.type, e.actorId, e.actorRole, e.entityType, e.entityId, e.sku, e.source, e.snapshot?.oldPrice, e.snapshot?.newPrice, e.note]);
   return [head, ...rows].map((r) => r.map(esc).join(',')).join('\n');
+}
+
+/** Visual tone per event family so the timeline is scannable by color alone. */
+export type AuditTone = 'brand' | 'agent' | 'up' | 'down' | 'warn' | 'info';
+export function eventTone(type: AuditEventType): AuditTone {
+  if (type.startsWith('strategy_')) return 'brand';
+  if (type === 'recommendation_approve') return 'up';
+  if (type === 'recommendation_reject') return 'down';
+  if (type === 'recommendation_adjust') return 'warn';
+  if (type === 'deployment_success') return 'up';
+  if (type === 'deployment_failure') return 'down';
+  if (type === 'deployment_retry') return 'warn';
+  if (type === 'manual_override') return 'warn';
+  if (type === 'scenario_sent') return 'agent';
+  return 'info';
+}
+
+export interface AuditDayGroup { day: string; label: string; events: AuditEvent[] }
+
+/** Groups events (already sorted desc) into per-day buckets for the timeline view. */
+export function groupEventsByDay(events: AuditEvent[], locale: string): AuditDayGroup[] {
+  const tag = locale === 'id' ? 'id-ID' : 'en-US';
+  const fmt = new Intl.DateTimeFormat(tag, { dateStyle: 'full' });
+  const keyFmt = new Intl.DateTimeFormat('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit' });
+  const groups = new Map<string, AuditDayGroup>();
+  for (const e of events) {
+    const d = new Date(e.timestamp);
+    const day = keyFmt.format(d);
+    const g = groups.get(day) ?? { day, label: fmt.format(d), events: [] };
+    g.events.push(e);
+    groups.set(day, g);
+  }
+  return [...groups.values()].sort((a, b) => b.day.localeCompare(a.day));
 }
 
 /** Where each event points, so a reviewer can jump from the log to the thing that changed. */

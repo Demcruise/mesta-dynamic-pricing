@@ -28,6 +28,7 @@
   "toast": { "approved": "{id} disetujui", "rejected": "{id} ditolak", "adjusted": "{id} disesuaikan", "bulk": "{n} rekomendasi disetujui" },
   "filter": {
     "category": "Kategori", "source": "Sumber", "status": "Status", "confidence": "Keyakinan", "magnitude": "Besar perubahan", "sort": "Urutkan", "all": "Semua",
+    "active": "Filter aktif", "remove": "Hapus filter {label}",
     "mag": { "small": "Kecil (<3%)", "medium": "Sedang (3–6%)", "large": "Besar (>6%)" }
   },
   "sort": { "confidence": "Keyakinan", "impact": "Dampak margin", "age": "Terbaru", "category": "Kategori" },
