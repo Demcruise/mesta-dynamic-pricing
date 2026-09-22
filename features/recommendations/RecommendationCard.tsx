@@ -4,6 +4,7 @@ import { TriangleAlert } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 import { AgentBorderCard } from '@/components/ds/AgentBorderCard';
+import { AgentRunTimeline, type RunStep } from '@/components/ds/AgentRunTimeline';
 import { ConfidenceBar } from '@/components/ds/ConfidenceBar';
 import { DeltaBadge } from '@/components/ds/DeltaBadge';
 import { PriceValue } from '@/components/ds/PriceValue';
@@ -13,11 +14,12 @@ import { StatusChip } from '@/components/ds/StatusChip';
 import { RoleGate } from '@/components/shell/RoleGate';
 import { Button } from '@/components/ui/button';
 import { recommendationHealth, stageDecision } from '@/lib/actions/recommendation';
-import { formatDate } from '@/lib/format';
+import { elasticityBand } from '@/lib/domain';
+import { formatDate, formatPrice } from '@/lib/format';
 import { useCan } from '@/lib/hooks';
 import { useTranslation } from '@/lib/i18n';
 import type { Product, Recommendation } from '@/lib/ontology';
-import { useSessionStore, useToastStore, useUndoStore } from '@/lib/stores';
+import { useProductCatalogStore, useSessionStore, useToastStore, useUndoStore } from '@/lib/stores';
 import { DecisionDialog, type DialogMode } from './DecisionDialog';
 import { changeRatio } from './filters';
 
@@ -29,11 +31,34 @@ export function RecommendationCard({ rec, product, defaultOpen = false }: {
   const can = useCan();
   const toast = useToastStore((s) => s.push);
   const staged = useUndoStore((s) => s.staged[rec.id]);
+  const competitors = useProductCatalogStore((s) => s.competitors);
   const [dialog, setDialog] = useState<DialogMode>(null);
   const health = recommendationHealth(rec);
   const pending = rec.status === 'pending';
   const locked = !!staged;
   const canDecide = pending && !locked && can('recommendation.decide');
+
+  const latestObs = competitors
+    .filter((c) => c.sku === rec.sku)
+    .map((c) => c.observedAt)
+    .sort()
+    .at(-1);
+
+  const run: RunStep[] = [
+    {
+      id: 'observed', label: t('recommendations.run.observed'), at: latestObs,
+      detail: product ? `${t('recommendations.card.competitor')}: ${formatPrice(product.competitorAvg, locale)}` : undefined,
+    },
+    {
+      id: 'elasticity', label: t('recommendations.run.elasticity'),
+      detail: product ? `${t(`catalog.elasticity.${elasticityBand(product.elasticity)}`)} (${product.elasticity})` : undefined,
+    },
+    {
+      id: 'guardrail', label: t('recommendations.run.guardrail'), ok: !health.breach,
+      detail: t(health.breach ? 'recommendations.run.guardrailBreach' : 'recommendations.run.guardrailOk'),
+    },
+    { id: 'formed', label: t('recommendations.run.formed'), at: rec.createdAt, detail: `${rec.confidence}%` },
+  ];
 
   const approve = () => {
     const r = stageDecision(user, rec.id, 'approved');
@@ -41,7 +66,7 @@ export function RecommendationCard({ rec, product, defaultOpen = false }: {
   };
 
   return (
-    <AgentBorderCard actor={rec.source === 'agent' ? 'agent' : 'human'} className="flex flex-col gap-3">
+    <AgentBorderCard actor={rec.source === 'agent' ? 'agent' : 'human'} status={rec.status} className="flex flex-col gap-3">
       <header className="flex flex-wrap items-start justify-between gap-2">
         <div>
           <h2 className="text-sm font-semibold">
@@ -86,6 +111,9 @@ export function RecommendationCard({ rec, product, defaultOpen = false }: {
 
       <details open={defaultOpen} className="text-sm">
         <summary className="cursor-pointer text-xs font-medium text-muted">{t('recommendations.card.evidence')}</summary>
+        <div className="mt-2">
+          <AgentRunTimeline steps={run} />
+        </div>
         {product && (
           <div className="mt-2 grid gap-3 sm:grid-cols-2">
             <div>

@@ -12,7 +12,18 @@
   "dialog": {
     "rejectTitle": "Tolak rekomendasi", "adjustTitle": "Sesuaikan harga usulan", "note": "Catatan (wajib)", "newPrice": "Harga disesuaikan",
     "bulkTitle": "Setujui massal", "threshold": "Keyakinan minimum", "targets": "{n} rekomendasi akan disetujui", "impact": "Total dampak margin proyeksi",
-    "excluded": "{n} dikecualikan ({stale} usang, {breach} melanggar guardrail)", "none": "Tidak ada yang memenuhi ambang ini.", "confirmBulk": "Setujui {n}"
+    "excluded": "{n} dikecualikan ({stale} usang, {breach} melanggar guardrail)", "none": "Tidak ada yang memenuhi ambang ini.", "confirmBulk": "Setujui {n}",
+    "checklist": "Pilih rekomendasi untuk disetujui", "excludedList": "Tampilkan yang dikecualikan ({n})",
+    "reason": { "stale": "usang", "breach": "melanggar guardrail" }
+  },
+  "run": {
+    "title": "Bagaimana rekomendasi ini dihasilkan",
+    "observed": "Data kompetitor ditarik",
+    "elasticity": "Elastisitas dihitung",
+    "guardrail": "Guardrail diperiksa",
+    "guardrailOk": "Dalam semua batas",
+    "guardrailBreach": "Di luar batas yang diizinkan",
+    "formed": "Rekomendasi dibentuk"
   },
   "toast": { "approved": "{id} disetujui", "rejected": "{id} ditolak", "adjusted": "{id} disesuaikan", "bulk": "{n} rekomendasi disetujui" },
   "filter": {

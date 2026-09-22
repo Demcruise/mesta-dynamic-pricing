@@ -9,7 +9,8 @@ export async function open(page: Page, path: string, role: RoleKey = 'analyst', 
   }, locale);
   // Switch role on a page every role may open, then navigate client-side (route guard would redirect otherwise).
   await page.goto(role === 'analyst' ? path : '/overview');
-  await expect(page.getByRole('main')).toBeVisible();
+  // Demo-data bootstrap + on-demand route compile can exceed the default 5s under parallel load.
+  await expect(page.getByRole('main')).toBeVisible({ timeout: 20_000 });
   if (role !== 'analyst') {
     await setRole(page, role);
     if (path !== '/overview') await go(page, path);

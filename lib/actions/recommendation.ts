@@ -120,12 +120,13 @@ export function bulkEligibility(recs: Recommendation[], minConfidence: number) {
   return { eligible, excluded, impact: eligible.reduce((s, r) => s + r.projectedMarginImpact, 0) };
 }
 
-export function bulkApprove(user: UserSession, recs: Recommendation[], minConfidence: number) {
+export function bulkApprove(user: UserSession, recs: Recommendation[], minConfidence: number, onlyIds?: Set<string>) {
   if (!can(user.role, 'recommendation.bulk_approve')) return fail('forbidden');
   track('bulk_approval_initiated', { minConfidence });
   const { eligible } = bulkEligibility(recs, minConfidence);
+  const targets = onlyIds ? eligible.filter((r) => onlyIds.has(r.id)) : eligible;
   let count = 0;
-  for (const r of eligible) {
+  for (const r of targets) {
     if (useRecommendationStore.getState().decide(r.id, 'approved').ok) {
       count++;
       useAuditStore.getState().record({

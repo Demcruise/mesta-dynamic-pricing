@@ -12,7 +12,18 @@
   "dialog": {
     "rejectTitle": "Reject recommendation", "adjustTitle": "Adjust proposed price", "note": "Note (required)", "newPrice": "Adjusted price",
     "bulkTitle": "Bulk approve", "threshold": "Minimum confidence", "targets": "{n} recommendations will be approved", "impact": "Total projected margin impact",
-    "excluded": "{n} excluded ({stale} stale, {breach} guardrail breach)", "none": "Nothing eligible at this threshold.", "confirmBulk": "Approve {n}"
+    "excluded": "{n} excluded ({stale} stale, {breach} guardrail breach)", "none": "Nothing eligible at this threshold.", "confirmBulk": "Approve {n}",
+    "checklist": "Select recommendations to approve", "excludedList": "Show excluded ({n})",
+    "reason": { "stale": "stale", "breach": "guardrail breach" }
+  },
+  "run": {
+    "title": "How this recommendation was generated",
+    "observed": "Competitor data pulled",
+    "elasticity": "Elasticity calculated",
+    "guardrail": "Guardrails checked",
+    "guardrailOk": "Within all bounds",
+    "guardrailBreach": "Outside allowed bounds",
+    "formed": "Recommendation formed"
   },
   "toast": { "approved": "{id} approved", "rejected": "{id} rejected", "adjusted": "{id} adjusted", "bulk": "{n} recommendations approved" },
   "filter": {

@@ -29,7 +29,15 @@
   },
   "settings": {
     "subtitle": "Appearance and workspace preferences",
-    "appearance": "Appearance"
+    "appearance": "Appearance",
+    "ai": "AI & model disclosure",
+    "aiModel": "Pricing model",
+    "aiModelBody": "Recommendations are produced by a deterministic pricing engine: competitor observations are pulled in, demand elasticity is estimated per SKU, strategy guardrails are checked, then a target price is formed. It is a rules-based model, not a large language model — there is no prompt or token usage to meter.",
+    "aiLimit": "Known limitation",
+    "aiLimitBody": "The engine assumes constant elasticity within each band: the same percentage price change is expected to have the same demand effect near the band edges as in the middle. Confidence reflects data freshness and observed response, not a guarantee of realized margin.",
+    "aiVolume": "Recommendation volume",
+    "aiVolumeBody": "{total} recommendations generated — {pending} awaiting human review, {decided} decided by humans.",
+    "aiVolumeSources": "{agent} agent-generated · {simulation} from simulation · {manual} manual"
   },
   "role": {
     "analyst": "Analyst",

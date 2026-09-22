@@ -29,7 +29,15 @@
   },
   "settings": {
     "subtitle": "Preferensi tampilan dan workspace",
-    "appearance": "Tampilan"
+    "appearance": "Tampilan",
+    "ai": "Keterbukaan AI & model",
+    "aiModel": "Model harga",
+    "aiModelBody": "Rekomendasi dihasilkan oleh mesin harga deterministik: observasi kompetitor ditarik, elastisitas permintaan diestimasi per SKU, guardrail strategi diperiksa, lalu harga target dibentuk. Ini model berbasis aturan, bukan large language model — tidak ada prompt atau token yang diukur.",
+    "aiLimit": "Keterbatasan yang diketahui",
+    "aiLimitBody": "Mesin mengasumsikan elastisitas konstan dalam tiap rentang: perubahan harga dengan persentase sama diperkirakan berdampak sama di tepi maupun di tengah rentang. Keyakinan mencerminkan kesegaran data dan respons yang teramati, bukan jaminan margin terealisasi.",
+    "aiVolume": "Volume rekomendasi",
+    "aiVolumeBody": "{total} rekomendasi dihasilkan — {pending} menunggu tinjauan manusia, {decided} diputuskan manusia.",
+    "aiVolumeSources": "{agent} dari agen · {simulation} dari simulasi · {manual} manual"
   },
   "role": {
     "analyst": "Analis",

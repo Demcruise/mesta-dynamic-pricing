@@ -37,6 +37,21 @@ export function skusInScope(s: Pick<Strategy, 'skuIds' | 'categories'>, products
   return out;
 }
 
+/** Active strategies whose scope intersects the draft's, with the specific SKUs in the overlap. */
+export function overlapSkus(
+  draft: Pick<StrategyDraft, 'skuIds' | 'categories'>,
+  strategies: Strategy[],
+  products: Product[],
+  selfId: string | null,
+): { strategy: Strategy; skus: string[] }[] {
+  const mine = skusInScope(draft, products);
+  if (mine.size === 0) return [];
+  return strategies
+    .filter((s) => s.id !== selfId && s.status === 'active')
+    .map((s) => ({ strategy: s, skus: [...skusInScope(s, products)].filter((x) => mine.has(x)) }))
+    .filter((x) => x.skus.length > 0);
+}
+
 export function validateDraft(
   draft: StrategyDraft,
   strategies: Strategy[],
@@ -51,15 +66,8 @@ export function validateDraft(
   if (!(g.maxChangePercent > 0 && g.maxChangePercent <= 100)) issues.push({ severity: 'blocker', code: 'change_range' });
   if (!(g.autoApproveThreshold >= 0 && g.autoApproveThreshold <= 100)) issues.push({ severity: 'blocker', code: 'threshold_range' });
 
-  if (draft.skuIds.length || draft.categories.length) {
-    const mine = skusInScope(draft, products);
-    const clash = strategies.filter((s) => {
-      if (s.id === selfId || s.status !== 'active') return false;
-      for (const sku of skusInScope(s, products)) if (mine.has(sku)) return true;
-      return false;
-    });
-    if (clash.length) issues.push({ severity: 'warning', code: 'overlap', detail: clash.map((s) => s.name).join(', ') });
-  }
+  const clash = overlapSkus(draft, strategies, products, selfId);
+  if (clash.length) issues.push({ severity: 'warning', code: 'overlap', detail: clash.map((c) => c.strategy.name).join(', ') });
   return issues;
 }
 

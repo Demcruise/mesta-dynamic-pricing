@@ -24,13 +24,19 @@ function Body({ recs, onClose }: { recs: Recommendation[]; onClose: () => void }
   const user = useSessionStore((s) => s.user);
   const toast = useToastStore((s) => s.push);
   const [threshold, setThreshold] = useState('85');
+  const [deselected, setDeselected] = useState<Set<string>>(new Set());
   const min = Math.min(100, Math.max(0, Number(threshold) || 0));
   const plan = useMemo(() => bulkEligibility(recs, min), [recs, min]);
   const stale = plan.excluded.filter((e) => e.reason === 'stale').length;
   const breach = plan.excluded.length - stale;
 
+  const chosen = plan.eligible.filter((r) => !deselected.has(r.id));
+  const impact = chosen.reduce((s, r) => s + r.projectedMarginImpact, 0);
+  const toggle = (id: string) =>
+    setDeselected((d) => { const n = new Set(d); if (n.has(id)) n.delete(id); else n.add(id); return n; });
+
   const confirm = () => {
-    const r = bulkApprove(user, recs, min);
+    const r = bulkApprove(user, recs, min, new Set(chosen.map((x) => x.id)));
     if (!r.ok) { toast(t(`recommendations.err.${r.error}`)); return; }
     toast(t('recommendations.toast.bulk', { n: r.count }));
     onClose();
@@ -42,24 +48,52 @@ function Body({ recs, onClose }: { recs: Recommendation[]; onClose: () => void }
         {(p) => <Input {...p} type="number" min={0} max={100} value={threshold} onChange={(e) => setThreshold(e.target.value)} />}
       </Field>
       <div aria-live="polite" className="rounded-input bg-subtle p-3 text-sm">
-        {plan.eligible.length === 0 ? (
+        {chosen.length === 0 ? (
           <p>{t('recommendations.dialog.none')}</p>
         ) : (
           <>
-            <p className="font-medium">{t('recommendations.dialog.targets', { n: plan.eligible.length })}</p>
-            <p className="text-muted">{t('recommendations.dialog.impact')}: <PriceValue value={plan.impact} /></p>
+            <p className="font-medium">{t('recommendations.dialog.targets', { n: chosen.length })}</p>
+            <p className="text-muted">{t('recommendations.dialog.impact')}: <PriceValue value={impact} /></p>
           </>
         )}
         {plan.excluded.length > 0 && <p className="mt-1 text-xs text-warn">{t('recommendations.dialog.excluded', { n: plan.excluded.length, stale, breach })}</p>}
       </div>
       {plan.eligible.length > 0 && (
-        <ul className="max-h-40 overflow-auto text-xs text-muted">
-          {plan.eligible.map((r) => <li key={r.id} className="tabular">{r.id} · {r.sku} · {r.confidence}%</li>)}
-        </ul>
+        <fieldset className="rounded-input border border-line">
+          <legend className="sr-only">{t('recommendations.dialog.checklist')}</legend>
+          <ul className="max-h-56 divide-y divide-line overflow-auto text-xs">
+            {plan.eligible.map((r) => {
+              const on = !deselected.has(r.id);
+              return (
+                <li key={r.id}>
+                  <label className="flex cursor-pointer items-center gap-2 px-3 py-2 transition-colors duration-fast hover:bg-subtle">
+                    <input type="checkbox" checked={on} onChange={() => toggle(r.id)} />
+                    <span className="tabular font-medium">{r.id}</span>
+                    <span className="tabular text-muted">{r.sku}</span>
+                    <span className="tabular ml-auto text-muted">{r.confidence}%</span>
+                    <PriceValue value={r.projectedMarginImpact} muted />
+                  </label>
+                </li>
+              );
+            })}
+          </ul>
+        </fieldset>
+      )}
+      {plan.excluded.length > 0 && (
+        <details className="text-xs text-muted">
+          <summary className="cursor-pointer">{t('recommendations.dialog.excludedList', { n: plan.excluded.length })}</summary>
+          <ul className="mt-1 flex flex-col gap-1 pl-4">
+            {plan.excluded.map(({ rec, reason }) => (
+              <li key={rec.id} className="tabular">
+                {rec.id} · {rec.sku} · <span className="text-warn">{t(`recommendations.dialog.reason.${reason}`)}</span>
+              </li>
+            ))}
+          </ul>
+        </details>
       )}
       <div className="flex justify-end gap-2">
         <Button variant="secondary" onClick={onClose}>{t('recommendations.action.cancel')}</Button>
-        <Button disabled={plan.eligible.length === 0} onClick={confirm}>{t('recommendations.dialog.confirmBulk', { n: plan.eligible.length })}</Button>
+        <Button disabled={chosen.length === 0} onClick={confirm}>{t('recommendations.dialog.confirmBulk', { n: chosen.length })}</Button>
       </div>
     </div>
   );

@@ -8,7 +8,7 @@ import { resetMestaData } from '@/lib/bootstrap';
 import { checkPrice, priceBounds } from '@/lib/guardrails';
 import type { Role, UserSession } from '@/lib/ontology';
 import { project } from '@/lib/projection';
-import { emptyDraft, validateDraft } from '@/lib/strategy-rules';
+import { emptyDraft, overlapSkus, validateDraft } from '@/lib/strategy-rules';
 import {
   UNDO_WINDOW_MS, useAuditStore, useNotificationStore, useProductCatalogStore, useRecommendationStore,
   useScenarioStore, useStrategyStore, useUndoStore,
@@ -94,6 +94,28 @@ describe('bulk approval', () => {
     expect(plan.eligible.some((r) => r.id === stale.id)).toBe(false);
     const res = bulkApprove(manager, items, 0);
     expect(res.ok && res.count).toBe(plan.eligible.length);
+    expect(useRecommendationStore.getState().items.find((r) => r.id === stale.id)?.status).toBe('pending');
+  });
+
+  it('approves only explicitly selected ids (per-item uncheck)', () => {
+    const items = useRecommendationStore.getState().items.filter((r) => r.status === 'pending');
+    const plan = bulkEligibility(items, 0);
+    expect(plan.eligible.length).toBeGreaterThanOrEqual(2);
+    const [keep, ...rest] = plan.eligible;
+    const res = bulkApprove(manager, items, 0, new Set([keep!.id]));
+    expect(res).toEqual({ ok: true, count: 1 });
+    const after = useRecommendationStore.getState().items;
+    expect(after.find((r) => r.id === keep!.id)?.status).toBe('approved');
+    for (const r of rest) expect(after.find((x) => x.id === r.id)?.status).toBe('pending');
+    expect(auditFor(keep!.id).some((e) => e.note === 'bulk approval')).toBe(true);
+  });
+
+  it('cannot smuggle an ineligible id through the selected set', () => {
+    const items = useRecommendationStore.getState().items.filter((r) => r.status === 'pending');
+    const stale = items[0]!;
+    useProductCatalogStore.getState().applyPrice(stale.sku, stale.currentPrice + 100, 'manual_override');
+    const res = bulkApprove(manager, items, 0, new Set([stale.id]));
+    expect(res).toEqual({ ok: true, count: 0 });
     expect(useRecommendationStore.getState().items.find((r) => r.id === stale.id)?.status).toBe('pending');
   });
 });
@@ -192,6 +214,19 @@ describe('strategy approval flow', () => {
     // seeded active strategy covers Beverages
     const overlap = validateDraft({ ...draft(), categories: ['Beverages'] }, strategies, products, null);
     expect(overlap.find((i) => i.code === 'overlap')?.severity).toBe('warning');
+  });
+
+  it('overlapSkus returns the specific SKUs shared with each active strategy', () => {
+    const products = useProductCatalogStore.getState().products;
+    const strategies = useStrategyStore.getState().items;
+    const overlaps = overlapSkus({ ...draft(), categories: ['Beverages'] }, strategies, products, null);
+    expect(overlaps.length).toBeGreaterThan(0);
+    for (const o of overlaps) {
+      expect(o.strategy.status).toBe('active');
+      expect(o.skus.length).toBeGreaterThan(0);
+    }
+    // drafts do not overlap themselves
+    expect(overlapSkus({ ...draft(), categories: [] }, strategies, products, null)).toEqual([]);
   });
 });
 

@@ -13,8 +13,9 @@ import { useTranslation } from '@/lib/i18n';
 import type { StrategyObjective } from '@/lib/ontology';
 import { useSkuList, useStrategies, useStrategyHistory } from '@/lib/queries';
 import {
-  emptyDraft, hasBlocker, toDraft, validateDraft, type Issue, type IssueCode, type StrategyDraft,
+  emptyDraft, hasBlocker, overlapSkus, toDraft, validateDraft, type Issue, type IssueCode, type StrategyDraft,
 } from '@/lib/strategy-rules';
+import { GuardrailPreview } from './GuardrailPreview';
 import { useCatalogSelectionStore, useSessionStore, useStrategyDraftStore, useToastStore } from '@/lib/stores';
 import { cn } from '@/lib/utils';
 import { formatDate } from '@/lib/format';
@@ -95,6 +96,7 @@ function Wizard({ strategyId, initial, status }: { strategyId: string | null; in
   useEffect(() => { useStrategyDraftStore.getState().setDraft(key, { draft, step }); }, [key, draft, step]);
 
   const issues = useMemo(() => validateDraft(draft, strategies, products, strategyId), [draft, strategies, products, strategyId]);
+  const overlaps = useMemo(() => overlapSkus(draft, strategies, products, strategyId), [draft, strategies, products, strategyId]);
   const stepBlocked = (s: number) => issues.some((i) => i.severity === 'blocker' && STEP_OF[i.code] === s);
   const set = (patch: Partial<StrategyDraft>) => setDraft((d) => ({ ...d, ...patch }));
   const setG = (patch: Partial<StrategyDraft['guardrail']>) => setDraft((d) => ({ ...d, guardrail: { ...d.guardrail, ...patch } }));
@@ -222,6 +224,22 @@ function Wizard({ strategyId, initial, status }: { strategyId: string | null; in
             {issues.filter((i) => STEP_OF[i.code] === 1).map((i) => (
               <p key={i.code} role="alert" className={cn('text-sm', i.severity === 'blocker' ? 'text-critical' : 'text-warn')}>{issueText(i)}</p>
             ))}
+            {overlaps.length > 0 && (
+              <div className="rounded-input border border-warn/40 bg-warn-soft p-3 text-xs">
+                <p className="mb-1.5 font-medium text-warn">{t('strategy.overlap.title')}</p>
+                <ul className="flex flex-col gap-1.5">
+                  {overlaps.map((o) => (
+                    <li key={o.strategy.id}>
+                      <span className="font-medium">{o.strategy.name}:</span>{' '}
+                      <span className="tabular">
+                        {o.skus.slice(0, 8).join(', ')}
+                        {o.skus.length > 8 && ` +${o.skus.length - 8}`}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
         )}
 
@@ -243,6 +261,7 @@ function Wizard({ strategyId, initial, status }: { strategyId: string | null; in
               <input type="checkbox" checked={g.mapEnforced} onChange={(e) => setG({ mapEnforced: e.target.checked })} />
               {t('strategy.field.map')}
             </label>
+            <GuardrailPreview draft={draft} products={products} />
           </div>
         )}
 
