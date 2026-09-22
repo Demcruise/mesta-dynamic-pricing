@@ -18,10 +18,10 @@ const focus =
   "focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--rb-accent,oklch(20.5%_0_0))] dark:focus-visible:outline-[var(--rb-accent,oklch(100%_0_0))]";
 
 const transition =
-  "transition-[background-color,border-color,color,transform] duration-150 ease-out";
+  "transition-[background-color,border-color,color,transform] duration-fast ease-decelerate";
 
 const field =
-  "h-9 w-full rounded-[var(--rb-r-md,8px)] border border-neutral-200 bg-white px-3 text-sm text-neutral-900 placeholder:text-neutral-400 transition-colors duration-150 hover:border-neutral-300 focus:border-neutral-900 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100 dark:placeholder:text-neutral-500 dark:hover:border-neutral-700 dark:focus:border-white";
+  "h-9 w-full rounded-[var(--rb-r-md,8px)] border border-neutral-200 bg-white px-3 text-sm text-neutral-900 placeholder:text-neutral-400 transition-colors duration-fast hover:border-neutral-300 focus:border-neutral-900 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100 dark:placeholder:text-neutral-500 dark:hover:border-neutral-700 dark:focus:border-white";
 
 type SelectOption = { value: string; label: string; hint?: string };
 
@@ -185,7 +185,7 @@ function Select({
         <ChevronDown
           aria-hidden="true"
           className={cx(
-            "h-4 w-4 shrink-0 text-neutral-400 transition-transform duration-150 ease-out motion-reduce:transition-none dark:text-neutral-600",
+            "h-4 w-4 shrink-0 text-neutral-400 transition-transform duration-fast ease-decelerate motion-reduce:transition-none dark:text-neutral-600",
             open && "rotate-180",
           )}
         />
@@ -198,7 +198,7 @@ function Select({
           role="listbox"
           tabIndex={-1}
           className={cx(
-            "absolute z-30 max-h-[264px] w-full overflow-y-auto rounded-[var(--rb-r-lg,10px)] border border-neutral-200 bg-white p-1 shadow-[0_8px_24px_-8px_rgba(0,0,0,0.18)] dark:border-neutral-800 dark:bg-neutral-900",
+            "absolute z-30 max-h-[264px] w-full overflow-y-auto rounded-[var(--rb-r-lg,10px)] border border-neutral-200 bg-white p-1 shadow-e3 dark:border-neutral-800 dark:bg-neutral-900",
             flip ? "bottom-full mb-1.5" : "top-full mt-1.5",
           )}
         >
@@ -835,7 +835,7 @@ export default function Filtering3() {
             {openPop === "add" && (
               <div
                 role="menu"
-                className="absolute top-full right-0 z-30 mt-1.5 w-52 rounded-[var(--rb-r-lg,10px)] border border-neutral-200 bg-white p-1 shadow-[0_8px_24px_-8px_rgba(0,0,0,0.18)] dark:border-neutral-800 dark:bg-neutral-900"
+                className="absolute top-full right-0 z-30 mt-1.5 w-52 rounded-[var(--rb-r-lg,10px)] border border-neutral-200 bg-white p-1 shadow-e3 dark:border-neutral-800 dark:bg-neutral-900"
               >
                 <p className="px-2.5 pt-1.5 pb-1 text-xs text-neutral-400 dark:text-neutral-500">
                   Filter by field
@@ -926,7 +926,7 @@ export default function Filtering3() {
                     <div
                       role="dialog"
                       aria-label={`Edit ${def.label} filter`}
-                      className="absolute top-full left-0 z-30 mt-1.5 w-64 rounded-[var(--rb-r-2xl,14px)] border border-neutral-200 bg-white p-3 shadow-[0_8px_24px_-8px_rgba(0,0,0,0.18)] dark:border-neutral-800 dark:bg-neutral-900"
+                      className="absolute top-full left-0 z-30 mt-1.5 w-64 rounded-[var(--rb-r-2xl,14px)] border border-neutral-200 bg-white p-3 shadow-e3 dark:border-neutral-800 dark:bg-neutral-900"
                     >
                       <div className="space-y-2">
                         <Select
@@ -1074,7 +1074,7 @@ export default function Filtering3() {
                     return (
                       <tr
                         key={d.id}
-                        className="group h-11 transition-colors duration-150 hover:bg-neutral-50 dark:hover:bg-neutral-800/50"
+                        className="group h-11 transition-colors duration-fast hover:bg-neutral-50 dark:hover:bg-neutral-800/50"
                       >
                         <td className="px-3 text-[13px] text-neutral-900 first:pl-4 sm:first:pl-5 dark:text-neutral-100">
                           <span className="block truncate font-medium">
@@ -1118,14 +1118,14 @@ export default function Filtering3() {
           <div
             aria-hidden="true"
             className={cx(
-              "pointer-events-none absolute inset-x-0 top-9 h-8 bg-gradient-to-b from-white to-transparent transition-opacity duration-200 ease-out dark:from-neutral-950",
+              "pointer-events-none absolute inset-x-0 top-9 h-8 bg-gradient-to-b from-white to-transparent transition-opacity duration-base ease-decelerate dark:from-neutral-950",
               tableEdges.start ? "opacity-100" : "opacity-0",
             )}
           />
           <div
             aria-hidden="true"
             className={cx(
-              "pointer-events-none absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-white to-transparent transition-opacity duration-200 ease-out dark:from-neutral-950",
+              "pointer-events-none absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-white to-transparent transition-opacity duration-base ease-decelerate dark:from-neutral-950",
               tableEdges.end ? "opacity-100" : "opacity-0",
             )}
           />

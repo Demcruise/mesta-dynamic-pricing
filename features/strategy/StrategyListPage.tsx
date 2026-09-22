@@ -86,7 +86,7 @@ export function StrategyListPage() {
       ) : (
         <ul className="grid gap-3 lg:grid-cols-2">
           {rows.map((s) => (
-            <li key={s.id} className="rounded-card border border-line bg-surface p-4">
+            <li key={s.id} className="rounded-card border border-line bg-surface p-card shadow-e1">
               <div className="flex items-start justify-between gap-2">
                 <div>
                   <h2 className="font-semibold">{s.name}</h2>

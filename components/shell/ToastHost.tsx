@@ -23,13 +23,13 @@ export function ToastHost() {
   return (
     <div role="status" aria-live="polite" className="fixed bottom-20 right-4 z-50 flex max-w-sm flex-col gap-2 md:bottom-4">
       {stagedList.map((d) => (
-        <div key={d.recId} className="flex items-center gap-3 rounded-card border border-line bg-surface p-3 text-sm shadow-lg">
+        <div key={d.recId} className="glass flex items-center gap-3 rounded-card border border-line p-3 text-sm shadow-e3">
           <span className="flex-1">{t(`recommendations.toast.${d.to}`, { id: d.recId })} · {Math.max(0, Math.ceil((d.expiresAt - now) / 1000))}s</span>
           <Button size="sm" variant="secondary" onClick={() => undoDecision(d.recId)}>{t('recommendations.action.undo')}</Button>
         </div>
       ))}
       {toasts.map((x) => (
-        <div key={x.id} className="rounded-card border border-line bg-surface p-3 text-sm shadow-lg">{x.message}</div>
+        <div key={x.id} className="glass rounded-card border border-line p-3 text-sm shadow-e3">{x.message}</div>
       ))}
     </div>
   );

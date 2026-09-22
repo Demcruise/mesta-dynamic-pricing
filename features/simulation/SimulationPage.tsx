@@ -136,7 +136,7 @@ function Simulator({ sku, strategyId, initial, basePrice }: {
           const disabled = !!s.sentRec || !can('simulation.use');
           const errId = `err-${s.key}`;
           return (
-            <section key={s.key} aria-label={t('simulation.scenario', { n: i + 1 })} className="rounded-card border border-line bg-surface p-4">
+            <section key={s.key} aria-label={t('simulation.scenario', { n: i + 1 })} className="rounded-card border border-line bg-surface p-card shadow-e1">
               <div className="mb-2 flex items-center justify-between">
                 <h2 className="text-sm font-semibold">{t('simulation.scenario', { n: i + 1 })}</h2>
                 {scenarios.length > 1 && !s.sentRec && (
@@ -180,7 +180,7 @@ function Simulator({ sku, strategyId, initial, basePrice }: {
         )}
       </div>
 
-      <section className="mb-4 overflow-x-auto rounded-card border border-line bg-surface">
+      <section className="mb-4 overflow-x-auto rounded-card border border-line bg-surface shadow-e1">
         <table className="w-full min-w-[520px] text-sm">
           <caption className="sr-only">{t('simulation.title')}</caption>
           <thead className="bg-subtle text-xs text-muted">
@@ -202,7 +202,7 @@ function Simulator({ sku, strategyId, initial, basePrice }: {
 
       <div className="grid gap-4 lg:grid-cols-[2fr_1fr]">
         <DemandChart product={product} markers={markers} />
-        <section className="rounded-card border border-line bg-surface p-4">
+        <section className="rounded-card border border-line bg-surface p-card shadow-e1">
           <h2 className="mb-2 text-sm font-semibold">{t('simulation.assumptions.title')}</h2>
           <p className="text-sm text-muted">
             {t('simulation.assumptions.body', { base: BASE_UNITS, elasticity: product.elasticity, ci: Math.round(CI * 100) })}
@@ -260,7 +260,7 @@ function SkuPicker({ strategyId }: { strategyId: string | null }) {
       <div className="max-w-md">
         <p className="mb-2 text-sm text-muted">{t('simulation.context.pick')}</p>
         <Input aria-label={t('simulation.context.searchSku')} placeholder={t('simulation.context.searchSku')} value={q} onChange={(e) => setQ(e.target.value)} />
-        <ul className="mt-2 divide-y divide-line rounded-card border border-line bg-surface">
+        <ul className="mt-2 divide-y divide-line rounded-card border border-line bg-surface shadow-e1">
           {hits.map((p) => (
             <li key={p.sku}>
               <button type="button" className="flex w-full items-center justify-between px-3 py-2 text-left text-sm hover:bg-subtle"

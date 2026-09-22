@@ -429,7 +429,7 @@ export default function ToolCalls1() {
           <button
             type="button"
             onClick={stop}
-            className="inline-flex h-8 shrink-0 cursor-pointer items-center gap-1.5 rounded-[var(--rb-r-md,8px)] bg-neutral-100 px-2.5 text-[13px] font-medium text-neutral-700 transition-[transform,background-color,color] duration-150 ease-out hover:bg-neutral-200 active:scale-[0.97] focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--rb-accent,oklch(20.5%_0_0))] dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700 dark:focus-visible:outline-[var(--rb-accent,oklch(100%_0_0))]"
+            className="inline-flex h-8 shrink-0 cursor-pointer items-center gap-1.5 rounded-[var(--rb-r-md,8px)] bg-neutral-100 px-2.5 text-[13px] font-medium text-neutral-700 transition-[transform,background-color,color] duration-fast ease-decelerate hover:bg-neutral-200 active:scale-[0.97] focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--rb-accent,oklch(20.5%_0_0))] dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700 dark:focus-visible:outline-[var(--rb-accent,oklch(100%_0_0))]"
           >
             <Square aria-hidden="true" className="h-3.5 w-3.5 shrink-0" />
             Stop
@@ -460,7 +460,7 @@ export default function ToolCalls1() {
                 aria-controls={panelId}
                 onClick={() => setOpenId(open ? "" : p.id)}
                 className={cx(
-                  "flex h-10 w-full cursor-pointer items-center gap-2 px-2 text-left transition-colors duration-150 ease-out focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--rb-accent,oklch(20.5%_0_0))] dark:focus-visible:outline-[var(--rb-accent,oklch(100%_0_0))]",
+                  "flex h-10 w-full cursor-pointer items-center gap-2 px-2 text-left transition-colors duration-fast ease-decelerate focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--rb-accent,oklch(20.5%_0_0))] dark:focus-visible:outline-[var(--rb-accent,oklch(100%_0_0))]",
                   open
                     ? "rounded-t-[var(--rb-r-md,8px)] hover:bg-neutral-50 dark:hover:bg-neutral-900"
                     : "rounded-[var(--rb-r-lg,10px)] border border-neutral-200/70 bg-white hover:bg-neutral-50 active:bg-neutral-100 dark:border-neutral-800 dark:bg-neutral-950 dark:hover:bg-neutral-900 dark:active:bg-neutral-800/70",
@@ -470,7 +470,7 @@ export default function ToolCalls1() {
                   <ChevronRight
                     aria-hidden="true"
                     className={cx(
-                      "h-3.5 w-3.5 text-neutral-500 transition-transform duration-150 ease-out dark:text-neutral-500",
+                      "h-3.5 w-3.5 text-neutral-500 transition-transform duration-fast ease-decelerate dark:text-neutral-500",
                       open && "rotate-90",
                     )}
                   />
@@ -539,14 +539,14 @@ export default function ToolCalls1() {
         <div
           aria-hidden="true"
           className={cx(
-            "pointer-events-none absolute inset-x-1 top-1 h-8 rounded-t-[var(--rb-r-lg,10px)] bg-gradient-to-b from-neutral-50 to-transparent transition-opacity duration-200 ease-out dark:from-neutral-900",
+            "pointer-events-none absolute inset-x-1 top-1 h-8 rounded-t-[var(--rb-r-lg,10px)] bg-gradient-to-b from-neutral-50 to-transparent transition-opacity duration-base ease-decelerate dark:from-neutral-900",
             transcript.edges.start ? "opacity-100" : "opacity-0",
           )}
         />
         <div
           aria-hidden="true"
           className={cx(
-            "pointer-events-none absolute inset-x-1 bottom-1 h-8 rounded-b-[var(--rb-r-lg,10px)] bg-gradient-to-t from-neutral-50 to-transparent transition-opacity duration-200 ease-out dark:from-neutral-900",
+            "pointer-events-none absolute inset-x-1 bottom-1 h-8 rounded-b-[var(--rb-r-lg,10px)] bg-gradient-to-t from-neutral-50 to-transparent transition-opacity duration-base ease-decelerate dark:from-neutral-900",
             transcript.edges.end ? "opacity-100" : "opacity-0",
           )}
         />
@@ -559,7 +559,7 @@ export default function ToolCalls1() {
           initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 4 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.15, ease: [0.23, 1, 0.32, 1] }}
-          className="absolute bottom-5 left-1/2 inline-flex h-8 -translate-x-1/2 cursor-pointer items-center gap-1.5 rounded-[var(--rb-r-md,8px)] border border-neutral-200 bg-white/90 px-3 text-[13px] font-medium text-neutral-700 shadow-[0_4px_16px_-4px_rgba(0,0,0,0.10)] backdrop-blur transition-colors duration-150 ease-out hover:bg-neutral-100 focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--rb-accent,oklch(20.5%_0_0))] dark:border-neutral-800 dark:bg-neutral-900/90 dark:text-neutral-300 dark:shadow-none dark:hover:bg-neutral-800 dark:focus-visible:outline-[var(--rb-accent,oklch(100%_0_0))]"
+          className="absolute bottom-5 left-1/2 inline-flex h-8 -translate-x-1/2 cursor-pointer items-center gap-1.5 rounded-[var(--rb-r-md,8px)] border border-neutral-200 bg-white/90 px-3 text-[13px] font-medium text-neutral-700 shadow-e2 backdrop-blur transition-colors duration-fast ease-decelerate hover:bg-neutral-100 focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--rb-accent,oklch(20.5%_0_0))] dark:border-neutral-800 dark:bg-neutral-900/90 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:focus-visible:outline-[var(--rb-accent,oklch(100%_0_0))]"
         >
           <ArrowDown aria-hidden="true" className="h-3.5 w-3.5 shrink-0" />
           Jump to latest

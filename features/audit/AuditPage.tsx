@@ -92,16 +92,16 @@ export function AuditPage() {
         <EmptyState title={t('audit.list.empty')} />
       ) : (
         <>
-          <div className="overflow-x-auto rounded-card border border-line bg-surface">
+          <div className="overflow-x-auto rounded-card border border-line bg-surface shadow-e1">
             <table className="w-full min-w-[680px] text-sm">
               <caption className="sr-only">{t('audit.list.caption')}</caption>
               <thead className="bg-subtle text-xs text-muted">
-                <tr>{(['time', 'event', 'actor', 'entity'] as const).map((c) => <th key={c} scope="col" className="px-3 py-2 text-left font-medium">{t(`audit.list.${c}`)}</th>)}</tr>
+                <tr className="h-row">{(['time', 'event', 'actor', 'entity'] as const).map((c) => <th key={c} scope="col" className="px-3 py-row text-left font-medium">{t(`audit.list.${c}`)}</th>)}</tr>
               </thead>
               <tbody>
                 {rows.slice(0, shown).map((e) => (
-                  <tr key={e.id} className="border-t border-line hover:bg-subtle">
-                    <td className="whitespace-nowrap px-3 py-2 text-muted">{formatDate(e.timestamp, locale)}</td>
+                  <tr key={e.id} className="h-row border-t border-line transition-colors duration-fast hover:bg-subtle">
+                    <td className="tabular whitespace-nowrap px-3 py-row text-muted">{formatDate(e.timestamp, locale)}</td>
                     <td className="px-3">
                       <button type="button" aria-label={t('audit.list.open', { id: e.id })} onClick={() => setSelected(e)} className="text-left text-brand hover:underline">
                         {t(`common.event.${e.type}`)}
@@ -122,7 +122,7 @@ export function AuditPage() {
         {selected && (
           <div className="flex flex-col gap-3 text-sm">
             <p className="font-medium">{t(`common.event.${selected.type}`)} <span className="tabular text-xs text-muted">{selected.id}</span></p>
-            <p className="text-xs text-muted">{formatDate(selected.timestamp, locale)} · {selected.actorId} · {t(`common.source.${selected.source}`)}</p>
+            <p className="text-xs text-muted"><span className="tabular">{formatDate(selected.timestamp, locale)}</span> · {selected.actorId} · {t(`common.source.${selected.source}`)}</p>
             <div>
               <h3 className="mb-1 text-xs font-medium text-muted">{t('audit.detail.price')}</h3>
               {selected.snapshot?.oldPrice !== undefined || selected.snapshot?.newPrice !== undefined ? (

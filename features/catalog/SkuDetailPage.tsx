@@ -18,7 +18,7 @@ import { useAuditLog, useCompetitorObservations, useRecommendations, useSkuDetai
 
 function Card({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="rounded-card border border-line bg-surface p-4">
+    <section className="rounded-card border border-line bg-surface p-card shadow-e1">
       <h2 className="mb-3 text-sm font-semibold">{title}</h2>
       {children}
     </section>
@@ -82,7 +82,7 @@ function Detail({ p }: { p: Product }) {
             <tbody>
               {[...p.priceHistory].reverse().map((h) => (
                 <tr key={h.at} className="border-t border-line">
-                  <td className="py-1 text-muted">{formatDate(h.at, locale)}</td>
+                  <td className="tabular py-1 text-muted">{formatDate(h.at, locale)}</td>
                   <td className="py-1 text-right"><PriceValue value={h.price} /></td>
                 </tr>
               ))}
@@ -107,7 +107,7 @@ function Detail({ p }: { p: Product }) {
                   <tr key={c.competitor} className="border-t border-line">
                     <td className="py-1">{c.competitor}</td>
                     <td className="py-1 text-right"><PriceValue value={c.price} /></td>
-                    <td className="py-1 text-right text-muted">{formatDate(c.observedAt, locale)}</td>
+                    <td className="tabular py-1 text-right text-muted">{formatDate(c.observedAt, locale)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -141,7 +141,7 @@ function Detail({ p }: { p: Product }) {
               {events.map((e) => (
                 <li key={e.id} className="flex justify-between gap-2">
                   <span>{e.type}</span>
-                  <span className="text-muted">{formatDate(e.timestamp, locale)}</span>
+                  <span className="tabular text-muted">{formatDate(e.timestamp, locale)}</span>
                 </li>
               ))}
             </ul>

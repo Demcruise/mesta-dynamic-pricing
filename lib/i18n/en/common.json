@@ -45,6 +45,11 @@
     "light": "Light",
     "dark": "Dark"
   },
+  "density": {
+    "label": "Density",
+    "comfortable": "Comfortable",
+    "compact": "Compact"
+  },
   "cmd": {
     "open": "Search or jump to…",
     "placeholder": "Search SKUs, strategies, recommendations…",

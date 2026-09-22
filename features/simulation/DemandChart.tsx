@@ -28,7 +28,7 @@ export function DemandChart({ product, markers }: { product: Product; markers: M
     [...pts].reverse().map((p) => `L${x(p.price)},${y(p.unitsLow)}`).join(' ') + 'Z';
 
   return (
-    <section className="rounded-card border border-line bg-surface p-4">
+    <section className="rounded-card border border-line bg-surface p-card shadow-e1">
       <div className="mb-2 flex items-center justify-between">
         <h2 className="text-sm font-semibold">{t('simulation.chart.title')}</h2>
         <div role="group" className="flex gap-1">
@@ -45,8 +45,8 @@ export function DemandChart({ product, markers }: { product: Product; markers: M
           <path d={line} fill="none" strokeWidth="2" className="stroke-brand" />
           <line x1={PAD.l} y1={H - PAD.b} x2={W - PAD.r} y2={H - PAD.b} className="stroke-line-strong" />
           <line x1={PAD.l} y1={PAD.t} x2={PAD.l} y2={H - PAD.b} className="stroke-line-strong" />
-          <text x={PAD.l} y={H - 8} className="fill-muted text-[10px]">{formatPrice(min, locale)}</text>
-          <text x={W - PAD.r} y={H - 8} textAnchor="end" className="fill-muted text-[10px]">{formatPrice(max, locale)}</text>
+          <text x={PAD.l} y={H - 8} className="tabular fill-muted text-[10px]">{formatPrice(min, locale)}</text>
+          <text x={W - PAD.r} y={H - 8} textAnchor="end" className="tabular fill-muted text-[10px]">{formatPrice(max, locale)}</text>
           <text x={W / 2} y={H - 8} textAnchor="middle" className="fill-muted text-[10px]">{t('simulation.chart.x')}</text>
           <text x={4} y={PAD.t + 8} className="fill-muted text-[10px]">{Math.round(yMax)}</text>
           <text x={4} y={H - PAD.b} className="fill-muted text-[10px]">{Math.round(yMin)}</text>

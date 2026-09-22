@@ -52,7 +52,7 @@ type Decision = "pending" | "once" | "always" | "denied";
 const focusRing =
   "focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--rb-accent,oklch(20.5%_0_0))] dark:focus-visible:outline-[var(--rb-accent,oklch(100%_0_0))]";
 const press =
-  "transition-[transform,background-color,border-color,color] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.97]";
+  "transition-[transform,background-color,border-color,color] duration-fast ease-decelerate active:scale-[0.97]";
 
 export default function AgentApproval2() {
   const reduceMotion = useReducedMotion();
@@ -180,7 +180,7 @@ export default function AgentApproval2() {
                         <ChevronRight
                           aria-hidden="true"
                           className={cx(
-                            "h-3.5 w-3.5 shrink-0 transition-transform duration-150 ease-out",
+                            "h-3.5 w-3.5 shrink-0 transition-transform duration-fast ease-decelerate",
                             showPatch && "rotate-90",
                           )}
                         />
@@ -261,14 +261,14 @@ export default function AgentApproval2() {
         <div
           aria-hidden="true"
           className={cx(
-            "pointer-events-none absolute inset-x-0 top-0 h-8 bg-gradient-to-b from-white to-transparent transition-opacity duration-200 ease-out dark:from-neutral-950",
+            "pointer-events-none absolute inset-x-0 top-0 h-8 bg-gradient-to-b from-white to-transparent transition-opacity duration-base ease-decelerate dark:from-neutral-950",
             body.edges.start ? "opacity-100" : "opacity-0",
           )}
         />
         <div
           aria-hidden="true"
           className={cx(
-            "pointer-events-none absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-white to-transparent transition-opacity duration-200 ease-out dark:from-neutral-950",
+            "pointer-events-none absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-white to-transparent transition-opacity duration-base ease-decelerate dark:from-neutral-950",
             body.edges.end ? "opacity-100" : "opacity-0",
           )}
         />

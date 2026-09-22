@@ -29,7 +29,7 @@ export function RecommendationDetailPage({ recId }: { recId: string }) {
           <PageHeader title={q.data.id} subtitle={q.data.sku} />
           <div className="grid max-w-3xl gap-4">
             <RecommendationCard rec={q.data} product={product} defaultOpen />
-            <section className="rounded-card border border-line bg-surface p-4">
+            <section className="rounded-card border border-line bg-surface p-card shadow-e1">
               <h2 className="mb-2 text-sm font-semibold">{t('recommendations.audit')}</h2>
               {events.length === 0 ? (
                 <p className="text-sm text-muted">{t('catalog.detail.none')}</p>
@@ -38,7 +38,7 @@ export function RecommendationDetailPage({ recId }: { recId: string }) {
                   {events.map((e) => (
                     <li key={e.id} className="flex justify-between gap-2">
                       <span>{e.type}{e.note ? ` — ${e.note}` : ''}</span>
-                      <span className="text-muted">{formatDate(e.timestamp, locale)}</span>
+                      <span className="tabular text-muted">{formatDate(e.timestamp, locale)}</span>
                     </li>
                   ))}
                 </ul>

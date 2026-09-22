@@ -184,7 +184,7 @@ function SortHead({
         type="button"
         onClick={() => onSort(sortKey)}
         className={cx(
-          "inline-flex h-9 max-w-full cursor-pointer items-center gap-1 text-xs font-medium transition-colors duration-150 focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--rb-accent,oklch(20.5%_0_0))] dark:focus-visible:outline-[var(--rb-accent,oklch(100%_0_0))]",
+          "inline-flex h-9 max-w-full cursor-pointer items-center gap-1 text-xs font-medium transition-colors duration-fast focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--rb-accent,oklch(20.5%_0_0))] dark:focus-visible:outline-[var(--rb-accent,oklch(100%_0_0))]",
           align === "right" && "flex-row-reverse",
           active
             ? "text-neutral-900 dark:text-neutral-100"
@@ -195,7 +195,7 @@ function SortHead({
         <ChevronUp
           aria-hidden
           className={cx(
-            "h-3 w-3 shrink-0 transition-[opacity,transform] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)]",
+            "h-3 w-3 shrink-0 transition-[opacity,transform] duration-fast ease-decelerate",
             active ? "opacity-100" : "opacity-0",
             active && sort.dir === "desc" && "rotate-180",
           )}
@@ -352,7 +352,7 @@ export default function DataTable1() {
           </h2>
           <button
             type="button"
-            className="hidden h-9 shrink-0 cursor-pointer items-center gap-2 rounded-[var(--rb-r-md,8px)] bg-neutral-100 px-3 text-sm font-medium text-neutral-700 transition-[transform,background-color,border-color,color] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] hover:bg-neutral-200 hover:text-neutral-900 active:scale-[0.97] focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--rb-accent,oklch(20.5%_0_0))] sm:inline-flex dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700 dark:hover:text-neutral-100 dark:focus-visible:outline-[var(--rb-accent,oklch(100%_0_0))]"
+            className="hidden h-9 shrink-0 cursor-pointer items-center gap-2 rounded-[var(--rb-r-md,8px)] bg-neutral-100 px-3 text-sm font-medium text-neutral-700 transition-[transform,background-color,border-color,color] duration-fast ease-decelerate hover:bg-neutral-200 hover:text-neutral-900 active:scale-[0.97] focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--rb-accent,oklch(20.5%_0_0))] sm:inline-flex dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700 dark:hover:text-neutral-100 dark:focus-visible:outline-[var(--rb-accent,oklch(100%_0_0))]"
           >
             <Download aria-hidden className="h-4 w-4 shrink-0" />
             Export
@@ -370,7 +370,7 @@ export default function DataTable1() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search accounts"
-              className="h-9 w-full rounded-[var(--rb-r-md,8px)] border border-neutral-200 bg-white pl-9 pr-3 text-sm text-neutral-900 placeholder:text-neutral-400 dark:placeholder:text-neutral-500 transition-colors duration-150 hover:border-neutral-300 focus:border-neutral-900 focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--rb-accent,oklch(20.5%_0_0))] dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100 dark:hover:border-neutral-700 dark:focus:border-white dark:focus-visible:outline-[var(--rb-accent,oklch(100%_0_0))]"
+              className="h-9 w-full rounded-[var(--rb-r-md,8px)] border border-neutral-200 bg-white pl-9 pr-3 text-sm text-neutral-900 placeholder:text-neutral-400 dark:placeholder:text-neutral-500 transition-colors duration-fast hover:border-neutral-300 focus:border-neutral-900 focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--rb-accent,oklch(20.5%_0_0))] dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100 dark:hover:border-neutral-700 dark:focus:border-white dark:focus-visible:outline-[var(--rb-accent,oklch(100%_0_0))]"
             />
           </label>
 
@@ -385,7 +385,7 @@ export default function DataTable1() {
                 aria-pressed={plan === null}
                 onClick={() => setPlan(null)}
                 className={cx(
-                  "inline-flex h-8 cursor-pointer items-center rounded-[var(--rb-r-md,8px)] px-2.5 text-[13px] font-medium transition-[transform,background-color,border-color,color] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.97] focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--rb-accent,oklch(20.5%_0_0))] dark:focus-visible:outline-[var(--rb-accent,oklch(100%_0_0))]",
+                  "inline-flex h-8 cursor-pointer items-center rounded-[var(--rb-r-md,8px)] px-2.5 text-[13px] font-medium transition-[transform,background-color,border-color,color] duration-fast ease-decelerate active:scale-[0.97] focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--rb-accent,oklch(20.5%_0_0))] dark:focus-visible:outline-[var(--rb-accent,oklch(100%_0_0))]",
                   plan === null
                     ? "bg-[var(--rb-accent,oklch(20.5%_0_0))] text-[var(--rb-accent-fg,oklch(100%_0_0))] dark:bg-[var(--rb-accent,oklch(100%_0_0))] dark:text-[var(--rb-accent-fg,oklch(20.5%_0_0))]"
                     : "border border-neutral-200 bg-neutral-100 text-neutral-700 hover:bg-neutral-200 hover:text-neutral-900 dark:border-neutral-800 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700 dark:hover:text-neutral-100",
@@ -402,7 +402,7 @@ export default function DataTable1() {
                     aria-pressed={active}
                     onClick={() => setPlan(active ? null : p)}
                     className={cx(
-                      "inline-flex h-8 cursor-pointer items-center rounded-[var(--rb-r-md,8px)] px-2.5 text-[13px] font-medium transition-[transform,background-color,border-color,color] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.97] focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--rb-accent,oklch(20.5%_0_0))] dark:focus-visible:outline-[var(--rb-accent,oklch(100%_0_0))]",
+                      "inline-flex h-8 cursor-pointer items-center rounded-[var(--rb-r-md,8px)] px-2.5 text-[13px] font-medium transition-[transform,background-color,border-color,color] duration-fast ease-decelerate active:scale-[0.97] focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--rb-accent,oklch(20.5%_0_0))] dark:focus-visible:outline-[var(--rb-accent,oklch(100%_0_0))]",
                       active
                         ? "bg-[var(--rb-accent,oklch(20.5%_0_0))] text-[var(--rb-accent-fg,oklch(100%_0_0))] dark:bg-[var(--rb-accent,oklch(100%_0_0))] dark:text-[var(--rb-accent-fg,oklch(20.5%_0_0))]"
                         : "border border-neutral-200 bg-neutral-100 text-neutral-700 hover:bg-neutral-200 hover:text-neutral-900 dark:border-neutral-800 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700 dark:hover:text-neutral-100",
@@ -416,14 +416,14 @@ export default function DataTable1() {
             <div
               aria-hidden="true"
               className={cx(
-                "pointer-events-none absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-neutral-50 to-transparent transition-opacity duration-200 ease-out sm:hidden dark:from-neutral-900",
+                "pointer-events-none absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-neutral-50 to-transparent transition-opacity duration-base ease-decelerate sm:hidden dark:from-neutral-900",
                 chips.edges.start ? "opacity-100" : "opacity-0",
               )}
             />
             <div
               aria-hidden="true"
               className={cx(
-                "pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-neutral-50 to-transparent transition-opacity duration-200 ease-out sm:hidden dark:from-neutral-900",
+                "pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-neutral-50 to-transparent transition-opacity duration-base ease-decelerate sm:hidden dark:from-neutral-900",
                 chips.edges.end ? "opacity-100" : "opacity-0",
               )}
             />
@@ -463,14 +463,14 @@ export default function DataTable1() {
                 if (menuOpen) closeMenu(false);
                 else setMenuOpen(true);
               }}
-              className="inline-flex h-9 cursor-pointer items-center gap-2 rounded-[var(--rb-r-md,8px)] bg-neutral-100 px-3 text-sm font-medium text-neutral-700 transition-[transform,background-color,border-color,color] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] hover:bg-neutral-200 hover:text-neutral-900 active:scale-[0.97] focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--rb-accent,oklch(20.5%_0_0))] dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700 dark:hover:text-neutral-100 dark:focus-visible:outline-[var(--rb-accent,oklch(100%_0_0))]"
+              className="inline-flex h-9 cursor-pointer items-center gap-2 rounded-[var(--rb-r-md,8px)] bg-neutral-100 px-3 text-sm font-medium text-neutral-700 transition-[transform,background-color,border-color,color] duration-fast ease-decelerate hover:bg-neutral-200 hover:text-neutral-900 active:scale-[0.97] focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--rb-accent,oklch(20.5%_0_0))] dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700 dark:hover:text-neutral-100 dark:focus-visible:outline-[var(--rb-accent,oklch(100%_0_0))]"
             >
               <Columns3 aria-hidden className="h-4 w-4 shrink-0" />
               <span className="hidden sm:inline">Columns</span>
               <ChevronDown
                 aria-hidden
                 className={cx(
-                  "h-4 w-4 shrink-0 transition-transform duration-150 ease-[cubic-bezier(0.23,1,0.32,1)]",
+                  "h-4 w-4 shrink-0 transition-transform duration-fast ease-decelerate",
                   menuOpen && "rotate-180",
                 )}
               />
@@ -481,7 +481,7 @@ export default function DataTable1() {
                 role="menu"
                 aria-label="Toggle columns"
                 className={cx(
-                  "absolute right-0 top-11 z-30 w-48 origin-top-right rounded-[var(--rb-r-xl,12px)] border border-neutral-200/70 bg-white p-1 shadow-[0_4px_16px_-4px_rgba(0,0,0,0.10)] transition-[opacity,transform] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] dark:border-neutral-800 dark:bg-neutral-900 dark:shadow-none",
+                  "absolute right-0 top-11 z-30 w-48 origin-top-right rounded-[var(--rb-r-xl,12px)] border border-neutral-200/70 bg-white p-1 shadow-e2 transition-[opacity,transform] duration-fast ease-decelerate dark:border-neutral-800 dark:bg-neutral-900",
                   menuShown
                     ? "translate-y-0 scale-100 opacity-100"
                     : "-translate-y-1 scale-[0.98] opacity-0",
@@ -497,12 +497,12 @@ export default function DataTable1() {
                     role="menuitemcheckbox"
                     aria-checked={visible[c]}
                     onClick={() => setVisible((v) => ({ ...v, [c]: !v[c] }))}
-                    className="flex h-8 w-full cursor-pointer items-center gap-2 rounded-[var(--rb-r-md,8px)] px-2 text-[13px] text-neutral-700 transition-colors duration-150 hover:bg-neutral-100 focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--rb-accent,oklch(20.5%_0_0))] dark:text-neutral-300 dark:hover:bg-neutral-800 dark:focus-visible:outline-[var(--rb-accent,oklch(100%_0_0))]"
+                    className="flex h-8 w-full cursor-pointer items-center gap-2 rounded-[var(--rb-r-md,8px)] px-2 text-[13px] text-neutral-700 transition-colors duration-fast hover:bg-neutral-100 focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--rb-accent,oklch(20.5%_0_0))] dark:text-neutral-300 dark:hover:bg-neutral-800 dark:focus-visible:outline-[var(--rb-accent,oklch(100%_0_0))]"
                   >
                     <span
                       aria-hidden
                       className={cx(
-                        "flex h-4 w-4 shrink-0 items-center justify-center rounded-[var(--rb-r-xs,4px)] border transition-colors duration-150",
+                        "flex h-4 w-4 shrink-0 items-center justify-center rounded-[var(--rb-r-xs,4px)] border transition-colors duration-fast",
                         visible[c]
                           ? "border-neutral-900 bg-[var(--rb-accent,oklch(20.5%_0_0))] dark:border-white dark:bg-[var(--rb-accent,oklch(100%_0_0))]"
                           : "border-neutral-300 bg-white dark:border-neutral-700 dark:bg-neutral-950",
@@ -582,7 +582,7 @@ export default function DataTable1() {
                 {rows.map((a) => (
                   <tr
                     key={a.name}
-                    className="h-11 transition-colors duration-150 hover:bg-neutral-50 dark:hover:bg-neutral-900/60"
+                    className="h-11 transition-colors duration-fast hover:bg-neutral-50 dark:hover:bg-neutral-900/60"
                   >
                     <td
                       className={cx(
@@ -692,7 +692,7 @@ export default function DataTable1() {
                     setQuery("");
                     setPlan(null);
                   }}
-                  className="mt-4 inline-flex h-8 cursor-pointer items-center rounded-[var(--rb-r-md,8px)] border border-neutral-200 bg-white px-2.5 text-[13px] font-medium text-neutral-900 transition-[transform,background-color,border-color,color] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] hover:bg-neutral-50 active:scale-[0.97] focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--rb-accent,oklch(20.5%_0_0))] dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-100 dark:hover:bg-neutral-800 dark:focus-visible:outline-[var(--rb-accent,oklch(100%_0_0))]"
+                  className="mt-4 inline-flex h-8 cursor-pointer items-center rounded-[var(--rb-r-md,8px)] border border-neutral-200 bg-white px-2.5 text-[13px] font-medium text-neutral-900 transition-[transform,background-color,border-color,color] duration-fast ease-decelerate hover:bg-neutral-50 active:scale-[0.97] focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--rb-accent,oklch(20.5%_0_0))] dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-100 dark:hover:bg-neutral-800 dark:focus-visible:outline-[var(--rb-accent,oklch(100%_0_0))]"
                 >
                   Clear filters
                 </button>
@@ -703,7 +703,7 @@ export default function DataTable1() {
           <div
             aria-hidden="true"
             className={cx(
-              "pointer-events-none absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-white to-transparent transition-opacity duration-200 ease-out dark:from-neutral-950",
+              "pointer-events-none absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-white to-transparent transition-opacity duration-base ease-decelerate dark:from-neutral-950",
               body.edges.end ? "opacity-100" : "opacity-0",
             )}
           />

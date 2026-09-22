@@ -22,7 +22,7 @@ export function Dialog({
       aria-label={title}
       onClose={onClose}
       onClick={(e) => { if (e.target === ref.current) onClose(); }}
-      className={cn('m-auto w-full max-w-md rounded-card border border-line bg-surface p-0 text-fg backdrop:bg-black/40', className)}
+      className={cn('m-auto w-full max-w-md rounded-card border border-line bg-surface p-0 text-fg shadow-e4 backdrop:bg-black/40', className)}
     >
       {open && (
         <div className="p-5">

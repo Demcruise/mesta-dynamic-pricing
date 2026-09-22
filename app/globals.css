@@ -35,6 +35,20 @@
   --radius-input: var(--radius-input);
   --color-rb-accent-fg: var(--rb-accent-fg);
   --color-rb-accent: var(--rb-accent);
+
+  /* Elevation scale → shadow-e1..e4 */
+  --shadow-e1: var(--elev-1);
+  --shadow-e2: var(--elev-2);
+  --shadow-e3: var(--elev-3);
+  --shadow-e4: var(--elev-4);
+
+  /* Density-aware spacing → p-card / px-card / py-card */
+  --spacing-card: var(--card-pad);
+
+  /* Motion easings → ease-standard / ease-decelerate / ease-accelerate */
+  --ease-standard: var(--ease-standard);
+  --ease-decelerate: var(--ease-decelerate);
+  --ease-accelerate: var(--ease-accelerate);
 }
 
 html, body { background: var(--bg); color: var(--text); font-family: var(--font-ui); }
@@ -51,6 +65,25 @@ body { font-size: 14px; line-height: 1.45; }
 }
 
 .tabular { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+/* Token-driven motion durations — use instead of duration-<number>. */
+@utility duration-fast { transition-duration: var(--motion-fast); }
+@utility duration-base { transition-duration: var(--motion-base); }
+@utility duration-slow { transition-duration: var(--motion-slow); }
+
+/* Density-aware table row metrics: h-row = row height (--row-h),
+   py-row = cell padding (--row-py). Both shrink in compact density. */
+@utility h-row { height: var(--row-h); }
+@utility min-h-row { min-height: var(--row-h); }
+@utility py-row { padding-block: var(--row-py); }
+
+/* Floating surfaces: translucent token background + backdrop blur.
+   Pair with shadow-e3 — used on popovers, sticky bars, toasts, command menu. */
+@utility glass {
+  background-color: color-mix(in srgb, var(--bg-surface) 86%, transparent);
+  backdrop-filter: blur(12px) saturate(1.4);
+  -webkit-backdrop-filter: blur(12px) saturate(1.4);
+}
 
 /* React Bits Pro blocks theme hooks — aliased to Mesta tokens (styles/tokens.css).
    Accent/radius follow the active theme automatically; do not add raw hex here. */

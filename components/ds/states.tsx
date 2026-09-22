@@ -29,7 +29,7 @@ export function ErrorState({ title, onRetry }: { title: string; onRetry: () => v
   );
 }
 
-export function LoadingRows({ rows = 8, rowHeight = 44 }: { rows?: number; rowHeight?: number }) {
+export function LoadingRows({ rows = 8, rowHeight = 'var(--row-h)' }: { rows?: number; rowHeight?: number | string }) {
   const { t } = useTranslation();
   return (
     <div role="status" aria-live="polite" aria-label={t('common.state.loading')} className="divide-y divide-line">
@@ -56,7 +56,7 @@ export function PageHeader({ title, subtitle, actions }: { title: string; subtit
 
 export function KpiCard({ label, value, hint }: { label: string; value: ReactNode; hint?: ReactNode }) {
   return (
-    <div className="rounded-card border border-line bg-surface p-4">
+    <div className="rounded-card border border-line bg-surface p-card shadow-e1">
       <p className="text-xs text-muted">{label}</p>
       <p className="tabular mt-1 break-words text-xl font-semibold text-fg sm:text-2xl">{value}</p>
       {hint && <p className="mt-1 text-xs text-faint">{hint}</p>}
@@ -68,7 +68,7 @@ export function PermissionDeniedState() {
   const { t } = useTranslation();
   const role = useSessionStore((s) => s.user.role);
   return (
-    <div role="alert" className="flex flex-col items-center gap-2 rounded-card border border-line bg-surface p-10 text-center">
+    <div role="alert" className="flex flex-col items-center gap-2 rounded-card border border-line bg-surface p-10 text-center shadow-e1">
       <Lock className="size-6 text-faint" aria-hidden />
       <h2 className="text-base font-semibold">{t('common.perm.deniedTitle')}</h2>
       <p className="text-sm text-muted">{t('common.perm.deniedBody', { role: t(`common.role.${role}`) })}</p>

@@ -38,7 +38,7 @@ export function NotificationBell() {
         </span>
       </Button>
       {open && (
-        <div className="absolute right-0 top-10 z-40 w-80 rounded-card border border-line bg-surface p-3 shadow-lg">
+        <div className="glass absolute right-0 top-10 z-40 w-80 rounded-card border border-line p-3 shadow-e3">
           <div className="mb-2 flex items-center justify-between">
             <h2 className="text-sm font-semibold">{t('common.notify.title')}</h2>
             {unread > 0 && <button type="button" className="text-xs text-brand underline" onClick={() => useNotificationStore.getState().markAllRead(role)}>{t('common.notify.markAll')}</button>}

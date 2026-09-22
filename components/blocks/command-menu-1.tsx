@@ -320,7 +320,7 @@ export default function CommandMenu1() {
         aria-haspopup="dialog"
         aria-expanded={open}
         onClick={() => openMenu(true)}
-        className="inline-flex h-9 w-64 max-w-full cursor-pointer items-center gap-2 rounded-[var(--rb-r-md,8px)] border border-neutral-200 bg-white px-3 text-sm font-medium text-neutral-900 transition-[transform,background-color,border-color,color] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] hover:bg-neutral-50 active:scale-[0.97] focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--rb-accent,oklch(20.5%_0_0))] disabled:pointer-events-none disabled:opacity-50 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-100 dark:hover:bg-neutral-800 dark:focus-visible:outline-[var(--rb-accent,oklch(100%_0_0))]"
+        className="inline-flex h-9 w-64 max-w-full cursor-pointer items-center gap-2 rounded-[var(--rb-r-md,8px)] border border-neutral-200 bg-white px-3 text-sm font-medium text-neutral-900 transition-[transform,background-color,border-color,color] duration-fast ease-decelerate hover:bg-neutral-50 active:scale-[0.97] focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--rb-accent,oklch(20.5%_0_0))] disabled:pointer-events-none disabled:opacity-50 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-100 dark:hover:bg-neutral-800 dark:focus-visible:outline-[var(--rb-accent,oklch(100%_0_0))]"
       >
         <Search aria-hidden="true" className="h-4 w-4 shrink-0" />
         <span className="min-w-0 flex-1 truncate text-left">
@@ -337,8 +337,8 @@ export default function CommandMenu1() {
             aria-label="Close menu"
             onClick={close}
             className={cx(
-              "absolute inset-0 z-40 cursor-default bg-neutral-950/40 backdrop-blur-[2px] transition-opacity ease-[cubic-bezier(0.23,1,0.32,1)] dark:bg-neutral-950/60",
-              shown ? "opacity-100 duration-200" : "opacity-0 duration-[140ms]",
+              "absolute inset-0 z-40 cursor-default bg-neutral-950/40 backdrop-blur-[2px] transition-opacity ease-decelerate dark:bg-neutral-950/60",
+              shown ? "opacity-100 duration-base" : "opacity-0 duration-fast",
             )}
           />
           <div
@@ -348,10 +348,10 @@ export default function CommandMenu1() {
             aria-labelledby={`${uid}-title`}
             onKeyDown={onDialogKeyDown}
             className={cx(
-              "absolute left-1/2 top-[12%] z-50 flex max-h-[76%] w-[calc(100%-2rem)] max-w-xl -translate-x-1/2 flex-col overflow-hidden rounded-[var(--rb-r-4xl,18px)] border border-neutral-200/70 bg-white shadow-[0_16px_48px_-12px_rgba(0,0,0,0.18)] transition-[opacity,transform] ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:scale-100 motion-reduce:transition-opacity dark:border-neutral-800 dark:bg-neutral-900 dark:shadow-none",
+              "absolute left-1/2 top-[12%] z-50 flex max-h-[76%] w-[calc(100%-2rem)] max-w-xl -translate-x-1/2 flex-col overflow-hidden rounded-[var(--rb-r-4xl,18px)] border border-neutral-200/70 bg-white shadow-e4 transition-[opacity,transform] ease-decelerate motion-reduce:scale-100 motion-reduce:transition-opacity dark:border-neutral-800 dark:bg-neutral-900",
               shown
-                ? "scale-100 opacity-100 duration-200"
-                : "scale-[0.97] opacity-0 duration-[140ms]",
+                ? "scale-100 opacity-100 duration-base"
+                : "scale-[0.97] opacity-0 duration-fast",
             )}
           >
             <h2 id={`${uid}-title`} className="sr-only">
@@ -430,7 +430,7 @@ export default function CommandMenu1() {
                                   run();
                                 }}
                                 className={cx(
-                                  "flex min-h-11 w-full cursor-pointer items-center gap-3 rounded-[var(--rb-r-lg,10px)] px-2.5 py-2 text-left transition-colors duration-150 active:bg-neutral-200 dark:active:bg-neutral-700",
+                                  "flex min-h-11 w-full cursor-pointer items-center gap-3 rounded-[var(--rb-r-lg,10px)] px-2.5 py-2 text-left transition-colors duration-fast active:bg-neutral-200 dark:active:bg-neutral-700",
                                   selected
                                     ? "bg-neutral-100 dark:bg-neutral-800"
                                     : "bg-transparent",
@@ -474,7 +474,7 @@ export default function CommandMenu1() {
                         setActiveIndex(0);
                         inputRef.current?.focus({ preventScroll: true });
                       }}
-                      className="mt-4 inline-flex h-8 cursor-pointer items-center justify-center gap-1.5 rounded-[var(--rb-r-md,8px)] bg-neutral-100 px-2.5 text-[13px] font-medium text-neutral-700 transition-[transform,background-color,color] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] hover:bg-neutral-200 active:scale-[0.97] focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--rb-accent,oklch(20.5%_0_0))] dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700 dark:focus-visible:outline-[var(--rb-accent,oklch(100%_0_0))]"
+                      className="mt-4 inline-flex h-8 cursor-pointer items-center justify-center gap-1.5 rounded-[var(--rb-r-md,8px)] bg-neutral-100 px-2.5 text-[13px] font-medium text-neutral-700 transition-[transform,background-color,color] duration-fast ease-decelerate hover:bg-neutral-200 active:scale-[0.97] focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--rb-accent,oklch(20.5%_0_0))] dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700 dark:focus-visible:outline-[var(--rb-accent,oklch(100%_0_0))]"
                     >
                       Clear search
                     </button>
@@ -484,14 +484,14 @@ export default function CommandMenu1() {
               <div
                 aria-hidden="true"
                 className={cx(
-                  "pointer-events-none absolute inset-x-0 top-0 h-8 bg-gradient-to-b from-neutral-50 to-transparent transition-opacity duration-200 ease-out dark:from-neutral-950/50",
+                  "pointer-events-none absolute inset-x-0 top-0 h-8 bg-gradient-to-b from-neutral-50 to-transparent transition-opacity duration-base ease-decelerate dark:from-neutral-950/50",
                   list.edges.start ? "opacity-100" : "opacity-0",
                 )}
               />
               <div
                 aria-hidden="true"
                 className={cx(
-                  "pointer-events-none absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-neutral-50 to-transparent transition-opacity duration-200 ease-out dark:from-neutral-950/50",
+                  "pointer-events-none absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-neutral-50 to-transparent transition-opacity duration-base ease-decelerate dark:from-neutral-950/50",
                   list.edges.end ? "opacity-100" : "opacity-0",
                 )}
               />

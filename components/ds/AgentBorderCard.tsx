@@ -15,7 +15,7 @@ const BORDER: Record<Actor, string> = {
 export function AgentBorderCard({ actor, children, className }: { actor: Actor; children: ReactNode; className?: string }) {
   const { t } = useTranslation();
   return (
-    <article className={cn('rounded-card border border-l-4 border-line bg-surface p-4', BORDER[actor], className)}>
+    <article className={cn('rounded-card border border-l-4 border-line bg-surface p-card shadow-e1', BORDER[actor], className)}>
       <span className="sr-only">{t(`common.agent.${actor}`)}</span>
       {children}
     </article>

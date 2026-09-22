@@ -68,7 +68,7 @@ export function DeploymentPage() {
         <>
           <section aria-label={t('deployment.board.title')} className="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
             {board.map((b) => (
-              <div key={b.channel} className="rounded-card border border-line bg-surface p-4">
+              <div key={b.channel} className="rounded-card border border-line bg-surface p-card shadow-e1">
                 <h2 className="mb-2 text-sm font-semibold">{t(`common.channel.${b.channel}`)}</h2>
                 <dl className="grid grid-cols-3 gap-1 text-center text-xs">
                   <div className="rounded bg-up-soft p-1.5 text-up"><dd className="tabular text-lg font-semibold">{b.synced}</dd><dt>{t('deployment.board.synced')}</dt></div>
@@ -87,7 +87,7 @@ export function DeploymentPage() {
             ) : (
               <ul className="grid gap-2 md:grid-cols-2">
                 {awaiting.map((r) => (
-                  <li key={r.id} className="flex flex-wrap items-center justify-between gap-2 rounded-card border border-line bg-surface p-3 text-sm">
+                  <li key={r.id} className="flex flex-wrap items-center justify-between gap-2 rounded-card border border-line bg-surface p-3 text-sm shadow-e1">
                     <div>
                       <p><Link href={`/recommendations/${r.id}`} className="tabular text-brand hover:underline">{r.id}</Link> · <span className="tabular">{r.sku}</span> {names.get(r.sku)}</p>
                       <p className="text-xs text-muted">{t('deployment.queue.proposed')}: <PriceValue value={r.proposedPrice} /></p>
@@ -112,14 +112,14 @@ export function DeploymentPage() {
             {rows.length === 0 ? (
               <EmptyState title={t('deployment.table.empty')} {...(status ? { action: { label: t('common.state.clearFilters'), onClick: () => setStatus('') } } : {})} />
             ) : (
-              <div className="overflow-x-auto rounded-card border border-line bg-surface">
+              <div className="overflow-x-auto rounded-card border border-line bg-surface shadow-e1">
                 <table className="w-full min-w-[720px] text-sm">
                   <caption className="sr-only">{t('deployment.table.caption')}</caption>
                   <thead className="bg-subtle text-xs text-muted">
-                    <tr>
-                      <th scope="col" className="w-8 px-2 py-2" />
+                    <tr className="h-row">
+                      <th scope="col" className="w-8 px-2 py-row" />
                       {(['sku', 'channel', 'status', 'retries', 'updated', 'actions'] as const).map((c) => (
-                        <th key={c} scope="col" className="px-3 py-2 text-left font-medium">{t(`deployment.table.${c}`)}</th>
+                        <th key={c} scope="col" className="px-3 py-row text-left font-medium">{t(`deployment.table.${c}`)}</th>
                       ))}
                     </tr>
                   </thead>
@@ -128,17 +128,17 @@ export function DeploymentPage() {
                       const expanded = open === r.id;
                       return (
                         <Fragment key={r.id}>
-                          <tr className="border-t border-line">
+                          <tr className="h-row border-t border-line transition-colors duration-fast hover:bg-subtle">
                             <td className="px-2">
-                              <button type="button" aria-expanded={expanded} aria-label={t('deployment.table.expand', { id: r.id })} onClick={() => setOpen(expanded ? null : r.id)} className="grid size-7 place-items-center rounded hover:bg-subtle">
+                              <button type="button" aria-expanded={expanded} aria-label={t('deployment.table.expand', { id: r.id })} onClick={() => setOpen(expanded ? null : r.id)} className="grid size-7 place-items-center rounded transition-colors duration-fast hover:bg-subtle">
                                 {expanded ? <ChevronDown className="size-4" aria-hidden /> : <ChevronRight className="size-4" aria-hidden />}
                               </button>
                             </td>
-                            <td className="px-3 py-2"><Link href={`/catalog/${r.sku}`} className="tabular text-brand hover:underline">{r.sku}</Link></td>
+                            <td className="px-3 py-row"><Link href={`/catalog/${r.sku}`} className="tabular text-brand hover:underline">{r.sku}</Link></td>
                             <td className="px-3">{t(`common.channel.${r.channel}`)}</td>
                             <td className="px-3"><span className={cn('rounded-full px-2 py-0.5 text-xs font-medium', STATUS_CLS[r.status])}>{t(`deployment.status.${r.status}`)}</span></td>
                             <td className="tabular px-3">{r.retryCount}</td>
-                            <td className="px-3 text-muted">{formatRelativeTime(r.updatedAt, locale)}</td>
+                            <td className="tabular px-3 text-muted">{formatRelativeTime(r.updatedAt, locale)}</td>
                             <td className="px-3">
                               <RoleGate action="deployment.execute">
                                 {r.status === 'failed' && (

@@ -50,7 +50,7 @@ export function RecommendationCard({ rec, product, defaultOpen = false }: {
           </h2>
           <p className="text-xs text-muted">
             <Link href={`/recommendations/${rec.id}`} className="tabular hover:underline">{rec.id}</Link>
-            {' · '}{t(`recommendations.source.${rec.source}`)} · {formatDate(rec.createdAt, locale)}
+            {' · '}{t(`recommendations.source.${rec.source}`)} · <span className="tabular">{formatDate(rec.createdAt, locale)}</span>
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">

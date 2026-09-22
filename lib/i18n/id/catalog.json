@@ -15,7 +15,6 @@
     "presets": "Preset filter", "savePreset": "Simpan preset", "presetName": "Nama preset", "count": "{n} filter aktif", "all": "Semua",
     "presetRisk": "Margin berisiko", "presetUndercut": "Dipotong kompetitor"
   },
-  "density": { "compact": "Ringkas", "comfortable": "Nyaman", "label": "Kepadatan" },
   "action": {
     "view": "Lihat detail", "simulate": "Simulasikan harga", "override": "Override harga", "audit": "Lihat audit", "applyStrategy": "Terapkan strategi",
     "selected": "{n} SKU dipilih", "clearSelection": "Kosongkan pilihan"

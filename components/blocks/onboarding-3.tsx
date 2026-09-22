@@ -10,7 +10,7 @@ const focus =
   "focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--rb-accent,oklch(20.5%_0_0))] dark:focus-visible:outline-[var(--rb-accent,oklch(100%_0_0))]";
 
 const transition =
-  "transition-[background-color,border-color,color,transform] duration-150 ease-out";
+  "transition-[background-color,border-color,color,transform] duration-fast ease-decelerate";
 
 const panel =
   "flex items-center gap-3 rounded-[var(--rb-r-lg,10px)] border border-neutral-200/70 bg-white px-4 py-3 dark:border-neutral-800 dark:bg-neutral-950";
@@ -98,7 +98,7 @@ export default function Onboarding3() {
           >
             <div
               style={{ width: `${percent}%` }}
-              className="h-full rounded-full bg-neutral-900 transition-[width] duration-300 ease-out motion-reduce:transition-none dark:bg-neutral-100"
+              className="h-full rounded-full bg-neutral-900 transition-[width] duration-slow ease-decelerate motion-reduce:transition-none dark:bg-neutral-100"
             />
           </div>
           <p className="shrink-0 text-xs tabular-nums text-neutral-500">

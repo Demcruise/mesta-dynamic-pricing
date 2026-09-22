@@ -58,7 +58,7 @@ const focusInset =
   "focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--rb-accent,oklch(20.5%_0_0))] dark:focus-visible:outline-[var(--rb-accent,oklch(100%_0_0))]";
 
 const transition =
-  "transition-[background-color,border-color,color,opacity] duration-150 ease-out";
+  "transition-[background-color,border-color,color,opacity] duration-fast ease-decelerate";
 
 const navItem =
   "flex h-8 w-full cursor-pointer items-center gap-2 rounded-[var(--rb-r-md,8px)] px-3 text-[13px] active:bg-neutral-200 dark:active:bg-neutral-700";
@@ -409,7 +409,7 @@ function SidebarBody({ onClose }: { onClose?: () => void }) {
                   <ChevronRight
                     aria-hidden="true"
                     className={cx(
-                      "h-3.5 w-3.5 shrink-0 text-neutral-500 transition-transform duration-200 ease-out motion-reduce:transition-none dark:text-neutral-500",
+                      "h-3.5 w-3.5 shrink-0 text-neutral-500 transition-transform duration-base ease-decelerate motion-reduce:transition-none dark:text-neutral-500",
                       shipmentsOpen && "rotate-90",
                     )}
                   />
@@ -417,7 +417,7 @@ function SidebarBody({ onClose }: { onClose?: () => void }) {
                 <div
                   id={shipmentsId}
                   className={cx(
-                    "grid transition-[grid-template-rows] duration-200 ease-out motion-reduce:transition-none",
+                    "grid transition-[grid-template-rows] duration-base ease-decelerate motion-reduce:transition-none",
                     shipmentsOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
                   )}
                 >
@@ -515,14 +515,14 @@ function SidebarBody({ onClose }: { onClose?: () => void }) {
         <div
           aria-hidden="true"
           className={cx(
-            "pointer-events-none absolute inset-x-0 top-0 h-8 bg-gradient-to-b from-neutral-50 to-transparent transition-opacity duration-200 ease-out dark:from-neutral-900",
+            "pointer-events-none absolute inset-x-0 top-0 h-8 bg-gradient-to-b from-neutral-50 to-transparent transition-opacity duration-base ease-decelerate dark:from-neutral-900",
             nav.edges.start ? "opacity-100" : "opacity-0",
           )}
         />
         <div
           aria-hidden="true"
           className={cx(
-            "pointer-events-none absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-neutral-50 to-transparent transition-opacity duration-200 ease-out dark:from-neutral-900",
+            "pointer-events-none absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-neutral-50 to-transparent transition-opacity duration-base ease-decelerate dark:from-neutral-900",
             nav.edges.end ? "opacity-100" : "opacity-0",
           )}
         />
@@ -582,7 +582,7 @@ function SidebarBody({ onClose }: { onClose?: () => void }) {
           <ChevronDown
             aria-hidden="true"
             className={cx(
-              "h-4 w-4 shrink-0 text-neutral-500 transition-transform duration-200 ease-out motion-reduce:transition-none dark:text-neutral-500",
+              "h-4 w-4 shrink-0 text-neutral-500 transition-transform duration-base ease-decelerate motion-reduce:transition-none dark:text-neutral-500",
               accountOpen && "rotate-180",
             )}
           />
@@ -594,7 +594,7 @@ function SidebarBody({ onClose }: { onClose?: () => void }) {
             role="menu"
             aria-label="Account"
             className={cx(
-              "absolute bottom-[calc(100%-0.25rem)] left-2 right-2 z-30 origin-bottom rounded-[var(--rb-r-2xl,14px)] border border-neutral-200/70 bg-white p-1 shadow-[0_4px_16px_-4px_rgba(0,0,0,0.10)] transition-[opacity,transform] duration-[180ms] ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-none dark:border-neutral-800 dark:bg-neutral-900 dark:shadow-none",
+              "absolute bottom-[calc(100%-0.25rem)] left-2 right-2 z-30 origin-bottom rounded-[var(--rb-r-2xl,14px)] border border-neutral-200/70 bg-white p-1 shadow-e2 transition-[opacity,transform] duration-base ease-decelerate motion-reduce:transition-none dark:border-neutral-800 dark:bg-neutral-900",
               accountShown ? "scale-100 opacity-100" : "scale-[0.97] opacity-0",
             )}
           >
@@ -767,14 +767,14 @@ export default function AppShell1() {
             <input
               type="search"
               placeholder="Search shipments"
-              className="h-9 w-full rounded-[var(--rb-r-md,8px)] border border-neutral-200 bg-white pl-9 pr-3 text-sm text-neutral-900 placeholder:text-neutral-500 transition-colors duration-150 hover:border-neutral-300 focus:border-neutral-900 focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--rb-accent,oklch(20.5%_0_0))] dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100 dark:placeholder:text-neutral-500 dark:hover:border-neutral-700 dark:focus:border-white dark:focus-visible:outline-[var(--rb-accent,oklch(100%_0_0))]"
+              className="h-9 w-full rounded-[var(--rb-r-md,8px)] border border-neutral-200 bg-white pl-9 pr-3 text-sm text-neutral-900 placeholder:text-neutral-500 transition-colors duration-fast hover:border-neutral-300 focus:border-neutral-900 focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--rb-accent,oklch(20.5%_0_0))] dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100 dark:placeholder:text-neutral-500 dark:hover:border-neutral-700 dark:focus:border-white dark:focus-visible:outline-[var(--rb-accent,oklch(100%_0_0))]"
             />
           </label>
 
           <button
             type="button"
             aria-label="Book shipment"
-            className="inline-flex h-9 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-[var(--rb-r-md,8px)] bg-[var(--rb-accent,oklch(20.5%_0_0))] px-3 text-sm font-medium text-[var(--rb-accent-fg,oklch(100%_0_0))] transition-[transform,background-color,color] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] hover:bg-[color-mix(in_oklab,var(--rb-accent,oklch(20.5%_0_0))_90%,transparent)] active:scale-[0.97] focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--rb-accent,oklch(20.5%_0_0))] dark:bg-[var(--rb-accent,oklch(100%_0_0))] dark:text-[var(--rb-accent-fg,oklch(20.5%_0_0))] dark:hover:bg-[color-mix(in_oklab,var(--rb-accent,oklch(100%_0_0))_90%,transparent)] dark:focus-visible:outline-[var(--rb-accent,oklch(100%_0_0))]"
+            className="inline-flex h-9 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-[var(--rb-r-md,8px)] bg-[var(--rb-accent,oklch(20.5%_0_0))] px-3 text-sm font-medium text-[var(--rb-accent-fg,oklch(100%_0_0))] transition-[transform,background-color,color] duration-fast ease-decelerate hover:bg-[color-mix(in_oklab,var(--rb-accent,oklch(20.5%_0_0))_90%,transparent)] active:scale-[0.97] focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--rb-accent,oklch(20.5%_0_0))] dark:bg-[var(--rb-accent,oklch(100%_0_0))] dark:text-[var(--rb-accent-fg,oklch(20.5%_0_0))] dark:hover:bg-[color-mix(in_oklab,var(--rb-accent,oklch(100%_0_0))_90%,transparent)] dark:focus-visible:outline-[var(--rb-accent,oklch(100%_0_0))]"
           >
             <Plus aria-hidden="true" className="h-4 w-4 shrink-0" />
             <span className="hidden sm:inline">Book shipment</span>
@@ -863,7 +863,7 @@ export default function AppShell1() {
                 {shipments.map((shipment) => (
                   <tr
                     key={shipment.reference}
-                    className="h-11 transition-colors duration-150 hover:bg-neutral-50 dark:hover:bg-neutral-900/60"
+                    className="h-11 transition-colors duration-fast hover:bg-neutral-50 dark:hover:bg-neutral-900/60"
                   >
                     <td className="whitespace-nowrap px-3 text-[13px] tabular-nums text-neutral-600 first:pl-4 sm:first:pl-6 dark:text-neutral-400">
                       {shipment.reference}
@@ -933,14 +933,14 @@ export default function AppShell1() {
           <div
             aria-hidden="true"
             className={cx(
-              "pointer-events-none absolute inset-x-0 top-0 h-8 bg-gradient-to-b from-white to-transparent transition-opacity duration-200 ease-out dark:from-neutral-950",
+              "pointer-events-none absolute inset-x-0 top-0 h-8 bg-gradient-to-b from-white to-transparent transition-opacity duration-base ease-decelerate dark:from-neutral-950",
               content.edges.start ? "opacity-100" : "opacity-0",
             )}
           />
           <div
             aria-hidden="true"
             className={cx(
-              "pointer-events-none absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-white to-transparent transition-opacity duration-200 ease-out dark:from-neutral-950",
+              "pointer-events-none absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-white to-transparent transition-opacity duration-base ease-decelerate dark:from-neutral-950",
               content.edges.end ? "opacity-100" : "opacity-0",
             )}
           />
@@ -955,7 +955,7 @@ export default function AppShell1() {
             onClick={closeDrawer}
             tabIndex={-1}
             className={cx(
-              "absolute inset-0 z-30 cursor-pointer bg-neutral-950/40 backdrop-blur-[2px] transition-opacity duration-200 ease-out dark:bg-neutral-950/60",
+              "absolute inset-0 z-30 cursor-pointer bg-neutral-950/40 backdrop-blur-[2px] transition-opacity duration-base ease-decelerate dark:bg-neutral-950/60",
               drawerShown ? "opacity-100" : "opacity-0",
             )}
           />
@@ -965,7 +965,7 @@ export default function AppShell1() {
             aria-modal="true"
             aria-label="Navigation"
             className={cx(
-              "absolute inset-y-0 left-0 z-40 flex w-72 max-w-[85%] flex-col rounded-r-[var(--rb-r-4xl,18px)] bg-white shadow-[0_16px_48px_-12px_rgba(0,0,0,0.18)] transition-transform duration-[320ms] ease-[cubic-bezier(0.32,0.72,0,1)] motion-reduce:transition-none dark:bg-neutral-900 dark:shadow-none",
+              "absolute inset-y-0 left-0 z-40 flex w-72 max-w-[85%] flex-col rounded-r-[var(--rb-r-4xl,18px)] bg-white shadow-e4 transition-transform duration-slow ease-standard motion-reduce:transition-none dark:bg-neutral-900",
               drawerShown ? "translate-x-0" : "-translate-x-full",
             )}
           >

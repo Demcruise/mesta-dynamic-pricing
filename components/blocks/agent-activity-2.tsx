@@ -144,7 +144,7 @@ export default function AgentActivity2() {
                         setOpen((prev) => ({ ...prev, [i]: !prev[i] }))
                       }
                       aria-expanded={isOpen}
-                      className="flex h-10 w-full cursor-pointer items-center gap-3 rounded-[var(--rb-r-sm,6px)] px-2 text-left transition-[transform,background-color,color] duration-150 ease-out hover:bg-neutral-50 active:scale-[0.99] focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--rb-accent,oklch(20.5%_0_0))] dark:hover:bg-neutral-900 dark:focus-visible:outline-[var(--rb-accent,oklch(100%_0_0))]"
+                      className="flex h-10 w-full cursor-pointer items-center gap-3 rounded-[var(--rb-r-sm,6px)] px-2 text-left transition-[transform,background-color,color] duration-fast ease-decelerate hover:bg-neutral-50 active:scale-[0.99] focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--rb-accent,oklch(20.5%_0_0))] dark:hover:bg-neutral-900 dark:focus-visible:outline-[var(--rb-accent,oklch(100%_0_0))]"
                     >
                       <span className="flex w-4 shrink-0 justify-center">
                         <span
@@ -161,7 +161,7 @@ export default function AgentActivity2() {
                       <ChevronRight
                         aria-hidden="true"
                         className={cx(
-                          "h-3.5 w-3.5 shrink-0 text-neutral-500 transition-transform duration-200 ease-out dark:text-neutral-500",
+                          "h-3.5 w-3.5 shrink-0 text-neutral-500 transition-transform duration-base ease-decelerate dark:text-neutral-500",
                           isOpen && "rotate-90",
                         )}
                       />
@@ -221,14 +221,14 @@ export default function AgentActivity2() {
           <div
             aria-hidden="true"
             className={cx(
-              "pointer-events-none absolute inset-x-0 top-0 h-8 rounded-t-[var(--rb-r-lg,10px)] bg-gradient-to-b from-white to-transparent transition-opacity duration-200 ease-out dark:from-neutral-950",
+              "pointer-events-none absolute inset-x-0 top-0 h-8 rounded-t-[var(--rb-r-lg,10px)] bg-gradient-to-b from-white to-transparent transition-opacity duration-base ease-decelerate dark:from-neutral-950",
               feed.edges.start ? "opacity-100" : "opacity-0",
             )}
           />
           <div
             aria-hidden="true"
             className={cx(
-              "pointer-events-none absolute inset-x-0 bottom-0 h-8 rounded-b-[var(--rb-r-lg,10px)] bg-gradient-to-t from-white to-transparent transition-opacity duration-200 ease-out dark:from-neutral-950",
+              "pointer-events-none absolute inset-x-0 bottom-0 h-8 rounded-b-[var(--rb-r-lg,10px)] bg-gradient-to-t from-white to-transparent transition-opacity duration-base ease-decelerate dark:from-neutral-950",
               feed.edges.end ? "opacity-100" : "opacity-0",
             )}
           />

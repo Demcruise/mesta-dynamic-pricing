@@ -34,11 +34,36 @@
 
   --radius-card: 10px;
   --radius-input: 6px;
-  --row-h: 44px;
   --space: 4px;
+
+  /* Density: row height, row cell padding, card padding.
+     Compact shrinks all three via [data-density='compact'] below. */
+  --row-h: 44px;
+  --row-py: 8px;
+  --card-pad: 16px;
+
+  /* Elevation scale — use via shadow-e* utilities, never raw shadow-*.
+     e1 resting card · e2 raised/sticky · e3 overlay/popover · e4 modal */
+  --elev-1: 0 1px 2px 0 rgb(17 24 39 / 0.05);
+  --elev-2: 0 2px 6px -1px rgb(17 24 39 / 0.08), 0 1px 2px 0 rgb(17 24 39 / 0.05);
+  --elev-3: 0 8px 24px -8px rgb(17 24 39 / 0.16), 0 2px 6px 0 rgb(17 24 39 / 0.06);
+  --elev-4: 0 20px 48px -12px rgb(17 24 39 / 0.24), 0 4px 12px 0 rgb(17 24 39 / 0.08);
+
+  /* Motion: fast = hover/micro feedback, base = enter/exit, slow = dialogs/page-level.
+     Reduced-motion users get ~0ms via the media query in app/globals.css. */
+  --motion-fast: 120ms;
+  --motion-base: 200ms;
+  --motion-slow: 320ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
 }
 
-:root[data-density='compact'] { --row-h: 34px; }
+:root[data-density='compact'] {
+  --row-h: 34px;
+  --row-py: 4px;
+  --card-pad: 12px;
+}
 
 :root[data-theme='dark'] {
   --bg: #0d1117;
@@ -67,4 +92,10 @@
   --critical-soft: #3a1815;
   --agent: #b794ff;
   --focus: #8aa5ff;
+
+  /* Dark elevation needs heavier black alpha to read against dark surfaces. */
+  --elev-1: 0 1px 2px 0 rgb(0 0 0 / 0.5);
+  --elev-2: 0 2px 6px -1px rgb(0 0 0 / 0.5), 0 1px 2px 0 rgb(0 0 0 / 0.4);
+  --elev-3: 0 8px 24px -8px rgb(0 0 0 / 0.6), 0 2px 6px 0 rgb(0 0 0 / 0.45);
+  --elev-4: 0 20px 48px -12px rgb(0 0 0 / 0.7), 0 4px 12px 0 rgb(0 0 0 / 0.5);
 }

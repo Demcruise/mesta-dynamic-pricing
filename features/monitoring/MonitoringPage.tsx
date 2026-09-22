@@ -77,13 +77,13 @@ export function MonitoringPage() {
           {sorted.length === 0 ? <EmptyState title={t('monitoring.forecast.empty')} /> : (
             <>
               <ForecastCharts outcomes={sorted} metric={metric} />
-              <div className="mt-4 overflow-x-auto rounded-card border border-line bg-surface">
+              <div className="mt-4 overflow-x-auto rounded-card border border-line bg-surface shadow-e1">
                 <table className="w-full min-w-[640px] text-sm">
                   <caption className="sr-only">{t('monitoring.forecast.caption')}</caption>
                   <thead className="bg-subtle text-xs text-muted">
-                    <tr>
+                    <tr className="h-row">
                       {(['sku', 'forecastLabel', 'actualLabel', 'variance', 'trace'] as const).map((c) => (
-                        <th key={c} scope="col" className={cn('px-3 py-2 font-medium', c === 'sku' || c === 'trace' ? 'text-left' : 'text-right')}>
+                        <th key={c} scope="col" className={cn('px-3 py-row font-medium', c === 'sku' || c === 'trace' ? 'text-left' : 'text-right')}>
                           {c === 'sku' ? t('monitoring.anomaly.sku') : t(`monitoring.forecast.${c}`)}
                         </th>
                       ))}
@@ -94,8 +94,8 @@ export function MonitoringPage() {
                       const f = o.forecast[metric], a = o.actual[metric];
                       const fmt = (v: number) => (metric === 'units' ? String(Math.round(v)) : <PriceValue value={Math.round(v)} />);
                       return (
-                        <tr key={o.id} className="border-t border-line">
-                          <td className="px-3 py-2"><Link href={`/catalog/${o.sku}`} className="tabular text-brand hover:underline">{o.sku}</Link></td>
+                        <tr key={o.id} className="h-row border-t border-line transition-colors duration-fast hover:bg-subtle">
+                          <td className="px-3 py-row"><Link href={`/catalog/${o.sku}`} className="tabular text-brand hover:underline">{o.sku}</Link></td>
                           <td className="tabular px-3 text-right">{fmt(f)}</td>
                           <td className="tabular px-3 text-right">{fmt(a)}</td>
                           <td className="px-3 text-right"><DeltaBadge value={f ? (a - f) / f : 0} /></td>
@@ -114,7 +114,7 @@ export function MonitoringPage() {
               <h2 className="text-sm font-semibold">{t('monitoring.anomaly.title')}</h2>
               <div className="flex flex-wrap items-end gap-3">
                 <Field label={t('monitoring.anomaly.threshold')}>
-                  {(p) => <Input {...p} type="number" min={0} max={100} className="w-28" value={threshold} onChange={(e) => setThreshold(Math.min(100, Math.max(0, Number(e.target.value) || 0)))} />}
+                  {(p) => <Input {...p} type="number" min={0} max={100} className="tabular w-28" value={threshold} onChange={(e) => setThreshold(Math.min(100, Math.max(0, Number(e.target.value) || 0)))} />}
                 </Field>
                 <div role="group" aria-label={t('monitoring.anomaly.mode')} className="flex gap-1">
                   {(['digest', 'granular'] as const).map((m) => (
@@ -127,7 +127,7 @@ export function MonitoringPage() {
             {visible.length === 0 ? <EmptyState title={t('monitoring.anomaly.empty')} /> : mode === 'digest' ? (
               <ul className="flex flex-col gap-2">
                 {groups.map((g) => (
-                  <li key={g.category} className="rounded-card border border-line bg-surface p-3">
+                  <li key={g.category} className="rounded-card border border-line bg-surface p-3 shadow-e1">
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <div aria-label={t('monitoring.anomaly.digestAria', { category: g.category, n: g.items.length, pct: g.maxDeviation })}>
                         <p className="text-sm font-semibold">{g.category} <Severity s={g.severity} /></p>
@@ -151,16 +151,16 @@ export function MonitoringPage() {
                 ))}
               </ul>
             ) : (
-              <div className="overflow-x-auto rounded-card border border-line bg-surface">
+              <div className="overflow-x-auto rounded-card border border-line bg-surface shadow-e1">
                 <table className="w-full min-w-[640px] text-sm">
                   <caption className="sr-only">{t('monitoring.anomaly.caption')}</caption>
                   <thead className="bg-subtle text-xs text-muted">
-                    <tr>{(['sku', 'category', 'deviation', 'channel', 'severity', 'actions'] as const).map((c) => <th key={c} scope="col" className="px-3 py-2 text-left font-medium">{t(`monitoring.anomaly.${c}`)}</th>)}</tr>
+                    <tr className="h-row">{(['sku', 'category', 'deviation', 'channel', 'severity', 'actions'] as const).map((c) => <th key={c} scope="col" className="px-3 py-row text-left font-medium">{t(`monitoring.anomaly.${c}`)}</th>)}</tr>
                   </thead>
                   <tbody>
                     {[...visible].sort((a, b) => Math.abs(b.deviationPercent) - Math.abs(a.deviationPercent)).map((a) => (
-                      <tr key={a.id} className="border-t border-line">
-                        <td className="px-3 py-2"><Link href={`/catalog/${a.sku}`} className="tabular text-brand hover:underline">{a.sku}</Link></td>
+                      <tr key={a.id} className="h-row border-t border-line transition-colors duration-fast hover:bg-subtle">
+                        <td className="px-3 py-row"><Link href={`/catalog/${a.sku}`} className="tabular text-brand hover:underline">{a.sku}</Link></td>
                         <td className="px-3">{a.category}</td>
                         <td className="tabular px-3">{a.deviationPercent}%</td>
                         <td className="px-3">{t(`common.channel.${a.channel}`)}</td>

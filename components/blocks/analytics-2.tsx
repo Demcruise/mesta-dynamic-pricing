@@ -17,7 +17,7 @@ const focus =
   "focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--rb-accent,oklch(20.5%_0_0))] dark:focus-visible:outline-[var(--rb-accent,oklch(100%_0_0))]";
 
 const transition =
-  "transition-[background-color,border-color,color,opacity,transform] duration-150 ease-out";
+  "transition-[background-color,border-color,color,opacity,transform] duration-fast ease-decelerate";
 
 const frame =
   "rounded-[var(--rb-r-2xl,14px)] border border-neutral-200/70 bg-neutral-50 p-1 dark:border-neutral-800 dark:bg-neutral-950";
@@ -244,7 +244,7 @@ export default function Analytics2() {
                   className={cx(
                     "inline-flex h-7 cursor-pointer items-center rounded-[var(--rb-r-sm,6px)] px-2.5 text-[13px] tabular-nums",
                     option === range
-                      ? "bg-white font-medium text-neutral-900 shadow-[0_1px_2px_rgba(0,0,0,0.06)] dark:bg-neutral-950 dark:text-neutral-100"
+                      ? "bg-white font-medium text-neutral-900 shadow-e1 dark:bg-neutral-950 dark:text-neutral-100"
                       : "text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100",
                     transition,
                     focus,
@@ -322,7 +322,7 @@ export default function Analytics2() {
                         transformBox: "fill-box",
                         transformOrigin: "left",
                       }}
-                      className="transition-transform duration-[420ms] ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-none"
+                      className="transition-transform duration-slow ease-decelerate motion-reduce:transition-none"
                     />
                   </clipPath>
                 </defs>
@@ -406,7 +406,7 @@ export default function Analytics2() {
                   top: clamp(y(values[held] ?? 0) - 54, 0, PLOT_H - 58),
                 }}
                 className={cx(
-                  "pointer-events-none absolute -translate-x-1/2 rounded-[var(--rb-r-lg,10px)] border border-neutral-200 bg-white px-2.5 py-1.5 shadow-[0_8px_24px_-8px_rgba(0,0,0,0.12)] transition-opacity duration-[125ms] ease-out dark:border-neutral-800 dark:bg-neutral-900",
+                  "pointer-events-none absolute -translate-x-1/2 rounded-[var(--rb-r-lg,10px)] border border-neutral-200 bg-white px-2.5 py-1.5 shadow-e3 transition-opacity duration-fast ease-decelerate dark:border-neutral-800 dark:bg-neutral-900",
                   active === null ? "opacity-0" : "opacity-100",
                 )}
               >

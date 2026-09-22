@@ -286,7 +286,7 @@ function RangeSelect({
         aria-label={`Date range: ${value}`}
         onClick={() => (open ? close() : openMenu(0, true))}
         onKeyDown={onTriggerKeyDown}
-        className="inline-flex h-9 cursor-pointer items-center gap-2 rounded-[var(--rb-r-md,8px)] border border-neutral-200 bg-white px-3 text-sm font-medium text-neutral-900 transition-[transform,background-color,border-color,color] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] hover:border-neutral-300 hover:bg-neutral-50 active:scale-[0.97] focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--rb-accent,oklch(20.5%_0_0))] dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-100 dark:hover:border-neutral-700 dark:hover:bg-neutral-800 dark:focus-visible:outline-[var(--rb-accent,oklch(100%_0_0))]"
+        className="inline-flex h-9 cursor-pointer items-center gap-2 rounded-[var(--rb-r-md,8px)] border border-neutral-200 bg-white px-3 text-sm font-medium text-neutral-900 transition-[transform,background-color,border-color,color] duration-fast ease-decelerate hover:border-neutral-300 hover:bg-neutral-50 active:scale-[0.97] focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--rb-accent,oklch(20.5%_0_0))] dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-100 dark:hover:border-neutral-700 dark:hover:bg-neutral-800 dark:focus-visible:outline-[var(--rb-accent,oklch(100%_0_0))]"
       >
         {value}
         <ChevronDown
@@ -303,7 +303,7 @@ function RangeSelect({
           tabIndex={-1}
           onKeyDown={onMenuKeyDown}
           className={cx(
-            "absolute right-0 top-full z-30 mt-1.5 w-48 origin-top-right overflow-hidden rounded-[var(--rb-r-2xl,14px)] border border-neutral-200/70 bg-white p-1 shadow-[0_4px_16px_-4px_rgba(0,0,0,0.10)] outline-none transition-[opacity,transform] duration-[180ms] ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-none dark:border-neutral-800 dark:bg-neutral-900 dark:shadow-none",
+            "absolute right-0 top-full z-30 mt-1.5 w-48 origin-top-right overflow-hidden rounded-[var(--rb-r-2xl,14px)] border border-neutral-200/70 bg-white p-1 shadow-e2 outline-none transition-[opacity,transform] duration-base ease-decelerate motion-reduce:transition-none dark:border-neutral-800 dark:bg-neutral-900",
             shown ? "scale-100 opacity-100" : "scale-95 opacity-0",
           )}
         >
@@ -319,7 +319,7 @@ function RangeSelect({
                 onClick={() => select(index)}
                 onPointerMove={() => setActive(index)}
                 className={cx(
-                  "flex h-8 w-full cursor-pointer items-center gap-2 rounded-[var(--rb-r-lg,10px)] px-2 text-left text-[13px] transition-colors duration-150",
+                  "flex h-8 w-full cursor-pointer items-center gap-2 rounded-[var(--rb-r-lg,10px)] px-2 text-left text-[13px] transition-colors duration-fast",
                   selected
                     ? "font-medium text-neutral-900 dark:text-neutral-100"
                     : "text-neutral-600 dark:text-neutral-400",
@@ -435,7 +435,7 @@ export default function Dashboard1() {
                 {range.revenue.map((value, i) => (
                   <div
                     key={range.months[i]}
-                    className="flex min-w-0 flex-1 justify-center transition-[height] duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-none"
+                    className="flex min-w-0 flex-1 justify-center transition-[height] duration-slow ease-decelerate motion-reduce:transition-none"
                     style={{ height: `${(value / Y_MAX) * 100}%` }}
                   >
                     <div className="h-full w-full max-w-[64px] rounded-t-[var(--rb-r-xs,4px)] bg-neutral-900 dark:bg-neutral-100" />

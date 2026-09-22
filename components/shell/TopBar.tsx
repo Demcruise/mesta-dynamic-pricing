@@ -1,6 +1,6 @@
 'use client';
 
-import { CircleHelp, Search, User } from 'lucide-react';
+import { CircleHelp, Rows2, Rows4, Search, User } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { resetMestaData } from '@/lib/bootstrap';
@@ -37,7 +37,7 @@ function UserMenu() {
         <User className="size-4" aria-hidden />
       </Button>
       {open && (
-        <div role="menu" className="absolute right-0 top-10 z-40 w-56 rounded-card border border-line bg-surface p-3 shadow-lg">
+        <div role="menu" className="glass absolute right-0 top-10 z-40 w-56 rounded-card border border-line p-3 shadow-e3">
           <p className="mb-2 text-sm font-medium">{user.name}</p>
           <div className="mb-2 flex items-center justify-between text-xs text-muted">
             <span>{t('common.user.language')}</span>
@@ -77,6 +77,8 @@ export function TopBar() {
   const setOpen = useCommandStore((s) => s.setOpen);
   const role = useSessionStore((s) => s.user.role);
   const setRole = useSessionStore((s) => s.setRole);
+  const density = useUiStore((s) => s.density);
+  const setDensity = useUiStore((s) => s.setDensity);
 
   return (
     <div className="sticky top-0 z-20 flex h-14 items-center gap-2 border-b border-line bg-surface px-2 sm:gap-3 sm:px-4">
@@ -104,6 +106,16 @@ export function TopBar() {
         )}
         <Button variant="ghost" size="icon" className="max-sm:hidden" aria-label={t('common.a11y.help')} onClick={() => useGlossaryStore.getState().show(null)}>
           <CircleHelp className="size-4" aria-hidden />
+        </Button>
+        <Button
+          variant={density === 'compact' ? 'secondary' : 'ghost'}
+          size="icon"
+          aria-label={`${t('common.density.label')}: ${t(`common.density.${density}`)}`}
+          aria-pressed={density === 'compact'}
+          title={`${t('common.density.label')}: ${t(`common.density.${density}`)}`}
+          onClick={() => setDensity(density === 'compact' ? 'comfortable' : 'compact')}
+        >
+          {density === 'compact' ? <Rows4 className="size-4" aria-hidden /> : <Rows2 className="size-4" aria-hidden />}
         </Button>
         <NotificationBell />
         <UserMenu />

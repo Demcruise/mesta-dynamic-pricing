@@ -23,10 +23,10 @@ const focus =
   "focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--rb-accent,oklch(20.5%_0_0))] dark:focus-visible:outline-[var(--rb-accent,oklch(100%_0_0))]";
 
 const transition =
-  "transition-[background-color,border-color,color,opacity,transform] duration-150 ease-out";
+  "transition-[background-color,border-color,color,opacity,transform] duration-fast ease-decelerate";
 
 const surface =
-  "rounded-[var(--rb-r-xl,12px)] border border-neutral-200 bg-white shadow-[0_8px_24px_-8px_rgba(0,0,0,0.18)] dark:border-neutral-800 dark:bg-neutral-900";
+  "rounded-[var(--rb-r-xl,12px)] border border-neutral-200 bg-white shadow-e3 dark:border-neutral-800 dark:bg-neutral-900";
 
 const EASE_OUT: [number, number, number, number] = [0.23, 1, 0.32, 1];
 

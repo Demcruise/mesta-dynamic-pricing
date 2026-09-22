@@ -99,7 +99,7 @@ export function DesignSystemPage() {
       <PageHeader title="Design system" subtitle="Mesta components, states, accessibility notes and usage guidance" />
       <div className="flex flex-col gap-6">
         {ENTRIES.map((e) => (
-          <section key={e.name} aria-labelledby={`ds-${e.name}`} className="rounded-card border border-line bg-surface p-4">
+          <section key={e.name} aria-labelledby={`ds-${e.name}`} className="rounded-card border border-line bg-surface p-card shadow-e1">
             <h2 id={`ds-${e.name}`} className="text-base font-semibold">{e.name}</h2>
             <p className="text-sm text-muted">{e.summary} <code className="text-xs">{e.file}</code></p>
             <div className="my-3 rounded-input border border-line bg-bg p-4">{e.demo}</div>
@@ -112,7 +112,7 @@ export function DesignSystemPage() {
             </dl>
           </section>
         ))}
-        <section className="rounded-card border border-line bg-surface p-4">
+        <section className="rounded-card border border-line bg-surface p-card shadow-e1">
           <h2 className="mb-2 text-base font-semibold">Which component do I use?</h2>
           <table className="w-full text-sm">
             <caption className="sr-only">Component decision guide</caption>

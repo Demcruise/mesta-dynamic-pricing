@@ -15,7 +15,7 @@ const focus =
   "focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--rb-accent,oklch(20.5%_0_0))] dark:focus-visible:outline-[var(--rb-accent,oklch(100%_0_0))]";
 
 const transition =
-  "transition-[background-color,border-color,color,opacity,transform] duration-150 ease-out";
+  "transition-[background-color,border-color,color,opacity,transform] duration-fast ease-decelerate";
 
 const frame =
   "rounded-[var(--rb-r-2xl,14px)] border border-neutral-200/70 bg-neutral-50 p-1 dark:border-neutral-800 dark:bg-neutral-950";
@@ -116,7 +116,7 @@ export default function EmptyState1() {
               <span className="mt-3 flex items-center gap-1 text-[13px] font-medium text-neutral-900 dark:text-neutral-100">
                 {title}
                 <ArrowRight
-                  className="h-3 w-3 -translate-x-1 opacity-0 transition-[opacity,transform] duration-150 ease-out group-hover:translate-x-0 group-hover:opacity-100"
+                  className="h-3 w-3 -translate-x-1 opacity-0 transition-[opacity,transform] duration-fast ease-decelerate group-hover:translate-x-0 group-hover:opacity-100"
                   aria-hidden
                 />
               </span>

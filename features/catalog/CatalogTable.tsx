@@ -71,7 +71,7 @@ export function CatalogTable({
   };
 
   return (
-    <div ref={scrollRef} className="max-h-[65vh] overflow-auto rounded-card border border-line bg-surface">
+    <div ref={scrollRef} className="max-h-[65vh] overflow-auto rounded-card border border-line bg-surface shadow-e1">
       <table className="w-full min-w-[1180px] border-separate border-spacing-0 text-sm">
         <caption className="sr-only">{t('catalog.title')}</caption>
         <thead className="sticky top-0 z-10 bg-subtle">
@@ -84,7 +84,7 @@ export function CatalogTable({
                   key={`${c.label}-${i}`}
                   scope="col"
                   aria-sort={active ? (dir === 'asc' ? 'ascending' : 'descending') : c.key ? 'none' : undefined}
-                  className={cn('border-b border-line px-3 py-2 text-xs font-medium text-muted', c.align === 'right' ? 'text-right' : 'text-left')}
+                  className={cn('border-b border-line px-3 py-row text-xs font-medium text-muted', c.align === 'right' ? 'text-right' : 'text-left')}
                 >
                   {c.label === 'select' ? (
                     <input
@@ -98,7 +98,7 @@ export function CatalogTable({
                     <button
                       type="button"
                       onClick={() => onSort(c.key as SortKey)}
-                      className={cn('inline-flex items-center gap-1 hover:text-fg', c.align === 'right' && 'flex-row-reverse')}
+                      className={cn('inline-flex items-center gap-1 transition-colors duration-fast hover:text-fg', c.align === 'right' && 'flex-row-reverse')}
                     >
                       {label}
                       {active ? (dir === 'asc' ? <ArrowUp className="size-3" aria-hidden /> : <ArrowDown className="size-3" aria-hidden />) : <ArrowUpDown className="size-3 opacity-40" aria-hidden />}
@@ -129,7 +129,7 @@ export function CatalogTable({
                   else if (e.key === ' ') { e.preventDefault(); onToggle(p.sku); }
                 }}
                 style={{ height: rowHeight }}
-                className={cn('border-b border-line', isSel ? 'bg-selected' : 'hover:bg-subtle')}
+                className={cn('border-b border-line transition-colors duration-fast', isSel ? 'bg-selected' : 'hover:bg-subtle')}
               >
                 <td className="border-b border-line px-3"><input type="checkbox" aria-label={`${t('catalog.col.select')} ${p.sku}`} checked={isSel} onChange={() => onToggle(p.sku)} /></td>
                 <td className="border-b border-line px-3"><Link className="tabular text-brand hover:underline" href={`/catalog/${p.sku}`}>{p.sku}</Link></td>
@@ -160,14 +160,14 @@ export function CatalogTable({
                 </td>
                 <td className="border-b border-line px-3">
                   <div className="flex items-center gap-1">
-                    <Link href={`/catalog/${p.sku}`} aria-label={`${t('catalog.action.view')} ${p.sku}`} title={t('catalog.action.view')} className="grid size-7 place-items-center rounded hover:bg-subtle"><Eye className="size-4" aria-hidden /></Link>
+                    <Link href={`/catalog/${p.sku}`} aria-label={`${t('catalog.action.view')} ${p.sku}`} title={t('catalog.action.view')} className="grid size-7 place-items-center rounded transition-colors duration-fast hover:bg-subtle"><Eye className="size-4" aria-hidden /></Link>
                     <RoleGate action="simulation.use">
-                      <Link href={`/simulation?sku=${p.sku}`} aria-label={`${t('catalog.action.simulate')} ${p.sku}`} title={t('catalog.action.simulate')} className="grid size-7 place-items-center rounded hover:bg-subtle"><FlaskConical className="size-4" aria-hidden /></Link>
+                      <Link href={`/simulation?sku=${p.sku}`} aria-label={`${t('catalog.action.simulate')} ${p.sku}`} title={t('catalog.action.simulate')} className="grid size-7 place-items-center rounded transition-colors duration-fast hover:bg-subtle"><FlaskConical className="size-4" aria-hidden /></Link>
                     </RoleGate>
                     <RoleGate action="catalog.override_price">
-                      <button type="button" onClick={() => onOverride(p)} aria-label={`${t('catalog.action.override')} ${p.sku}`} title={t('catalog.action.override')} className="grid size-7 place-items-center rounded hover:bg-subtle"><PencilLine className="size-4" aria-hidden /></button>
+                      <button type="button" onClick={() => onOverride(p)} aria-label={`${t('catalog.action.override')} ${p.sku}`} title={t('catalog.action.override')} className="grid size-7 place-items-center rounded transition-colors duration-fast hover:bg-subtle"><PencilLine className="size-4" aria-hidden /></button>
                     </RoleGate>
-                    <Link href={`/audit?sku=${p.sku}`} aria-label={`${t('catalog.action.audit')} ${p.sku}`} title={t('catalog.action.audit')} className="grid size-7 place-items-center rounded hover:bg-subtle"><ScrollText className="size-4" aria-hidden /></Link>
+                    <Link href={`/audit?sku=${p.sku}`} aria-label={`${t('catalog.action.audit')} ${p.sku}`} title={t('catalog.action.audit')} className="grid size-7 place-items-center rounded transition-colors duration-fast hover:bg-subtle"><ScrollText className="size-4" aria-hidden /></Link>
                   </div>
                 </td>
               </tr>

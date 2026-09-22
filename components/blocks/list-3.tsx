@@ -26,7 +26,7 @@ const focus =
   "focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--rb-accent,oklch(20.5%_0_0))] dark:focus-visible:outline-[var(--rb-accent,oklch(100%_0_0))]";
 
 const transition =
-  "transition-[background-color,border-color,color,opacity] duration-150 ease-out";
+  "transition-[background-color,border-color,color,opacity] duration-fast ease-decelerate";
 
 function useScrollFade<T extends HTMLElement>() {
   const ref = useRef<T>(null);
@@ -282,7 +282,7 @@ export default function List3() {
                     className={cx(
                       "inline-flex h-7 cursor-pointer items-center rounded-[var(--rb-r-sm,6px)] px-2.5 text-[13px] active:scale-[0.97]",
                       active
-                        ? "bg-white font-medium text-neutral-900 shadow-sm dark:bg-neutral-950 dark:text-neutral-100"
+                        ? "bg-white font-medium text-neutral-900 shadow-e1 dark:bg-neutral-950 dark:text-neutral-100"
                         : "text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100",
                       transition,
                       focus,
@@ -347,7 +347,7 @@ export default function List3() {
                           key={event.id}
                           style={{ transitionDelay: mounted ? "0ms" : delay }}
                           className={cx(
-                            "transition-[opacity,transform] duration-200 ease-out motion-reduce:transition-none",
+                            "transition-[opacity,transform] duration-base ease-decelerate motion-reduce:transition-none",
                             mounted
                               ? "translate-y-0 opacity-100"
                               : "translate-y-1 opacity-0",
@@ -410,14 +410,14 @@ export default function List3() {
           <div
             aria-hidden="true"
             className={cx(
-              "pointer-events-none absolute inset-x-1 top-1 z-20 h-8 rounded-t-[var(--rb-r-lg,10px)] bg-gradient-to-b from-neutral-50 to-transparent transition-opacity duration-200 ease-out dark:from-neutral-900",
+              "pointer-events-none absolute inset-x-1 top-1 z-20 h-8 rounded-t-[var(--rb-r-lg,10px)] bg-gradient-to-b from-neutral-50 to-transparent transition-opacity duration-base ease-decelerate dark:from-neutral-900",
               fade.edges.start ? "opacity-100" : "opacity-0",
             )}
           />
           <div
             aria-hidden="true"
             className={cx(
-              "pointer-events-none absolute inset-x-1 bottom-1 z-20 h-8 rounded-b-[var(--rb-r-lg,10px)] bg-gradient-to-t from-neutral-50 to-transparent transition-opacity duration-200 ease-out dark:from-neutral-900",
+              "pointer-events-none absolute inset-x-1 bottom-1 z-20 h-8 rounded-b-[var(--rb-r-lg,10px)] bg-gradient-to-t from-neutral-50 to-transparent transition-opacity duration-base ease-decelerate dark:from-neutral-900",
               fade.edges.end ? "opacity-100" : "opacity-0",
             )}
           />

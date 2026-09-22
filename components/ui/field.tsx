@@ -2,7 +2,7 @@ import { useId, type InputHTMLAttributes, type ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 
 export const inputCls =
-  'h-9 w-full rounded-input border border-line bg-surface px-2 text-sm text-fg placeholder:text-faint';
+  'h-9 w-full rounded-input border border-line bg-surface px-2 text-sm text-fg transition-colors duration-fast ease-standard placeholder:text-faint';
 
 export function Field({
   label, error, children,

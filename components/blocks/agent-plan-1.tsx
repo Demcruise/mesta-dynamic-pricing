@@ -143,7 +143,7 @@ export default function AgentPlan1() {
             className="h-1 w-20 overflow-hidden rounded-full bg-neutral-200 dark:bg-neutral-800"
           >
             <div
-              className="h-full rounded-full bg-neutral-900 transition-[width] duration-500 ease-out motion-reduce:transition-none dark:bg-neutral-100"
+              className="h-full rounded-full bg-neutral-900 transition-[width] duration-slow ease-decelerate motion-reduce:transition-none dark:bg-neutral-100"
               style={{ width: `${progress}%` }}
             />
           </div>
@@ -154,7 +154,7 @@ export default function AgentPlan1() {
         <button
           type="button"
           onClick={() => setPaused((p) => !p)}
-          className="inline-flex h-8 shrink-0 cursor-pointer items-center gap-1.5 rounded-[var(--rb-r-md,8px)] bg-neutral-100 px-2.5 text-[13px] font-medium text-neutral-700 transition-[transform,background-color,color] duration-100 ease-[cubic-bezier(0.23,1,0.32,1)] hover:bg-neutral-200 hover:text-neutral-900 active:scale-[0.97] focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--rb-accent,oklch(20.5%_0_0))] dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700 dark:hover:text-neutral-100 dark:focus-visible:outline-[var(--rb-accent,oklch(100%_0_0))]"
+          className="inline-flex h-8 shrink-0 cursor-pointer items-center gap-1.5 rounded-[var(--rb-r-md,8px)] bg-neutral-100 px-2.5 text-[13px] font-medium text-neutral-700 transition-[transform,background-color,color] duration-fast ease-decelerate hover:bg-neutral-200 hover:text-neutral-900 active:scale-[0.97] focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--rb-accent,oklch(20.5%_0_0))] dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700 dark:hover:text-neutral-100 dark:focus-visible:outline-[var(--rb-accent,oklch(100%_0_0))]"
         >
           {paused ? (
             <Play aria-hidden="true" className="h-3.5 w-3.5 shrink-0" />
@@ -191,7 +191,7 @@ export default function AgentPlan1() {
                     type="button"
                     aria-expanded={isOpen}
                     onClick={() => setOpenIndex(isOpen ? -1 : i)}
-                    className="flex h-11 w-full cursor-pointer items-center gap-2 rounded-[var(--rb-r-md,8px)] p-2 text-left transition-colors duration-150 ease-out hover:bg-neutral-50 focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--rb-accent,oklch(20.5%_0_0))] dark:hover:bg-neutral-900 dark:focus-visible:outline-[var(--rb-accent,oklch(100%_0_0))]"
+                    className="flex h-11 w-full cursor-pointer items-center gap-2 rounded-[var(--rb-r-md,8px)] p-2 text-left transition-colors duration-fast ease-decelerate hover:bg-neutral-50 focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--rb-accent,oklch(20.5%_0_0))] dark:hover:bg-neutral-900 dark:focus-visible:outline-[var(--rb-accent,oklch(100%_0_0))]"
                   >
                     <span className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-[var(--rb-r-sm,6px)] bg-neutral-100 text-xs tabular-nums text-neutral-500 dark:bg-neutral-800 dark:text-neutral-500">
                       {i + 1}
@@ -262,14 +262,14 @@ export default function AgentPlan1() {
           <div
             aria-hidden="true"
             className={cx(
-              "pointer-events-none absolute inset-x-0 top-0 h-8 bg-gradient-to-b from-white to-transparent transition-opacity duration-200 ease-out dark:from-neutral-950",
+              "pointer-events-none absolute inset-x-0 top-0 h-8 bg-gradient-to-b from-white to-transparent transition-opacity duration-base ease-decelerate dark:from-neutral-950",
               steps.edges.start ? "opacity-100" : "opacity-0",
             )}
           />
           <div
             aria-hidden="true"
             className={cx(
-              "pointer-events-none absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-white to-transparent transition-opacity duration-200 ease-out dark:from-neutral-950",
+              "pointer-events-none absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-white to-transparent transition-opacity duration-base ease-decelerate dark:from-neutral-950",
               steps.edges.end ? "opacity-100" : "opacity-0",
             )}
           />

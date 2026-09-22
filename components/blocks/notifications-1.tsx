@@ -21,7 +21,7 @@ const focus =
   "focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--rb-accent,oklch(20.5%_0_0))] dark:focus-visible:outline-[var(--rb-accent,oklch(100%_0_0))]";
 
 const transition =
-  "transition-[background-color,border-color,color,opacity,transform] duration-150 ease-out";
+  "transition-[background-color,border-color,color,opacity,transform] duration-fast ease-decelerate";
 
 const TABS = ["All", "Unread", "Mentions"] as const;
 type Tab = (typeof TABS)[number];

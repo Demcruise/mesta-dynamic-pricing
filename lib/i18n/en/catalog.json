@@ -15,7 +15,6 @@
     "presets": "Filter presets", "savePreset": "Save preset", "presetName": "Preset name", "count": "{n} active filters", "all": "All",
     "presetRisk": "High-risk margin", "presetUndercut": "Competitor undercut"
   },
-  "density": { "compact": "Compact", "comfortable": "Comfortable", "label": "Density" },
   "action": {
     "view": "View detail", "simulate": "Simulate price", "override": "Override price", "audit": "View audit trail", "applyStrategy": "Apply strategy",
     "selected": "{n} SKUs selected", "clearSelection": "Clear selection"

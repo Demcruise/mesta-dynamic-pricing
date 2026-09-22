@@ -18,7 +18,7 @@ const focus =
   "focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--rb-accent,oklch(20.5%_0_0))] dark:focus-visible:outline-[var(--rb-accent,oklch(100%_0_0))]";
 
 const transition =
-  "transition-[background-color,border-color,color,opacity,transform] duration-150 ease-out";
+  "transition-[background-color,border-color,color,opacity,transform] duration-fast ease-decelerate";
 
 const frame =
   "rounded-[var(--rb-r-2xl,14px)] border border-neutral-200/70 bg-neutral-50 p-1 dark:border-neutral-800 dark:bg-neutral-950";
@@ -242,7 +242,7 @@ function Throughput({
                 transformBox: "fill-box",
                 transformOrigin: "left",
               }}
-              className="transition-transform duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-none"
+              className="transition-transform duration-slow ease-decelerate motion-reduce:transition-none"
             >
               <path d={areaPath} fill={`url(#${fillId})`} />
               <path
@@ -354,7 +354,7 @@ export default function Monitoring1() {
                     transition,
                     focus,
                     r === range
-                      ? "bg-white text-neutral-900 shadow-[0_1px_2px_rgba(0,0,0,0.06)] dark:bg-neutral-900 dark:text-neutral-100"
+                      ? "bg-white text-neutral-900 shadow-e1 dark:bg-neutral-900 dark:text-neutral-100"
                       : "text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100",
                   )}
                 >

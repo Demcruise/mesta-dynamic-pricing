@@ -80,10 +80,10 @@ export function CatalogPage() {
         subtitle={t('catalog.subtitle', { count: rows.length, total: skus.data.length })}
         actions={
           <>
-            <div role="group" aria-label={t('catalog.density.label')} className="flex gap-1">
+            <div role="group" aria-label={t('common.density.label')} className="flex gap-1">
               {(['comfortable', 'compact'] as const).map((d) => (
                 <Button key={d} size="sm" variant={density === d ? 'primary' : 'secondary'} aria-pressed={density === d} onClick={() => setDensity(d)}>
-                  {t(`catalog.density.${d}`)}
+                  {t(`common.density.${d}`)}
                 </Button>
               ))}
             </div>
@@ -139,7 +139,7 @@ export function CatalogPage() {
         <div
           role="region"
           aria-label={t('catalog.action.selected', { n: selectedIds.length })}
-          className="sticky bottom-16 z-20 mt-3 flex items-center justify-between gap-3 rounded-card border border-line bg-surface p-3 shadow-lg md:bottom-4"
+          className="glass sticky bottom-16 z-20 mt-3 flex items-center justify-between gap-3 rounded-card border border-line p-3 shadow-e3 md:bottom-4"
         >
           <span className="text-sm font-medium" aria-live="polite">{t('catalog.action.selected', { n: selectedIds.length })}</span>
           <div className="flex gap-2">

@@ -23,8 +23,8 @@ export function LineChart({ series, labels, format = (v) => String(Math.round(v)
     <div>
       <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={label} className="w-full">
         <line x1={P.l} y1={H - P.b} x2={W - P.r} y2={H - P.b} className="stroke-line-strong" />
-        <text x={4} y={P.t + 8} className="fill-muted text-[10px]">{format(max)}</text>
-        <text x={4} y={H - P.b} className="fill-muted text-[10px]">{format(min)}</text>
+        <text x={4} y={P.t + 8} className="tabular fill-muted text-[10px]">{format(max)}</text>
+        <text x={4} y={H - P.b} className="tabular fill-muted text-[10px]">{format(min)}</text>
         {series.map((s) => (
           <path
             key={s.name}
@@ -77,7 +77,7 @@ export function ChartWithTable({ title, caption, chart, columns, rows }: {
   const { t } = useTranslation();
   const [view, setView] = useState<'chart' | 'table'>('chart');
   return (
-    <section className="rounded-card border border-line bg-surface p-4">
+    <section className="rounded-card border border-line bg-surface p-card shadow-e1">
       <div className="mb-3 flex items-center justify-between gap-2">
         <h2 className="text-sm font-semibold">{title}</h2>
         <div role="group" aria-label={title} className="flex gap-1">

@@ -46,7 +46,7 @@ function History({ strategyId }: { strategyId: string }) {
   const toast = useToastStore((s) => s.push);
   const versions = useStrategyHistory(strategyId).data;
   return (
-    <section className="mt-6 max-w-2xl rounded-card border border-line bg-surface p-5">
+    <section className="mt-6 max-w-2xl rounded-card border border-line bg-surface p-5 shadow-e1">
       <h2 className="mb-2 text-sm font-semibold">{t('strategy.history.history')}</h2>
       {versions.length === 0 ? <p className="text-sm text-muted">{t('strategy.history.noHistory')}</p> : (
         <ol className="divide-y divide-line text-sm">
@@ -160,7 +160,7 @@ function Wizard({ strategyId, initial, status }: { strategyId: string | null; in
         ))}
       </ol>
 
-      <section className="max-w-2xl rounded-card border border-line bg-surface p-5">
+      <section className="max-w-2xl rounded-card border border-line bg-surface p-5 shadow-e1">
         {step === 0 && (
           <div className="flex flex-col gap-4">
             <Field label={t('strategy.field.name')} error={stepBlocked(0) && draft.name === '' ? issueText({ severity: 'blocker', code: 'name_required' }) : undefined}>

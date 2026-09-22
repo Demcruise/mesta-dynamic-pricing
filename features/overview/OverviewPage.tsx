@@ -74,7 +74,7 @@ export function OverviewPage() {
         <>
           <section aria-label={t('common.a11y.kpi')} className="mb-4 grid grid-cols-1 gap-3 min-[420px]:grid-cols-2 lg:grid-cols-4">
             {view.kpis.map((k) => (
-              <Link key={k.key} href={k.href ?? '/overview'} onClick={() => quick(k.href ?? '/overview')} className="block rounded-card hover:opacity-90">
+              <Link key={k.key} href={k.href ?? '/overview'} onClick={() => quick(k.href ?? '/overview')} className="block rounded-card transition-opacity duration-fast hover:opacity-90">
                 <KpiCard label={t(`overview.kpi.${k.key}`)} value={fmt(k)} />
               </Link>
             ))}
@@ -82,7 +82,7 @@ export function OverviewPage() {
 
           <nav aria-label={t('overview.title')} className="mb-6 flex flex-wrap gap-2">
             {links.map((l) => (
-              <Link key={l.key} href={l.href} onClick={() => quick(l.href)} className="rounded-full border border-line bg-surface px-3 py-1 text-sm hover:bg-subtle">
+              <Link key={l.key} href={l.href} onClick={() => quick(l.href)} className="rounded-full border border-line bg-surface px-3 py-1 text-sm transition-colors duration-fast hover:bg-subtle">
                 {t(`overview.links.${l.key}`)}
               </Link>
             ))}
@@ -90,14 +90,14 @@ export function OverviewPage() {
 
           <OverviewCharts margin={view.margin} volume={view.volume} gap={view.gap} />
 
-          <section className="mt-6 rounded-card border border-line bg-surface p-4">
+          <section className="mt-6 rounded-card border border-line bg-surface p-card shadow-e1">
             <h2 className="mb-2 text-sm font-semibold">{t('overview.activity.title')}</h2>
             {audit.data.length === 0 ? <p className="text-sm text-muted">{t('overview.activity.empty')}</p> : (
               <ul className="divide-y divide-line text-sm">
                 {audit.data.slice(0, 8).map((e) => (
                   <li key={e.id} className="flex flex-wrap justify-between gap-2 py-1.5">
                     <span>{t(`common.event.${e.type}`)} · <span className="tabular">{e.sku ?? e.entityId}</span></span>
-                    <span className="text-muted">{formatDate(e.timestamp, locale)}</span>
+                    <span className="tabular text-muted">{formatDate(e.timestamp, locale)}</span>
                   </li>
                 ))}
               </ul>

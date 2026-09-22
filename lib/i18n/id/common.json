@@ -45,6 +45,11 @@
     "light": "Terang",
     "dark": "Gelap"
   },
+  "density": {
+    "label": "Kepadatan",
+    "comfortable": "Nyaman",
+    "compact": "Ringkas"
+  },
   "cmd": {
     "open": "Cari atau lompat ke…",
     "placeholder": "Cari SKU, strategi, rekomendasi…",

@@ -56,7 +56,7 @@ const focus =
   "focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--rb-accent,oklch(20.5%_0_0))] dark:focus-visible:outline-[var(--rb-accent,oklch(100%_0_0))]";
 
 const transition =
-  "transition-[background-color,border-color,color,opacity] duration-150 ease-out";
+  "transition-[background-color,border-color,color,opacity] duration-fast ease-decelerate";
 
 const groups = [
   {
@@ -257,14 +257,14 @@ function SidebarBody({
         <div
           aria-hidden="true"
           className={cx(
-            "pointer-events-none absolute inset-x-0 top-0 h-8 bg-gradient-to-b from-neutral-50 to-transparent transition-opacity duration-200 ease-out dark:from-neutral-900",
+            "pointer-events-none absolute inset-x-0 top-0 h-8 bg-gradient-to-b from-neutral-50 to-transparent transition-opacity duration-base ease-decelerate dark:from-neutral-900",
             nav.edges.start ? "opacity-100" : "opacity-0",
           )}
         />
         <div
           aria-hidden="true"
           className={cx(
-            "pointer-events-none absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-neutral-50 to-transparent transition-opacity duration-200 ease-out dark:from-neutral-900",
+            "pointer-events-none absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-neutral-50 to-transparent transition-opacity duration-base ease-decelerate dark:from-neutral-900",
             nav.edges.end ? "opacity-100" : "opacity-0",
           )}
         />
@@ -339,7 +339,7 @@ function SidebarBody({
             role="menu"
             aria-label="Account"
             className={cx(
-              "absolute bottom-[calc(100%-0.25rem)] left-2 z-30 origin-bottom rounded-[var(--rb-r-2xl,14px)] bg-white p-1 shadow-[0_4px_16px_-4px_rgba(0,0,0,0.10)] transition-[opacity,transform] duration-150 ease-out dark:bg-neutral-800 dark:shadow-[0_4px_16px_-4px_rgba(0,0,0,0.5)]",
+              "absolute bottom-[calc(100%-0.25rem)] left-2 z-30 origin-bottom rounded-[var(--rb-r-2xl,14px)] bg-white p-1 shadow-e2 transition-[opacity,transform] duration-fast ease-decelerate dark:bg-neutral-800",
               collapsed ? "w-56" : "right-2",
               shown ? "scale-100 opacity-100" : "scale-[0.97] opacity-0",
             )}
@@ -438,7 +438,7 @@ export default function AppSidebar1() {
     <div className="relative flex h-full min-h-[640px] w-full overflow-hidden bg-white dark:bg-neutral-950">
       <aside
         className={cx(
-          "hidden shrink-0 flex-col bg-neutral-50 transition-[width] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] lg:flex dark:bg-neutral-900",
+          "hidden shrink-0 flex-col bg-neutral-50 transition-[width] duration-base ease-decelerate lg:flex dark:bg-neutral-900",
           collapsed ? "w-14" : "w-64",
         )}
       >
@@ -478,7 +478,7 @@ export default function AppSidebar1() {
             onClick={closeMobile}
             tabIndex={-1}
             className={cx(
-              "absolute inset-0 z-30 cursor-pointer bg-neutral-950/40 backdrop-blur-[2px] transition-opacity duration-200 ease-out dark:bg-neutral-950/60",
+              "absolute inset-0 z-30 cursor-pointer bg-neutral-950/40 backdrop-blur-[2px] transition-opacity duration-base ease-decelerate dark:bg-neutral-950/60",
               drawerShown ? "opacity-100" : "opacity-0",
             )}
           />
@@ -488,7 +488,7 @@ export default function AppSidebar1() {
             aria-modal="true"
             aria-label="Navigation"
             className={cx(
-              "absolute inset-y-0 left-0 z-40 flex w-72 max-w-[85%] flex-col rounded-r-[var(--rb-r-4xl,18px)] bg-neutral-50 shadow-[0_16px_48px_-12px_rgba(0,0,0,0.18)] transition-transform duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] dark:bg-neutral-900 dark:shadow-[0_16px_48px_-12px_rgba(0,0,0,0.6)]",
+              "absolute inset-y-0 left-0 z-40 flex w-72 max-w-[85%] flex-col rounded-r-[var(--rb-r-4xl,18px)] bg-neutral-50 shadow-e4 transition-transform duration-base ease-decelerate dark:bg-neutral-900",
               drawerShown ? "translate-x-0" : "-translate-x-full",
             )}
           >
