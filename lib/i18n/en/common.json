@@ -79,7 +79,11 @@
     "deleteView": "Delete view {name}",
     "noViews": "No saved views yet.",
     "openFull": "Open full page",
-    "close": "Close"
+    "close": "Close",
+    "resize": "Resize column {col}",
+    "resizeHint": "Drag or use arrow keys · double-click to reset",
+    "groupBy": "Group by",
+    "groupNone": "None"
   },
   "perm": {
     "deniedTitle": "Access denied",

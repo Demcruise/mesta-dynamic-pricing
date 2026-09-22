@@ -64,6 +64,78 @@ describe('MestaDataTable', () => {
   });
 });
 
+interface GRow { id: string; name: string; grp: string }
+const gRows: GRow[] = [
+  { id: 'A-1', name: 'Alpha', grp: 'x' },
+  { id: 'B-2', name: 'Beta', grp: 'y' },
+  { id: 'C-3', name: 'Gamma', grp: 'x' },
+];
+const gColumns: DataColumn<GRow>[] = [
+  { id: 'id', header: 'ID', required: true, cell: (r) => r.id },
+  { id: 'name', header: 'Name', defaultWidth: 200, cell: (r) => r.name },
+];
+
+describe('MestaDataTable — Wave H: resize + grouping', () => {
+  it('resizable renders a keyboard-usable separator per column and persists widths', () => {
+    render(
+      <MestaDataTable tableId="rz" caption="T" columns={gColumns} rows={gRows} getRowId={(r) => r.id} resizable />,
+    );
+    const sep = screen.getByRole('separator', { name: 'Resize column Name' });
+    expect(sep).toHaveAttribute('aria-valuenow', '200');
+    fireEvent.keyDown(sep, { key: 'ArrowRight' });
+    expect(sep).toHaveAttribute('aria-valuenow', '216');
+    expect(JSON.parse(localStorage.getItem('mesta-colw-rz') ?? '{}')).toEqual({ name: 216 });
+    fireEvent.keyDown(sep, { key: 'ArrowLeft' });
+    fireEvent.keyDown(sep, { key: 'ArrowLeft' });
+    expect(sep).toHaveAttribute('aria-valuenow', '184');
+    // double-click resets to the column default
+    fireEvent.doubleClick(sep);
+    expect(sep).toHaveAttribute('aria-valuenow', '200');
+    expect(JSON.parse(localStorage.getItem('mesta-colw-rz') ?? '{}')).toEqual({});
+  });
+
+  it('non-resizable tables render no separators and no colgroup', () => {
+    render(
+      <MestaDataTable tableId="nr" caption="T" columns={gColumns} rows={gRows} getRowId={(r) => r.id} />,
+    );
+    expect(screen.queryByRole('separator')).toBeNull();
+    expect(document.querySelector('colgroup')).toBeNull();
+  });
+
+  it('group select reorders rows and inserts labelled group headers', () => {
+    render(
+      <MestaDataTable
+        tableId="gp" caption="T" columns={gColumns} rows={gRows} getRowId={(r) => r.id}
+        groups={[{ id: 'grp', label: 'Bucket', value: (r) => r.grp }]}
+      />,
+    );
+    const sel = screen.getByLabelText('Group by');
+    fireEvent.change(sel, { target: { value: 'grp' } });
+    const trs = screen.getAllByRole('row');
+    const text = trs.map((tr) => tr.textContent ?? '');
+    // header row, then group 'x' header, A-1, C-3, group 'y' header, B-2
+    expect(text[1]).toContain('x');
+    expect(text[1]).toContain('2');
+    expect(text[4]).toContain('y');
+    expect(text.indexOf(text.find((s) => s.includes('C-3'))!)).toBeLessThan(text.indexOf(text.find((s) => s.includes('B-2'))!));
+    expect(localStorage.getItem('mesta-group-gp')).toBe('grp');
+    // clearing the select restores original order
+    fireEvent.change(sel, { target: { value: '' } });
+    const rows2 = screen.getAllByRole('row').map((tr) => tr.textContent ?? '');
+    expect(rows2.findIndex((s) => s.includes('B-2'))).toBeLessThan(rows2.findIndex((s) => s.includes('C-3')));
+  });
+
+  it('group select is hidden when the table is virtualized', () => {
+    render(
+      <MestaDataTable
+        tableId="gv" caption="T" columns={gColumns} rows={gRows} getRowId={(r) => r.id}
+        virtualize groups={[{ id: 'grp', label: 'Bucket', value: (r) => r.grp }]}
+      />,
+    );
+    expect(screen.queryByLabelText('Group by')).toBeNull();
+  });
+});
+
 describe('SavedViewMenu', () => {
   it('saves filter query + hidden columns as one view and applies it back', () => {
     const applied: { query: string; hidden: string[] }[] = [];

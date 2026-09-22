@@ -57,7 +57,7 @@ Legend: ✅ exists · 🟡 partial / different shape · ❌ missing · ⚖️ de
 
 | Requirement | Status | Delta |
 |---|---|---|
-| Table standards | 🟡 | MestaDataTable: sort/filter/select/sticky/density/virtualize/detail/export. Missing: column resize, grouping, pagination alternative |
+| Table standards | ✅ | MestaDataTable: sort/filter/select/sticky/density/virtualize/detail/export/column-visibility + column resize (pointer + keyboard, persisted per table) and row grouping (toolbar select, group headers; non-virtualized tables). Virtualization + "show more" is the pagination alternative |
 | Filter system | ✅ | URL-serialized filters, chips, saved views + cross-page Org→BU→Region→Store scope filter (C.1) |
 | Chart requirements | ✅ | Title/caption/table twin + `meta` line carrying explicit unit/window metadata on overview charts; simulation carries run-state/freshness line |
 | Data trust block | ✅ | `MetricDefinition` popover (definition/scope/source/updated) on overview + analytics KPIs (A.2, D.5) |
@@ -120,7 +120,8 @@ Blueprint items are covered by the existing foundation.
 | E | `4dbe573` | Experiments, 7-step onboarding, multi-level approval + delegation, optimistic concurrency |
 | F | `c6c4ef8` | Command-menu entity coverage, chart unit/window metadata, builder dirty-guard, read-only policy matrix |
 | G | `2d5910f` | Strategy scheduling (simulated clock), strategy-bound rules/signals with real evaluation semantics, audit-timeline icon-map fix, 320px responsive hardening (`grid-cols-1` bases + `min-w-0` clipping) |
+| H | pending | Table standards: column resize (fixed layout, colgroup, pointer/keyboard separator, persisted per table) + row grouping (toolbar select, group header rows, non-virtualized tables) |
 
 Known honest gaps remaining: writable policy editing
-(intentionally code-only — the matrix on /settings is read-only), table column resize/grouping,
+(intentionally code-only — the matrix on /settings is read-only)
 and the Channel scope dimension (channels belong to deployments, not SKUs).

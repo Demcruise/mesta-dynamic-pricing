@@ -79,7 +79,11 @@
     "deleteView": "Hapus tampilan {name}",
     "noViews": "Belum ada tampilan tersimpan.",
     "openFull": "Buka halaman penuh",
-    "close": "Tutup"
+    "close": "Tutup",
+    "resize": "Ubah lebar kolom {col}",
+    "resizeHint": "Seret atau tombol panah · klik dua kali untuk reset",
+    "groupBy": "Kelompokkan",
+    "groupNone": "Tidak ada"
   },
   "perm": {
     "deniedTitle": "Akses ditolak",

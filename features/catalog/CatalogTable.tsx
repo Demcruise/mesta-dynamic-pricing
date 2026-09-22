@@ -53,14 +53,14 @@ export function CatalogTable({
 
   const columns = useMemo<DataColumn<Product>[]>(() => [
     {
-      id: 'sku', header: t('catalog.col.sku'), sortKey: 'sku', required: true,
+      id: 'sku', defaultWidth: 116, header: t('catalog.col.sku'), sortKey: 'sku', required: true,
       cell: (p) => <Link className="tabular text-brand hover:underline" href={detailHref(p.sku)}>{p.sku}</Link>,
     },
-    { id: 'name', header: t('catalog.col.name'), sortKey: 'name', cell: (p) => <span className="block max-w-56 truncate">{p.name}</span> },
-    { id: 'category', header: t('catalog.col.category'), sortKey: 'category', cell: (p) => <span className="text-muted">{p.category}</span> },
-    { id: 'cost', header: t('catalog.col.cost'), sortKey: 'cost', align: 'right', cell: (p) => <PriceValue value={p.cost} muted /> },
+    { id: 'name', defaultWidth: 210, header: t('catalog.col.name'), sortKey: 'name', cell: (p) => <span className="block max-w-56 truncate">{p.name}</span> },
+    { id: 'category', defaultWidth: 116, header: t('catalog.col.category'), sortKey: 'category', cell: (p) => <span className="text-muted">{p.category}</span> },
+    { id: 'cost', defaultWidth: 104, header: t('catalog.col.cost'), sortKey: 'cost', align: 'right', cell: (p) => <PriceValue value={p.cost} muted /> },
     {
-      id: 'price', header: t('catalog.col.price'), sortKey: 'price', align: 'right',
+      id: 'price', defaultWidth: 108, header: t('catalog.col.price'), sortKey: 'price', align: 'right',
       cell: (p) => canOverride ? (
         <button
           type="button"
@@ -74,7 +74,7 @@ export function CatalogTable({
       ) : <PriceValue value={p.price} animate />,
     },
     {
-      id: 'competitor', header: t('catalog.col.competitor'), sortKey: 'competitorAvg', align: 'right',
+      id: 'competitor', defaultWidth: 150, header: t('catalog.col.competitor'), sortKey: 'competitorAvg', align: 'right',
       cell: (p) => (
         <div className="flex items-center justify-end gap-2">
           <PriceValue value={p.competitorAvg} muted />
@@ -83,7 +83,7 @@ export function CatalogTable({
       ),
     },
     {
-      id: 'margin', header: t('catalog.col.margin'), sortKey: 'margin', align: 'right',
+      id: 'margin', defaultWidth: 160, header: t('catalog.col.margin'), sortKey: 'margin', align: 'right',
       cell: (p) => {
         const health = marginHealth(p);
         const pct = marginPct(p);
@@ -103,15 +103,15 @@ export function CatalogTable({
         );
       },
     },
-    { id: 'elasticity', header: t('catalog.col.elasticity'), sortKey: 'elasticity', cell: (p) => t(`catalog.elasticity.${elasticityBand(p.elasticity)}`) },
+    { id: 'elasticity', defaultWidth: 110, header: t('catalog.col.elasticity'), sortKey: 'elasticity', cell: (p) => t(`catalog.elasticity.${elasticityBand(p.elasticity)}`) },
     {
-      id: 'stock', header: t('catalog.col.stock'), sortKey: 'stock', align: 'right',
+      id: 'stock', defaultWidth: 140, header: t('catalog.col.stock'), sortKey: 'stock', align: 'right',
       cell: (p) => <span className="tabular">{p.stockUnits} <span className="text-xs text-muted">({t(`catalog.stock.${p.stockStatus}`)})</span></span>,
     },
-    { id: 'lastChange', header: t('catalog.col.lastChange'), sortKey: 'lastChange', cell: (p) => <span className="text-muted">{formatDate(p.lastChangeAt, locale)}</span> },
-    { id: 'trend', header: t('catalog.col.trend'), cell: (p) => <Sparkline points={p.priceHistory.map((h) => h.price)} className="h-5 w-20 text-faint" /> },
+    { id: 'lastChange', defaultWidth: 140, header: t('catalog.col.lastChange'), sortKey: 'lastChange', cell: (p) => <span className="text-muted">{formatDate(p.lastChangeAt, locale)}</span> },
+    { id: 'trend', defaultWidth: 104, header: t('catalog.col.trend'), cell: (p) => <Sparkline points={p.priceHistory.map((h) => h.price)} className="h-5 w-20 text-faint" /> },
     {
-      id: 'ai', header: t('catalog.col.ai'),
+      id: 'ai', defaultWidth: 96, header: t('catalog.col.ai'),
       cell: (p) => pendingSkus.has(p.sku) ? (
         <span className="inline-flex items-center gap-1 text-xs text-agent"><Sparkles className="size-3" aria-hidden />{t('catalog.ai.pending')}</span>
       ) : (
@@ -119,7 +119,7 @@ export function CatalogTable({
       ),
     },
     {
-      id: 'actions', header: t('catalog.col.actions'), required: true,
+      id: 'actions', defaultWidth: 148, header: t('catalog.col.actions'), required: true,
       cell: (p) => (
         <div className="flex items-center gap-1">
           <Link href={detailHref(p.sku)} aria-label={`${t('catalog.action.view')} ${p.sku}`} title={t('catalog.action.view')} className="grid size-7 place-items-center rounded transition-colors duration-fast hover:bg-subtle"><Eye className="size-4" aria-hidden /></Link>
@@ -148,6 +148,7 @@ export function CatalogTable({
       virtualize
       rowHeight={rowHeight}
       minWidth={1280}
+      resizable
       csv={csv}
       toolbar={toolbar}
       visibility={visibility}

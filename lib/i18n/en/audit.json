@@ -1,14 +1,59 @@
 {
   "title": "Audit & governance",
   "subtitle": "{count} of {total} events",
-  "scopeNote": { "own": "Showing your own events and owned SKUs.", "deployment": "Showing deployment-related events.", "all": "Showing all events." },
-  "filter": { "from": "From", "to": "To", "actor": "Actor", "source": "Source", "type": "Event type", "sku": "SKU", "all": "All", "search": "Filter by SKU" },
-  "export": "Export CSV", "exported": "Exported {n} events",
-  "list": { "caption": "Audit events", "time": "Time", "event": "Event", "actor": "Actor", "source": "Source", "entity": "Entity", "empty": "No audit events match.", "open": "Details {id}" },
-  "view": { "label": "View", "list": "List", "timeline": "Timeline" },
-  "timeline": { "count": "{n} events" },
+  "scopeNote": {
+    "own": "Showing your own events and owned SKUs.",
+    "deployment": "Showing deployment-related events.",
+    "all": "Showing all events."
+  },
+  "filter": {
+    "from": "From",
+    "to": "To",
+    "actor": "Actor",
+    "source": "Source",
+    "type": "Event type",
+    "sku": "SKU",
+    "all": "All",
+    "search": "Filter by SKU"
+  },
+  "export": "Export CSV",
+  "exported": "Exported {n} events",
+  "list": {
+    "caption": "Audit events",
+    "time": "Time",
+    "event": "Event",
+    "actor": "Actor",
+    "source": "Source",
+    "entity": "Entity",
+    "empty": "No audit events match.",
+    "open": "Details {id}"
+  },
+  "view": {
+    "label": "View",
+    "list": "List",
+    "timeline": "Timeline"
+  },
+  "timeline": {
+    "count": "{n} events"
+  },
   "detail": {
-    "title": "Event details", "close": "Close", "price": "Price change", "before": "Before", "after": "After", "note": "Note", "rationale": "Rationale snapshot", "links": "Related",
-    "sku": "SKU", "recommendation": "Recommendation", "deployment": "Deployment", "strategy": "Strategy", "scenario": "Scenario", "noSnapshot": "No price snapshot for this event.", "none": "None"
+    "title": "Event details",
+    "close": "Close",
+    "price": "Price change",
+    "before": "Before",
+    "after": "After",
+    "note": "Note",
+    "rationale": "Rationale snapshot",
+    "links": "Related",
+    "sku": "SKU",
+    "recommendation": "Recommendation",
+    "deployment": "Deployment",
+    "strategy": "Strategy",
+    "scenario": "Scenario",
+    "noSnapshot": "No price snapshot for this event.",
+    "none": "None"
+  },
+  "group": {
+    "day": "Day"
   }
 }

@@ -71,18 +71,25 @@ export function AuditPage() {
   const scope = can('audit.view_all') ? 'all' : role === 'ops_lead' ? 'deployment' : 'own';
 
   const columns = useMemo<DataColumn<AuditEvent>[]>(() => [
-    { id: 'time', header: t('audit.list.time'), cell: (e) => <span className="tabular whitespace-nowrap text-muted">{formatDate(e.timestamp, locale)}</span> },
+    { id: 'time', defaultWidth: 180, header: t('audit.list.time'), cell: (e) => <span className="tabular whitespace-nowrap text-muted">{formatDate(e.timestamp, locale)}</span> },
     {
-      id: 'event', header: t('audit.list.event'), required: true,
+      id: 'event', defaultWidth: 250, header: t('audit.list.event'), required: true,
       cell: (e) => (
         <button type="button" aria-label={t('audit.list.open', { id: e.id })} onClick={() => setSelected(e)} className="text-left text-brand hover:underline">
           {t(`common.event.${e.type}`)}
         </button>
       ),
     },
-    { id: 'actor', header: t('audit.list.actor'), cell: (e) => <>{e.actorId} <span className="text-xs text-faint">({t(`common.role.${e.actorRole}`)})</span></> },
-    { id: 'source', header: t('audit.list.source'), cell: (e) => t(`common.source.${e.source}`) },
-    { id: 'entity', header: t('audit.list.entity'), cell: (e) => <span className="tabular">{e.sku ?? e.entityId}</span> },
+    { id: 'actor', defaultWidth: 180, header: t('audit.list.actor'), cell: (e) => <>{e.actorId} <span className="text-xs text-faint">({t(`common.role.${e.actorRole}`)})</span></> },
+    { id: 'source', defaultWidth: 120, header: t('audit.list.source'), cell: (e) => t(`common.source.${e.source}`) },
+    { id: 'entity', defaultWidth: 170, header: t('audit.list.entity'), cell: (e) => <span className="tabular">{e.sku ?? e.entityId}</span> },
+  ], [t, locale]);
+
+  const groups = useMemo(() => [
+    { id: 'day', label: t('audit.group.day'), value: (e: AuditEvent) => e.timestamp.slice(0, 10), format: (v: string) => formatDate(`${v}T12:00:00`, locale) },
+    { id: 'type', label: t('audit.list.event'), value: (e: AuditEvent) => e.type, format: (v: string) => t(`common.event.${v}`) },
+    { id: 'actor', label: t('audit.list.actor'), value: (e: AuditEvent) => e.actorId },
+    { id: 'source', label: t('audit.list.source'), value: (e: AuditEvent) => e.source, format: (v: string) => t(`common.source.${v}`) },
   ], [t, locale]);
 
   const rec = selected?.entityType === 'recommendation' || selected?.entityType === 'deployment'
@@ -148,6 +155,8 @@ export function AuditPage() {
             getRowId={(e) => e.id}
             onRowClick={setSelected}
             minWidth={720}
+            resizable
+            groups={groups}
             visibility={columnVis}
             toolbar={
               <SavedViewMenu
