@@ -19,7 +19,7 @@ Legend: ✅ exists · 🟡 partial / different shape · ❌ missing · ⚖️ de
 | P-03 Recommendation Detail | `/recommendations/[recId]` | ✅ | RuleEvaluation drill-down (input→expected→actual→result), DecisionSummary consequence preview, inline adjust editor (B.2) |
 | P-04 Price Catalog | `/catalog` | ✅ | Virtualized table, filters, saved views, override dialog, SKU drawer, detail nav |
 | P-05 Simulator | `/simulation` | ✅ | Competitor avg + vs-market delta, break-even marker, run-state line with observation freshness (B.4) |
-| P-06 Strategies | `/strategy` | 🟡 | List, wizard, versions, rollback, submit→manager approval exist. Missing: schedule, signal/rule selectors |
+| P-06 Strategies | `/strategy` | ✅ | List, wizard, versions, rollback, submit→manager approval, scheduled activation (simulated clock), signal/rule binding with real evaluation semantics |
 | P-07 Rules | `/rules` | ✅ | `Rule { when[], then, scope, priority }` + builder + deterministic evaluation + conflict resolution (C.2) |
 | P-08 Guardrails | `/guardrails` | ✅ | Standalone center: effective bounds, MAP, max-change, auto-approve, margin floor, staleness coverage + per-SKU drill-down (C.3) |
 | P-09 Approvals | `/approvals` | ✅ | Inbox with escalated/changes_requested/expired, 7-day TTL, stale re-check + ack, multi-level high-impact gate, delegation grants (C.4, E.3) |
@@ -106,7 +106,7 @@ Blueprint items are covered by the existing foundation.
 1. **Blueprint adoption (BP-001–004).** **Not adopted.** Patterns were mapped onto the existing tokens+shadcn+React Bits foundation; no `@blueprintjs/*` dependency was added. Rationale held: two competing primitive systems would have re-opened every a11y/visual baseline.
 2. **Persona model.** **Resolved: 4 roles kept.** The backlog's Finance Approver maps to `manager` — the multi-level gate (E.3) treats manager as the second approval level, with `DelegationGrant` covering temporary analyst elevation. A dedicated `approver`/`admin` role remains available if the persona matrix is ever mandated.
 3. **Scope hierarchy realism.** **Resolved: real version shipped.** `Product` carries `region`/`store` (BU derived); `ScopeSelector` + scoped query hooks filter every major surface. Channel remains unmodeled — no product carries a channel dimension, so the selector honestly stops at Store.
-4. **Scheduling.** **Resolved: simulated, honestly labeled.** `runScheduledJob` promotes scheduled publish jobs; `triggerSourceSync` completes on a 2s timer. Both are documented in-code as frontend stand-ins for a backend job runner — out of scope for the frontend-only MVP.
+4. **Scheduling.** **Resolved: simulated, honestly labeled.** `runScheduledJob` promotes scheduled publish jobs; `triggerSourceSync` completes on a 2s timer; `promoteScheduledStrategies` sweeps due `Strategy.activateAt` at bootstrap (same simulated-clock pattern). All are documented in-code as frontend stand-ins for a backend job runner — out of scope for the frontend-only MVP.
 5. **Experiments (EPIC 15).** **Resolved: shipped with honest semantics.** No variant-assignment backend exists, so `startExperiment` applies the treatment price to the whole SKU scope and emits outcomes from the demand model with deterministic noise. Results are labeled "directional signal only" — the UI never claims statistical confidence.
 
 ## 6. Shipped state
@@ -119,7 +119,8 @@ Blueprint items are covered by the existing foundation.
 | D | `01c635c` | Data health, exceptions, alert center, competitors, analytics |
 | E | `4dbe573` | Experiments, 7-step onboarding, multi-level approval + delegation, optimistic concurrency |
 | F | `c6c4ef8` | Command-menu entity coverage, chart unit/window metadata, builder dirty-guard, read-only policy matrix |
+| G | `2d5910f` | Strategy scheduling (simulated clock), strategy-bound rules/signals with real evaluation semantics, audit-timeline icon-map fix, 320px responsive hardening (`grid-cols-1` bases + `min-w-0` clipping) |
 
-Known honest gaps remaining: strategy scheduling/signal/rule selectors (P-06), writable policy editing
+Known honest gaps remaining: writable policy editing
 (intentionally code-only — the matrix on /settings is read-only), table column resize/grouping,
 and the Channel scope dimension (channels belong to deployments, not SKUs).
