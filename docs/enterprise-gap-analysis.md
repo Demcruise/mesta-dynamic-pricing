@@ -118,7 +118,8 @@ Blueprint items are covered by the existing foundation.
 | C | `22fd61d` | Scope hierarchy, rule engine, guardrail center, approval inbox |
 | D | `01c635c` | Data health, exceptions, alert center, competitors, analytics |
 | E | `4dbe573` | Experiments, 7-step onboarding, multi-level approval + delegation, optimistic concurrency |
+| F | `c6c4ef8` | Command-menu entity coverage, chart unit/window metadata, builder dirty-guard, read-only policy matrix |
 
-Known honest gaps remaining: strategy scheduling/signal selectors (P-06), policy-management UI (P-19),
-command-menu entity coverage (APP-003), chart metadata (units/date-range), table resize/grouping,
-dirty-guard on wizard forms, and the Channel scope dimension.
+Known honest gaps remaining: strategy scheduling/signal/rule selectors (P-06), writable policy editing
+(intentionally code-only — the matrix on /settings is read-only), table column resize/grouping,
+and the Channel scope dimension (channels belong to deployments, not SKUs).
