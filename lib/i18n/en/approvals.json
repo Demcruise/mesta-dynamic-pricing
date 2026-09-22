@@ -25,5 +25,21 @@
     "title": "Resubmit recommendation",
     "noteLabel": "Note (optional context)",
     "staleNote": "The underlying data moved since this recommendation was formed — a fresh staleness check runs on approval."
+  },
+  "delegation": {
+    "title": "Approval delegation",
+    "desc": "Let a named user approve high-impact recommendations for a limited time.",
+    "grant": "Delegate approval",
+    "revoke": "Revoke",
+    "dialogTitle": "Delegate high-impact approval",
+    "to": "Delegate to",
+    "hours": "Valid for (hours)",
+    "note": "Delegated approvals are audited under the delegate’s name and expire automatically.",
+    "toast": "Approval delegated"
+  },
+  "err": {
+    "forbidden": "Only managers can delegate approvals.",
+    "invalid": "Invalid delegation target or duration.",
+    "not_found": "Delegation not found."
   }
 }

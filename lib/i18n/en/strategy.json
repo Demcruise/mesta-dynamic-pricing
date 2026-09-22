@@ -87,9 +87,12 @@
     "invalid": "Fix the blocking issues first.",
     "not_found": "Strategy not found.",
     "note_required": "A reason is required.",
-    "archived": "Archived strategies cannot be edited."
+    "archived": "Archived strategies cannot be edited.",
+    "conflict": "This strategy was edited elsewhere — reload to see the latest version, or overwrite it."
   },
-  "overlap": { "title": "Overlapping scope" },
+  "overlap": {
+    "title": "Overlapping scope"
+  },
   "guardrailViz": {
     "title": "Effective bounds",
     "aria": "Guardrail range covering {n} SKUs in scope",
@@ -107,5 +110,11 @@
     "noHistory": "No earlier versions.",
     "version": "Version {n}",
     "rolledBack": "Rolled back to version {n}"
+  },
+  "conflict": {
+    "title": "Edited elsewhere",
+    "desc": "This strategy changed since you opened it. Reload to discard your edits, or overwrite the other version.",
+    "reload": "Reload latest",
+    "overwrite": "Overwrite"
   }
 }

@@ -83,8 +83,15 @@
   },
   "err": {
     "forbidden": "Peran Anda tidak dapat mengelola atau menjalankan aturan.",
-    "not_found": "Aturan tidak ditemukan."
+    "not_found": "Aturan tidak ditemukan.",
+    "conflict": "Aturan ini diedit di tempat lain — muat ulang untuk melihat versi terbaru, atau timpa."
   },
   "empty": "Belum ada aturan harga. Buat satu untuk mengotomatisasi proposal harga.",
-  "note": "Aturan bersifat deterministik dan dapat diaudit — setiap rekomendasi yang dihasilkan tertaut ke aturan pembuatnya."
+  "note": "Aturan bersifat deterministik dan dapat diaudit — setiap rekomendasi yang dihasilkan tertaut ke aturan pembuatnya.",
+  "editConflict": {
+    "title": "Diubah di tempat lain",
+    "desc": "Aturan ini berubah sejak Anda membukanya. Muat ulang untuk membuang editan Anda, atau timpa versi lain.",
+    "reload": "Muat terbaru",
+    "overwrite": "Timpa"
+  }
 }

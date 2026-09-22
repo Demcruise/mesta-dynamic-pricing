@@ -5,7 +5,7 @@ import { resetMestaData } from '@/lib/bootstrap';
 import { selectAuditForUser } from '@/lib/audit-scope';
 import type { AuditEvent, Role, UserSession } from '@/lib/ontology';
 import {
-  useAuditStore, useDeploymentStore, useMonitoringStore, useNotificationStore, useProductCatalogStore, useRecommendationStore,
+  useAuditStore, useDeploymentStore, useExperimentStore, useMonitoringStore, useNotificationStore, useProductCatalogStore, useRecommendationStore,
 } from '@/lib/stores';
 import { eventLinks, eventTone, filterAudit, groupEventsByDay, toCsv, EMPTY_AUDIT_FILTERS } from '@/features/audit/audit-utils';
 import { decisionsByCategory, gapByCategory, marginTrend, roleKpis } from '@/features/overview/kpis';
@@ -105,9 +105,13 @@ describe('monitoring', () => {
     expect(flagForModelReview(user('analyst'), a.id)).toEqual({ ok: false, error: 'already_flagged' });
   });
 
-  it('every outcome traces to a recommendation', () => {
+  it('every outcome traces to a recommendation or an experiment', () => {
     const recs = new Set(useRecommendationStore.getState().items.map((r) => r.id));
-    for (const o of useMonitoringStore.getState().outcomes) expect(o.recommendationId && recs.has(o.recommendationId)).toBe(true);
+    const exps = new Set(useExperimentStore.getState().items.map((e) => e.id));
+    for (const o of useMonitoringStore.getState().outcomes) {
+      if (o.recommendationId !== null) expect(recs.has(o.recommendationId)).toBe(true);
+      else expect(o.experimentId != null && exps.has(o.experimentId)).toBe(true);
+    }
   });
 });
 

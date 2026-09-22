@@ -97,13 +97,15 @@ Audit filter (date/actor/SKU) ──► timeline or table ──► drawer ratio
 
 ## First-run journey (I.2)
 
-A fresh analyst/manager sees the onboarding checklist on Overview (adapted
-from the `onboarding-3` block): **Create first strategy → Run a simulation →
-Review a recommendation**. Steps check off from real store state (strategy
-exists, scenario exists, recommendation exists) with a progress bar; the
-card disappears once the journey is complete. Roles without
-`strategy.create` (ops_lead, compliance) never see it — their first run
-lands on queue/audit work that already exists.
+A fresh analyst/manager sees the setup checklist on Overview (adapted
+from the `onboarding-3` block) — seven steps covering the whole loop:
+**review catalog → verify data feeds → activate strategy → enable a rule →
+run a simulation → clear the decision queue → publish a price change**.
+Every step completes from real store state (active strategy exists, all
+sources healthy, zero pending/escalated recs, …) and is gated by RBAC, so a
+role only sees steps it can act on; the card disappears once every visible
+step is done. The subtitle is honest that this is a seeded sample workspace —
+several steps may already be complete.
 
 ## Error & recovery journeys (I.4)
 

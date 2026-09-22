@@ -37,11 +37,13 @@ import enCompetitors from './en/competitors.json';
 import idCompetitors from './id/competitors.json';
 import enAnalytics from './en/analytics.json';
 import idAnalytics from './id/analytics.json';
+import enExperiments from './en/experiments.json';
+import idExperiments from './id/experiments.json';
 
 /** One file per namespace per locale; add new namespaces here. */
 export const messages = {
-  id: { common: idCommon, catalog: idCatalog, strategy: idStrategy, simulation: idSimulation, recommendations: idRecommendations, deployment: idDeployment, monitoring: idMonitoring, audit: idAudit, overview: idOverview, rules: idRules, guardrails: idGuardrails, approvals: idApprovals, data: idData, exceptions: idExceptions, alerts: idAlerts, competitors: idCompetitors, analytics: idAnalytics },
-  en: { common: enCommon, catalog: enCatalog, strategy: enStrategy, simulation: enSimulation, recommendations: enRecommendations, deployment: enDeployment, monitoring: enMonitoring, audit: enAudit, overview: enOverview, rules: enRules, guardrails: enGuardrails, approvals: enApprovals, data: enData, exceptions: enExceptions, alerts: enAlerts, competitors: enCompetitors, analytics: enAnalytics },
+  id: { common: idCommon, catalog: idCatalog, strategy: idStrategy, simulation: idSimulation, recommendations: idRecommendations, deployment: idDeployment, monitoring: idMonitoring, audit: idAudit, overview: idOverview, rules: idRules, guardrails: idGuardrails, approvals: idApprovals, data: idData, exceptions: idExceptions, alerts: idAlerts, competitors: idCompetitors, analytics: idAnalytics, experiments: idExperiments },
+  en: { common: enCommon, catalog: enCatalog, strategy: enStrategy, simulation: enSimulation, recommendations: enRecommendations, deployment: enDeployment, monitoring: enMonitoring, audit: enAudit, overview: enOverview, rules: enRules, guardrails: enGuardrails, approvals: enApprovals, data: enData, exceptions: enExceptions, alerts: enAlerts, competitors: enCompetitors, analytics: enAnalytics, experiments: enExperiments },
 } as const;
 
 type Tree = { [k: string]: string | Tree };

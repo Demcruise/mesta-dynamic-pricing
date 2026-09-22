@@ -134,7 +134,7 @@ export interface PriceEvent {
   oldPrice: number;
   newPrice: number;
   recommendationId: string | null;
-  source: 'deployment' | 'manual_override';
+  source: 'deployment' | 'manual_override' | 'experiment';
   at: string;
 }
 
@@ -213,6 +213,32 @@ export interface OverrideRequest {
   decisionNote: string | null;
 }
 
+export type ExperimentStatus = 'draft' | 'running' | 'concluded' | 'cancelled';
+
+/** A price experiment: applies a treatment delta to a SKU scope and measures against the demand model. */
+export interface Experiment {
+  id: string;
+  name: string;
+  hypothesis: string;
+  skuIds: string[];
+  /** Treatment price change in percent, e.g. -5. */
+  deltaPct: number;
+  status: ExperimentStatus;
+  ownerId: string;
+  createdAt: string;
+  startedAt: string | null;
+  endedAt: string | null;
+}
+
+/** A manager's temporary grant letting a named user decide high-impact recommendations. */
+export interface DelegationGrant {
+  id: string;
+  toUserId: string;
+  grantedBy: string;
+  createdAt: string;
+  until: string;
+}
+
 export type AuditEventType =
   | 'strategy_submit' | 'strategy_activate' | 'strategy_reject' | 'strategy_rollback'
   | 'scenario_sent'
@@ -223,6 +249,8 @@ export type AuditEventType =
   | 'rule_save' | 'rule_run'
   | 'override_request' | 'override_approve' | 'override_reject'
   | 'datasource_sync'
+  | 'experiment_save' | 'experiment_start' | 'experiment_conclude' | 'experiment_cancel'
+  | 'delegation_grant' | 'delegation_revoke'
   | 'model_review_feedback' | 'manual_override';
 
 export interface AuditEvent {
@@ -230,7 +258,7 @@ export interface AuditEvent {
   type: AuditEventType;
   actorId: string;
   actorRole: Role;
-  entityType: 'strategy' | 'scenario' | 'recommendation' | 'deployment' | 'anomaly' | 'product' | 'rule' | 'override' | 'datasource';
+  entityType: 'strategy' | 'scenario' | 'recommendation' | 'deployment' | 'anomaly' | 'product' | 'rule' | 'override' | 'datasource' | 'experiment' | 'delegation';
   entityId: string;
   sku: string | null;
   source: 'ui' | 'agent' | 'system';
@@ -252,6 +280,8 @@ export interface Outcome {
   category: string;
   recommendationId: string | null;
   priceEventId: string | null;
+  /** Set when the outcome measures a running/concluded experiment's treatment. */
+  experimentId?: string | null;
   forecast: OutcomeMetrics;
   actual: OutcomeMetrics;
   at: string;

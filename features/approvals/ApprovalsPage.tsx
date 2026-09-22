@@ -5,15 +5,17 @@ import Link from 'next/link';
 import { StatusBadge } from '@/components/ds/StatusBadge';
 import { EmptyState, ErrorState, LoadingRows, PageHeader } from '@/components/ds/states';
 import { RecoveryNotice } from '@/components/ds/trust';
+import { RoleGate } from '@/components/shell/RoleGate';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
-import { Field, Input } from '@/components/ui/field';
+import { Field, Input, inputCls } from '@/components/ui/field';
+import { delegateApproval, revokeDelegation } from '@/lib/actions/ops';
 import { expireStaleRecommendations, recommendationHealth, resubmitRecommendation } from '@/lib/actions/recommendation';
-import { formatDate, formatPrice } from '@/lib/format';
+import { formatDate, formatPrice, formatRelativeTime } from '@/lib/format';
 import { useTranslation } from '@/lib/i18n';
 import type { Recommendation } from '@/lib/ontology';
-import { useScopedRecommendations, useSkuList } from '@/lib/queries';
-import { useSessionStore, useToastStore } from '@/lib/stores';
+import { useDelegations, useScopedRecommendations, useSkuList } from '@/lib/queries';
+import { USERS, useSessionStore, useToastStore } from '@/lib/stores';
 import { RecommendationCard } from '@/features/recommendations/RecommendationCard';
 
 export function ApprovalsPage() {
@@ -48,6 +50,10 @@ export function ApprovalsPage() {
   return (
     <>
       <PageHeader title={t('approvals.page.title')} subtitle={t('approvals.page.desc')} />
+
+      <RoleGate action="approval.delegate">
+        <DelegationStrip t={t} locale={locale} />
+      </RoleGate>
 
       {q.isLoading ? <LoadingRows rows={3} rowHeight={96} /> : q.isError ? (
         <ErrorState title={t('common.state.error')} onRetry={q.refetch} />
@@ -101,6 +107,80 @@ export function ApprovalsPage() {
 }
 
 type T = (key: string, vars?: Record<string, string | number>) => string;
+
+/**
+ * Manager's delegation strip: a live grant lets the named user approve
+ * high-impact recommendations until `until`. One active grant per user.
+ */
+function DelegationStrip({ t, locale }: { t: T; locale: 'en' | 'id' }) {
+  const user = useSessionStore((s) => s.user);
+  const toast = useToastStore((s) => s.push);
+  const grants = useDelegations();
+  const [open, setOpen] = useState(false);
+  const [target, setTarget] = useState('u-analyst-1');
+  const [hours, setHours] = useState('24');
+  const [err, setErr] = useState('');
+
+  const now = Date.now();
+  const active = grants.data.filter((g) => new Date(g.until).getTime() > now);
+  const nameOf = (id: string) => Object.values(USERS).find((u) => u.userId === id)?.name ?? id;
+
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const r = delegateApproval(user, target, Number(hours));
+    if (r.ok) { toast(t('approvals.delegation.toast')); setOpen(false); setErr(''); }
+    else setErr(t(`approvals.err.${r.error}`));
+  };
+
+  return (
+    <section aria-label={t('approvals.delegation.title')} className="mb-6 max-w-3xl rounded-card border border-line bg-surface p-card shadow-e1">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <h2 className="text-sm font-semibold">{t('approvals.delegation.title')}</h2>
+          <p className="mt-0.5 text-xs text-muted">{t('approvals.delegation.desc')}</p>
+        </div>
+        <Button size="sm" variant="secondary" onClick={() => setOpen(true)}>{t('approvals.delegation.grant')}</Button>
+      </div>
+      {active.length > 0 && (
+        <ul className="mt-3 grid gap-1.5">
+          {active.map((g) => (
+            <li key={g.id} className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-input bg-subtle px-3 py-2 text-xs">
+              <span className="font-medium">{nameOf(g.toUserId)}</span>
+              <span className="tabular text-muted">{formatRelativeTime(g.until, locale)}</span>
+              <Button size="sm" variant="ghost" className="ms-auto" onClick={() => {
+                const r = revokeDelegation(user, g.id);
+                if (!r.ok) toast(t(`approvals.err.${r.error}`));
+              }}>{t('approvals.delegation.revoke')}</Button>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      <Dialog open={open} onClose={() => setOpen(false)} title={t('approvals.delegation.dialogTitle')}>
+        <form noValidate className="flex flex-col gap-3" onSubmit={submit}>
+          <Field label={t('approvals.delegation.to')}>
+            {(p) => (
+              <select {...p} value={target} onChange={(e) => setTarget(e.target.value)} className={inputCls}>
+                {Object.values(USERS).filter((u) => u.userId !== user.userId).map((u) => (
+                  <option key={u.userId} value={u.userId}>{u.name} · {u.userId}</option>
+                ))}
+              </select>
+            )}
+          </Field>
+          <Field label={t('approvals.delegation.hours')}>
+            {(p) => <Input {...p} type="number" min="1" max="168" step="1" className="tabular w-28" value={hours} onChange={(e) => setHours(e.target.value)} />}
+          </Field>
+          <RecoveryNotice>{t('approvals.delegation.note')}</RecoveryNotice>
+          {err && <p role="alert" className="text-xs text-critical">{err}</p>}
+          <div className="flex justify-end gap-2">
+            <Button variant="secondary" onClick={() => setOpen(false)}>{t('common.action.cancel')}</Button>
+            <Button type="submit">{t('approvals.delegation.grant')}</Button>
+          </div>
+        </form>
+      </Dialog>
+    </section>
+  );
+}
 
 function WorkflowSection({ title, desc, recs, locale, resubmit, t, ctaKey, extra }: {
   title: string; desc: string; recs: Recommendation[]; locale: 'en' | 'id';

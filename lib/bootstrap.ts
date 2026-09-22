@@ -1,14 +1,14 @@
 import {
   applySeedDeployments, generateAnomalies, generateAudit, generateCompetitors, generateDataSources,
-  generateDeployments, generateOverrideRequests, generateProducts, generateRecommendations, generateRules,
-  generateStrategies,
+  generateDeployments, generateExperiments, generateOverrideRequests, generateProducts, generateRecommendations,
+  generateRules, generateStrategies,
 } from './mock-data';
 import { cancelAllDecisionTimers } from './actions/recommendation';
 import { cancelAllSyncTimers } from './actions/ops';
 import {
-  useAuditStore, useCatalogSelectionStore, useDataSourceStore, useDeploymentStore, useMonitoringStore,
-  useNotificationStore, useOverrideRequestStore, useProductCatalogStore, useRecommendationStore,
-  useScenarioStore, useStrategyStore,
+  useAuditStore, useCatalogSelectionStore, useDataSourceStore, useDelegationStore, useDeploymentStore,
+  useExperimentStore, useMonitoringStore, useNotificationStore, useOverrideRequestStore, useProductCatalogStore,
+  useRecommendationStore, useScenarioStore, useStrategyStore,
 } from './stores';
 import { usePublishJobStore } from './stores/publish';
 import { useRuleStore } from './stores/rule';
@@ -35,12 +35,15 @@ export function bootstrapMestaData({ productCount = DEFAULT_PRODUCT_COUNT, force
   const approved = generated.filter((r) => r.status === 'approved').length;
   const seeded = applySeedDeployments(products, generated, Math.min(6, Math.ceil(approved / 2)));
   const recs = seeded.recs;
-  useProductCatalogStore.getState().hydrate(seeded.products, generateCompetitors(seeded.products), seeded.priceEvents);
+  const expSeed = generateExperiments(seeded.products);
+  useProductCatalogStore.getState().hydrate(seeded.products, generateCompetitors(seeded.products), [...seeded.priceEvents, ...expSeed.priceEvents]);
   useRecommendationStore.getState().hydrate(recs);
   const deploymentSeed = generateDeployments(recs);
   useDeploymentStore.getState().hydrate(deploymentSeed.records);
   usePublishJobStore.getState().hydrate(deploymentSeed.jobs);
-  useMonitoringStore.getState().hydrate(generateAnomalies(seeded.products), seeded.outcomes);
+  useMonitoringStore.getState().hydrate(generateAnomalies(seeded.products), [...seeded.outcomes, ...expSeed.outcomes]);
+  useExperimentStore.getState().hydrate(expSeed.experiments);
+  useDelegationStore.getState().reset();
   useStrategyStore.getState().hydrate(generateStrategies());
   useRuleStore.getState().hydrate(generateRules());
   useAuditStore.getState().hydrate(generateAudit(recs));

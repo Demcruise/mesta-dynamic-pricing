@@ -25,9 +25,18 @@ describe('bootstrap', () => {
     expect(useProductCatalogStore.getState().products).toHaveLength(100);
   });
 
-  it('uses one SKU list: every recommendation SKU exists in catalog; live price matches (deployed ones show the new price)', () => {
+  it('uses one SKU list: every recommendation SKU exists in catalog; live price matches the latest price event (deployed ones show the new price)', () => {
     const skus = new Map(useProductCatalogStore.getState().products.map((p) => [p.sku, p.price]));
-    for (const r of useRecommendationStore.getState().items) expect(skus.get(r.sku)).toBe(r.deployed ? r.proposedPrice : r.currentPrice);
+    // The live price is the newest recorded move — deployments, then any later experiment treatment.
+    const latest = new Map<string, { at: string; newPrice: number }>();
+    for (const e of useProductCatalogStore.getState().priceEvents) {
+      const cur = latest.get(e.sku);
+      if (!cur || e.at > cur.at) latest.set(e.sku, e);
+    }
+    for (const r of useRecommendationStore.getState().items) {
+      const e = latest.get(r.sku);
+      expect(skus.get(r.sku)).toBe(e ? e.newPrice : r.deployed ? r.proposedPrice : r.currentPrice);
+    }
   });
 });
 

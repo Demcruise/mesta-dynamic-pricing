@@ -10,7 +10,7 @@ import { useScenarioStore } from '../stores/scenario';
 import { useDeploymentStore } from '../stores/deployment';
 import { usePublishJobStore } from '../stores/publish';
 import { useMonitoringStore } from '../stores/monitoring';
-import { useDataSourceStore, useOverrideRequestStore } from '../stores/ops';
+import { useDataSourceStore, useDelegationStore, useExperimentStore, useOverrideRequestStore } from '../stores/ops';
 import { useNotificationStore } from '../stores/notification';
 import { useUiStore } from '../stores/ui';
 import { selectAuditForUser } from '../audit-scope';
@@ -89,4 +89,6 @@ export const usePriceEvents = () => useListQuery(['sku', 'priceEvents'], () => u
 export const useNotifications = () => useListQuery(['notification', 'list'], () => useNotificationStore.getState().items);
 export const useDataSources = () => useListQuery(['datasource', 'list'], () => useDataSourceStore.getState().sources);
 export const useOverrideRequests = () => useListQuery(['override', 'list'], () => useOverrideRequestStore.getState().requests);
+export const useExperiments = () => useListQuery(['experiment', 'list'], () => useExperimentStore.getState().items);
+export const useDelegations = () => useListQuery(['delegation', 'list'], () => useDelegationStore.getState().grants);
 export const useStrategyHistory = (id: string) => useListQuery(['strategy', 'history', id], () => useStrategyStore.getState().history[id] ?? []);

@@ -1,0 +1,47 @@
+{
+  "page": {
+    "title": "Experiments",
+    "desc": "Controlled price tests: a treatment delta applied to a SKU scope, measured against the demand model."
+  },
+  "empty": "No experiments yet. Create one to test a price change on a SKU scope.",
+  "action": {
+    "new": "New experiment",
+    "start": "Start",
+    "conclude": "Conclude",
+    "cancel": "Cancel"
+  },
+  "skuCount": "{n} SKUs",
+  "builder": {
+    "title": "New experiment",
+    "name": "Name",
+    "hypothesis": "Hypothesis",
+    "skus": "SKUs",
+    "skusHint": "Comma-separated SKU ids that receive the treatment price.",
+    "delta": "Treatment delta (%)",
+    "save": "Create experiment"
+  },
+  "start": {
+    "title": "Start experiment",
+    "delta": "treatment {pct}%",
+    "skus": "SKUs repriced",
+    "deltaLabel": "Price delta",
+    "note": "Starting applies the treatment price to every SKU immediately and records outcomes from the demand model. Cancelling ends the test; prices stay applied until changed in catalog."
+  },
+  "result": {
+    "revenue": "Revenue · expected → observed",
+    "margin": "Margin · expected → observed",
+    "framing": "Directional signal only — {n} SKU outcomes, {days} days running. Observed values come from the demo demand model, not real traffic."
+  },
+  "toast": {
+    "saved": "Experiment created",
+    "started": "Experiment started — treatment prices applied",
+    "concluded": "Experiment concluded",
+    "cancelled": "Experiment cancelled"
+  },
+  "err": {
+    "forbidden": "You don't have permission to manage experiments.",
+    "invalid": "Invalid experiment state or input.",
+    "not_found": "Experiment not found.",
+    "guardrail": "The treatment price breaches a min/max bound on at least one SKU — adjust the delta or scope."
+  }
+}

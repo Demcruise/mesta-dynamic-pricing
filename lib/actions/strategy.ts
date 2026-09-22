@@ -19,11 +19,16 @@ function nextId() {
   return `STR-${String(max + 1).padStart(3, '0')}`;
 }
 
-/** Create or update a strategy draft. Non-draft strategies can only be edited by users who may activate. */
-export function saveStrategy(user: UserSession, draft: StrategyDraft, id: string | null): (Ok & { strategy: Strategy }) | Fail {
+/**
+ * Create or update a strategy draft. Non-draft strategies can only be edited by users who
+ * may activate. `expectedUpdatedAt` is the optimistic-concurrency token the editor captured
+ * on open — a mismatch means someone saved in between and the write fails with 'conflict'.
+ */
+export function saveStrategy(user: UserSession, draft: StrategyDraft, id: string | null, opts: { expectedUpdatedAt?: string } = {}): (Ok & { strategy: Strategy }) | Fail {
   if (!can(user.role, 'strategy.create')) return fail('forbidden');
   const existing = id ? find(id) : undefined;
   if (id && !existing) return fail('not_found');
+  if (existing && opts.expectedUpdatedAt !== undefined && existing.updatedAt !== opts.expectedUpdatedAt) return fail('conflict');
   if (existing && existing.status !== 'draft' && !can(user.role, 'strategy.activate')) return fail('forbidden');
   if (existing?.status === 'archived') return fail('archived');
   const strategy: Strategy = {

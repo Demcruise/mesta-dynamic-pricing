@@ -1,7 +1,8 @@
 import { create } from 'zustand';
 import type { Role, UserSession } from '../ontology';
 
-const USERS: Record<Role, UserSession> = {
+/** Demo user directory — the manager's delegation picker lists these. */
+export const USERS: Record<Role, UserSession> = {
   analyst: { userId: 'u-analyst-1', name: 'Rina Analyst', role: 'analyst', ownedSkuIds: [] },
   manager: { userId: 'u-manager-1', name: 'Budi Manager', role: 'manager', ownedSkuIds: [] },
   ops_lead: { userId: 'u-ops-1', name: 'Sari Ops', role: 'ops_lead', ownedSkuIds: [] },

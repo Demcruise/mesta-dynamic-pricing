@@ -6,7 +6,7 @@ import { CATEGORIES } from './categories';
 import { REGIONS, STORES_BY_REGION, type Region } from './scope';
 import type {
   AnomalyAlert, AuditEvent, Channel, CompetitorObservation, DataSource, DeploymentRecord, Outcome,
-  OverrideRequest, PriceEvent, Product, PublishJob, RationaleFactor, Recommendation, Rule, Strategy,
+  Experiment, OverrideRequest, PriceEvent, Product, PublishJob, RationaleFactor, Recommendation, Rule, Strategy,
 } from './ontology';
 
 export const NOW = Date.UTC(2026, 8, 21, 6, 0, 0);
@@ -317,4 +317,50 @@ export function generateOverrideRequests(products: Product[]): OverrideRequest[]
       decidedAt: new Date(NOW - 2 * DAY + 3 * HOUR).toISOString(), decisionNote: 'Rejected — wait for the cost master to update',
     },
   ];
+}
+
+/**
+ * One concluded experiment with real treatment outcomes (prices applied at start)
+ * and one draft — so /experiments shows both halves of the lifecycle.
+ */
+export function generateExperiments(products: Product[]): { experiments: Experiment[]; outcomes: Outcome[]; priceEvents: PriceEvent[] } {
+  const targets = products.slice(6, 10);
+  if (targets.length < 2) return { experiments: [], outcomes: [], priceEvents: [] };
+  const deltaPct = -6;
+  const startedAt = new Date(NOW - 5 * DAY).toISOString();
+  const endedAt = new Date(NOW - 1 * DAY).toISOString();
+  const outcomes: Outcome[] = [];
+  const priceEvents: PriceEvent[] = [];
+  const r = rng(777);
+  targets.forEach((p, i) => {
+    const np = Math.round((p.price * (1 + deltaPct / 100)) / 100) * 100;
+    if (np < p.minPrice || np > p.maxPrice) return;
+    priceEvents.push({ id: `PE-EXP1-${i}`, sku: p.sku, oldPrice: p.price, newPrice: np, recommendationId: null, source: 'experiment', at: startedAt });
+    p.priceHistory = [...p.priceHistory, { at: startedAt, price: np }];
+    p.price = np;
+    p.lastChangeAt = startedAt;
+    const units = BASE * Math.pow(np / priceEvents[i]!.oldPrice, p.elasticity);
+    const forecast = { units, revenue: units * np, margin: units * (np - p.cost) };
+    const k = 0.88 + r() * 0.24;
+    outcomes.push({
+      id: `OUT-EXP-001-${p.sku}`, sku: p.sku, category: p.category, recommendationId: null,
+      priceEventId: priceEvents[i]!.id, experimentId: 'EXP-001', forecast,
+      actual: { units: forecast.units * k, revenue: forecast.revenue * k, margin: forecast.margin * (k * 0.97) }, at: endedAt,
+    });
+  });
+  const experiments: Experiment[] = [
+    {
+      id: 'EXP-001', name: 'Weekend price dip on beverages', deltaPct, status: 'concluded',
+      hypothesis: 'A 6% weekend dip lifts beverage revenue without eroding margin.',
+      skuIds: targets.map((p) => p.sku), ownerId: 'u-analyst-1',
+      createdAt: new Date(NOW - 6 * DAY).toISOString(), startedAt, endedAt,
+    },
+    {
+      id: 'EXP-002', name: 'Premium snack markup test', deltaPct: 4, status: 'draft',
+      hypothesis: 'Snacks tolerate +4% in Jawa stores without losing basket share.',
+      skuIds: products.slice(10, 13).map((p) => p.sku), ownerId: 'u-analyst-1',
+      createdAt: new Date(NOW - HOUR).toISOString(), startedAt: null, endedAt: null,
+    },
+  ];
+  return { experiments, outcomes, priceEvents };
 }

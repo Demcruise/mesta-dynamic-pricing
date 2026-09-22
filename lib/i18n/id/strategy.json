@@ -87,9 +87,12 @@
     "invalid": "Perbaiki masalah yang memblokir dulu.",
     "not_found": "Strategi tidak ditemukan.",
     "note_required": "Alasan wajib diisi.",
-    "archived": "Strategi yang diarsipkan tidak dapat diubah."
+    "archived": "Strategi yang diarsipkan tidak dapat diubah.",
+    "conflict": "Strategi ini diedit di tempat lain — muat ulang untuk melihat versi terbaru, atau timpa."
   },
-  "overlap": { "title": "Cakupan tumpang tindih" },
+  "overlap": {
+    "title": "Cakupan tumpang tindih"
+  },
   "guardrailViz": {
     "title": "Batas efektif",
     "aria": "Rentang guardrail mencakup {n} SKU dalam cakupan",
@@ -107,5 +110,11 @@
     "noHistory": "Belum ada versi sebelumnya.",
     "version": "Versi {n}",
     "rolledBack": "Dikembalikan ke versi {n}"
+  },
+  "conflict": {
+    "title": "Diubah di tempat lain",
+    "desc": "Strategi ini berubah sejak Anda membukanya. Muat ulang untuk membuang editan Anda, atau timpa versi lain.",
+    "reload": "Muat terbaru",
+    "overwrite": "Timpa"
   }
 }

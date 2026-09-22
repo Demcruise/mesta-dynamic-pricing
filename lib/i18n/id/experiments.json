@@ -1,0 +1,47 @@
+{
+  "page": {
+    "title": "Eksperimen",
+    "desc": "Uji harga terkontrol: delta treatment diterapkan pada cakupan SKU, diukur terhadap model permintaan."
+  },
+  "empty": "Belum ada eksperimen. Buat satu untuk menguji perubahan harga pada cakupan SKU.",
+  "action": {
+    "new": "Eksperimen baru",
+    "start": "Mulai",
+    "conclude": "Akhiri",
+    "cancel": "Batalkan"
+  },
+  "skuCount": "{n} SKU",
+  "builder": {
+    "title": "Eksperimen baru",
+    "name": "Nama",
+    "hypothesis": "Hipotesis",
+    "skus": "SKU",
+    "skusHint": "ID SKU dipisah koma yang menerima harga treatment.",
+    "delta": "Delta treatment (%)",
+    "save": "Buat eksperimen"
+  },
+  "start": {
+    "title": "Mulai eksperimen",
+    "delta": "treatment {pct}%",
+    "skus": "SKU diubah harganya",
+    "deltaLabel": "Delta harga",
+    "note": "Memulai langsung menerapkan harga treatment ke setiap SKU dan mencatat hasil dari model permintaan. Membatalkan mengakhiri uji; harga tetap berlaku sampai diubah di katalog."
+  },
+  "result": {
+    "revenue": "Pendapatan · ekspektasi → observasi",
+    "margin": "Margin · ekspektasi → observasi",
+    "framing": "Sinyal arah saja — {n} hasil SKU, berjalan {days} hari. Nilai observasi berasal dari model permintaan demo, bukan trafik nyata."
+  },
+  "toast": {
+    "saved": "Eksperimen dibuat",
+    "started": "Eksperimen dimulai — harga treatment diterapkan",
+    "concluded": "Eksperimen diakhiri",
+    "cancelled": "Eksperimen dibatalkan"
+  },
+  "err": {
+    "forbidden": "Anda tidak punya izin mengelola eksperimen.",
+    "invalid": "Status atau input eksperimen tidak valid.",
+    "not_found": "Eksperimen tidak ditemukan.",
+    "guardrail": "Harga treatment melanggar batas min/maks pada setidaknya satu SKU — sesuaikan delta atau cakupan."
+  }
+}

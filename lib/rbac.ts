@@ -34,6 +34,9 @@ export const PERMISSIONS = {
   'alerts.view': ['analyst', 'manager', 'ops_lead', 'compliance'],
   'competitors.view': ['analyst', 'manager', 'compliance'],
   'analytics.view': ['analyst', 'manager', 'compliance'],
+  'experiment.view': ['analyst', 'manager', 'compliance'],
+  'experiment.manage': ['analyst', 'manager'],
+  'approval.delegate': ['manager'],
 } as const satisfies Record<string, readonly Role[]>;
 
 export type Action = keyof typeof PERMISSIONS;
@@ -62,6 +65,7 @@ export const ROUTE_ACTIONS: Record<string, Action> = {
   '/alerts': 'alerts.view',
   '/competitors': 'competitors.view',
   '/analytics': 'analytics.view',
+  '/experiments': 'experiment.view',
 };
 
 export function actionForPath(pathname: string): Action | null {

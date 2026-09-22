@@ -1,7 +1,7 @@
 import { validatePrice } from '../domain';
 import type { OverrideRequestStatus, UserSession } from '../ontology';
 import { can } from '../rbac';
-import { useAuditStore, useDataSourceStore, useNotificationStore, useOverrideRequestStore, useProductCatalogStore } from '../stores';
+import { useAuditStore, useDataSourceStore, useDelegationStore, useNotificationStore, useOverrideRequestStore, useProductCatalogStore } from '../stores';
 import { track } from '../telemetry';
 import { fail, ok } from './result';
 
@@ -88,5 +88,35 @@ export function triggerSourceSync(user: UserSession, sourceId: string) {
     entityId: sourceId, sku: null, source: 'ui', note: src.name,
   });
   track('datasource_sync', { sourceId });
+  return ok();
+}
+
+/**
+ * Grants a named user temporary authority to approve high-impact recommendations.
+ * Manager-only; the grant is stored, audited, and expires at `until`.
+ */
+export function delegateApproval(user: UserSession, toUserId: string, hours: number) {
+  if (!can(user.role, 'approval.delegate')) return fail('forbidden');
+  if (!toUserId.trim() || toUserId === user.userId) return fail('invalid');
+  const grant = {
+    id: `DLG-${Date.now().toString(36)}`, toUserId: toUserId.trim(), grantedBy: user.userId,
+    createdAt: new Date().toISOString(), until: new Date(Date.now() + hours * 3_600_000).toISOString(),
+  };
+  useDelegationStore.getState().add(grant);
+  useAuditStore.getState().record({
+    type: 'delegation_grant', actorId: user.userId, actorRole: user.role, entityType: 'delegation',
+    entityId: grant.id, sku: null, source: 'ui', note: `${toUserId} · ${hours}h`,
+  });
+  track('delegation_granted', { id: grant.id });
+  return { ok: true as const, grant };
+}
+
+export function revokeDelegation(user: UserSession, grantId: string) {
+  if (!can(user.role, 'approval.delegate')) return fail('forbidden');
+  if (!useDelegationStore.getState().revoke(grantId)) return fail('not_found');
+  useAuditStore.getState().record({
+    type: 'delegation_revoke', actorId: user.userId, actorRole: user.role, entityType: 'delegation',
+    entityId: grantId, sku: null, source: 'ui', note: null,
+  });
   return ok();
 }

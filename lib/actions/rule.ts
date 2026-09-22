@@ -10,8 +10,14 @@ const FIELD_FACTOR: Record<string, RationaleFactorKey> = {
   competitor_gap_pct: 'competitor', stock_units: 'stock', margin_pct: 'rule', days_since_change: 'rule',
 };
 
-export function saveRule(user: UserSession, rule: Rule): Result {
+/**
+ * Optimistic concurrency: pass the `updatedAt` observed when the editor opened.
+ * If the stored rule changed since, the save fails closed with 'conflict'.
+ */
+export function saveRule(user: UserSession, rule: Rule, opts: { expectedUpdatedAt?: string } = {}): Result {
   if (!can(user.role, 'rule.manage')) return fail('forbidden');
+  const existing = useRuleStore.getState().items.find((x) => x.id === rule.id);
+  if (existing && opts.expectedUpdatedAt !== undefined && existing.updatedAt !== opts.expectedUpdatedAt) return fail('conflict');
   useRuleStore.getState().upsert({ ...rule, updatedAt: new Date().toISOString() });
   useAuditStore.getState().record({
     type: 'rule_save', actorId: user.userId, actorRole: user.role, entityType: 'rule', entityId: rule.id,

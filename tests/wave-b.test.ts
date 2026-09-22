@@ -15,6 +15,7 @@ import type { Recommendation } from '@/lib/ontology';
 
 const user = (role: Role): UserSession => ({ userId: `u-${role}`, name: role, role, ownedSkuIds: [] });
 const analyst = user('analyst');
+const manager = user('manager');
 const ops = user('ops_lead');
 
 beforeEach(() => {
@@ -33,9 +34,9 @@ const jobs = () => usePublishJobStore.getState().jobs;
 const recs = () => useDeploymentStore.getState().records;
 const jobRecs = (jobId: string) => recs().filter((r) => r.jobId === jobId);
 
-/** Approves a pending rec through the undo window. */
+/** Approves a pending rec through the undo window — manager covers the high-impact gate. */
 function approve(r: Recommendation) {
-  expect(stageDecision(analyst, r.id, 'approved', { ackStale: true }).ok).toBe(true);
+  expect(stageDecision(manager, r.id, 'approved', { ackStale: true }).ok).toBe(true);
   vi.advanceTimersByTime(UNDO_WINDOW_MS + 10);
   expect(useRecommendationStore.getState().items.find((x) => x.id === r.id)?.status).toBe('approved');
 }

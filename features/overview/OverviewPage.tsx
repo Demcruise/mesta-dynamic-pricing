@@ -10,10 +10,11 @@ import { MetricDefinition } from '@/components/ds/trust';
 import { recommendationHealth } from '@/lib/actions/recommendation';
 import { formatDate, formatPercent, formatPrice } from '@/lib/format';
 import { useTranslation } from '@/lib/i18n';
+import type { UserSession } from '@/lib/ontology';
 import {
-  useAnomalies, useAuditLog, useDeploymentRecords, usePriceEvents, useScenarios, useScopedRecommendations, useScopedSkuList, useScopedSkuSet, useStrategies,
+  useAnomalies, useAuditLog, useDataSources, useDeploymentRecords, usePriceEvents, useRules, useScenarios, useScopedRecommendations, useScopedSkuList, useScopedSkuSet, useStrategies,
 } from '@/lib/queries';
-import { can } from '@/lib/rbac';
+import { can, type Action } from '@/lib/rbac';
 import { useMonitoringStore, useSessionStore } from '@/lib/stores';
 import { track } from '@/lib/telemetry';
 import { decisionsByCategory, gapByCategory, roleKpis } from './kpis';
@@ -39,6 +40,8 @@ export function OverviewPage() {
   const scenarios = useScenarios();
   const deployments = useDeploymentRecords();
   const events = usePriceEvents();
+  const rules = useRules();
+  const sources = useDataSources();
 
   useEffect(() => { track('page_viewed', { page: 'overview', role: user.role }); }, [user.role]);
 
@@ -81,27 +84,16 @@ export function OverviewPage() {
       <PageHeader title={t('overview.title')} subtitle={t('overview.greeting', { name: user.name, role: t(`common.role.${user.role}`) })} />
       {loading ? <LoadingRows rows={4} rowHeight={72} /> : (
         <>
-          {can(user.role, 'strategy.create') && !(strategies.data.length && scenarios.data.length && recs.data.length) && (
-            <OnboardingChecklist
-              title={t('overview.onboarding.title')}
-              subtitle={t('overview.onboarding.subtitle')}
-              doneLabel={(n, total) => t('overview.onboarding.progress', { n, total })}
-              steps={[
-                {
-                  id: 'strategy', href: '/strategy/new', done: strategies.data.length > 0,
-                  title: t('overview.onboarding.step.strategy'), description: t('overview.onboarding.step.strategyHint'),
-                },
-                {
-                  id: 'simulation', href: '/simulation', done: scenarios.data.length > 0,
-                  title: t('overview.onboarding.step.simulation'), description: t('overview.onboarding.step.simulationHint'),
-                },
-                {
-                  id: 'review', href: '/recommendations', done: recs.data.length > 0,
-                  title: t('overview.onboarding.step.review'), description: t('overview.onboarding.step.reviewHint'),
-                },
-              ]}
-            />
-          )}
+          <SetupChecklist
+            t={t} user={user}
+            skuCount={skus.data.length}
+            allHealthy={sources.data.length > 0 && sources.data.every((s) => s.status === 'healthy')}
+            hasActiveStrategy={strategies.data.some((s) => s.status === 'active')}
+            hasActiveRule={rules.data.some((r) => r.status === 'active')}
+            hasScenario={scenarios.data.length > 0}
+            queueClear={!recs.data.some((r) => r.status === 'pending' || r.status === 'escalated')}
+            hasDeploy={deployments.data.some((d) => d.status === 'synced')}
+          />
           <section aria-label={t('common.a11y.kpi')} className="mb-4 grid grid-cols-1 gap-3 min-[420px]:grid-cols-2 lg:grid-cols-4">
             {view.kpis.map((k) => (
               <KpiCard
@@ -159,5 +151,44 @@ export function OverviewPage() {
         </>
       )}
     </>
+  );
+}
+
+type T = (key: string, vars?: Record<string, string | number>) => string;
+
+/**
+ * Seven-step workspace setup tracker (E.2). Every step is derived from real
+ * store state and gated by RBAC — a role only sees steps it can act on.
+ * The seeded workspace means some steps are already done; the subtitle says so.
+ * Hidden entirely once every visible step is complete.
+ */
+function SetupChecklist({ t, user, skuCount, allHealthy, hasActiveStrategy, hasActiveRule, hasScenario, queueClear, hasDeploy }: {
+  t: T; user: UserSession;
+  skuCount: number; allHealthy: boolean; hasActiveStrategy: boolean; hasActiveRule: boolean;
+  hasScenario: boolean; queueClear: boolean; hasDeploy: boolean;
+}) {
+  const all: { id: string; href: string; action: Action; done: boolean }[] = [
+    { id: 'catalog', href: '/catalog', action: 'catalog.view', done: skuCount > 0 },
+    { id: 'feeds', href: '/data', action: 'data.view', done: allHealthy },
+    { id: 'strategy', href: '/strategy', action: 'strategy.create', done: hasActiveStrategy },
+    { id: 'rules', href: '/rules', action: 'rule.manage', done: hasActiveRule },
+    { id: 'simulate', href: '/simulation', action: 'simulation.use', done: hasScenario },
+    { id: 'decide', href: '/approvals', action: 'recommendation.decide', done: queueClear },
+    { id: 'publish', href: '/deployment', action: 'deployment.view', done: hasDeploy },
+  ];
+  const steps = all
+    .filter((s) => can(user.role, s.action))
+    .map(({ id, href, done }) => ({
+      id, href, done,
+      title: t(`overview.onboarding.step.${id}`), description: t(`overview.onboarding.step.${id}Hint`),
+    }));
+  if (steps.length === 0 || steps.every((s) => s.done)) return null;
+  return (
+    <OnboardingChecklist
+      title={t('overview.onboarding.title')}
+      subtitle={`${t('overview.onboarding.subtitle')} ${t('overview.onboarding.sample')}`}
+      doneLabel={(n, total) => t('overview.onboarding.progress', { n, total })}
+      steps={steps}
+    />
   );
 }

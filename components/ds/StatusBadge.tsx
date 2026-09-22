@@ -1,7 +1,7 @@
 'use client';
 
 import {
-  Ban, CalendarClock, Check, CircleCheck, CircleDashed, CircleX, Clock, GitMerge, Hourglass,
+  Ban, CalendarClock, Check, CircleCheck, CircleDashed, CircleX, Clock, Flag, GitMerge, Hourglass,
   Info, LoaderCircle, OctagonAlert, Pause, PenLine, Pencil, TimerOff, TriangleAlert, Undo2, X,
   type LucideIcon,
 } from 'lucide-react';
@@ -18,9 +18,9 @@ export type MestaStatus =
   // Workflow lifecycle — recommendations, strategies, rules, approvals
   | 'draft' | 'pending' | 'approved' | 'rejected' | 'adjusted' | 'changes_requested'
   | 'escalated' | 'expired' | 'stale' | 'active'
-  // Execution — publish/deploy jobs
+  // Execution — publish/deploy jobs, experiments
   | 'queued' | 'scheduled' | 'in_flight' | 'publishing' | 'published' | 'synced'
-  | 'failed' | 'rolled_back' | 'cancelled' | 'partial'
+  | 'failed' | 'rolled_back' | 'cancelled' | 'partial' | 'running' | 'concluded'
   // Data / sync health
   | 'healthy' | 'syncing' | 'delayed' | 'paused'
   // Governance
@@ -49,6 +49,8 @@ const MAP: Record<MestaStatus, { icon: LucideIcon; cls: string; spin?: boolean }
   rolled_back: { icon: Undo2, cls: 'bg-warn-soft text-warn' },
   cancelled: { icon: Ban, cls: 'bg-subtle text-muted' },
   partial: { icon: CircleDashed, cls: 'bg-warn-soft text-warn' },
+  running: { icon: LoaderCircle, cls: 'bg-info-soft text-info', spin: true },
+  concluded: { icon: Flag, cls: 'bg-up-soft text-up' },
   healthy: { icon: CircleCheck, cls: 'bg-up-soft text-up' },
   syncing: { icon: LoaderCircle, cls: 'bg-info-soft text-info', spin: true },
   delayed: { icon: Clock, cls: 'bg-warn-soft text-warn' },

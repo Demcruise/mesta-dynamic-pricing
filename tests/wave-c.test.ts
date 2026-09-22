@@ -11,6 +11,7 @@ import { useAuditStore, useNotificationStore, useProductCatalogStore, useRecomme
 
 const user = (role: Role): UserSession => ({ userId: `u-${role}`, name: role, role, ownedSkuIds: [] });
 const analyst = user('analyst');
+const manager = user('manager');
 const compliance = user('compliance');
 const ops = user('ops_lead');
 
@@ -213,8 +214,9 @@ describe('approval inbox workflow', () => {
   it('staleness gate: approving a stale rec without ack fails; with ack it stages', () => {
     const stale = stalePending();
     expect(stale, 'seed should contain a stale pending rec').toBeDefined();
-    expect(stageDecision(analyst, stale!.id, 'approved')).toEqual({ ok: false, error: 'stale' });
-    expect(stageDecision(analyst, stale!.id, 'approved', { ackStale: true }).ok).toBe(true);
+    // Manager here — a stale rec may also be high-impact, and this test exercises the stale gate alone.
+    expect(stageDecision(manager, stale!.id, 'approved')).toEqual({ ok: false, error: 'stale' });
+    expect(stageDecision(manager, stale!.id, 'approved', { ackStale: true }).ok).toBe(true);
   });
 
   it('resubmit returns changes_requested and expired recs to pending', () => {

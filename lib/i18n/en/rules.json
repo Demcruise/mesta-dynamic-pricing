@@ -83,8 +83,15 @@
   },
   "err": {
     "forbidden": "Your role cannot manage or run rules.",
-    "not_found": "Rule not found."
+    "not_found": "Rule not found.",
+    "conflict": "This rule was edited elsewhere — reload to see the latest version, or overwrite it."
   },
   "empty": "No pricing rules yet. Create one to automate price proposals.",
-  "note": "Rules are deterministic and auditable — every generated recommendation links back to the rule that produced it."
+  "note": "Rules are deterministic and auditable — every generated recommendation links back to the rule that produced it.",
+  "editConflict": {
+    "title": "Edited elsewhere",
+    "desc": "This rule changed since you opened it. Reload to discard your edits, or overwrite the other version.",
+    "reload": "Reload latest",
+    "overwrite": "Overwrite"
+  }
 }

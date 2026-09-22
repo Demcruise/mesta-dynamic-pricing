@@ -1,5 +1,5 @@
 import {
-  Activity, BarChart3, BellRing, Database, FlaskConical, Inbox, LayoutDashboard, ListChecks, Package, Palette,
+  Activity, BarChart3, Beaker, BellRing, Database, FlaskConical, Inbox, LayoutDashboard, ListChecks, Package, Palette,
   Scale, ScrollText, Send, Settings, ShieldCheck, Siren, Sparkles, TrendingUp,
   type LucideIcon,
 } from 'lucide-react';
@@ -9,7 +9,7 @@ export interface NavItem {
   href: string;
   key:
     | 'overview' | 'catalog' | 'strategy' | 'rules' | 'guardrails' | 'simulation' | 'recommendations' | 'approvals' | 'deployment' | 'monitoring' | 'audit'
-    | 'exceptions' | 'alerts' | 'data' | 'competitors' | 'analytics'
+    | 'exceptions' | 'alerts' | 'data' | 'competitors' | 'analytics' | 'experiments'
     | 'designSystem' | 'settings';
   icon: LucideIcon;
   /** Absent = visible to every role (open routes). */
@@ -52,6 +52,7 @@ export const NAV_SECTIONS: NavSection[] = [
       { href: '/monitoring', key: 'monitoring', icon: Activity, action: 'monitoring.view', mobile: true },
       { href: '/competitors', key: 'competitors', icon: Scale, action: 'competitors.view' },
       { href: '/analytics', key: 'analytics', icon: TrendingUp, action: 'analytics.view' },
+      { href: '/experiments', key: 'experiments', icon: Beaker, action: 'experiment.view' },
       { href: '/audit', key: 'audit', icon: ScrollText, action: 'audit.view' },
       { href: '/overview', key: 'overview', icon: LayoutDashboard, action: 'overview.view', mobile: true },
     ],

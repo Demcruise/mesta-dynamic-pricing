@@ -13,7 +13,7 @@ import { Sparkline } from '@/components/ds/Sparkline';
 import { StatusChip } from '@/components/ds/StatusChip';
 import { RoleGate } from '@/components/shell/RoleGate';
 import { Button } from '@/components/ui/button';
-import { recommendationHealth, stageDecision } from '@/lib/actions/recommendation';
+import { canDecideHighImpact, recommendationHealth, requiresManager, stageDecision } from '@/lib/actions/recommendation';
 import { elasticityBand } from '@/lib/domain';
 import { formatDate, formatPrice } from '@/lib/format';
 import { useCan } from '@/lib/hooks';
@@ -40,6 +40,9 @@ export function RecommendationCard({ rec, product, defaultOpen = false, showStat
   const decidable = rec.status === 'pending' || rec.status === 'escalated';
   const locked = !!staged;
   const canDecide = decidable && !locked && can('recommendation.decide');
+  // Second-level rule: high-impact approvals need a manager or a live delegation grant.
+  const needsManager = decidable && requiresManager(rec);
+  const canApprove = canDecide && (!needsManager || canDecideHighImpact(user));
   const [staleAck, setStaleAck] = useState(false);
 
   const latestObs = competitors
@@ -87,6 +90,11 @@ export function RecommendationCard({ rec, product, defaultOpen = false, showStat
         <div className="flex flex-wrap items-center gap-2">
           {showStatus && <StatusChip status={rec.status} />}
           {decidable && health.stale && <StatusChip status="stale" />}
+          {needsManager && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-warn-soft px-2 py-0.5 text-xs font-medium text-warn">
+              <TriangleAlert className="size-3" aria-hidden />{t('recommendations.card.requiresManager')}
+            </span>
+          )}
         </div>
       </header>
 
@@ -158,7 +166,9 @@ export function RecommendationCard({ rec, product, defaultOpen = false, showStat
               {t('recommendations.card.staleAck')}
             </label>
           )}
-          <Button size="sm" disabled={!canDecide || (health.stale && !staleAck)} onClick={approve}>{t('recommendations.action.approve')}</Button>
+          <Button size="sm" disabled={!canApprove || (health.stale && !staleAck)} onClick={approve}
+            title={needsManager && !canDecideHighImpact(user) ? t('recommendations.card.requiresManager') : undefined}
+          >{t('recommendations.action.approve')}</Button>
           <Button size="sm" variant="secondary" disabled={!canDecide} onClick={() => setDialog('adjust')}>{t('recommendations.action.adjust')}</Button>
           <Button size="sm" variant="secondary" disabled={!canDecide} onClick={() => setDialog('reject')}>{t('recommendations.action.reject')}</Button>
           <Button size="sm" variant="ghost" disabled={!canDecide} onClick={() => setDialog('request')}>{t('recommendations.action.requestChanges')}</Button>

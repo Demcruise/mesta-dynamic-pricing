@@ -6,7 +6,7 @@ const ROUTES = [
   '/overview', '/catalog', '/catalog/SKU-1004', '/strategy', '/strategy/new', '/simulation?sku=SKU-1004',
   '/rules', '/guardrails', '/approvals',
   '/recommendations', '/recommendations/REC-1000', '/deployment', '/monitoring', '/audit', '/design-system',
-  '/data', '/exceptions', '/alerts', '/competitors', '/analytics',
+  '/data', '/exceptions', '/alerts', '/competitors', '/analytics', '/experiments',
 ];
 
 async function violations(page: Page, label: string): Promise<string[]> {

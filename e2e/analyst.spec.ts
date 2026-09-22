@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { go, open } from './helpers';
+import { go, open, setRole } from './helpers';
 
 test('analyst: catalog → simulation → send → approve → audit', async ({ page }) => {
   await open(page, '/catalog');
@@ -17,6 +17,8 @@ test('analyst: catalog → simulation → send → approve → audit', async ({ 
 
   await go(page, `/recommendations/${recId}`);
   await expect(page.getByRole('heading', { name: recId })).toBeVisible();
+  // Multi-level approval: a +1000 move on this SKU is high-impact — a manager decides it.
+  await setRole(page, 'manager');
   await page.getByRole('button', { name: 'Approve' }).click();
   await expect(page.getByRole('button', { name: 'Undo' })).toBeVisible();
   await expect(page.locator('article header').getByText('Approved')).toBeVisible({ timeout: 15_000 });
@@ -34,5 +36,6 @@ test('analyst: reject needs a note and undo leaves the item pending', async ({ p
   await page.getByLabel('Note (required)').fill('data looked stale');
   await page.getByRole('button', { name: 'Confirm' }).click();
   await page.getByRole('button', { name: 'Undo' }).click();
-  await expect(card.getByRole('button', { name: 'Approve' })).toBeEnabled();
+  // Undo leaves it decidable — Reject re-enables (Approve may stay manager-gated on high-impact recs).
+  await expect(card.getByRole('button', { name: 'Reject' })).toBeEnabled();
 });

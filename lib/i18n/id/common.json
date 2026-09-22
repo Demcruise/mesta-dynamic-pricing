@@ -30,7 +30,8 @@
     "alerts": "Peringatan",
     "data": "Kesehatan data",
     "competitors": "Kompetitor",
-    "analytics": "Analitik"
+    "analytics": "Analitik",
+    "experiments": "Eksperimen"
   },
   "crumb": {
     "new": "Baru",
@@ -146,7 +147,9 @@
     "conflicted": "Konflik",
     "info": "Info",
     "warning": "Peringatan",
-    "critical": "Kritis"
+    "critical": "Kritis",
+    "running": "Berjalan",
+    "concluded": "Selesai"
   },
   "delta": {
     "up": "Naik",
@@ -250,7 +253,13 @@
     "override_request": "Override diminta",
     "override_approve": "Override disetujui",
     "override_reject": "Override ditolak",
-    "datasource_sync": "Sinkronisasi ulang sumber data"
+    "datasource_sync": "Sinkronisasi ulang sumber data",
+    "experiment_save": "Eksperimen disimpan",
+    "experiment_start": "Eksperimen dimulai",
+    "experiment_conclude": "Eksperimen diakhiri",
+    "experiment_cancel": "Eksperimen dibatalkan",
+    "delegation_grant": "Persetujuan didelegasikan",
+    "delegation_revoke": "Delegasi dicabut"
   },
   "channel": {
     "pos": "POS",

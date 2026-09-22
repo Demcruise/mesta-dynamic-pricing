@@ -35,7 +35,8 @@ export function StrategyWizard({ strategyId }: { strategyId: string | null }) {
   if (strategyId && !existing) return <NotFound />;
   return (
     <>
-      <Wizard key={existing?.updatedAt ?? 'new'} strategyId={strategyId} initial={existing ? toDraft(existing) : null} status={existing?.status ?? null} />
+      <Wizard key={existing?.updatedAt ?? 'new'} strategyId={strategyId} initial={existing ? toDraft(existing) : null}
+        status={existing?.status ?? null} expectedUpdatedAt={existing?.updatedAt ?? null} />
       {strategyId && <History strategyId={strategyId} />}
     </>
   );
@@ -75,7 +76,9 @@ function NotFound() {
   return <EmptyState title={t('strategy.notFound')} />;
 }
 
-function Wizard({ strategyId, initial, status }: { strategyId: string | null; initial: StrategyDraft | null; status: string | null }) {
+function Wizard({ strategyId, initial, status, expectedUpdatedAt }: {
+  strategyId: string | null; initial: StrategyDraft | null; status: string | null; expectedUpdatedAt: string | null;
+}) {
   const { t } = useTranslation();
   const router = useRouter();
   const can = useCan();
@@ -94,6 +97,9 @@ function Wizard({ strategyId, initial, status }: { strategyId: string | null; in
   const [skuErr, setSkuErr] = useState(false);
   // Set when the user jumps from the review step to fix one section: offers a one-click return.
   const [fromReview, setFromReview] = useState(false);
+  // Set when the stored strategy changed since the wizard opened — reload or overwrite.
+  const [conflict, setConflict] = useState(false);
+  const [conflictMode, setConflictMode] = useState<'draft' | 'submit' | 'activate'>('draft');
 
   // Autosave to the local draft store on every change.
   useEffect(() => { useStrategyDraftStore.getState().setDraft(key, { draft, step }); }, [key, draft, step]);
@@ -116,9 +122,10 @@ function Wizard({ strategyId, initial, status }: { strategyId: string | null; in
 
   const issueText = (i: Issue) => t(`strategy.issue.${i.code}`, { detail: i.detail ?? '' });
 
-  const finish = (mode: 'draft' | 'submit' | 'activate') => {
+  const finish = (mode: 'draft' | 'submit' | 'activate', force = false) => {
     if (mode !== 'draft' && hasBlocker(issues)) { toast(t('strategy.err.invalid')); return; }
-    const saved = saveStrategy(user, draft, strategyId);
+    const saved = saveStrategy(user, draft, strategyId, { expectedUpdatedAt: force ? undefined : (expectedUpdatedAt ?? undefined) });
+    if (!saved.ok && saved.error === 'conflict') { setConflict(true); setConflictMode(mode); return; }
     if (!saved.ok) { toast(t(`strategy.err.${saved.error}`)); return; }
     const id = saved.strategy.id;
     if (mode === 'submit' || mode === 'activate') {
@@ -162,6 +169,22 @@ function Wizard({ strategyId, initial, status }: { strategyId: string | null; in
     <>
       <PageHeader title={strategyId ? t('strategy.edit') : t('strategy.new')} subtitle={t('strategy.step.progress', { n: step + 1, total: STEPS.length })} />
       {restored && <p role="status" className="mb-3 rounded-input bg-info-soft px-3 py-2 text-sm text-info">{t('strategy.draftRestored')}</p>}
+      {conflict && (
+        <div role="alert" className="mb-3 rounded-card border border-warn bg-warn-soft p-3 text-xs">
+          <p className="font-medium text-warn">{t('strategy.conflict.title')}</p>
+          <p className="mt-0.5 text-muted">{t('strategy.conflict.desc')}</p>
+          <div className="mt-2 flex gap-2">
+            <Button size="sm" variant="secondary" onClick={() => {
+              const latest = strategies.find((s) => s.id === strategyId);
+              if (latest) setDraft(toDraft(latest));
+              setConflict(false);
+            }}>{t('strategy.conflict.reload')}</Button>
+            <Button size="sm" variant="secondary" onClick={() => { setConflict(false); finish(conflictMode, true); }}>
+              {t('strategy.conflict.overwrite')}
+            </Button>
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-[17rem_1fr]">
         <nav aria-label={t('strategy.step.progress', { n: step + 1, total: STEPS.length })} className="min-w-0 rounded-card border border-line bg-surface p-3 shadow-e1 lg:self-start">

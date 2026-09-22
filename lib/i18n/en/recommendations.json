@@ -1,29 +1,86 @@
 {
   "title": "AI recommendations",
   "subtitle": "{count} of {total} recommendations",
-  "source": { "agent": "Agent", "simulation": "Simulation", "manual": "Manual", "label": "Source" },
-  "factor": { "competitor": "Competitor", "elasticity": "Elasticity", "stock": "Stock", "seasonality": "Seasonality", "title": "Why this price" },
+  "source": {
+    "agent": "Agent",
+    "simulation": "Simulation",
+    "manual": "Manual",
+    "label": "Source"
+  },
+  "factor": {
+    "competitor": "Competitor",
+    "elasticity": "Elasticity",
+    "stock": "Stock",
+    "seasonality": "Seasonality",
+    "title": "Why this price"
+  },
   "card": {
-    "current": "Current", "proposed": "Proposed", "competitor": "Competitor avg", "impact": "Projected margin impact", "created": "Created",
-    "evidence": "Evidence", "trend": "Recent price trend", "simulate": "Open simulation", "detail": "Open detail", "stale": "Stale: price or competitor data changed since this was created",
-    "breach": "Guardrail breach: proposed price is outside allowed bounds", "pendingUndo": "Decision pending: {s}s to undo", "decision": "Decision note", "decidedAt": "Decided",
-    "owner": "Owner", "reason": "Primary driver",
-    "staleAck": "I re-checked the current data"
+    "current": "Current",
+    "proposed": "Proposed",
+    "competitor": "Competitor avg",
+    "impact": "Projected margin impact",
+    "created": "Created",
+    "evidence": "Evidence",
+    "trend": "Recent price trend",
+    "simulate": "Open simulation",
+    "detail": "Open detail",
+    "stale": "Stale: price or competitor data changed since this was created",
+    "breach": "Guardrail breach: proposed price is outside allowed bounds",
+    "pendingUndo": "Decision pending: {s}s to undo",
+    "decision": "Decision note",
+    "decidedAt": "Decided",
+    "owner": "Owner",
+    "reason": "Primary driver",
+    "staleAck": "I re-checked the current data",
+    "requiresManager": "Manager approval required"
   },
   "tabs": {
-    "label": "Work queues", "all": "All", "decide": "Needs decision", "deploy": "Ready to deploy",
-    "impact": "High impact", "stale": "Stale", "anomaly": "Anomalous SKUs",
+    "label": "Work queues",
+    "all": "All",
+    "decide": "Needs decision",
+    "deploy": "Ready to deploy",
+    "impact": "High impact",
+    "stale": "Stale",
+    "anomaly": "Anomalous SKUs",
     "impactHint": "Projected margin impact ≥ IDR {n}"
   },
-  "action": { "approve": "Approve", "reject": "Reject", "adjust": "Adjust", "undo": "Undo", "confirm": "Confirm", "cancel": "Cancel", "bulk": "Bulk approve", "more": "Show more ({n} left)", "requestChanges": "Request changes", "escalate": "Escalate" },
+  "action": {
+    "approve": "Approve",
+    "reject": "Reject",
+    "adjust": "Adjust",
+    "undo": "Undo",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "bulk": "Bulk approve",
+    "more": "Show more ({n} left)",
+    "requestChanges": "Request changes",
+    "escalate": "Escalate"
+  },
   "dialog": {
-    "rejectTitle": "Reject recommendation", "adjustTitle": "Adjust proposed price", "note": "Note (required)", "newPrice": "Adjusted price", "delta": "Change vs current",
-    "requestTitle": "Request changes", "escalateTitle": "Escalate for priority review", "noteOptional": "Note (optional)",
-    "bulkTitle": "Bulk approve", "threshold": "Minimum confidence", "targets": "{n} recommendations will be approved", "impact": "Total projected margin impact",
-    "excluded": "{n} excluded ({stale} stale, {breach} guardrail breach)", "none": "Nothing eligible at this threshold.", "confirmBulk": "Approve {n}",
-    "checklist": "Select recommendations to approve", "excludedList": "Show excluded ({n})", "excludedShort": "{n} excluded", "targetsShort": "{n} recommendations",
+    "rejectTitle": "Reject recommendation",
+    "adjustTitle": "Adjust proposed price",
+    "note": "Note (required)",
+    "newPrice": "Adjusted price",
+    "delta": "Change vs current",
+    "requestTitle": "Request changes",
+    "escalateTitle": "Escalate for priority review",
+    "noteOptional": "Note (optional)",
+    "bulkTitle": "Bulk approve",
+    "threshold": "Minimum confidence",
+    "targets": "{n} recommendations will be approved",
+    "impact": "Total projected margin impact",
+    "excluded": "{n} excluded ({stale} stale, {breach} guardrail breach)",
+    "none": "Nothing eligible at this threshold.",
+    "confirmBulk": "Approve {n}",
+    "checklist": "Select recommendations to approve",
+    "excludedList": "Show excluded ({n})",
+    "excludedShort": "{n} excluded",
+    "targetsShort": "{n} recommendations",
     "bulkImmediate": "Bulk approval applies immediately — no undo window. Each approval is recorded in the audit trail; reversing requires a new decision per SKU.",
-    "reason": { "stale": "stale", "breach": "guardrail breach" }
+    "reason": {
+      "stale": "stale",
+      "breach": "guardrail breach"
+    }
   },
   "run": {
     "title": "How this recommendation was generated",
@@ -34,20 +91,53 @@
     "guardrailBreach": "Outside allowed bounds",
     "formed": "Recommendation formed"
   },
-  "toast": { "approved": "{id} approved", "rejected": "{id} rejected", "adjusted": "{id} adjusted", "bulk": "{n} recommendations approved" },
-  "filter": {
-    "category": "Category", "source": "Source", "status": "Status", "confidence": "Confidence", "magnitude": "Change size", "sort": "Sort by", "all": "All",
-    "active": "Active filters", "remove": "Remove filter {label}",
-    "mag": { "small": "Small (<3%)", "medium": "Medium (3–6%)", "large": "Large (>6%)" }
+  "toast": {
+    "approved": "{id} approved",
+    "rejected": "{id} rejected",
+    "adjusted": "{id} adjusted",
+    "bulk": "{n} recommendations approved"
   },
-  "sort": { "confidence": "Confidence", "impact": "Margin impact", "age": "Newest", "category": "Category" },
-  "empty": { "caughtUp": "You are all caught up. No pending recommendations.", "staleOnly": "Only stale recommendations remain. Review them individually.", "noMatch": "No recommendations match the filters." },
+  "filter": {
+    "category": "Category",
+    "source": "Source",
+    "status": "Status",
+    "confidence": "Confidence",
+    "magnitude": "Change size",
+    "sort": "Sort by",
+    "all": "All",
+    "active": "Active filters",
+    "remove": "Remove filter {label}",
+    "mag": {
+      "small": "Small (<3%)",
+      "medium": "Medium (3–6%)",
+      "large": "Large (>6%)"
+    }
+  },
+  "sort": {
+    "confidence": "Confidence",
+    "impact": "Margin impact",
+    "age": "Newest",
+    "category": "Category"
+  },
+  "empty": {
+    "caughtUp": "You are all caught up. No pending recommendations.",
+    "staleOnly": "Only stale recommendations remain. Review them individually.",
+    "noMatch": "No recommendations match the filters."
+  },
   "err": {
-    "forbidden": "Your role cannot decide recommendations.", "not_found": "Recommendation not found.", "not_pending": "This recommendation was already decided.",
-    "already_staged": "A decision is already pending undo.", "note_required": "A note is required.", "invalid": "Enter a valid price.",
-    "below_min": "Price is below the minimum.", "above_max": "Price is above the maximum.", "map_breach": "Price breaches MAP.", "exceeds_change": "Price is outside the strategy guardrail.",
+    "forbidden": "Your role cannot decide recommendations.",
+    "not_found": "Recommendation not found.",
+    "not_pending": "This recommendation was already decided.",
+    "already_staged": "A decision is already pending undo.",
+    "note_required": "A note is required.",
+    "invalid": "Enter a valid price.",
+    "below_min": "Price is below the minimum.",
+    "above_max": "Price is above the maximum.",
+    "map_breach": "Price breaches MAP.",
+    "exceeds_change": "Price is outside the strategy guardrail.",
     "stale": "The data moved since this recommendation was formed — confirm the staleness acknowledgement to approve anyway.",
-    "invalid_transition": "That status change is not allowed."
+    "invalid_transition": "That status change is not allowed.",
+    "requires_manager": "High-impact approval requires a manager — or an active delegation grant."
   },
   "notFound": "Recommendation not found.",
   "back": "Back to queue",
@@ -55,8 +145,13 @@
   "rules": {
     "title": "Rule evaluation",
     "caption": "How the proposed price performs against each check",
-    "check": "Check", "expected": "Expected", "actual": "Actual", "result": "Result",
-    "pass": "Pass", "fail": "Fail", "na": "n/a",
+    "check": "Check",
+    "expected": "Expected",
+    "actual": "Actual",
+    "result": "Result",
+    "pass": "Pass",
+    "fail": "Fail",
+    "na": "n/a",
     "generatedBy": "Generated by rule",
     "rows": {
       "min_price": "Minimum price",

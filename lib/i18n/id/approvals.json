@@ -25,5 +25,21 @@
     "title": "Kirim ulang rekomendasi",
     "noteLabel": "Catatan (konteks opsional)",
     "staleNote": "Data pendukung berubah sejak rekomendasi dibuat — pemeriksaan keusangan baru berjalan saat persetujuan."
+  },
+  "delegation": {
+    "title": "Delegasi persetujuan",
+    "desc": "Beri pengguna tertentu wewenang menyetujui rekomendasi berdampak tinggi untuk waktu terbatas.",
+    "grant": "Delegasikan persetujuan",
+    "revoke": "Cabut",
+    "dialogTitle": "Delegasikan persetujuan berdampak tinggi",
+    "to": "Delegasikan ke",
+    "hours": "Berlaku (jam)",
+    "note": "Persetujuan terdelegasi teraudit atas nama penerima dan kedaluwarsa otomatis.",
+    "toast": "Persetujuan didelegasikan"
+  },
+  "err": {
+    "forbidden": "Hanya manajer yang dapat mendelegasikan persetujuan.",
+    "invalid": "Target atau durasi delegasi tidak valid.",
+    "not_found": "Delegasi tidak ditemukan."
   }
 }

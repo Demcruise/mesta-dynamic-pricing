@@ -33,13 +33,18 @@
   },
   "movers": { "title": "Pergerakan harga teratas", "live": "Live", "empty": "Belum ada pergerakan harga.", "margin": "Margin" },
   "onboarding": {
-    "title": "Mulai dengan Mesta",
-    "subtitle": "Tiga langkah menuju keputusan harga pertama.",
+    "title": "Penyiapan workspace",
+    "subtitle": "Tujuh langkah menuju loop pricing yang berjalan penuh.",
+    "sample": "Ini workspace sampel — data seed berarti beberapa langkah sudah selesai.",
     "progress": "{n} dari {total} selesai",
     "step": {
-      "strategy": "Buat strategi pertama", "strategyHint": "Atur guardrail dan cakupan untuk pricing otomatis.",
-      "simulation": "Jalankan simulasi", "simulationHint": "Bandingkan skenario sebelum harga bergerak.",
-      "review": "Tinjau rekomendasi", "reviewHint": "Setujui, sesuaikan, atau tolak — setiap keputusan teraudit."
+      "catalog": "Tinjau katalog", "catalogHint": "Pastikan SKU, batas, dan cakupan kompetitor sudah benar.",
+      "feeds": "Verifikasi feed data", "feedsHint": "Semua sumber harus berstatus healthy sebelum angka dipercaya.",
+      "strategy": "Aktifkan strategi", "strategyHint": "Atur guardrail dan cakupan untuk pricing otomatis.",
+      "rules": "Aktifkan aturan pricing", "rulesHint": "Aturan WHEN/AND/THEN menghasilkan rekomendasi secara deterministik.",
+      "simulate": "Jalankan simulasi", "simulateHint": "Bandingkan skenario sebelum harga bergerak.",
+      "decide": "Kosongkan antrean keputusan", "decideHint": "Setujui, sesuaikan, atau tolak — setiap keputusan teraudit.",
+      "publish": "Publikasikan perubahan harga", "publishHint": "Dorong rekomendasi yang disetujui ke channel."
     }
   },
   "activity": { "title": "Aktivitas terbaru", "empty": "Belum ada aktivitas." },

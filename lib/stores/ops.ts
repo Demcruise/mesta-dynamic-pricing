@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { DataSource, OverrideRequest, OverrideRequestStatus } from '../ontology';
+import type { DataSource, DelegationGrant, Experiment, ExperimentStatus, OverrideRequest, OverrideRequestStatus } from '../ontology';
 
 interface DataSourceState {
   sources: DataSource[];
@@ -40,3 +40,65 @@ export const useOverrideRequestStore = create<OverrideRequestState>((set, get) =
   },
   reset: () => set({ requests: [] }),
 }));
+
+interface ExperimentState {
+  items: Experiment[];
+  hydrate: (items: Experiment[]) => void;
+  upsert: (e: Experiment) => void;
+  /** Valid transitions: draft → running/cancelled, running → concluded/cancelled. */
+  transition: (id: string, to: ExperimentStatus) => boolean;
+  reset: () => void;
+}
+
+const EXP_NEXT: Record<ExperimentStatus, ExperimentStatus[]> = {
+  draft: ['running', 'cancelled'],
+  running: ['concluded', 'cancelled'],
+  concluded: [],
+  cancelled: [],
+};
+
+export const useExperimentStore = create<ExperimentState>((set, get) => ({
+  items: [],
+  hydrate: (items) => set({ items }),
+  upsert: (e) => set((s) => {
+    const i = s.items.findIndex((x) => x.id === e.id);
+    return { items: i === -1 ? [e, ...s.items] : s.items.map((x) => (x.id === e.id ? e : x)) };
+  }),
+  transition: (id, to) => {
+    const e = get().items.find((x) => x.id === id);
+    if (!e || !EXP_NEXT[e.status].includes(to)) return false;
+    const at = new Date().toISOString();
+    set((s) => ({
+      items: s.items.map((x) => (x.id === id ? {
+        ...x, status: to,
+        startedAt: to === 'running' ? at : x.startedAt,
+        endedAt: to === 'concluded' || to === 'cancelled' ? at : x.endedAt,
+      } : x)),
+    }));
+    return true;
+  },
+  reset: () => set({ items: [] }),
+}));
+
+interface DelegationState {
+  grants: DelegationGrant[];
+  add: (g: DelegationGrant) => void;
+  revoke: (id: string) => boolean;
+  reset: () => void;
+}
+
+export const useDelegationStore = create<DelegationState>((set, get) => ({
+  grants: [],
+  add: (g) => set((s) => ({ grants: [g, ...s.grants.filter((x) => x.toUserId !== g.toUserId)] })),
+  revoke: (id) => {
+    if (!get().grants.some((g) => g.id === id)) return false;
+    set((s) => ({ grants: s.grants.filter((g) => g.id !== id) }));
+    return true;
+  },
+  reset: () => set({ grants: [] }),
+}));
+
+/** Live grant for a user, honouring expiry. */
+export function activeGrantFor(userId: string, now = Date.now()): DelegationGrant | null {
+  return useDelegationStore.getState().grants.find((g) => g.toUserId === userId && new Date(g.until).getTime() > now) ?? null;
+}

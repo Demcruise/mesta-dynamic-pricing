@@ -4,6 +4,7 @@ import { can } from '../rbac';
 import {
   UNDO_WINDOW_MS, useAuditStore, useNotificationStore, useProductCatalogStore, useRecommendationStore, useStrategyStore, useUndoStore,
 } from '../stores';
+import { activeGrantFor } from '../stores/ops';
 import { track } from '../telemetry';
 import { fail, ok } from './result';
 
@@ -12,6 +13,17 @@ type Decision = 'approved' | 'rejected' | 'adjusted';
 const DECIDABLE = new Set<RecommendationStatus>(['pending', 'escalated']);
 /** A pending/escalated rec lapses to `expired` after this long without a decision. */
 export const REC_TTL_MS = 7 * 86_400_000;
+/** |projectedMarginImpact| above this (IDR) requires a manager decision — or an active delegation grant. */
+export const HIGH_IMPACT_IDR = 100_000;
+
+/** Second-level approval rule: high-impact recs need a manager unless a live grant covers the user. */
+export function requiresManager(rec: Pick<Recommendation, 'projectedMarginImpact'>): boolean {
+  return Math.abs(rec.projectedMarginImpact) >= HIGH_IMPACT_IDR;
+}
+
+export function canDecideHighImpact(user: UserSession): boolean {
+  return user.role === 'manager' || activeGrantFor(user.userId) !== null;
+}
 const AUDIT_TYPE = {
   approved: 'recommendation_approve',
   rejected: 'recommendation_reject',
@@ -95,6 +107,8 @@ export function stageDecision(
   if ((to === 'rejected' || to === 'adjusted') && !note) return fail('note_required');
   // Staleness re-check on approval: the product may have moved since the rec was formed.
   if (to === 'approved' && recommendationHealth(rec).stale && !opts.ackStale) return fail('stale');
+  // Multi-level approval: high-impact changes need a manager (or a live delegation grant).
+  if (to === 'approved' && requiresManager(rec) && !canDecideHighImpact(user)) return fail('requires_manager');
   if (to === 'adjusted') {
     const product = useProductCatalogStore.getState().products.find((p) => p.sku === rec.sku);
     const strategy = rec.strategyId ? useStrategyStore.getState().items.find((s) => s.id === rec.strategyId) ?? null : null;

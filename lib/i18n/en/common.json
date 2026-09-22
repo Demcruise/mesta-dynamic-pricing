@@ -30,7 +30,8 @@
     "alerts": "Alerts",
     "data": "Data health",
     "competitors": "Competitors",
-    "analytics": "Analytics"
+    "analytics": "Analytics",
+    "experiments": "Experiments"
   },
   "crumb": {
     "new": "New",
@@ -146,7 +147,9 @@
     "conflicted": "Conflicted",
     "info": "Info",
     "warning": "Warning",
-    "critical": "Critical"
+    "critical": "Critical",
+    "running": "Running",
+    "concluded": "Concluded"
   },
   "delta": {
     "up": "Increase",
@@ -250,7 +253,13 @@
     "override_request": "Override requested",
     "override_approve": "Override approved",
     "override_reject": "Override rejected",
-    "datasource_sync": "Data source re-sync"
+    "datasource_sync": "Data source re-sync",
+    "experiment_save": "Experiment saved",
+    "experiment_start": "Experiment started",
+    "experiment_conclude": "Experiment concluded",
+    "experiment_cancel": "Experiment cancelled",
+    "delegation_grant": "Approval delegated",
+    "delegation_revoke": "Delegation revoked"
   },
   "channel": {
     "pos": "POS",

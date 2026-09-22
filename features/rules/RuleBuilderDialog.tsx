@@ -13,7 +13,7 @@ import type { ConditionOp, Rule, RuleCondition, RuleConditionField, RuleFormulaK
 import { useSkuList } from '@/lib/queries';
 import { evaluateProduct, OPS } from '@/lib/rules';
 import { REGIONS } from '@/lib/scope';
-import { useSessionStore, useToastStore } from '@/lib/stores';
+import { useRuleStore, useSessionStore, useToastStore } from '@/lib/stores';
 import { cn } from '@/lib/utils';
 import { describeFormula } from './rule-format';
 
@@ -73,6 +73,8 @@ export function RuleBuilderDialog({ rule, open, onClose }: { rule: Rule | null; 
   const toast = useToastStore((s) => s.push);
   const [draft, setDraft] = useState<Rule | null>(null);
   const [err, setErr] = useState('');
+  // Set when the stored rule changed since the dialog opened — offers reload/overwrite.
+  const [conflict, setConflict] = useState(false);
 
   // Sync incoming rule → local draft whenever the dialog opens for a different rule.
   const current = open ? (draft ?? (rule ? { ...rule } : {
@@ -90,11 +92,19 @@ export function RuleBuilderDialog({ rule, open, onClose }: { rule: Rule | null; 
   const toggle = (list: 'categories' | 'regions', v: string) =>
     set({ scope: { ...current.scope, [list]: current.scope[list].includes(v) ? current.scope[list].filter((x) => x !== v) : [...current.scope[list], v] } });
 
-  const save = () => {
+  const save = (force = false) => {
     if (!current.name.trim() || current.when.length === 0) { setErr(t('rules.builder.validate')); return; }
-    const r = saveRule(user, current);
-    if (r.ok) { toast(t('rules.builder.validated')); setDraft(null); onClose(); }
+    // current.updatedAt is the snapshot captured at open — a mismatch means a concurrent edit.
+    const r = saveRule(user, current, { expectedUpdatedAt: force ? undefined : current.updatedAt });
+    if (!r.ok && r.error === 'conflict') { setConflict(true); return; }
+    if (r.ok) { toast(t('rules.builder.validated')); setDraft(null); setConflict(false); onClose(); }
     else setErr(t(`rules.err.${r.error}`));
+  };
+
+  const reload = () => {
+    const latest = useRuleStore.getState().items.find((x) => x.id === current.id);
+    if (latest) setDraft({ ...latest });
+    setConflict(false);
   };
 
   return (
@@ -183,10 +193,20 @@ export function RuleBuilderDialog({ rule, open, onClose }: { rule: Rule | null; 
 
         <PreviewList draft={current} locale={locale} />
 
+        {conflict && (
+          <div role="alert" className="rounded-card border border-warn bg-warn-soft p-3 text-xs">
+            <p className="font-medium text-warn">{t('rules.editConflict.title')}</p>
+            <p className="mt-0.5 text-muted">{t('rules.editConflict.desc')}</p>
+            <div className="mt-2 flex gap-2">
+              <Button size="sm" variant="secondary" onClick={reload}>{t('rules.editConflict.reload')}</Button>
+              <Button size="sm" variant="secondary" onClick={() => { setConflict(false); save(true); }}>{t('rules.editConflict.overwrite')}</Button>
+            </div>
+          </div>
+        )}
         {err && <p role="alert" className="text-xs text-critical">{err}</p>}
         <div className="flex justify-end gap-2">
           <Button variant="secondary" onClick={() => { setDraft(null); onClose(); }}>{t('common.action.cancel')}</Button>
-          <Button onClick={save}>{t('rules.builder.save')}</Button>
+          <Button onClick={() => save()}>{t('rules.builder.save')}</Button>
         </div>
       </div>
     </Dialog>
