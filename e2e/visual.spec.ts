@@ -8,8 +8,13 @@ import { go, open } from './helpers';
  * design change is intentional.
  */
 const SECTIONS = [
-  'ds-PriceValue', 'ds-DeltaBadge', 'ds-ConfidenceBar', 'ds-AgentBorderCard',
-  'ds-StatusChip', 'ds-KpiCard / PageHeader / EmptyState / LoadingRows', 'ds-Button',
+  'ds-PriceValue', 'ds-DeltaBadge', 'ds-ConfidenceBar', 'ds-Sparkline',
+  'ds-AgentBorderCard', 'ds-AgentRunTimeline', 'ds-RationaleBreakdown',
+  'ds-StatusChip', 'ds-SeverityChip / LiveDot', 'ds-MestaDataTable',
+  'ds-Drawer / Dialog', 'ds-Field / Input', 'ds-RoleGate', 'ds-OnboardingChecklist',
+  'ds-TopMoversPanel', 'ds-Charts (ChartWithTable)',
+  'ds-KpiCard / PageHeader / EmptyState / LoadingRows / PageSkeleton', 'ds-Button',
+  'ds-blocks', 'ds-guide',
 ];
 
 for (const theme of ['light', 'dark'] as const) {
