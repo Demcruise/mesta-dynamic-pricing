@@ -13,7 +13,8 @@
     "rejectTitle": "Reject recommendation", "adjustTitle": "Adjust proposed price", "note": "Note (required)", "newPrice": "Adjusted price",
     "bulkTitle": "Bulk approve", "threshold": "Minimum confidence", "targets": "{n} recommendations will be approved", "impact": "Total projected margin impact",
     "excluded": "{n} excluded ({stale} stale, {breach} guardrail breach)", "none": "Nothing eligible at this threshold.", "confirmBulk": "Approve {n}",
-    "checklist": "Select recommendations to approve", "excludedList": "Show excluded ({n})",
+    "checklist": "Select recommendations to approve", "excludedList": "Show excluded ({n})", "excludedShort": "{n} excluded", "targetsShort": "{n} recommendations",
+    "bulkImmediate": "Bulk approval applies immediately — no undo window. Each approval is recorded in the audit trail; reversing requires a new decision per SKU.",
     "reason": { "stale": "stale", "breach": "guardrail breach" }
   },
   "run": {

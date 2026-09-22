@@ -2,16 +2,10 @@
 
 import { useTranslation } from '@/lib/i18n';
 import type { AnomalyAlert } from '@/lib/ontology';
-import { cn } from '@/lib/utils';
+import { StatusBadge } from './StatusBadge';
 
-const SEV_CLS = {
-  info: 'bg-info-soft text-info',
-  warning: 'bg-warn-soft text-warn',
-  critical: 'bg-down-soft text-down',
-} as const;
-
-/** Anomaly severity chip — the single colour scheme for signal severity (alerts + monitoring). */
+/** Anomaly severity chip — keeps the severity label vocabulary on the unified StatusBadge. */
 export function SeverityChip({ s, className }: { s: AnomalyAlert['severity']; className?: string }) {
   const { t } = useTranslation();
-  return <span className={cn('rounded-full px-2 py-0.5 text-xs font-medium', SEV_CLS[s], className)}>{t(`common.severity.${s}`)}</span>;
+  return <StatusBadge status={s} label={t(`common.severity.${s}`)} className={className} />;
 }

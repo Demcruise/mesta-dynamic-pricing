@@ -5,6 +5,10 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import { Drawer } from '@/components/ds/Drawer';
 import { PriceValue } from '@/components/ds/PriceValue';
+import { StatusBadge } from '@/components/ds/StatusBadge';
+import { DocsLink, RecoveryNotice } from '@/components/ds/trust';
+import { ExecutionTimeline, FreshnessBadge, JobProgress, SyncStatus, type ExecStep } from '@/components/ds/system-status';
+import type { MestaStatus } from '@/components/ds/StatusBadge';
 import { EmptyState, ErrorState, LoadingRows, PageHeader } from '@/components/ds/states';
 import { MestaDataTable, useColumnVisibility, type DataColumn } from '@/components/ds/table/DataTable';
 import { RoleGate } from '@/components/shell/RoleGate';
@@ -16,13 +20,13 @@ import { formatPercent, formatRelativeTime } from '@/lib/format';
 import { useCan } from '@/lib/hooks';
 import { useTranslation } from '@/lib/i18n';
 import type { DeploymentRecord, DeploymentStatus } from '@/lib/ontology';
-import { useDeploymentRecords, useRecommendations, useSkuList } from '@/lib/queries';
+import { useAuditLog, useDeploymentRecords, useRecommendations, useSkuList } from '@/lib/queries';
 import { useSessionStore, useToastStore } from '@/lib/stores';
 import { cn } from '@/lib/utils';
 
 const STATUSES: DeploymentStatus[] = ['failed', 'in_flight', 'pending', 'synced'];
-const STATUS_CLS: Record<DeploymentStatus, string> = {
-  synced: 'bg-up-soft text-up', pending: 'bg-info-soft text-info', failed: 'bg-down-soft text-down', in_flight: 'bg-warn-soft text-warn',
+const DOT_CLS: Record<DeploymentStatus, string> = {
+  synced: 'bg-up-soft', pending: 'bg-info-soft', failed: 'bg-down-soft', in_flight: 'bg-warn-soft',
 };
 
 export function DeploymentPage() {
@@ -37,6 +41,7 @@ export function DeploymentPage() {
   const recsData = recs.data;
   const records = useDeploymentRecords();
   const skus = useSkuList();
+  const audit = useAuditLog();
   const [selected, setSelected] = useState<DeploymentRecord | null>(null);
   const columnVis = useColumnVisibility('deployment');
 
@@ -61,7 +66,9 @@ export function DeploymentPage() {
       channel,
       synced: count('synced'),
       pending: count('pending') + count('in_flight'),
+      inFlight: count('in_flight'),
       failed: failed.length,
+      total: rs.length,
       lastFailed: failed.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))[0] ?? null,
       successRate: rs.length ? count('synced') / rs.length : null,
       avgRetries: rs.length ? rs.reduce((n, r) => n + r.retryCount, 0) / rs.length : null,
@@ -69,6 +76,20 @@ export function DeploymentPage() {
       recent,
     };
   });
+
+  const trace: ExecStep[] = useMemo(() => {
+    if (!selected) return [];
+    return audit.data
+      .filter((e) => e.entityType === 'deployment' && e.entityId === selected.id)
+      .sort((a, b) => a.timestamp.localeCompare(b.timestamp))
+      .map((e) => ({
+        id: e.id,
+        label: t(`common.event.${e.type}`),
+        detail: e.note ?? undefined,
+        at: e.timestamp,
+        status: e.type === 'deployment_success' ? 'synced' : e.type === 'deployment_failure' ? 'failed' : 'in_flight',
+      }));
+  }, [audit.data, selected, t]);
 
   const run = (r: { ok: boolean; error?: string }, id?: string) => {
     if (!r.ok) toast(t(`deployment.err.${r.error}`));
@@ -83,7 +104,7 @@ export function DeploymentPage() {
     { id: 'channel', header: t('deployment.table.channel'), cell: (r) => t(`common.channel.${r.channel}`) },
     {
       id: 'status', header: t('deployment.table.status'),
-      cell: (r) => <span className={cn('rounded-full px-2 py-0.5 text-xs font-medium', STATUS_CLS[r.status])}>{t(`deployment.status.${r.status}`)}</span>,
+      cell: (r) => <StatusBadge status={r.status} label={t(`deployment.status.${r.status}`)} />,
     },
     { id: 'retries', header: t('deployment.table.retries'), cell: (r) => <span className="tabular">{r.retryCount}</span> },
     { id: 'updated', header: t('deployment.table.updated'), cell: (r) => <span className="tabular text-muted">{formatRelativeTime(r.updatedAt, locale)}</span> },
@@ -110,25 +131,31 @@ export function DeploymentPage() {
       ) : (
         <>
           <section aria-label={t('deployment.board.title')} className="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            {board.map((b) => (
+            {board.map((b) => {
+              const health: MestaStatus = b.failed > 0 ? 'failed' : b.inFlight > 0 ? 'in_flight' : b.pending > 0 ? 'queued' : 'healthy';
+              return (
               <div key={b.channel} className="flex flex-col rounded-card border border-line bg-surface p-card shadow-e1">
                 <div className="mb-2 flex items-center justify-between gap-2">
                   <h2 className="text-sm font-semibold">{t(`common.channel.${b.channel}`)}</h2>
-                  <RoleGate action="deployment.execute">
-                    {b.lastFailed && (
-                      <Button size="sm" variant="secondary" onClick={() => run(retryDeployment(user, b.lastFailed!.id))}>
-                        {t('deployment.board.retry')}
-                      </Button>
-                    )}
-                  </RoleGate>
+                  <div className="flex items-center gap-2">
+                    <SyncStatus status={health} />
+                    <RoleGate action="deployment.execute">
+                      {b.lastFailed && (
+                        <Button size="sm" variant="secondary" onClick={() => run(retryDeployment(user, b.lastFailed!.id))}>
+                          {t('deployment.board.retry')}
+                        </Button>
+                      )}
+                    </RoleGate>
+                  </div>
                 </div>
                 <dl className="grid grid-cols-3 gap-1 text-center text-xs">
                   <div className="rounded bg-up-soft p-1.5 text-up"><dd className="tabular text-lg font-semibold">{b.synced}</dd><dt>{t('deployment.board.synced')}</dt></div>
                   <div className="rounded bg-info-soft p-1.5 text-info"><dd className="tabular text-lg font-semibold">{b.pending}</dd><dt>{t('deployment.board.pending')}</dt></div>
                   <div className="rounded bg-down-soft p-1.5 text-down"><dd className="tabular text-lg font-semibold">{b.failed}</dd><dt>{t('deployment.board.failed')}</dt></div>
                 </dl>
+                {b.total > 0 && <JobProgress done={b.synced} total={b.total} label={t('deployment.board.progress')} className="mt-2" />}
                 <dl className="mt-2 grid grid-cols-3 gap-1 border-t border-line pt-2 text-xs">
-                  <div><dt className="text-faint">{t('deployment.board.updated')}</dt><dd className="tabular">{b.last ? formatRelativeTime(b.last, locale) : '—'}</dd></div>
+                  <div><dt className="text-faint">{t('deployment.board.updated')}</dt><dd><FreshnessBadge at={b.last} /></dd></div>
                   <div><dt className="text-faint">{t('deployment.board.successRate')}</dt><dd className="tabular">{b.successRate === null ? '—' : formatPercent(b.successRate, locale)}</dd></div>
                   <div><dt className="text-faint">{t('deployment.board.avgRetries')}</dt><dd className="tabular">{b.avgRetries === null ? '—' : b.avgRetries.toFixed(1)}</dd></div>
                 </dl>
@@ -136,16 +163,17 @@ export function DeploymentPage() {
                   <ul aria-label={t('deployment.board.recent')} className="mt-2 flex flex-col gap-1 border-t border-line pt-2 text-xs">
                     {b.recent.map((r) => (
                       <li key={r.id} className="flex items-center gap-2">
-                        <span aria-hidden className={cn('size-1.5 shrink-0 rounded-full', STATUS_CLS[r.status].split(' ')[0])} />
+                        <span aria-hidden className={cn('size-1.5 shrink-0 rounded-full', DOT_CLS[r.status])} />
                         <span className="tabular min-w-0 flex-1 truncate">{r.sku}</span>
-                        <span className={cn('rounded-full px-1.5 py-px font-medium', STATUS_CLS[r.status])}>{t(`deployment.status.${r.status}`)}</span>
+                        <StatusBadge status={r.status} label={t(`deployment.status.${r.status}`)} className="px-1.5 py-px" />
                         <span className="tabular shrink-0 text-faint">{formatRelativeTime(r.updatedAt, locale)}</span>
                       </li>
                     ))}
                   </ul>
                 )}
               </div>
-            ))}
+              );
+            })}
           </section>
 
           <section className="mb-5">
@@ -212,7 +240,7 @@ export function DeploymentPage() {
             <dl className="grid grid-cols-2 gap-x-4 gap-y-2">
               <div><dt className="text-xs text-muted">{t('deployment.table.sku')}</dt><dd><Link href={`/catalog/${selected.sku}`} className="tabular text-brand hover:underline">{selected.sku}</Link> <span className="text-muted">{names.get(selected.sku)}</span></dd></div>
               <div><dt className="text-xs text-muted">{t('deployment.table.channel')}</dt><dd>{t(`common.channel.${selected.channel}`)}</dd></div>
-              <div><dt className="text-xs text-muted">{t('deployment.table.status')}</dt><dd><span className={cn('rounded-full px-2 py-0.5 text-xs font-medium', STATUS_CLS[selected.status])}>{t(`deployment.status.${selected.status}`)}</span></dd></div>
+              <div><dt className="text-xs text-muted">{t('deployment.table.status')}</dt><dd><StatusBadge status={selected.status} label={t(`deployment.status.${selected.status}`)} /></dd></div>
               <div><dt className="text-xs text-muted">{t('deployment.table.retries')}</dt><dd className="tabular">{selected.retryCount}</dd></div>
               <div><dt className="text-xs text-muted">{t('deployment.table.updated')}</dt><dd className="tabular">{formatRelativeTime(selected.updatedAt, locale)}</dd></div>
               <div>
@@ -226,7 +254,14 @@ export function DeploymentPage() {
                 </dd>
               </div>
             </dl>
+            {trace.length > 0 && (
+              <section aria-label={t('deployment.table.trace')} className="border-t border-line pt-3">
+                <h3 className="mb-2 text-xs font-semibold text-muted">{t('deployment.table.trace')}</h3>
+                <ExecutionTimeline steps={trace} ariaLabel={t('deployment.table.trace')} />
+              </section>
+            )}
             {selected.errorReason && <p className="rounded-input bg-down-soft px-3 py-2 text-xs text-down">{t('deployment.table.error')}: {selected.errorReason}</p>}
+            {selected.status === 'failed' && <RecoveryNotice>{t('deployment.recovery.retry')} <DocsLink href="/audit">{t('common.action.viewAudit')}</DocsLink></RecoveryNotice>}
             <RoleGate action="deployment.execute">
               <div className="flex gap-2 border-t border-line pt-3">
                 {selected.status === 'failed' && (

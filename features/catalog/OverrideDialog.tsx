@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { PriceValue } from '@/components/ds/PriceValue';
+import { ConsequencePreview, DocsLink, RecoveryNotice } from '@/components/ds/trust';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { Field, Input } from '@/components/ui/field';
@@ -61,6 +62,28 @@ function OverrideForm({ product, onClose }: { product: Product; onClose: () => v
       <Field label={t('catalog.override.reason')} error={submitted ? reasonErr : undefined}>
         {(p) => <Input {...p} value={reason} onChange={(e) => setReason(e.target.value)} />}
       </Field>
+      {!priceErr && (
+        <ConsequencePreview
+          items={[
+            { label: t('catalog.override.consequence.current'), value: <PriceValue value={product.price} /> },
+            {
+              label: t('catalog.override.consequence.new'), value: <PriceValue value={Number(price)} />,
+              tone: Number(price) > product.price ? 'up' : Number(price) < product.price ? 'down' : 'default',
+            },
+            {
+              label: t('catalog.override.consequence.delta'),
+              value: `${Number(price) > product.price ? '+' : ''}${(((Number(price) - product.price) / product.price) * 100).toFixed(1)}%`,
+              tone: Number(price) > product.price ? 'up' : Number(price) < product.price ? 'down' : 'default',
+            },
+            {
+              label: t('catalog.override.consequence.vsMap'),
+              value: `${Number(price) >= product.mapPrice ? '+' : ''}${(((Number(price) - product.mapPrice) / product.mapPrice) * 100).toFixed(1)}%`,
+              tone: Number(price) < product.mapPrice ? 'warn' : 'default',
+            },
+          ]}
+        />
+      )}
+      <RecoveryNotice>{t('catalog.override.recovery')} <DocsLink href="/audit">{t('common.action.viewAudit')}</DocsLink></RecoveryNotice>
       <div className="flex justify-end gap-2">
         <Button variant="secondary" onClick={onClose}>{t('catalog.override.cancel')}</Button>
         <Button type="submit">{t('catalog.override.submit')}</Button>

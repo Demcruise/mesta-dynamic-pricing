@@ -12,7 +12,10 @@ import { PriceValue } from '@/components/ds/PriceValue';
 import { RationaleBreakdown } from '@/components/ds/RationaleBreakdown';
 import { SeverityChip } from '@/components/ds/SeverityChip';
 import { Sparkline } from '@/components/ds/Sparkline';
+import { StatusBadge } from '@/components/ds/StatusBadge';
 import { StatusChip } from '@/components/ds/StatusChip';
+import { ExecutionTimeline, FreshnessBadge, JobProgress, SyncStatus } from '@/components/ds/system-status';
+import { ActionSummary, ConsequencePreview, DocsLink, MetricDefinition, RecoveryNotice } from '@/components/ds/trust';
 import { EmptyState, KpiCard, LoadingRows, PageHeader } from '@/components/ds/states';
 import { MestaDataTable, useColumnVisibility } from '@/components/ds/table/DataTable';
 import { RoleGate } from '@/components/shell/RoleGate';
@@ -154,12 +157,59 @@ const ENTRIES: Entry[] = [
     ]} />,
   },
   {
-    name: 'StatusChip', file: 'components/ds/StatusChip.tsx', summary: 'Lifecycle state of a recommendation.',
-    props: 'status: "pending" | "approved" | "rejected" | "adjusted" | "stale" · className?',
-    a11y: 'Icon + translated label.',
-    doText: 'Use for workflow state.', dontText: 'Do not use for severity; use SeverityChip.',
+    name: 'StatusBadge', file: 'components/ds/StatusBadge.tsx', summary: 'The single status vocabulary — workflow, execution, sync-health, and severity states resolve through one map.',
+    props: 'StatusBadge{status: MestaStatus, label?, className?} · StatusIcon{status} · StatusChip + SeverityChip are domain aliases over it',
+    a11y: 'Icon + translated label + tone — never colour alone. Running states use a spinning LoaderCircle (killed under reduced-motion).',
+    doText: 'Use for every lifecycle/system status: approvals, deployment, publishing, sync health.', dontText: 'Do not hand-roll status spans or page-local STATUS_CLS maps — that is how the vocabulary diverged.',
     reactBits: 'Application UI › Data display › Badge',
-    demo: <div className="flex flex-wrap gap-2">{(['pending', 'approved', 'rejected', 'adjusted', 'stale'] as const).map((s) => <StatusChip key={s} status={s} />)}</div>,
+    demo: (
+      <div className="flex flex-wrap gap-2">
+        {(['draft', 'pending', 'approved', 'rejected', 'adjusted', 'changes_requested', 'escalated', 'expired', 'stale',
+          'queued', 'scheduled', 'in_flight', 'published', 'failed', 'rolled_back', 'partial',
+          'healthy', 'syncing', 'delayed', 'blocked', 'conflicted', 'info', 'warning', 'critical'] as const)
+          .map((s) => <StatusBadge key={s} status={s} />)}
+      </div>
+    ),
+  },
+  {
+    name: 'Trust components', file: 'components/ds/trust.tsx', summary: 'Consequence and recovery vocabulary around high-impact actions (TR-001).',
+    props: 'ActionSummary{action,consequence} · ConsequencePreview{items:{label,value,tone?}[]} · RecoveryNotice{children} · DocsLink{href} · MetricDefinition{label,definition,rows?}',
+    a11y: 'Consequence text sits adjacent to the CTA it describes; MetricDefinition is a <details> disclosure with a named trigger.',
+    doText: 'Bulk approve, overrides, deployments — anywhere scope, impact, or irreversibility must be visible before commit.', dontText: 'Do not hide consequences in tooltips, footnotes, or post-submit toasts.',
+    reactBits: 'Blocks › app-dialog-6 (pattern source)',
+    demo: (
+      <div className="flex flex-col gap-3">
+        <ConsequencePreview items={[
+          { label: 'Current price', value: <PriceValue value={125000} /> },
+          { label: 'New price', value: <PriceValue value={118000} />, tone: 'down' },
+          { label: 'Change', value: '−5.6%', tone: 'down' },
+          { label: 'vs MAP', value: '+2.1%' },
+        ]} />
+        <ActionSummary consequence={<>12 SKUs · impact <PriceValue value={21400} /> · 2 excluded</>} action={<Button size="sm">Approve 12</Button>} />
+        <RecoveryNotice>Applies immediately — each decision is recorded in the audit trail. <DocsLink href="/audit">View audit trail</DocsLink></RecoveryNotice>
+        <div className="flex items-center gap-2 text-xs text-muted">
+          Pending approvals <MetricDefinition label="About pending approvals" definition="Recommendations currently waiting for a decision." rows={[{ label: 'Scope', value: 'All stores' }]} />
+        </div>
+      </div>
+    ),
+  },
+  {
+    name: 'System-status primitives', file: 'components/ds/system-status.tsx', summary: 'Operational state: data freshness, channel sync health, job progress, execution traces.',
+    props: 'FreshnessBadge{at,label?} · SyncStatus{status} · JobProgress{done,total,label} · ExecutionTimeline{steps:ExecStep[],ariaLabel}',
+    a11y: 'JobProgress is role="progressbar" with min/max/now and a label; ExecutionTimeline is a semantic ordered list like AgentRunTimeline.',
+    doText: 'Deployment channel health, "competitor data X ago" provenance, publish-job progress, per-record execution history.', dontText: 'Do not show bare timestamps where a freshness claim is being made — name it.',
+    reactBits: 'Blocks › monitoring-1',
+    demo: (
+      <div className="flex flex-col gap-3">
+        <div className="flex flex-wrap items-center gap-3"><SyncStatus status="healthy" /><SyncStatus status="in_flight" /><SyncStatus status="failed" /><FreshnessBadge at={new Date(0).toISOString()} label="Updated 5m ago" /><FreshnessBadge at={null} /></div>
+        <JobProgress done={3} total={4} label="Channels synced" />
+        <ExecutionTimeline ariaLabel="Demo trace" steps={[
+          { id: 'a', label: 'Deployment triggered', status: 'queued' },
+          { id: 'b', label: 'Channel synced', status: 'synced' },
+          { id: 'c', label: 'Retry scheduled', status: 'in_flight' },
+        ]} />
+      </div>
+    ),
   },
   {
     name: 'SeverityChip / LiveDot', file: 'components/ds/SeverityChip.tsx · components/ds/LiveDot.tsx', summary: 'Signal severity palette and the pulsing live indicator.',
@@ -273,7 +323,9 @@ const BLOCK_MAP: [string, string, string][] = [
 const GUIDE: [string, string][] = [
   ['MestaDataTable vs a plain list', 'Rows you need to sort, select, export or drill into → table; small static lists → simple markup.'],
   ['Drawer vs Dialog', 'Row quick-view or entity drill-in → Drawer; a decision needing input or confirmation → Dialog.'],
-  ['StatusChip vs SeverityChip', 'Workflow lifecycle (pending/approved/…) → StatusChip; signal severity (info/warning/critical) → SeverityChip.'],
+  ['StatusBadge vs SeverityChip', 'Any lifecycle/system status (pending/deployed/synced/failed/…) → StatusBadge (or its StatusChip alias for recs); signal severity → SeverityChip alias.'],
+  ['ActionSummary vs bare CTA', 'Action with consequences a reviewer must see before commit (scope, impact, exclusions) → ActionSummary; trivial navigation or low-risk toggles → plain button.'],
+  ['JobProgress vs LoadingRows', 'A job with a measurable denominator (N channels synced) → progressbar; unknown-duration waits → LoadingRows/PageSkeleton.'],
   ['DeltaBadge vs ConfidenceBar', 'How much a number moved → DeltaBadge; an absolute 0–100 score → ConfidenceBar.'],
   ['AgentBorderCard vs plain card', 'Content authored by an agent/human/rule that must show provenance → AgentBorderCard; generic grouping → plain card.'],
   ['AgentRunTimeline vs RationaleBreakdown', 'The process steps that produced a recommendation → timeline; the weighted factors behind it → breakdown.'],

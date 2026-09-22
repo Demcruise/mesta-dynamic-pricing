@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { PriceValue } from '@/components/ds/PriceValue';
+import { ActionSummary, DocsLink, RecoveryNotice } from '@/components/ds/trust';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { Field, Input } from '@/components/ui/field';
@@ -91,10 +92,21 @@ function Body({ recs, onClose }: { recs: Recommendation[]; onClose: () => void }
           </ul>
         </details>
       )}
-      <div className="flex justify-end gap-2">
-        <Button variant="secondary" onClick={onClose}>{t('recommendations.action.cancel')}</Button>
-        <Button disabled={chosen.length === 0} onClick={confirm}>{t('recommendations.dialog.confirmBulk', { n: chosen.length })}</Button>
-      </div>
+      <RecoveryNotice>{t('recommendations.dialog.bulkImmediate')} <DocsLink href="/audit">{t('common.action.viewAudit')}</DocsLink></RecoveryNotice>
+      <ActionSummary
+        consequence={
+          <>
+            {t('recommendations.dialog.targetsShort', { n: chosen.length })} · {t('recommendations.dialog.impact')} <PriceValue value={impact} />
+            {plan.excluded.length > 0 && <> · {t('recommendations.dialog.excludedShort', { n: plan.excluded.length })}</>}
+          </>
+        }
+        action={
+          <>
+            <Button variant="secondary" onClick={onClose}>{t('recommendations.action.cancel')}</Button>
+            <Button disabled={chosen.length === 0} onClick={confirm}>{t('recommendations.dialog.confirmBulk', { n: chosen.length })}</Button>
+          </>
+        }
+      />
     </div>
   );
 }

@@ -3,6 +3,7 @@
   "subtitle": "Bandingkan skenario harga dengan baseline sebelum dikirim untuk ditinjau",
   "context": { "sku": "SKU", "strategy": "Strategi", "noStrategy": "Tanpa strategi (hanya batas produk)", "searchSku": "Cari SKU atau nama", "pick": "Pilih SKU untuk disimulasikan.", "change": "Ganti SKU" },
   "baseline": "Baseline",
+  "competitorFresh": "Data kompetitor {at}",
   "scenario": "Skenario {n}",
   "controls": {
     "price": "Harga usulan", "slider": "Slider harga", "reset": "Kembali ke baseline", "add": "Tambah skenario", "remove": "Hapus skenario {n}",

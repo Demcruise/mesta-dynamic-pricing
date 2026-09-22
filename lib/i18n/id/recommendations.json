@@ -13,7 +13,8 @@
     "rejectTitle": "Tolak rekomendasi", "adjustTitle": "Sesuaikan harga usulan", "note": "Catatan (wajib)", "newPrice": "Harga disesuaikan",
     "bulkTitle": "Setujui massal", "threshold": "Keyakinan minimum", "targets": "{n} rekomendasi akan disetujui", "impact": "Total dampak margin proyeksi",
     "excluded": "{n} dikecualikan ({stale} usang, {breach} melanggar guardrail)", "none": "Tidak ada yang memenuhi ambang ini.", "confirmBulk": "Setujui {n}",
-    "checklist": "Pilih rekomendasi untuk disetujui", "excludedList": "Tampilkan yang dikecualikan ({n})",
+    "checklist": "Pilih rekomendasi untuk disetujui", "excludedList": "Tampilkan yang dikecualikan ({n})", "excludedShort": "{n} dikecualikan", "targetsShort": "{n} rekomendasi",
+    "bulkImmediate": "Persetujuan massal berlaku segera — tanpa jeda pembatalan. Setiap persetujuan tercatat di jejak audit; pembalikan memerlukan keputusan baru per SKU.",
     "reason": { "stale": "usang", "breach": "melanggar guardrail" }
   },
   "run": {

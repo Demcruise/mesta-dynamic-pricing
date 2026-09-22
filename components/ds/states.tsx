@@ -73,7 +73,7 @@ export function PageHeader({ title, subtitle, actions }: { title: string; subtit
 }
 
 export function KpiCard({ label, value, format, hint, spark, delta }: {
-  label: string; value: number | ReactNode; hint?: ReactNode;
+  label: ReactNode; value: number | ReactNode; hint?: ReactNode;
   /** Formats the animated number (e.g. percent/currency). Defaults to rounded integer. */
   format?: (value: number) => string;
   /** Per-period series for the inline sparkline (same source as the KPI value). */
@@ -92,10 +92,10 @@ export function KpiCard({ label, value, format, hint, spark, delta }: {
       </div>
       <p className="tabular mt-1 break-words text-xl font-semibold text-fg sm:text-2xl">{shown}</p>
       {(delta !== undefined || hint) && (
-        <p className="mt-1 flex items-center gap-2 text-xs text-faint">
+        <div className="mt-1 flex items-center gap-2 text-xs text-faint">
           {delta !== undefined && <DeltaBadge value={delta} />}
           {hint}
-        </p>
+        </div>
       )}
     </div>
   );

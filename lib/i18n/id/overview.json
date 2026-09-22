@@ -6,6 +6,25 @@
     "strategyHealth": "Strategi aktif", "pendingStrategies": "Strategi menunggu persetujuan", "channelFailures": "Kegagalan kanal", "pendingSyncs": "Sinkron tertunda", "lastDeployment": "Deployment terakhir",
     "auditVolume": "Kejadian audit", "manualOverrides": "Override manual", "guardrailExceptions": "Pengecualian guardrail", "none": "Belum ada"
   },
+  "kpiDef": {
+    "pendingApprovals": "Rekomendasi yang saat ini menunggu keputusan.",
+    "reviewed": "Keputusan setuju, sesuaikan, dan tolak yang dibuat akun Anda.",
+    "activeAnomalies": "Anomali harga yang belum terselesaikan di seluruh katalog.",
+    "marginImpact": "Proyeksi dampak margin dari rekomendasi yang disetujui dan disesuaikan.",
+    "overrideRate": "Override harga manual sebagai bagian dari seluruh keputusan harga.",
+    "strategyHealth": "Strategi harga yang sedang aktif.",
+    "pendingStrategies": "Strategi yang dikirim dan menunggu persetujuan manajer.",
+    "channelFailures": "Deployment kanal yang saat ini gagal.",
+    "pendingSyncs": "Deployment kanal yang mengantre atau sedang berjalan.",
+    "lastDeployment": "Deployment kanal terakhir yang selesai.",
+    "auditVolume": "Total kejadian audit yang tercatat di workspace ini.",
+    "manualOverrides": "Perubahan harga manual di luar rekomendasi.",
+    "guardrailExceptions": "Rekomendasi yang ditandai karena melanggar guardrail."
+  },
+  "def": {
+    "about": "Tentang {name}", "scope": "Cakupan", "scopeValue": "Semua toko · semua kanal",
+    "source": "Sumber", "sourceValue": "Dataset simulasi", "updated": "Diperbarui", "updatedValue": "Langsung (dalam memori)"
+  },
   "links": { "pending": "Tinjau persetujuan tertunda", "breach": "Tinjau pelanggaran guardrail", "failures": "Buka kegagalan deployment", "strategies": "Tinjau strategi", "audit": "Buka log audit", "monitoring": "Buka monitoring" },
   "charts": {
     "marginTrend": "Tren margin rata-rata", "volume": "Keputusan perubahan harga per kategori", "gap": "Selisih kompetitor per kategori", "period": "Periode {n}", "category": "Kategori", "value": "Nilai", "chart": "Grafik", "table": "Tabel data",

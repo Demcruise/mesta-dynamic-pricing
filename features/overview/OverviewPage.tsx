@@ -6,6 +6,7 @@ import { useEffect, useMemo } from 'react';
 import { OnboardingChecklist } from '@/components/ds/OnboardingChecklist';
 import { TopMoversPanel } from '@/components/ds/TopMoversPanel';
 import { KpiCard, LoadingRows, PageHeader } from '@/components/ds/states';
+import { MetricDefinition } from '@/components/ds/trust';
 import { recommendationHealth } from '@/lib/actions/recommendation';
 import { formatDate, formatPercent, formatPrice } from '@/lib/format';
 import { useTranslation } from '@/lib/i18n';
@@ -98,14 +99,28 @@ export function OverviewPage() {
           )}
           <section aria-label={t('common.a11y.kpi')} className="mb-4 grid grid-cols-1 gap-3 min-[420px]:grid-cols-2 lg:grid-cols-4">
             {view.kpis.map((k) => (
-              <Link key={k.key} href={k.href ?? '/overview'} onClick={() => quick(k.href ?? '/overview')} className="block rounded-card transition-opacity duration-fast hover:opacity-90">
-                <KpiCard
-                  label={t(`overview.kpi.${k.key}`)}
-                  value={typeof k.value === 'number' ? k.value : fmt(k)}
-                  format={k.kind === 'money' ? (n) => formatPrice(n, locale) : k.kind === 'percent' ? (n) => formatPercent(n, locale) : undefined}
-                  spark={k.spark} delta={k.delta}
-                />
-              </Link>
+              <KpiCard
+                key={k.key}
+                label={
+                  <Link href={k.href ?? '/overview'} onClick={() => quick(k.href ?? '/overview')} className="rounded transition-colors duration-fast hover:text-fg hover:underline">
+                    {t(`overview.kpi.${k.key}`)}
+                  </Link>
+                }
+                value={typeof k.value === 'number' ? k.value : fmt(k)}
+                format={k.kind === 'money' ? (n) => formatPrice(n, locale) : k.kind === 'percent' ? (n) => formatPercent(n, locale) : undefined}
+                spark={k.spark} delta={k.delta}
+                hint={
+                  <MetricDefinition
+                    label={t('overview.def.about', { name: t(`overview.kpi.${k.key}`) })}
+                    definition={t(`overview.kpiDef.${k.key}`)}
+                    rows={[
+                      { label: t('overview.def.scope'), value: t('overview.def.scopeValue') },
+                      { label: t('overview.def.source'), value: t('overview.def.sourceValue') },
+                      { label: t('overview.def.updated'), value: t('overview.def.updatedValue') },
+                    ]}
+                  />
+                }
+              />
             ))}
           </section>
 

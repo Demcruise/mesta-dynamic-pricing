@@ -3,6 +3,7 @@
   "subtitle": "Compare price scenarios against a baseline before sending them for review",
   "context": { "sku": "SKU", "strategy": "Strategy", "noStrategy": "No strategy (product limits only)", "searchSku": "Search SKU or name", "pick": "Select an SKU to simulate.", "change": "Change SKU" },
   "baseline": "Baseline",
+  "competitorFresh": "Competitor data {at}",
   "scenario": "Scenario {n}",
   "controls": {
     "price": "Proposed price", "slider": "Price slider", "reset": "Reset to baseline", "add": "Add scenario", "remove": "Remove scenario {n}",

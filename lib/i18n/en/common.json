@@ -99,11 +99,34 @@
     "recent": "Recent"
   },
   "status": {
+    "draft": "Draft",
     "pending": "Pending",
     "approved": "Approved",
     "rejected": "Rejected",
     "adjusted": "Adjusted",
-    "stale": "Stale"
+    "changes_requested": "Changes requested",
+    "escalated": "Escalated",
+    "expired": "Expired",
+    "stale": "Stale",
+    "queued": "Queued",
+    "scheduled": "Scheduled",
+    "in_flight": "In flight",
+    "publishing": "Publishing",
+    "published": "Published",
+    "synced": "Synced",
+    "failed": "Failed",
+    "rolled_back": "Rolled back",
+    "cancelled": "Cancelled",
+    "partial": "Partial",
+    "healthy": "Healthy",
+    "syncing": "Syncing",
+    "delayed": "Delayed",
+    "paused": "Paused",
+    "blocked": "Blocked",
+    "conflicted": "Conflicted",
+    "info": "Info",
+    "warning": "Warning",
+    "critical": "Critical"
   },
   "delta": {
     "up": "Increase",
@@ -205,5 +228,12 @@
     "ui": "User",
     "agent": "Agent",
     "system": "System"
+  },
+  "action": {
+    "viewAudit": "View audit trail"
+  },
+  "freshness": {
+    "updated": "Updated {at}",
+    "never": "No data yet"
   }
 }

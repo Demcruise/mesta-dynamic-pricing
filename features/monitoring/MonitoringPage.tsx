@@ -8,11 +8,12 @@ import { LiveDot } from '@/components/ds/LiveDot';
 import { PriceValue } from '@/components/ds/PriceValue';
 import { SeverityChip } from '@/components/ds/SeverityChip';
 import { EmptyState, ErrorState, LoadingRows, PageHeader } from '@/components/ds/states';
+import { FreshnessBadge } from '@/components/ds/system-status';
 import { RoleGate } from '@/components/shell/RoleGate';
 import { Button } from '@/components/ui/button';
 import { Field, Input } from '@/components/ui/field';
 import { flagForModelReview, groupAnomalies } from '@/lib/actions/monitoring';
-import { formatDate } from '@/lib/format';
+import { formatRelativeTime } from '@/lib/format';
 import { useTranslation } from '@/lib/i18n';
 import type { AnomalyAlert } from '@/lib/ontology';
 import { useAnomalies, useOutcomes } from '@/lib/queries';
@@ -65,7 +66,7 @@ export function MonitoringPage() {
           <div className="mb-4 flex items-center gap-2 rounded-card border border-line bg-surface px-3 py-2 text-xs text-muted shadow-e1" role="status">
             <LiveDot />
             <span className="font-medium text-fg">{t('monitoring.live.stream')}</span>
-            {lastEventAt && <span className="tabular">{t('monitoring.live.lastEvent', { at: formatDate(lastEventAt, locale) })}</span>}
+            {lastEventAt && <FreshnessBadge at={lastEventAt} label={t('monitoring.live.lastEvent', { at: formatRelativeTime(lastEventAt, locale) })} />}
             <span className="tabular ml-auto">{t('monitoring.live.alerts', { n: visible.length })}</span>
           </div>
           <div className="mb-2 flex items-center justify-between gap-2">

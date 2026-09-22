@@ -6,6 +6,25 @@
     "strategyHealth": "Active strategies", "pendingStrategies": "Strategies awaiting approval", "channelFailures": "Channel failures", "pendingSyncs": "Pending syncs", "lastDeployment": "Last deployment",
     "auditVolume": "Audit events", "manualOverrides": "Manual overrides", "guardrailExceptions": "Guardrail exceptions", "none": "None yet"
   },
+  "kpiDef": {
+    "pendingApprovals": "Recommendations currently waiting for a decision.",
+    "reviewed": "Approve, adjust, and reject decisions made by your account.",
+    "activeAnomalies": "Unresolved pricing anomalies across the catalog.",
+    "marginImpact": "Projected margin impact of approved and adjusted recommendations.",
+    "overrideRate": "Manual price overrides as a share of all price decisions.",
+    "strategyHealth": "Pricing strategies currently active.",
+    "pendingStrategies": "Strategies submitted and awaiting manager approval.",
+    "channelFailures": "Channel deployments currently in a failed state.",
+    "pendingSyncs": "Channel deployments queued or in flight.",
+    "lastDeployment": "Most recent completed channel deployment.",
+    "auditVolume": "Total recorded audit events in this workspace.",
+    "manualOverrides": "Price changes made manually, outside recommendations.",
+    "guardrailExceptions": "Recommendations flagged for breaching guardrails."
+  },
+  "def": {
+    "about": "About {name}", "scope": "Scope", "scopeValue": "All stores · all channels",
+    "source": "Source", "sourceValue": "Simulated dataset", "updated": "Updated", "updatedValue": "Live (in-memory)"
+  },
   "links": { "pending": "Review pending approvals", "breach": "Review guardrail breaches", "failures": "Open deployment failures", "strategies": "Review strategies", "audit": "Open audit log", "monitoring": "Open monitoring" },
   "charts": {
     "marginTrend": "Average margin trend", "volume": "Price-change decisions by category", "gap": "Competitor gap by category", "period": "Period {n}", "category": "Category", "value": "Value", "chart": "Chart", "table": "Data table",

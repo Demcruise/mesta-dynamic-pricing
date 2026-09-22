@@ -99,11 +99,34 @@
     "recent": "Terbaru"
   },
   "status": {
+    "draft": "Draf",
     "pending": "Tertunda",
     "approved": "Disetujui",
     "rejected": "Ditolak",
     "adjusted": "Disesuaikan",
-    "stale": "Usang"
+    "changes_requested": "Perlu perubahan",
+    "escalated": "Dieskalasi",
+    "expired": "Kedaluwarsa",
+    "stale": "Usang",
+    "queued": "Antre",
+    "scheduled": "Terjadwal",
+    "in_flight": "Dalam proses",
+    "publishing": "Mempublikasikan",
+    "published": "Terpublikasi",
+    "synced": "Tersinkron",
+    "failed": "Gagal",
+    "rolled_back": "Dikembalikan",
+    "cancelled": "Dibatalkan",
+    "partial": "Parsial",
+    "healthy": "Sehat",
+    "syncing": "Menyinkronkan",
+    "delayed": "Tertunda",
+    "paused": "Dijeda",
+    "blocked": "Diblokir",
+    "conflicted": "Konflik",
+    "info": "Info",
+    "warning": "Peringatan",
+    "critical": "Kritis"
   },
   "delta": {
     "up": "Naik",
@@ -205,5 +228,12 @@
     "ui": "Pengguna",
     "agent": "Agen",
     "system": "Sistem"
+  },
+  "action": {
+    "viewAudit": "Lihat jejak audit"
+  },
+  "freshness": {
+    "updated": "Diperbarui {at}",
+    "never": "Belum ada data"
   }
 }

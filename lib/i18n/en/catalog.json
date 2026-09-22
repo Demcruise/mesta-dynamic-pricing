@@ -21,7 +21,9 @@
   },
   "override": {
     "title": "Manual price override", "newPrice": "New price", "reason": "Reason", "submit": "Apply", "cancel": "Cancel",
-    "err": { "invalid": "Enter a valid price.", "below_min": "Price is below the minimum.", "above_max": "Price is above the maximum.", "map_breach": "Price breaches MAP.", "reason": "A reason is required." }
+    "err": { "invalid": "Enter a valid price.", "below_min": "Price is below the minimum.", "above_max": "Price is above the maximum.", "map_breach": "Price breaches MAP.", "reason": "A reason is required." },
+    "consequence": { "current": "Current price", "new": "New price", "delta": "Change", "vsMap": "vs MAP" },
+    "recovery": "Recorded in the audit trail with your reason. Revert any time by submitting a new override."
   },
   "empty": "No SKUs match the current filters.",
   "error": "Failed to load the catalog.",

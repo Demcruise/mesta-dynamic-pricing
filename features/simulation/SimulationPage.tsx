@@ -10,13 +10,14 @@ import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { Input, inputCls } from '@/components/ui/field';
 import { saveScenario, sendScenario } from '@/lib/actions/scenario';
+import { FreshnessBadge } from '@/components/ds/system-status';
 import { checkPrice, priceBounds } from '@/lib/guardrails';
 import { useCan } from '@/lib/hooks';
-import { formatPercent } from '@/lib/format';
+import { formatPercent, formatRelativeTime } from '@/lib/format';
 import { useTranslation } from '@/lib/i18n';
 import type { Product, Strategy } from '@/lib/ontology';
 import { BASE_UNITS, CI, project } from '@/lib/projection';
-import { useScenario, useScenarios, useSkuDetail, useSkuList, useStrategies } from '@/lib/queries';
+import { useCompetitorObservations, useScenario, useScenarios, useSkuDetail, useSkuList, useStrategies } from '@/lib/queries';
 import { skusInScope } from '@/lib/strategy-rules';
 import { useSessionStore, useToastStore } from '@/lib/stores';
 import { DemandChart } from './DemandChart';
@@ -54,6 +55,8 @@ function Simulator({ sku, strategyId, initial, basePrice }: {
   const toast = useToastStore((s) => s.push);
   const product = useSkuDetail(sku).data;
   const strategies = useStrategies().data;
+  const competitorObs = useCompetitorObservations(sku).data;
+  const competitorFreshAt = useMemo(() => competitorObs.map((o) => o.observedAt).sort().at(-1) ?? null, [competitorObs]);
   useScenarios();
 
   const strategy: Strategy | null = strategyId ? strategies.find((s) => s.id === strategyId) ?? null : null;
@@ -123,6 +126,7 @@ function Simulator({ sku, strategyId, initial, basePrice }: {
         subtitle={`${product.sku} · ${product.name}`}
         actions={
           <>
+            <FreshnessBadge at={competitorFreshAt} label={competitorFreshAt ? t('simulation.competitorFresh', { at: formatRelativeTime(competitorFreshAt, locale) }) : undefined} />
             <Link href="/simulation" className="text-sm text-muted underline">{t('simulation.context.change')}</Link>
             <Button variant="secondary" disabled={!dirty && scenarios.length === 1} onClick={() => (dirty ? setConfirmDiscard(true) : discard())}>
               {t('simulation.controls.discard')}
