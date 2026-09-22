@@ -1,0 +1,45 @@
+{
+  "page": {
+    "title": "Data health",
+    "desc": "Upstream feeds, sync status, and data-quality issues for the current scope."
+  },
+  "sources": {
+    "title": "Data sources",
+    "desc": "Every feed the pricing loop consumes, with last sync and rejection counts."
+  },
+  "kind": {
+    "pos_feed": "POS feed",
+    "ecommerce_feed": "E-commerce",
+    "marketplace_feed": "Marketplace",
+    "competitor_feed": "Competitor feed",
+    "erp": "ERP"
+  },
+  "col": {
+    "source": "Source",
+    "kind": "Kind",
+    "status": "Status",
+    "lastSync": "Last sync",
+    "coverage": "Coverage",
+    "rejected": "Rejected",
+    "actions": "Actions"
+  },
+  "action": { "sync": "Sync now", "syncing": "Syncing…" },
+  "toast": { "syncing": "Re-sync started for {name}" },
+  "err": {
+    "forbidden": "Your role cannot trigger syncs",
+    "not_found": "Data source not found",
+    "already_syncing": "A sync is already running for this source"
+  },
+  "quality": {
+    "title": "Data quality",
+    "desc": "Gaps that weaken recommendations in the current scope.",
+    "missingTitle": "Missing competitor input",
+    "missingDesc": "SKUs with no competitor observations — gap-driven rules cannot evaluate them.",
+    "missingEmpty": "Every SKU in scope has competitor observations.",
+    "staleTitle": "Stale prices",
+    "staleDesc": "SKUs whose price has not moved in over {days} days.",
+    "staleEmpty": "No stale prices in scope.",
+    "count": "{n} of {total} SKUs",
+    "sample": "Sample:"
+  }
+}

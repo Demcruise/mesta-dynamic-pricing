@@ -11,6 +11,7 @@ import {
 import { useDevStore } from '@/lib/stores/dev';
 import { usePublishJobStore } from '@/lib/stores/publish';
 import { useRuleStore } from '@/lib/stores/rule';
+import { useDataSourceStore, useOverrideRequestStore } from '@/lib/stores/ops';
 
 /** Any store write invalidates its query domain, so hooks never go stale. */
 function subscribeQueryInvalidation(qc: QueryClient) {
@@ -27,6 +28,8 @@ function subscribeQueryInvalidation(qc: QueryClient) {
     useMonitoringStore.subscribe(inv('anomaly')),
     useMonitoringStore.subscribe(inv('sku')),
     useNotificationStore.subscribe(inv('notification')),
+    useDataSourceStore.subscribe(inv('datasource')),
+    useOverrideRequestStore.subscribe(inv('override')),
     useDevStore.subscribe(() => void qc.invalidateQueries()),
   ];
   return () => unsubs.forEach((u) => u());

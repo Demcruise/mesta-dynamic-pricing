@@ -1,0 +1,26 @@
+{
+  "page": {
+    "title": "Alert center",
+    "desc": "Anomalies, deployment failures, and data-quality issues in one severity feed."
+  },
+  "sev": {
+    "critical": "Critical",
+    "warning": "Warning",
+    "info": "Info"
+  },
+  "kind": {
+    "anomaly": "Price anomaly",
+    "deploy_failure": "Deployment failure",
+    "data_quality": "Data quality"
+  },
+  "empty": "No active alerts in the current scope.",
+  "action": {
+    "anatomy": "Details",
+    "investigate": "Investigate"
+  },
+  "anatomy": {
+    "changed": "What changed",
+    "expected": "Expected",
+    "observed": "Observed"
+  }
+}

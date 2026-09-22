@@ -1,11 +1,14 @@
 import {
-  applySeedDeployments, generateAnomalies, generateAudit, generateCompetitors, generateDeployments,
-  generateProducts, generateRecommendations, generateRules, generateStrategies,
+  applySeedDeployments, generateAnomalies, generateAudit, generateCompetitors, generateDataSources,
+  generateDeployments, generateOverrideRequests, generateProducts, generateRecommendations, generateRules,
+  generateStrategies,
 } from './mock-data';
 import { cancelAllDecisionTimers } from './actions/recommendation';
+import { cancelAllSyncTimers } from './actions/ops';
 import {
-  useAuditStore, useCatalogSelectionStore, useDeploymentStore, useMonitoringStore, useNotificationStore,
-  useProductCatalogStore, useRecommendationStore, useScenarioStore, useStrategyStore,
+  useAuditStore, useCatalogSelectionStore, useDataSourceStore, useDeploymentStore, useMonitoringStore,
+  useNotificationStore, useOverrideRequestStore, useProductCatalogStore, useRecommendationStore,
+  useScenarioStore, useStrategyStore,
 } from './stores';
 import { usePublishJobStore } from './stores/publish';
 import { useRuleStore } from './stores/rule';
@@ -41,10 +44,13 @@ export function bootstrapMestaData({ productCount = DEFAULT_PRODUCT_COUNT, force
   useStrategyStore.getState().hydrate(generateStrategies());
   useRuleStore.getState().hydrate(generateRules());
   useAuditStore.getState().hydrate(generateAudit(recs));
+  useDataSourceStore.getState().hydrate(generateDataSources());
+  useOverrideRequestStore.getState().hydrate(generateOverrideRequests(seeded.products));
   expireStaleRecommendations();
   useNotificationStore.getState().reset();
   useScenarioStore.getState().reset();
   cancelAllDecisionTimers();
+  cancelAllSyncTimers();
   useCatalogSelectionStore.getState().clear();
   bootstrapped = true;
 }

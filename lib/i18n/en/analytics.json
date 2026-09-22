@@ -1,0 +1,31 @@
+{
+  "page": {
+    "title": "Pricing analytics",
+    "desc": "How the pricing loop is performing — every metric derivable from the audit trail and catalog."
+  },
+  "kpi": {
+    "acceptance": "Acceptance rate",
+    "acceptanceDef": "Share of decided recommendations that were approved or adjusted.",
+    "acceptanceHint": "{n} decided",
+    "priceIndex": "Price index",
+    "priceIndexDef": "Mean of our price ÷ competitor average across in-scope SKUs. 100 = at market.",
+    "priceIndexHint": "vs competitor average = 100",
+    "leakage": "Margin leakage",
+    "leakageDef": "Projected margin impact of recommendations that were rejected or expired undecided.",
+    "leakageHint": "rejected + expired recs",
+    "latency": "Decision latency",
+    "latencyDef": "Mean time from recommendation creation to a recorded decision.",
+    "latencyValue": "{d} days",
+    "latencyHint": "created → decided",
+    "deploySuccess": "Deploy success rate",
+    "overrides": "Manual overrides"
+  },
+  "byCategory": { "title": "By category" },
+  "col": {
+    "category": "Category",
+    "priceIndex": "Price index",
+    "gap": "vs market",
+    "acceptance": "Acceptance",
+    "leakage": "Leakage"
+  }
+}

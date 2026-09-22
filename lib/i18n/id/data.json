@@ -1,0 +1,45 @@
+{
+  "page": {
+    "title": "Kesehatan data",
+    "desc": "Feed hulu, status sinkronisasi, dan masalah kualitas data untuk cakupan saat ini."
+  },
+  "sources": {
+    "title": "Sumber data",
+    "desc": "Semua feed yang dikonsumsi loop harga, dengan sinkronisasi terakhir dan jumlah penolakan."
+  },
+  "kind": {
+    "pos_feed": "Feed POS",
+    "ecommerce_feed": "E-commerce",
+    "marketplace_feed": "Marketplace",
+    "competitor_feed": "Feed kompetitor",
+    "erp": "ERP"
+  },
+  "col": {
+    "source": "Sumber",
+    "kind": "Jenis",
+    "status": "Status",
+    "lastSync": "Sinkron terakhir",
+    "coverage": "Cakupan",
+    "rejected": "Ditolak",
+    "actions": "Aksi"
+  },
+  "action": { "sync": "Sinkronkan", "syncing": "Menyinkronkan…" },
+  "toast": { "syncing": "Sinkronisasi ulang dimulai untuk {name}" },
+  "err": {
+    "forbidden": "Peran Anda tidak dapat memicu sinkronisasi",
+    "not_found": "Sumber data tidak ditemukan",
+    "already_syncing": "Sinkronisasi sedang berjalan untuk sumber ini"
+  },
+  "quality": {
+    "title": "Kualitas data",
+    "desc": "Celah yang melemahkan rekomendasi dalam cakupan saat ini.",
+    "missingTitle": "Input kompetitor hilang",
+    "missingDesc": "SKU tanpa observasi kompetitor — aturan berbasis gap tidak dapat mengevaluasinya.",
+    "missingEmpty": "Semua SKU dalam cakupan memiliki observasi kompetitor.",
+    "staleTitle": "Harga kedaluwarsa",
+    "staleDesc": "SKU yang harganya tidak berubah lebih dari {days} hari.",
+    "staleEmpty": "Tidak ada harga kedaluwarsa dalam cakupan.",
+    "count": "{n} dari {total} SKU",
+    "sample": "Contoh:"
+  }
+}

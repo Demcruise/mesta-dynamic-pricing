@@ -1,0 +1,51 @@
+{
+  "page": {
+    "title": "Exceptions",
+    "desc": "Guardrail breaches, stale work, missing inputs, and override requests — one queue."
+  },
+  "filterLabel": "Filter by exception kind",
+  "kind": {
+    "all": "All",
+    "breach": "Guardrail breach",
+    "stale": "Stale recommendation",
+    "override_request": "Override request",
+    "missing_input": "Missing input",
+    "stale_price": "Stale price"
+  },
+  "empty": "No exceptions in the current scope.",
+  "action": {
+    "investigate": "Investigate",
+    "approve": "Approve",
+    "reject": "Reject"
+  },
+  "requests": {
+    "title": "Override requests",
+    "desc": "Analyst-filed price overrides awaiting a manager decision.",
+    "empty": "No pending override requests."
+  },
+  "decide": {
+    "approveTitle": "Approve override",
+    "rejectTitle": "Reject override",
+    "approveNote": "Approving applies the price immediately across the catalog and is recorded in the audit trail.",
+    "noteLabel": "Decision note (optional)"
+  },
+  "history": {
+    "title": "Override history",
+    "empty": "No decided override requests yet.",
+    "col": {
+      "id": "ID",
+      "sku": "SKU",
+      "price": "Requested price",
+      "status": "Status",
+      "decidedBy": "Decided by",
+      "at": "Decided at"
+    }
+  },
+  "err": {
+    "forbidden": "Your role cannot decide override requests",
+    "not_found": "Override request not found",
+    "invalid_transition": "This request was already decided",
+    "stale": "The requested price no longer passes product bounds — reject and re-file",
+    "reason_required": "A reason is required"
+  }
+}

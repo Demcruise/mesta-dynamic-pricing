@@ -26,6 +26,14 @@ export const PERMISSIONS = {
   'audit.view_all': ['manager', 'compliance'],
   'audit.export': ['manager', 'compliance'],
   'overview.view': ['analyst', 'manager', 'ops_lead', 'compliance'],
+  'data.view': ['manager', 'ops_lead', 'compliance'],
+  'data.sync': ['ops_lead'],
+  'exceptions.view': ['analyst', 'manager', 'ops_lead', 'compliance'],
+  'override.request': ['analyst', 'manager'],
+  'override.decide': ['manager'],
+  'alerts.view': ['analyst', 'manager', 'ops_lead', 'compliance'],
+  'competitors.view': ['analyst', 'manager', 'compliance'],
+  'analytics.view': ['analyst', 'manager', 'compliance'],
 } as const satisfies Record<string, readonly Role[]>;
 
 export type Action = keyof typeof PERMISSIONS;
@@ -49,6 +57,11 @@ export const ROUTE_ACTIONS: Record<string, Action> = {
   '/deployment': 'deployment.view',
   '/monitoring': 'monitoring.view',
   '/audit': 'audit.view',
+  '/data': 'data.view',
+  '/exceptions': 'exceptions.view',
+  '/alerts': 'alerts.view',
+  '/competitors': 'competitors.view',
+  '/analytics': 'analytics.view',
 };
 
 export function actionForPath(pathname: string): Action | null {

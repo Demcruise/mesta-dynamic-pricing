@@ -1,0 +1,51 @@
+{
+  "page": {
+    "title": "Pengecualian",
+    "desc": "Pelanggaran guardrail, pekerjaan kedaluwarsa, input hilang, dan permintaan override — satu antrean."
+  },
+  "filterLabel": "Saring menurut jenis pengecualian",
+  "kind": {
+    "all": "Semua",
+    "breach": "Pelanggaran guardrail",
+    "stale": "Rekomendasi kedaluwarsa",
+    "override_request": "Permintaan override",
+    "missing_input": "Input hilang",
+    "stale_price": "Harga kedaluwarsa"
+  },
+  "empty": "Tidak ada pengecualian dalam cakupan saat ini.",
+  "action": {
+    "investigate": "Selidiki",
+    "approve": "Setujui",
+    "reject": "Tolak"
+  },
+  "requests": {
+    "title": "Permintaan override",
+    "desc": "Override harga dari analis yang menunggu keputusan manajer.",
+    "empty": "Tidak ada permintaan override yang menunggu."
+  },
+  "decide": {
+    "approveTitle": "Setujui override",
+    "rejectTitle": "Tolak override",
+    "approveNote": "Menyetujui langsung menerapkan harga ke katalog dan tercatat di jejak audit.",
+    "noteLabel": "Catatan keputusan (opsional)"
+  },
+  "history": {
+    "title": "Riwayat override",
+    "empty": "Belum ada permintaan override yang diputuskan.",
+    "col": {
+      "id": "ID",
+      "sku": "SKU",
+      "price": "Harga diminta",
+      "status": "Status",
+      "decidedBy": "Diputuskan oleh",
+      "at": "Diputuskan pada"
+    }
+  },
+  "err": {
+    "forbidden": "Peran Anda tidak dapat memutuskan permintaan override",
+    "not_found": "Permintaan override tidak ditemukan",
+    "invalid_transition": "Permintaan ini sudah diputuskan",
+    "stale": "Harga yang diminta tidak lagi memenuhi batas produk — tolak dan ajukan ulang",
+    "reason_required": "Alasan wajib diisi"
+  }
+}

@@ -14,4 +14,5 @@ export * from './deployment';
 export * from './publish';
 export * from './rule';
 export * from './monitoring';
+export * from './ops';
 export * from './feedback';

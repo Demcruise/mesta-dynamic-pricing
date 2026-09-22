@@ -5,8 +5,8 @@
 import { CATEGORIES } from './categories';
 import { REGIONS, STORES_BY_REGION, type Region } from './scope';
 import type {
-  AnomalyAlert, AuditEvent, Channel, CompetitorObservation, DeploymentRecord, Outcome, PriceEvent, Product,
-  PublishJob, RationaleFactor, Recommendation, Rule, Strategy,
+  AnomalyAlert, AuditEvent, Channel, CompetitorObservation, DataSource, DeploymentRecord, Outcome,
+  OverrideRequest, PriceEvent, Product, PublishJob, RationaleFactor, Recommendation, Rule, Strategy,
 } from './ontology';
 
 export const NOW = Date.UTC(2026, 8, 21, 6, 0, 0);
@@ -283,4 +283,38 @@ export function generateDeployments(recs: Recommendation[]): { jobs: PublishJob[
     scheduledFor: null, createdBy: 'u-ops-1', createdAt: at, updatedAt: at,
   }];
   return { jobs, records };
+}
+
+/** The upstream feeds the loop depends on. One degraded + one failed so Sync Health has real signal. */
+export function generateDataSources(): DataSource[] {
+  const mk = (id: string, name: string, kind: DataSource['kind'], status: DataSource['status'], ageMin: number, coveragePct: number, total: number, rejected: number): DataSource => ({
+    id, name, kind, status, lastSyncAt: new Date(NOW - ageMin * 60_000).toISOString(),
+    coveragePct, recordsTotal: total, rejectedRecords: rejected,
+  });
+  return [
+    mk('DS-POS', 'POS price feed', 'pos_feed', 'healthy', 12, 99.4, 48_210, 6),
+    mk('DS-ECOM', 'E-commerce catalog', 'ecommerce_feed', 'healthy', 8, 100, 12_904, 0),
+    mk('DS-MKT', 'Marketplace listings', 'marketplace_feed', 'delayed', 190, 87.2, 9_412, 214),
+    mk('DS-COMP', 'Competitor price scrape', 'competitor_feed', 'failed', 1_540, 61.8, 4_003, 1_120),
+    mk('DS-ERP', 'ERP cost master', 'erp', 'paused', 4_300, 100, 500, 0),
+  ];
+}
+
+/** A pending + a decided request so the exceptions queue shows both halves of the workflow. */
+export function generateOverrideRequests(products: Product[]): OverrideRequest[] {
+  const [a, b] = products;
+  if (!a || !b) return [];
+  return [
+    {
+      id: 'OVR-1001', sku: a.sku, requestedPrice: Math.round(a.price * 0.9 / 100) * 100,
+      reason: 'Match weekend promo on marketplace', status: 'pending', requestedBy: 'u-analyst-1',
+      createdAt: new Date(NOW - 5 * HOUR).toISOString(), decidedBy: null, decidedAt: null, decisionNote: null,
+    },
+    {
+      id: 'OVR-1000', sku: b.sku, requestedPrice: Math.round(b.price * 1.05 / 100) * 100,
+      reason: 'Supplier surcharge pass-through', status: 'rejected', requestedBy: 'u-analyst-1',
+      createdAt: new Date(NOW - 2 * DAY).toISOString(), decidedBy: 'u-manager-1',
+      decidedAt: new Date(NOW - 2 * DAY + 3 * HOUR).toISOString(), decisionNote: 'Rejected — wait for the cost master to update',
+    },
+  ];
 }

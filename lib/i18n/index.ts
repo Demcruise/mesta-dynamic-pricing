@@ -27,11 +27,21 @@ import enGuardrails from './en/guardrails.json';
 import idGuardrails from './id/guardrails.json';
 import enApprovals from './en/approvals.json';
 import idApprovals from './id/approvals.json';
+import enData from './en/data.json';
+import idData from './id/data.json';
+import enExceptions from './en/exceptions.json';
+import idExceptions from './id/exceptions.json';
+import enAlerts from './en/alerts.json';
+import idAlerts from './id/alerts.json';
+import enCompetitors from './en/competitors.json';
+import idCompetitors from './id/competitors.json';
+import enAnalytics from './en/analytics.json';
+import idAnalytics from './id/analytics.json';
 
 /** One file per namespace per locale; add new namespaces here. */
 export const messages = {
-  id: { common: idCommon, catalog: idCatalog, strategy: idStrategy, simulation: idSimulation, recommendations: idRecommendations, deployment: idDeployment, monitoring: idMonitoring, audit: idAudit, overview: idOverview, rules: idRules, guardrails: idGuardrails, approvals: idApprovals },
-  en: { common: enCommon, catalog: enCatalog, strategy: enStrategy, simulation: enSimulation, recommendations: enRecommendations, deployment: enDeployment, monitoring: enMonitoring, audit: enAudit, overview: enOverview, rules: enRules, guardrails: enGuardrails, approvals: enApprovals },
+  id: { common: idCommon, catalog: idCatalog, strategy: idStrategy, simulation: idSimulation, recommendations: idRecommendations, deployment: idDeployment, monitoring: idMonitoring, audit: idAudit, overview: idOverview, rules: idRules, guardrails: idGuardrails, approvals: idApprovals, data: idData, exceptions: idExceptions, alerts: idAlerts, competitors: idCompetitors, analytics: idAnalytics },
+  en: { common: enCommon, catalog: enCatalog, strategy: enStrategy, simulation: enSimulation, recommendations: enRecommendations, deployment: enDeployment, monitoring: enMonitoring, audit: enAudit, overview: enOverview, rules: enRules, guardrails: enGuardrails, approvals: enApprovals, data: enData, exceptions: enExceptions, alerts: enAlerts, competitors: enCompetitors, analytics: enAnalytics },
 } as const;
 
 type Tree = { [k: string]: string | Tree };

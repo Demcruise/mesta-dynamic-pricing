@@ -23,8 +23,14 @@
     "section": {
       "workflow": "Workflow",
       "insight": "Insight",
-      "account": "Account"
-    }
+      "account": "Account",
+      "operations": "Operations"
+    },
+    "exceptions": "Exceptions",
+    "alerts": "Alerts",
+    "data": "Data health",
+    "competitors": "Competitors",
+    "analytics": "Analytics"
   },
   "crumb": {
     "new": "New",
@@ -185,7 +191,9 @@
     "rolledBack": "{sku} publish rolled back to the previous price",
     "flagged": "{sku} flagged for model review",
     "ruleRun": "Rule run: {n} new recommendations",
-    "grouped": "{n} similar"
+    "grouped": "{n} similar",
+    "overrideRequested": "Override request filed for {sku}",
+    "overrideDecided": "Override request on {sku} was decided"
   },
   "a11y": {
     "expandSidebar": "Expand sidebar",
@@ -238,7 +246,11 @@
     "manual_override": "Manual override",
     "strategy_rollback": "Strategy rolled back",
     "rule_run": "Rule run executed",
-    "rule_save": "Rule saved"
+    "rule_save": "Rule saved",
+    "override_request": "Override requested",
+    "override_approve": "Override approved",
+    "override_reject": "Override rejected",
+    "datasource_sync": "Data source re-sync"
   },
   "channel": {
     "pos": "POS",

@@ -23,8 +23,14 @@
     "section": {
       "workflow": "Alur Kerja",
       "insight": "Wawasan",
-      "account": "Akun"
-    }
+      "account": "Akun",
+      "operations": "Operasi"
+    },
+    "exceptions": "Pengecualian",
+    "alerts": "Peringatan",
+    "data": "Kesehatan data",
+    "competitors": "Kompetitor",
+    "analytics": "Analitik"
   },
   "crumb": {
     "new": "Baru",
@@ -185,7 +191,9 @@
     "rolledBack": "Publikasi {sku} dikembalikan ke harga sebelumnya",
     "flagged": "{sku} ditandai untuk tinjauan model",
     "ruleRun": "Eksekusi aturan: {n} rekomendasi baru",
-    "grouped": "{n} serupa"
+    "grouped": "{n} serupa",
+    "overrideRequested": "Permintaan override diajukan untuk {sku}",
+    "overrideDecided": "Permintaan override untuk {sku} telah diputuskan"
   },
   "a11y": {
     "expandSidebar": "Perluas sidebar",
@@ -238,7 +246,11 @@
     "manual_override": "Override manual",
     "strategy_rollback": "Strategi dikembalikan",
     "rule_run": "Eksekusi aturan dijalankan",
-    "rule_save": "Aturan disimpan"
+    "rule_save": "Aturan disimpan",
+    "override_request": "Override diminta",
+    "override_approve": "Override disetujui",
+    "override_reject": "Override ditolak",
+    "datasource_sync": "Sinkronisasi ulang sumber data"
   },
   "channel": {
     "pos": "POS",

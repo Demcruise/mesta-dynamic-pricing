@@ -1,0 +1,20 @@
+{
+  "page": {
+    "title": "Competitor workspace",
+    "desc": "Observed competitor prices aggregated per competitor and per SKU."
+  },
+  "empty": "No competitor observations in the current scope.",
+  "skusObserved": "{n} SKUs observed",
+  "avgGap": "avg gap vs us",
+  "freshest": "freshest {at}",
+  "action": { "expand": "Show SKUs", "collapse": "Hide SKUs" },
+  "tableCaption": "Observed prices from {name}",
+  "col": {
+    "sku": "SKU",
+    "product": "Product",
+    "theirs": "Their price",
+    "ours": "Our price",
+    "gap": "Gap",
+    "observed": "Observed"
+  }
+}

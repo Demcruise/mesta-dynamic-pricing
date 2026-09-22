@@ -2,37 +2,118 @@
   "title": "Katalog SKU",
   "subtitle": "{count} dari {total} SKU",
   "search": "Cari SKU atau nama",
-  "kpi": { "avgMargin": "Margin rata-rata", "belowMap": "SKU di bawah MAP", "pendingAi": "Rekomendasi AI tertunda", "avgGap": "Selisih harga kompetitor" },
-  "col": {
-    "select": "Pilih", "sku": "SKU", "name": "Nama", "category": "Kategori", "cost": "Biaya", "price": "Harga", "competitor": "Rata-rata kompetitor",
-    "margin": "Margin", "elasticity": "Elastisitas", "stock": "Stok", "lastChange": "Perubahan terakhir", "trend": "Tren", "ai": "AI", "actions": "Aksi"
+  "kpi": {
+    "avgMargin": "Margin rata-rata",
+    "belowMap": "SKU di bawah MAP",
+    "pendingAi": "Rekomendasi AI tertunda",
+    "avgGap": "Selisih harga kompetitor"
   },
-  "elasticity": { "inelastic": "Inelastis", "moderate": "Sedang", "elastic": "Elastis" },
-  "stock": { "in_stock": "Tersedia", "low_stock": "Menipis", "out_of_stock": "Habis" },
-  "health": { "healthy": "Sehat", "thin": "Tipis", "critical": "Kritis" },
+  "col": {
+    "select": "Pilih",
+    "sku": "SKU",
+    "name": "Nama",
+    "category": "Kategori",
+    "cost": "Biaya",
+    "price": "Harga",
+    "competitor": "Rata-rata kompetitor",
+    "margin": "Margin",
+    "elasticity": "Elastisitas",
+    "stock": "Stok",
+    "lastChange": "Perubahan terakhir",
+    "trend": "Tren",
+    "ai": "AI",
+    "actions": "Aksi"
+  },
+  "elasticity": {
+    "inelastic": "Inelastis",
+    "moderate": "Sedang",
+    "elastic": "Elastis"
+  },
+  "stock": {
+    "in_stock": "Tersedia",
+    "low_stock": "Menipis",
+    "out_of_stock": "Habis"
+  },
+  "health": {
+    "healthy": "Sehat",
+    "thin": "Tipis",
+    "critical": "Kritis"
+  },
   "filter": {
-    "category": "Kategori", "elasticity": "Elastisitas", "margin": "Kesehatan margin", "stock": "Status stok", "gapMin": "Selisih min (%)", "gapMax": "Selisih maks (%)",
-    "presets": "Preset filter", "savePreset": "Simpan preset", "presetName": "Nama preset", "count": "{n} filter aktif", "all": "Semua",
-    "presetRisk": "Margin berisiko", "presetUndercut": "Dipotong kompetitor"
+    "category": "Kategori",
+    "elasticity": "Elastisitas",
+    "margin": "Kesehatan margin",
+    "stock": "Status stok",
+    "gapMin": "Selisih min (%)",
+    "gapMax": "Selisih maks (%)",
+    "presets": "Preset filter",
+    "savePreset": "Simpan preset",
+    "presetName": "Nama preset",
+    "count": "{n} filter aktif",
+    "all": "Semua",
+    "presetRisk": "Margin berisiko",
+    "presetUndercut": "Dipotong kompetitor"
   },
   "action": {
-    "view": "Lihat detail", "simulate": "Simulasikan harga", "override": "Override harga", "audit": "Lihat audit", "applyStrategy": "Terapkan strategi",
-    "selected": "{n} SKU dipilih", "clearSelection": "Kosongkan pilihan"
+    "view": "Lihat detail",
+    "simulate": "Simulasikan harga",
+    "override": "Override harga",
+    "audit": "Lihat audit",
+    "applyStrategy": "Terapkan strategi",
+    "selected": "{n} SKU dipilih",
+    "clearSelection": "Kosongkan pilihan"
   },
   "override": {
-    "title": "Override harga manual", "newPrice": "Harga baru", "reason": "Alasan", "submit": "Terapkan", "cancel": "Batal",
-    "err": { "invalid": "Masukkan harga yang valid.", "below_min": "Harga di bawah batas minimum.", "above_max": "Harga di atas batas maksimum.", "map_breach": "Harga melanggar MAP.", "reason": "Alasan wajib diisi." },
-    "consequence": { "current": "Harga saat ini", "new": "Harga baru", "delta": "Perubahan", "vsMap": "vs MAP" },
-    "recovery": "Tercatat di jejak audit beserta alasannya. Batalkan kapan saja dengan override baru."
+    "title": "Override harga manual",
+    "newPrice": "Harga baru",
+    "reason": "Alasan",
+    "submit": "Terapkan",
+    "cancel": "Batal",
+    "err": {
+      "invalid": "Masukkan harga yang valid.",
+      "below_min": "Harga di bawah batas minimum.",
+      "above_max": "Harga di atas batas maksimum.",
+      "map_breach": "Harga melanggar MAP.",
+      "reason": "Alasan wajib diisi."
+    },
+    "consequence": {
+      "current": "Harga saat ini",
+      "new": "Harga baru",
+      "delta": "Perubahan",
+      "vsMap": "vs MAP"
+    },
+    "recovery": "Tercatat di jejak audit beserta alasannya. Batalkan kapan saja dengan override baru.",
+    "requestSubmit": "Minta persetujuan",
+    "requestNote": "Mengajukan permintaan override — manajer harus menyetujui sebelum harga berubah.",
+    "viewQueue": "Lihat antrean pengecualian",
+    "requestedToast": "Permintaan override diajukan untuk ditinjau manajer"
   },
   "empty": "Tidak ada SKU yang cocok dengan filter.",
   "error": "Gagal memuat katalog.",
   "simulateError": "Simulasikan error",
-  "ai": { "pending": "Ada rekomendasi", "none": "—" },
+  "ai": {
+    "pending": "Ada rekomendasi",
+    "none": "—"
+  },
   "detail": {
-    "identity": "Identitas", "history": "Riwayat harga", "competitors": "Perbandingan kompetitor", "recs": "Rekomendasi terkait", "audit": "Audit terkait",
-    "notFound": "SKU tidak ditemukan.", "backToCatalog": "Kembali ke katalog", "none": "Belum ada data.", "gap": "Selisih vs rata-rata kompetitor",
-    "minMax": "Batas harga", "map": "MAP", "date": "Tanggal", "price": "Harga", "competitor": "Kompetitor", "observed": "Diamati",
-    "skuNav": "Navigasi SKU", "prev": "Sebelumnya: {sku}", "next": "Berikutnya: {sku}", "position": "{i} dari {n}"
+    "identity": "Identitas",
+    "history": "Riwayat harga",
+    "competitors": "Perbandingan kompetitor",
+    "recs": "Rekomendasi terkait",
+    "audit": "Audit terkait",
+    "notFound": "SKU tidak ditemukan.",
+    "backToCatalog": "Kembali ke katalog",
+    "none": "Belum ada data.",
+    "gap": "Selisih vs rata-rata kompetitor",
+    "minMax": "Batas harga",
+    "map": "MAP",
+    "date": "Tanggal",
+    "price": "Harga",
+    "competitor": "Kompetitor",
+    "observed": "Diamati",
+    "skuNav": "Navigasi SKU",
+    "prev": "Sebelumnya: {sku}",
+    "next": "Berikutnya: {sku}",
+    "position": "{i} dari {n}"
   }
 }

@@ -1,0 +1,31 @@
+{
+  "page": {
+    "title": "Analitik harga",
+    "desc": "Kinerja loop harga — semua metrik diturunkan dari jejak audit dan katalog."
+  },
+  "kpi": {
+    "acceptance": "Tingkat penerimaan",
+    "acceptanceDef": "Porsi rekomendasi yang diputuskan dan disetujui atau disesuaikan.",
+    "acceptanceHint": "{n} diputuskan",
+    "priceIndex": "Indeks harga",
+    "priceIndexDef": "Rata-rata harga kita ÷ rata-rata kompetitor untuk SKU dalam cakupan. 100 = setara pasar.",
+    "priceIndexHint": "vs rata-rata kompetitor = 100",
+    "leakage": "Kebocoran margin",
+    "leakageDef": "Dampak margin terproyeksi dari rekomendasi yang ditolak atau kedaluwarsa tanpa keputusan.",
+    "leakageHint": "rec ditolak + kedaluwarsa",
+    "latency": "Latensi keputusan",
+    "latencyDef": "Rata-rata waktu dari pembuatan rekomendasi hingga keputusan tercatat.",
+    "latencyValue": "{d} hari",
+    "latencyHint": "dibuat → diputuskan",
+    "deploySuccess": "Tingkat sukses deploy",
+    "overrides": "Override manual"
+  },
+  "byCategory": { "title": "Per kategori" },
+  "col": {
+    "category": "Kategori",
+    "priceIndex": "Indeks harga",
+    "gap": "vs pasar",
+    "acceptance": "Penerimaan",
+    "leakage": "Kebocoran"
+  }
+}

@@ -1,5 +1,6 @@
 import {
-  Activity, BarChart3, FlaskConical, Inbox, LayoutDashboard, ListChecks, Package, Palette, ScrollText, Send, Settings, ShieldCheck, Sparkles,
+  Activity, BarChart3, BellRing, Database, FlaskConical, Inbox, LayoutDashboard, ListChecks, Package, Palette,
+  Scale, ScrollText, Send, Settings, ShieldCheck, Siren, Sparkles, TrendingUp,
   type LucideIcon,
 } from 'lucide-react';
 import type { Action } from '@/lib/rbac';
@@ -8,6 +9,7 @@ export interface NavItem {
   href: string;
   key:
     | 'overview' | 'catalog' | 'strategy' | 'rules' | 'guardrails' | 'simulation' | 'recommendations' | 'approvals' | 'deployment' | 'monitoring' | 'audit'
+    | 'exceptions' | 'alerts' | 'data' | 'competitors' | 'analytics'
     | 'designSystem' | 'settings';
   icon: LucideIcon;
   /** Absent = visible to every role (open routes). */
@@ -18,7 +20,7 @@ export interface NavItem {
 }
 
 export interface NavSection {
-  key: 'workflow' | 'insight' | 'account';
+  key: 'workflow' | 'operations' | 'insight' | 'account';
   items: NavItem[];
 }
 
@@ -37,9 +39,19 @@ export const NAV_SECTIONS: NavSection[] = [
     ],
   },
   {
+    key: 'operations',
+    items: [
+      { href: '/exceptions', key: 'exceptions', icon: Siren, action: 'exceptions.view' },
+      { href: '/alerts', key: 'alerts', icon: BellRing, action: 'alerts.view' },
+      { href: '/data', key: 'data', icon: Database, action: 'data.view' },
+    ],
+  },
+  {
     key: 'insight',
     items: [
       { href: '/monitoring', key: 'monitoring', icon: Activity, action: 'monitoring.view', mobile: true },
+      { href: '/competitors', key: 'competitors', icon: Scale, action: 'competitors.view' },
+      { href: '/analytics', key: 'analytics', icon: TrendingUp, action: 'analytics.view' },
       { href: '/audit', key: 'audit', icon: ScrollText, action: 'audit.view' },
       { href: '/overview', key: 'overview', icon: LayoutDashboard, action: 'overview.view', mobile: true },
     ],

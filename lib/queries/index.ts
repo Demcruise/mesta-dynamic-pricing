@@ -10,6 +10,7 @@ import { useScenarioStore } from '../stores/scenario';
 import { useDeploymentStore } from '../stores/deployment';
 import { usePublishJobStore } from '../stores/publish';
 import { useMonitoringStore } from '../stores/monitoring';
+import { useDataSourceStore, useOverrideRequestStore } from '../stores/ops';
 import { useNotificationStore } from '../stores/notification';
 import { useUiStore } from '../stores/ui';
 import { selectAuditForUser } from '../audit-scope';
@@ -86,4 +87,6 @@ export const useAnomalies = () => useListQuery(keys.anomaly.list(), () => useMon
 export const useOutcomes = () => useListQuery(['anomaly', 'outcomes'], () => useMonitoringStore.getState().outcomes);
 export const usePriceEvents = () => useListQuery(['sku', 'priceEvents'], () => useProductCatalogStore.getState().priceEvents);
 export const useNotifications = () => useListQuery(['notification', 'list'], () => useNotificationStore.getState().items);
+export const useDataSources = () => useListQuery(['datasource', 'list'], () => useDataSourceStore.getState().sources);
+export const useOverrideRequests = () => useListQuery(['override', 'list'], () => useOverrideRequestStore.getState().requests);
 export const useStrategyHistory = (id: string) => useListQuery(['strategy', 'history', id], () => useStrategyStore.getState().history[id] ?? []);

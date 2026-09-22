@@ -1,0 +1,26 @@
+{
+  "page": {
+    "title": "Pusat peringatan",
+    "desc": "Anomali, kegagalan deployment, dan masalah kualitas data dalam satu feed severity."
+  },
+  "sev": {
+    "critical": "Kritis",
+    "warning": "Peringatan",
+    "info": "Info"
+  },
+  "kind": {
+    "anomaly": "Anomali harga",
+    "deploy_failure": "Kegagalan deployment",
+    "data_quality": "Kualitas data"
+  },
+  "empty": "Tidak ada peringatan aktif dalam cakupan saat ini.",
+  "action": {
+    "anatomy": "Detail",
+    "investigate": "Selidiki"
+  },
+  "anatomy": {
+    "changed": "Apa yang berubah",
+    "expected": "Diharapkan",
+    "observed": "Teramati"
+  }
+}

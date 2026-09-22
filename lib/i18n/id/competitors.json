@@ -1,0 +1,20 @@
+{
+  "page": {
+    "title": "Ruang kerja kompetitor",
+    "desc": "Harga kompetitor yang teramati, diagregasi per kompetitor dan per SKU."
+  },
+  "empty": "Tidak ada observasi kompetitor dalam cakupan saat ini.",
+  "skusObserved": "{n} SKU teramati",
+  "avgGap": "gap rata-rata vs kita",
+  "freshest": "terbaru {at}",
+  "action": { "expand": "Tampilkan SKU", "collapse": "Sembunyikan SKU" },
+  "tableCaption": "Harga teramati dari {name}",
+  "col": {
+    "sku": "SKU",
+    "product": "Produk",
+    "theirs": "Harga mereka",
+    "ours": "Harga kita",
+    "gap": "Gap",
+    "observed": "Teramati"
+  }
+}

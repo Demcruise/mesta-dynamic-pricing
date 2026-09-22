@@ -4,6 +4,7 @@ import { go, open } from './helpers';
 const ROUTES = [
   '/overview', '/catalog', '/catalog/SKU-1004', '/strategy', '/strategy/new', '/simulation?sku=SKU-1004',
   '/recommendations', '/recommendations/REC-1000', '/deployment', '/monitoring', '/audit',
+  '/data', '/exceptions', '/alerts', '/competitors', '/analytics',
 ];
 const WIDTHS = [320, 768, 1024, 1440];
 

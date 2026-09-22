@@ -6,11 +6,12 @@ import { ConsequencePreview, DocsLink, RecoveryNotice } from '@/components/ds/tr
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { Field, Input } from '@/components/ui/field';
+import { requestOverride } from '@/lib/actions/ops';
 import { validatePrice } from '@/lib/domain';
 import { useCan } from '@/lib/hooks';
 import { useTranslation } from '@/lib/i18n';
 import type { Product } from '@/lib/ontology';
-import { useAuditStore, useProductCatalogStore, useSessionStore } from '@/lib/stores';
+import { useAuditStore, useProductCatalogStore, useSessionStore, useToastStore } from '@/lib/stores';
 
 export function OverrideDialog({ product, onClose }: { product: Product | null; onClose: () => void }) {
   const { t } = useTranslation();
@@ -25,9 +26,12 @@ function OverrideForm({ product, onClose }: { product: Product; onClose: () => v
   const { t } = useTranslation();
   const can = useCan();
   const user = useSessionStore((s) => s.user);
+  const toast = useToastStore((s) => s.push);
   const [price, setPrice] = useState(String(product.price));
   const [reason, setReason] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  // Managers apply overrides directly; everyone else files a request for approval.
+  const direct = can('catalog.override_price') && can('override.decide');
 
   const result = validatePrice(product, Number(price));
   const priceErr = result === 'ok' ? undefined : t(`catalog.override.err.${result}`);
@@ -37,14 +41,20 @@ function OverrideForm({ product, onClose }: { product: Product; onClose: () => v
     e.preventDefault();
     setSubmitted(true);
     // Handler-level RBAC: visibility alone is not enough.
-    if (!can('catalog.override_price') || priceErr || reasonErr) return;
+    if (!can('override.request') || priceErr || reasonErr) return;
     const newPrice = Number(price);
-    if (!useProductCatalogStore.getState().applyPrice(product.sku, newPrice, 'manual_override')) return;
-    useAuditStore.getState().record({
-      type: 'manual_override', actorId: user.userId, actorRole: user.role, entityType: 'product',
-      entityId: product.sku, sku: product.sku, source: 'ui', note: reason.trim(),
-      snapshot: { oldPrice: product.price, newPrice },
-    });
+    if (direct) {
+      if (!useProductCatalogStore.getState().applyPrice(product.sku, newPrice, 'manual_override')) return;
+      useAuditStore.getState().record({
+        type: 'manual_override', actorId: user.userId, actorRole: user.role, entityType: 'product',
+        entityId: product.sku, sku: product.sku, source: 'ui', note: reason.trim(),
+        snapshot: { oldPrice: product.price, newPrice },
+      });
+    } else {
+      const r = requestOverride(user, product.sku, newPrice, reason);
+      if (!r.ok) { toast(t(`exceptions.err.${r.error}`)); return; }
+      toast(t('catalog.override.requestedToast'));
+    }
     onClose();
   };
 
@@ -83,10 +93,13 @@ function OverrideForm({ product, onClose }: { product: Product; onClose: () => v
           ]}
         />
       )}
-      <RecoveryNotice>{t('catalog.override.recovery')} <DocsLink href="/audit">{t('common.action.viewAudit')}</DocsLink></RecoveryNotice>
+      <RecoveryNotice>
+        {direct ? t('catalog.override.recovery') : t('catalog.override.requestNote')}{' '}
+        <DocsLink href={direct ? '/audit' : '/exceptions'}>{t(direct ? 'common.action.viewAudit' : 'catalog.override.viewQueue')}</DocsLink>
+      </RecoveryNotice>
       <div className="flex justify-end gap-2">
         <Button variant="secondary" onClick={onClose}>{t('catalog.override.cancel')}</Button>
-        <Button type="submit">{t('catalog.override.submit')}</Button>
+        <Button type="submit">{direct ? t('catalog.override.submit') : t('catalog.override.requestSubmit')}</Button>
       </div>
     </form>
   );

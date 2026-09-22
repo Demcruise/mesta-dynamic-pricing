@@ -182,6 +182,37 @@ export interface AnomalyAlert {
   strategyId: string | null;
 }
 
+export type DataSourceKind = 'pos_feed' | 'ecommerce_feed' | 'marketplace_feed' | 'competitor_feed' | 'erp';
+export type DataSourceStatus = 'healthy' | 'syncing' | 'delayed' | 'failed' | 'paused';
+
+/** An upstream feed the pricing loop depends on. Coverage/rejects describe the last completed sync. */
+export interface DataSource {
+  id: string;
+  name: string;
+  kind: DataSourceKind;
+  status: DataSourceStatus;
+  lastSyncAt: string;
+  coveragePct: number; // share of catalog SKUs receiving data
+  recordsTotal: number;
+  rejectedRecords: number;
+}
+
+export type OverrideRequestStatus = 'pending' | 'approved' | 'rejected';
+
+/** A manual price override waiting on manager approval — direct edits still exist for managers. */
+export interface OverrideRequest {
+  id: string;
+  sku: string;
+  requestedPrice: number;
+  reason: string;
+  status: OverrideRequestStatus;
+  requestedBy: string;
+  createdAt: string;
+  decidedBy: string | null;
+  decidedAt: string | null;
+  decisionNote: string | null;
+}
+
 export type AuditEventType =
   | 'strategy_submit' | 'strategy_activate' | 'strategy_reject' | 'strategy_rollback'
   | 'scenario_sent'
@@ -190,6 +221,8 @@ export type AuditEventType =
   | 'deployment_success' | 'deployment_failure' | 'deployment_retry' | 'deployment_rollback'
   | 'publish_scheduled' | 'publish_cancelled'
   | 'rule_save' | 'rule_run'
+  | 'override_request' | 'override_approve' | 'override_reject'
+  | 'datasource_sync'
   | 'model_review_feedback' | 'manual_override';
 
 export interface AuditEvent {
@@ -197,7 +230,7 @@ export interface AuditEvent {
   type: AuditEventType;
   actorId: string;
   actorRole: Role;
-  entityType: 'strategy' | 'scenario' | 'recommendation' | 'deployment' | 'anomaly' | 'product' | 'rule';
+  entityType: 'strategy' | 'scenario' | 'recommendation' | 'deployment' | 'anomaly' | 'product' | 'rule' | 'override' | 'datasource';
   entityId: string;
   sku: string | null;
   source: 'ui' | 'agent' | 'system';
