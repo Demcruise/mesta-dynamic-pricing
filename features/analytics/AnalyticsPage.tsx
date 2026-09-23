@@ -136,7 +136,10 @@ export function AnalyticsPage() {
         <ErrorState title={t('common.state.error')} onRetry={() => { recs.refetch(); products.refetch(); deployments.refetch(); audit.refetch(); }} />
       ) : (
         <>
-          <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          {/* T-01: KPIs are grouped — pricing outcomes first, operational health second. */}
+          <section aria-label={t('analytics.group.outcomes')}>
+            <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-faint">{t('analytics.group.outcomes')}</h2>
+          <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <KpiCard
               label={<MetricDefinition label={t('analytics.kpi.acceptance')} definition={t('analytics.kpi.acceptanceDef')} />}
               value={stats.acceptance === null ? '—' : formatPercent(stats.acceptance, locale)}
@@ -159,7 +162,7 @@ export function AnalyticsPage() {
             />
           </div>
 
-          <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4" role="group" aria-label={t('analytics.group.outcomesSecondary')}>
             <KpiCard
               label={<MetricDefinition label={t('analytics.kpi.unitsSold')} definition={t('analytics.kpi.unitsSoldDef')} />}
               value={stats.unitsSold === null ? '—' : Math.round(stats.unitsSold).toLocaleString(locale)}
@@ -182,6 +185,9 @@ export function AnalyticsPage() {
             />
           </div>
 
+          </section>
+          <section aria-label={t('analytics.group.operations')}>
+            <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-faint">{t('analytics.group.operations')}</h2>
           <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div className="rounded-card border border-line bg-surface p-3 shadow-e1">
               <p className="text-xs text-muted">{t('analytics.kpi.deploySuccess')}</p>
@@ -194,6 +200,7 @@ export function AnalyticsPage() {
               <p className="mt-1 text-lg font-semibold tabular">{stats.overrides}</p>
             </div>
           </div>
+          </section>
 
           <section aria-label={t('analytics.byObjective.title')} className="mb-6">
             <h2 className="mb-2 text-sm font-semibold">{t('analytics.byObjective.title')}</h2>

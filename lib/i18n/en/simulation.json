@@ -89,5 +89,6 @@
   "historical": {
     "none": "No past price points",
     "vs": "vs {price} · {at}"
-  }
+  },
+  "scenarioLabel": "Scenario {letter}"
 }

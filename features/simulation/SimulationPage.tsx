@@ -57,6 +57,9 @@ export function SimulationPage({ scenarioId }: { scenarioId?: string }) {
   return <Simulator key={`${scenarioId ?? ''}|${sku}|${strategyId ?? ''}`} sku={sku} strategyId={strategyId} initial={saved.data ?? null} basePrice={products.data.find((p) => p.sku === sku)?.price ?? null} />;
 }
 
+/** L-03: scenario columns are lettered A/B/C against the baseline — "Scenario 1" carries no meaning. */
+const SCENARIO_LETTERS = ['A', 'B', 'C'] as const;
+
 function Simulator({ sku, strategyId, initial, basePrice }: {
   sku: string; strategyId: string | null; basePrice: number | null;
   initial: { id: string; proposedPrice: number; recommendationId: string | null } | null;
@@ -88,7 +91,7 @@ function Simulator({ sku, strategyId, initial, basePrice }: {
     return () => window.removeEventListener('beforeunload', h);
   }, [dirty]);
 
-  if (!product) return <SkuPicker strategyId={strategyId} />;
+  if (!product) return <SkuPicker strategyId={strategyId} currentSku={sku} />;
 
   const bounds = priceBounds(product, strategy);
   const base = project(product, product.price);
@@ -121,9 +124,9 @@ function Simulator({ sku, strategyId, initial, basePrice }: {
   const markers = [
     { label: 'B', price: product.price },
     ...(product.cost >= product.minPrice && product.cost <= product.maxPrice ? [{ label: 'E', price: product.cost }] : []),
-    ...rows.filter((r) => r.check === 'ok').map((r, i) => ({ label: String(i + 1), price: r.price })),
+    ...rows.filter((r) => r.check === 'ok').map((r, i) => ({ label: SCENARIO_LETTERS[i] ?? String(i + 1), price: r.price })),
   ];
-  const columns = [{ label: t('simulation.baseline'), p: base }, ...rows.filter((r) => Number.isFinite(r.price) && r.price > 0).map((r, i) => ({ label: t('simulation.scenario', { n: i + 1 }), p: project(product, r.price) }))];
+  const columns = [{ label: t('simulation.baseline'), p: base }, ...rows.filter((r) => Number.isFinite(r.price) && r.price > 0).map((r, i) => ({ label: SCENARIO_LETTERS[i] ?? t('simulation.scenario', { n: i + 1 }), p: project(product, r.price) }))];
   const pct = (v: number) => formatPercent(v, locale);
   const metric: { key: string; render: (p: ReturnType<typeof project>) => React.ReactNode }[] = [
     { key: 'price', render: (p) => <PriceValue value={Math.round(p.price)} /> },
@@ -154,7 +157,7 @@ function Simulator({ sku, strategyId, initial, basePrice }: {
     <>
       <PageHeader
         title={t('simulation.title')}
-        subtitle={`${product.sku} · ${product.name}`}
+        subtitle={<ProductIdentity product={product} />}
         actions={
           <>
             <FreshnessBadge at={competitorFreshAt} label={competitorFreshAt ? t('simulation.competitorFresh', { at: formatRelativeTime(competitorFreshAt, locale) }) : undefined} />
@@ -172,9 +175,9 @@ function Simulator({ sku, strategyId, initial, basePrice }: {
           const disabled = !!s.sentRec || !can('simulation.use');
           const errId = `err-${s.key}`;
           return (
-            <section key={s.key} aria-label={t('simulation.scenario', { n: i + 1 })} className="rounded-card border border-line bg-surface p-card shadow-e1">
+            <section key={s.key} aria-label={t('simulation.scenarioLabel', { letter: SCENARIO_LETTERS[i] ?? String(i + 1) })} className="rounded-card border border-line bg-surface p-card shadow-e1">
               <div className="mb-2 flex items-center justify-between">
-                <h2 className="text-sm font-semibold">{t('simulation.scenario', { n: i + 1 })}</h2>
+                <h2 className="text-sm font-semibold">{t('simulation.scenarioLabel', { letter: SCENARIO_LETTERS[i] ?? String(i + 1) })}</h2>
                 {scenarios.length > 1 && !s.sentRec && (
                   <button type="button" aria-label={t('simulation.controls.remove', { n: i + 1 })} className="text-muted transition-colors duration-fast hover:text-fg"
                     onClick={() => setScenarios((all) => all.filter((x) => x.key !== s.key))}>×</button>
@@ -306,7 +309,7 @@ function StrategySelect({ product, strategyId }: { product: Product; strategyId:
   );
 }
 
-function SkuPicker({ strategyId }: { strategyId: string | null }) {
+function SkuPicker({ strategyId, currentSku }: { strategyId: string | null; currentSku: string }) {
   const { t } = useTranslation();
   const router = useRouter();
   const products = useScopedSkuList().data;
@@ -322,15 +325,20 @@ function SkuPicker({ strategyId }: { strategyId: string | null }) {
         <p className="mb-2 text-sm text-muted">{t('simulation.context.pick')}</p>
         <Input aria-label={t('simulation.context.searchSku')} placeholder={t('simulation.context.searchSku')} value={q} onChange={(e) => setQ(e.target.value)} />
         <ul className="mt-2 divide-y divide-line rounded-card border border-line bg-surface shadow-e1">
-          {hits.map((p) => (
+          {hits.map((p) => {
+            const selected = p.sku === currentSku;
+            return (
             <li key={p.sku}>
-              <button type="button" className="flex w-full items-center justify-between px-3 py-2 text-left text-sm transition-colors duration-fast hover:bg-subtle"
+              {/* L-02: the picker's selected state mirrors the loaded SKU. */}
+              <button type="button" aria-pressed={selected}
+                className={`flex w-full items-center justify-between px-3 py-2 text-left text-sm transition-colors duration-fast ${selected ? 'bg-brand-soft' : 'hover:bg-subtle'}`}
                 onClick={() => router.push(`/simulation?sku=${p.sku}${strategyId ? `&strategyId=${strategyId}` : ''}`)}>
                 <ProductIdentity product={p} />
                 <PriceValue value={p.price} muted />
               </button>
             </li>
-          ))}
+            );
+          })}
         </ul>
       </div>
     </>

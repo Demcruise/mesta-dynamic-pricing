@@ -15,6 +15,10 @@ export interface ExceptionItem {
   count: number;
   at: string;
   href: string;
+  /** O-01 evidence fragment — prices, ages, request ids — rendered verbatim (locale-neutral). */
+  detail?: string;
+  /** O-02 entity the exception points at (rec id / override id) for the investigation drawer. */
+  refId?: string;
 }
 
 const STALE_PRICE_MS = 30 * 86_400_000;
@@ -41,15 +45,15 @@ export function deriveExceptions(input: {
     if (r.status !== 'pending' && r.status !== 'escalated') continue;
     const h = recommendationHealth(r);
     if (h.breach) {
-      out.push({ id: `exc-breach-${r.id}`, kind: 'breach', severity: 'critical', sku: r.sku, category: null, count: 1, at: r.createdAt, href: `/recommendations/${r.id}` });
+      out.push({ id: `exc-breach-${r.id}`, kind: 'breach', severity: 'critical', sku: r.sku, category: null, count: 1, at: r.createdAt, href: `/recommendations/${r.id}`, detail: `${r.currentPrice} → ${r.proposedPrice}`, refId: r.id });
     } else if (h.stale) {
-      out.push({ id: `exc-stale-${r.id}`, kind: 'stale', severity: 'warning', sku: r.sku, category: null, count: 1, at: r.createdAt, href: `/recommendations/${r.id}` });
+      out.push({ id: `exc-stale-${r.id}`, kind: 'stale', severity: 'warning', sku: r.sku, category: null, count: 1, at: r.createdAt, href: `/recommendations/${r.id}`, detail: `${r.id} · ${Math.round((now - new Date(r.createdAt).getTime()) / 86_400_000)}d`, refId: r.id });
     }
   }
 
   for (const o of overrides) {
     if (o.status !== 'pending') continue;
-    out.push({ id: `exc-ovr-${o.id}`, kind: 'override_request', severity: 'warning', sku: o.sku, category: null, count: 1, at: o.createdAt, href: `/exceptions` });
+    out.push({ id: `exc-ovr-${o.id}`, kind: 'override_request', severity: 'warning', sku: o.sku, category: null, count: 1, at: o.createdAt, href: `/exceptions`, detail: `→ ${o.requestedPrice}`, refId: o.id });
   }
 
   const observed = new Set(competitors.map((c) => c.sku));
@@ -62,12 +66,13 @@ export function deriveExceptions(input: {
     missingByCat.set(p.category, m);
   }
   for (const [category, m] of missingByCat) {
-    out.push({ id: `exc-input-${category}`, kind: 'missing_input', severity: 'warning', sku: null, category, count: m.n, at: m.oldest, href: '/catalog' });
+    out.push({ id: `exc-input-${category}`, kind: 'missing_input', severity: 'warning', sku: null, category, count: m.n, at: m.oldest, href: '/catalog', detail: `${m.n} SKU` });
   }
 
   for (const p of products) {
-    if (now - new Date(p.lastChangeAt).getTime() <= STALE_PRICE_MS) continue;
-    out.push({ id: `exc-staleprice-${p.sku}`, kind: 'stale_price', severity: 'info', sku: p.sku, category: null, count: 1, at: p.lastChangeAt, href: `/catalog/${p.sku}` });
+    const days = Math.round((now - new Date(p.lastChangeAt).getTime()) / 86_400_000);
+    if (days <= 30) continue;
+    out.push({ id: `exc-staleprice-${p.sku}`, kind: 'stale_price', severity: 'info', sku: p.sku, category: null, count: 1, at: p.lastChangeAt, href: `/catalog/${p.sku}`, detail: `${days}d`, refId: p.sku });
   }
 
   return out.sort((a, b) => rank[a.severity] - rank[b.severity] || b.at.localeCompare(a.at));

@@ -13,7 +13,9 @@
     "updated": "Diperbarui",
     "actions": "Aksi",
     "matches": "{n} dari {total} SKU cocok",
-    "bound": "Terikat ke"
+    "bound": "Terikat ke",
+    "and": "dan",
+    "conflicts": "{n} konflik"
   },
   "scope": {
     "all": "Semua SKU",

@@ -13,10 +13,13 @@ interface UiState {
   sidebarCollapsed: boolean;
   /** Org → Region → Store slice every scoped page filters by. */
   scope: ScopeSelection;
+  /** Returning users dismiss setup; onboarding only reappears when explicitly opened. */
+  onboardingDismissed: boolean;
   setDensity: (d: Density) => void;
   setTheme: (t: Theme) => void;
   setLocale: (l: Locale) => void;
   setScope: (s: ScopeSelection) => void;
+  setOnboardingDismissed: (v: boolean) => void;
   toggleSidebar: () => void;
 }
 
@@ -32,10 +35,12 @@ export const useUiStore = create<UiState>()(
       locale: 'id',
       sidebarCollapsed: false,
       scope: ORG_SCOPE,
+      onboardingDismissed: false,
       setDensity: (density) => set({ density }),
       setTheme: (theme) => set({ theme }),
       setLocale: (locale) => set({ locale }),
       setScope: (scope) => set({ scope }),
+      setOnboardingDismissed: (onboardingDismissed) => set({ onboardingDismissed }),
       toggleSidebar: () => set((s) => ({ sidebarCollapsed: !s.sidebarCollapsed })),
     }),
     { name: 'mesta-ui', skipHydration: true },

@@ -9,6 +9,7 @@ import { Drawer } from '@/components/ds/Drawer';
 import { LiveDot } from '@/components/ds/LiveDot';
 import { OnboardingChecklist } from '@/components/ds/OnboardingChecklist';
 import { PriceValue } from '@/components/ds/PriceValue';
+import { CategoryIcon, ProductIdentity } from '@/components/ds/ProductIdentity';
 import { RationaleBreakdown } from '@/components/ds/RationaleBreakdown';
 import { RuleEvaluation } from '@/components/ds/RuleEvaluation';
 import { SeverityChip } from '@/components/ds/SeverityChip';
@@ -247,6 +248,20 @@ const ENTRIES: Entry[] = [
     doText: 'Every data-dense list view uses this; gate CSV by RBAC and pass visibility for tables with >4 columns.', dontText: 'Do not hand-roll table markup or a second sort implementation.',
     reactBits: 'Blocks › data-table-1 (pattern source)',
     demo: <TableDemo />,
+  },
+  {
+    name: 'ProductIdentity / CategoryIcon', file: 'components/ds/ProductIdentity.tsx', summary: 'Canonical product reference: category icon + name primary, "Category · SKU" secondary. One object identity across every surface.',
+    props: 'ProductIdentity{product,size?:"md"|"sm"} · CategoryIcon{category,className?} — stable category→icon map with Package fallback.',
+    a11y: 'Icon is decorative (aria-hidden) with a title tooltip; identity text truncates instead of overlapping.',
+    doText: 'Everywhere a SKU appears alongside its product — tables, drawers, pickers, command menu.', dontText: 'Do not render bare SKU strings when a product object is available.',
+    reactBits: 'Mesta convention (SKU-001/002)',
+    demo: (
+      <div className="flex flex-col gap-2">
+        <ProductIdentity product={DEMO_PRODUCT} />
+        <ProductIdentity product={DEMO_PRODUCT} size="sm" />
+        <div className="flex items-center gap-2 text-sm text-muted"><CategoryIcon category={DEMO_PRODUCT.category} /> CategoryIcon standalone</div>
+      </div>
+    ),
   },
   {
     name: 'Drawer / Dialog', file: 'components/ds/Drawer.tsx · components/ui/dialog.tsx', summary: 'Right-anchored quick-view sheet vs centred decision modal.',

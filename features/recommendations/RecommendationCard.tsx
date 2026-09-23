@@ -25,10 +25,12 @@ import { useProductCatalogStore, useSessionStore, useToastStore, useUndoStore } 
 import { DecisionDialog, type DialogMode } from './DecisionDialog';
 import { changeRatio } from './filters';
 
-export function RecommendationCard({ rec, product, defaultOpen = false, showStatus = true }: {
+export function RecommendationCard({ rec, product, defaultOpen = false, showStatus = true, stickyActions = false }: {
   rec: Recommendation; product: Product | undefined; defaultOpen?: boolean;
   /** Under a status-owning queue tab the chip repeats the tab — only render it when it adds information. */
   showStatus?: boolean;
+  /** M-06: on the detail surface the decision row stays pinned while evidence scrolls. */
+  stickyActions?: boolean;
 }) {
   const { t, locale } = useTranslation();
   const user = useSessionStore((s) => s.user);
@@ -128,11 +130,14 @@ export function RecommendationCard({ rec, product, defaultOpen = false, showStat
         <p role="note" className="flex items-center gap-1.5 text-xs text-critical"><TriangleAlert className="size-3.5" aria-hidden />{t('recommendations.card.breach')}</p>
       )}
 
-      <RationaleBreakdown factors={rec.rationale} />
       <ApprovalChain rec={rec} />
 
       <details open={defaultOpen} className="text-sm">
         <summary className="cursor-pointer text-xs font-medium text-muted">{t('recommendations.card.evidence')}</summary>
+        {/* M-03: rationale + run evidence sit behind disclosure — the collapsed card carries identity, price, confidence, status. */}
+        <div className="mt-2">
+          <RationaleBreakdown factors={rec.rationale} />
+        </div>
         <div className="mt-2">
           <AgentRunTimeline steps={run} />
         </div>
@@ -167,7 +172,9 @@ export function RecommendationCard({ rec, product, defaultOpen = false, showStat
       )}
 
       <RoleGate action="recommendation.decide">
-        <div className="flex flex-wrap items-center gap-2">
+        <div className={stickyActions
+          ? 'sticky bottom-0 -mx-card -mb-card flex flex-wrap items-center gap-2 border-t border-line bg-surface/95 px-card py-2 backdrop-blur'
+          : 'flex flex-wrap items-center gap-2'}>
           {canDecide && health.stale && (
             <label className="flex items-center gap-1.5 text-xs text-warn">
               <input type="checkbox" checked={staleAck} onChange={(e) => setStaleAck(e.target.checked)} />

@@ -70,7 +70,19 @@
   "covered": "{n} SKUs governed",
   "breaches": {
     "title": "Current breaches",
-    "none": "No SKU currently breaches a hard constraint."
+    "none": "No SKU currently breaches a hard constraint.",
+    "caption": "SKUs currently violating a guardrail",
+    "flagged": "Pending rec flagged:",
+    "floorDetail": "Margin below {v} floor",
+    "inspect": "Inspect",
+    "openSku": "Open SKU detail",
+    "col": {
+      "sku": "SKU",
+      "constraint": "Constraint",
+      "price": "Current price",
+      "detail": "Detail",
+      "action": "Actions"
+    }
   },
   "drill": {
     "title": "Per-SKU drill-down",
@@ -99,5 +111,14 @@
     "map_breach": "MAP breach",
     "exceeds_change": "Exceeds change limit"
   },
-  "notModelled": "Not modelled"
+  "notModelled": "Not modelled",
+  "group": {
+    "breached": "Breached",
+    "enforced": "Enforced",
+    "observed": "Observed",
+    "unavailable": "Not modelled"
+  },
+  "filterHint": "Click to filter the breach table",
+  "filterOn": "Filtering the breach table — click to clear",
+  "clearFilter": "Clear: {name}"
 }

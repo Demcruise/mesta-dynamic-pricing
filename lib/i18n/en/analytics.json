@@ -51,5 +51,10 @@
     "recs": "Recommendations",
     "acceptance": "Acceptance",
     "margin": "Projected margin"
+  },
+  "group": {
+    "outcomes": "Pricing outcomes",
+    "outcomesSecondary": "Volume & price realization",
+    "operations": "Operations"
   }
 }

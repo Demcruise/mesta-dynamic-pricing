@@ -51,5 +51,10 @@
     "recs": "Rekomendasi",
     "acceptance": "Penerimaan",
     "margin": "Margin terproyeksi"
+  },
+  "group": {
+    "outcomes": "Hasil pricing",
+    "outcomesSecondary": "Volume & realisasi harga",
+    "operations": "Operasional"
   }
 }

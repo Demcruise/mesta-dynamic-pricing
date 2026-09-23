@@ -98,7 +98,9 @@
       "decideHint": "Approve, adjust, or reject — every decision is audited.",
       "publish": "Publish a price change",
       "publishHint": "Push an approved recommendation to a channel."
-    }
+    },
+    "reopen": "Open setup",
+    "dismiss": "Dismiss setup checklist"
   },
   "activity": {
     "title": "Recent activity",
@@ -118,5 +120,18 @@
     "ops_leadDesc": "Publishing and data feeds",
     "compliance": "Compliance",
     "complianceDesc": "Audit trail and oversight"
+  },
+  "attention": {
+    "title": "Needs attention",
+    "awaiting": "approvals awaiting you",
+    "breaches": "guardrail breaches",
+    "failedDeploys": "failed deployments",
+    "anomalies": "anomalies",
+    "sources": "unhealthy feeds"
+  },
+  "queue": {
+    "title": "Decision queue",
+    "all": "View all",
+    "empty": "Queue is clear — no pending recommendations."
   }
 }

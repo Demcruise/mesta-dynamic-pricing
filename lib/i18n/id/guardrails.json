@@ -70,7 +70,19 @@
   "covered": "{n} SKU diatur",
   "breaches": {
     "title": "Pelanggaran saat ini",
-    "none": "Tidak ada SKU yang melanggar batasan keras saat ini."
+    "none": "Tidak ada SKU yang melanggar batasan keras saat ini.",
+    "caption": "SKU yang saat ini melanggar guardrail",
+    "flagged": "Rek pending ditandai:",
+    "floorDetail": "Margin di bawah floor {v}",
+    "inspect": "Periksa",
+    "openSku": "Buka detail SKU",
+    "col": {
+      "sku": "SKU",
+      "constraint": "Batasan",
+      "price": "Harga saat ini",
+      "detail": "Detail",
+      "action": "Aksi"
+    }
   },
   "drill": {
     "title": "Rincian per SKU",
@@ -99,5 +111,14 @@
     "map_breach": "Pelanggaran MAP",
     "exceeds_change": "Melebihi batas perubahan"
   },
-  "notModelled": "Tidak dimodelkan"
+  "notModelled": "Tidak dimodelkan",
+  "group": {
+    "breached": "Dilanggar",
+    "enforced": "Ditegakkan",
+    "observed": "Diamati",
+    "unavailable": "Belum dimodelkan"
+  },
+  "filterHint": "Klik untuk memfilter tabel pelanggaran",
+  "filterOn": "Sedang memfilter tabel — klik untuk hapus",
+  "clearFilter": "Hapus: {name}"
 }

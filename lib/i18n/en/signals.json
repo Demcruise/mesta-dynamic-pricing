@@ -23,5 +23,12 @@
     "stock": "Stock",
     "daysSupply": "Days of supply",
     "risk": "Stock risk"
+  },
+  "def": {
+    "velocity": "Modelled units per month at the current price — from the demand model, not observed sales.",
+    "elasticity": "Price elasticity coefficient and its band; more negative means demand reacts harder to price moves.",
+    "coverage": "How many competitor feeds report a price for this SKU.",
+    "daysSupply": "Stock units divided by modelled daily velocity. “—” when velocity is zero.",
+    "risk": "Stockout < 7d of supply, low < 14d, overstock > 90d — thresholds are demand-model estimates."
   }
 }

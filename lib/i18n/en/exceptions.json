@@ -47,5 +47,18 @@
     "invalid_transition": "This request was already decided",
     "stale": "The requested price no longer passes product bounds — reject and re-file",
     "reason_required": "A reason is required"
+  },
+  "drawer": {
+    "severity": "Severity",
+    "kind": "Kind",
+    "product": "Product",
+    "category": "Category",
+    "detail": "Detail",
+    "age": "Age",
+    "recTitle": "Recommendation",
+    "breachNote": "Proposed price violates the effective guardrail bounds.",
+    "staleNote": "Recommendation is older than its freshness window — re-verify before deciding.",
+    "overrideTitle": "Override request",
+    "openSurface": "Open the owning surface"
   }
 }

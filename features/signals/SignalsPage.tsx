@@ -53,23 +53,23 @@ export function SignalsPage() {
     },
     { id: 'category', header: t('signals.table.category'), defaultWidth: 120, cell: (r) => <span className="text-muted">{r.product.category}</span> },
     {
-      id: 'velocity', header: t('signals.table.velocity'), defaultWidth: 110,
+      id: 'velocity', header: t('signals.table.velocity'), headerHint: t('signals.def.velocity'), align: 'right', defaultWidth: 110,
       cell: (r) => <span className="tabular">{Math.round(r.velocity).toLocaleString(locale)}/mo</span>,
     },
     {
-      id: 'elasticity', header: t('signals.table.elasticity'), defaultWidth: 110,
+      id: 'elasticity', header: t('signals.table.elasticity'), headerHint: t('signals.def.elasticity'), align: 'right', defaultWidth: 110,
       cell: (r) => <span className="tabular">{r.product.elasticity} · {t(`catalog.elasticity.${r.elasticityBand}`)}</span>,
     },
     {
-      id: 'coverage', header: t('signals.table.coverage'), defaultWidth: 100,
+      id: 'coverage', header: t('signals.table.coverage'), headerHint: t('signals.def.coverage'), align: 'right', defaultWidth: 100,
       cell: (r) => <span className="tabular">{r.competitorCoverage}</span>,
     },
     {
-      id: 'stock', header: t('signals.table.stock'), defaultWidth: 100,
+      id: 'stock', header: t('signals.table.stock'), align: 'right', defaultWidth: 100,
       cell: (r) => <span className="tabular">{r.product.stockUnits.toLocaleString(locale)}</span>,
     },
     {
-      id: 'daysSupply', header: t('signals.table.daysSupply'), defaultWidth: 110,
+      id: 'daysSupply', header: t('signals.table.daysSupply'), headerHint: t('signals.def.daysSupply'), align: 'right', defaultWidth: 110,
       cell: (r) => (
         <span className="tabular">
           {Number.isFinite(r.daysOfSupply) ? `${Math.round(r.daysOfSupply)}d` : '—'}
@@ -77,7 +77,7 @@ export function SignalsPage() {
       ),
     },
     {
-      id: 'risk', header: t('signals.table.risk'), required: true, defaultWidth: 110,
+      id: 'risk', header: t('signals.table.risk'), headerHint: t('signals.def.risk'), required: true, defaultWidth: 110,
       cell: (r) => <StatusBadge status={RISK_STATUS[r.stockRisk]} label={t(`signals.risk.${r.stockRisk}`)} />,
     },
   ];

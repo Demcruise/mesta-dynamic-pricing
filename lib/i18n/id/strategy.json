@@ -30,7 +30,8 @@
     "category": "Kategori",
     "activatesAt": "Aktif",
     "boundRules": "Aturan terikat",
-    "none": "Belum ada strategi."
+    "none": "Belum ada strategi.",
+    "recs": "Rek"
   },
   "action": {
     "saveDraft": "Simpan draf",
@@ -139,5 +140,25 @@
     "desc": "Strategi ini berubah sejak Anda membukanya. Muat ulang untuk membuang editan Anda, atau timpa versi lain.",
     "reload": "Muat terbaru",
     "overwrite": "Timpa"
+  },
+  "detail": {
+    "notFound": "Strategi tidak ditemukan",
+    "back": "Semua strategi",
+    "scopeTitle": "Cakupan & kepemilikan",
+    "categories": "Kategori",
+    "skuList": "SKU",
+    "maxChange": "Perubahan maks",
+    "autoApprove": "Auto-approve di bawah",
+    "map": "MAP diterapkan",
+    "mapOn": "Ya",
+    "mapOff": "Tidak",
+    "bounds": "Batas harga",
+    "rulesTitle": "Aturan terikat",
+    "noRules": "Tidak ada aturan terikat ke strategi ini.",
+    "impactTitle": "Rekomendasi",
+    "recs": "Total",
+    "pendingRecs": "Dalam antrean",
+    "acceptance": "Acceptance",
+    "projected": "Margin terproyeksi"
   }
 }

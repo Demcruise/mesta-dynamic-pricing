@@ -39,7 +39,7 @@ export function RecommendationDetailPage({ recId }: { recId: string }) {
         <>
           <PageHeader title={q.data.id} subtitle={q.data.sku} />
           <div className="grid max-w-3xl grid-cols-1 gap-4">
-            <RecommendationCard rec={q.data} product={product} defaultOpen />
+            <RecommendationCard rec={q.data} product={product} defaultOpen stickyActions />
             <section className="rounded-card border border-line bg-surface p-card shadow-e1">
               <h2 className="mb-2 text-sm font-semibold">{t('recommendations.logic.title')}</h2>
               <AppliedLogic rec={q.data} product={product} strategy={strategy} rule={rule} scenario={scenario ?? null} />

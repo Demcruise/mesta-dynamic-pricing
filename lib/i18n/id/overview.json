@@ -98,7 +98,9 @@
       "decideHint": "Setujui, sesuaikan, atau tolak — setiap keputusan teraudit.",
       "publish": "Publikasikan perubahan harga",
       "publishHint": "Dorong rekomendasi yang disetujui ke channel."
-    }
+    },
+    "reopen": "Buka setup",
+    "dismiss": "Sembunyikan checklist setup"
   },
   "activity": {
     "title": "Aktivitas terbaru",
@@ -118,5 +120,18 @@
     "ops_leadDesc": "Publishing dan feed data",
     "compliance": "Kepatuhan",
     "complianceDesc": "Jejak audit dan pengawasan"
+  },
+  "attention": {
+    "title": "Perlu perhatian",
+    "awaiting": "persetujuan menunggu Anda",
+    "breaches": "pelanggaran guardrail",
+    "failedDeploys": "deployment gagal",
+    "anomalies": "anomali",
+    "sources": "feed tidak sehat"
+  },
+  "queue": {
+    "title": "Antrean keputusan",
+    "all": "Lihat semua",
+    "empty": "Antrean bersih — tidak ada rekomendasi pending."
   }
 }

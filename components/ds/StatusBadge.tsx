@@ -1,7 +1,7 @@
 'use client';
 
 import {
-  Ban, CalendarClock, Check, CircleCheck, CircleDashed, CircleX, Clock, Flag, GitMerge, Hourglass,
+  Archive, Ban, CalendarClock, Check, CircleCheck, CircleDashed, CircleX, Clock, Flag, GitMerge, Hourglass,
   Info, LoaderCircle, OctagonAlert, Pause, PenLine, Pencil, TimerOff, TriangleAlert, Undo2, X,
   type LucideIcon,
 } from 'lucide-react';
@@ -17,7 +17,7 @@ import { cn } from '@/lib/utils';
 export type MestaStatus =
   // Workflow lifecycle — recommendations, strategies, rules, approvals
   | 'draft' | 'pending' | 'approved' | 'rejected' | 'adjusted' | 'changes_requested'
-  | 'escalated' | 'expired' | 'stale' | 'active'
+  | 'escalated' | 'expired' | 'stale' | 'active' | 'archived' | 'pending_manager_approval'
   // Execution — publish/deploy jobs, experiments
   | 'queued' | 'scheduled' | 'in_flight' | 'publishing' | 'published' | 'synced'
   | 'failed' | 'rolled_back' | 'cancelled' | 'partial' | 'running' | 'concluded'
@@ -55,6 +55,8 @@ const MAP: Record<MestaStatus, { icon: LucideIcon; cls: string; spin?: boolean }
   syncing: { icon: LoaderCircle, cls: 'bg-info-soft text-info', spin: true },
   delayed: { icon: Clock, cls: 'bg-warn-soft text-warn' },
   paused: { icon: Pause, cls: 'bg-subtle text-muted' },
+  archived: { icon: Archive, cls: 'bg-subtle text-faint' },
+  pending_manager_approval: { icon: Clock, cls: 'bg-warn-soft text-warn' },
   blocked: { icon: Ban, cls: 'bg-down-soft text-down' },
   conflicted: { icon: GitMerge, cls: 'bg-warn-soft text-warn' },
   info: { icon: Info, cls: 'bg-info-soft text-info' },

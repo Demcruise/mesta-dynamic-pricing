@@ -92,7 +92,8 @@
     "resize": "Resize column {col}",
     "resizeHint": "Drag or use arrow keys · double-click to reset",
     "groupBy": "Group by",
-    "groupNone": "None"
+    "groupNone": "None",
+    "colAbout": "About {name}"
   },
   "perm": {
     "deniedTitle": "Access denied",
@@ -123,7 +124,8 @@
     "allStoresInRegion": "All stores in region",
     "reset": "Reset scope",
     "category": "Category",
-    "allCategories": "All categories"
+    "allCategories": "All categories",
+    "dataAsOf": "Data as of {at}"
   },
   "cmd": {
     "open": "Search or jump to…",
@@ -175,7 +177,9 @@
     "warning": "Warning",
     "critical": "Critical",
     "running": "Running",
-    "concluded": "Concluded"
+    "concluded": "Concluded",
+    "archived": "Archived",
+    "pending_manager_approval": "Pending manager approval"
   },
   "delta": {
     "up": "Increase",

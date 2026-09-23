@@ -14,7 +14,7 @@ import { formatRelativeTime } from '@/lib/format';
 import { useCan } from '@/lib/hooks';
 import { useTranslation } from '@/lib/i18n';
 import type { Strategy, StrategyStatus } from '@/lib/ontology';
-import { useStrategies } from '@/lib/queries';
+import { useScopedRecommendations, useStrategies } from '@/lib/queries';
 import { useSessionStore, useToastStore } from '@/lib/stores';
 import { cn } from '@/lib/utils';
 
@@ -30,6 +30,7 @@ const CHIP: Record<StrategyStatus, string> = {
 export function StrategyListPage() {
   const { t, locale } = useTranslation();
   const q = useStrategies();
+  const recs = useScopedRecommendations();
   const user = useSessionStore((s) => s.user);
   const can = useCan();
   const toast = useToastStore((s) => s.push);
@@ -42,6 +43,12 @@ export function StrategyListPage() {
   const [noteErr, setNoteErr] = useState(false);
   const [scheduling, setScheduling] = useState<Strategy | null>(null);
   const [scheduleAt, setScheduleAt] = useState('');
+
+  const recCount = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const r of recs.data) if (r.strategyId) m.set(r.strategyId, (m.get(r.strategyId) ?? 0) + 1);
+    return m;
+  }, [recs.data]);
 
   const rows = useMemo(() => {
     const needle = search.trim().toLowerCase();
@@ -92,7 +99,9 @@ export function StrategyListPage() {
             <li key={s.id} className="rounded-card border border-line bg-surface p-card shadow-e1">
               <div className="flex items-start justify-between gap-2">
                 <div>
-                  <h2 className="font-semibold">{s.name}</h2>
+                  <h2 className="font-semibold">
+                    <Link href={`/strategy/${s.id}`} className="hover:underline">{s.name}</Link>
+                  </h2>
                   <p className="text-xs text-muted">{t(`strategy.objective.${s.objective}`)}</p>
                 </div>
                 <span className={cn('rounded-full px-2 py-0.5 text-xs font-medium', CHIP[s.status])}>{t(`strategy.status.${s.status}`)}</span>
@@ -108,6 +117,8 @@ export function StrategyListPage() {
                   })}
                 </dd>
                 <dt>{t('strategy.list.owner')}</dt><dd className="text-fg">{s.ownerId}</dd>
+                {/* I-02 performance/usage: how many recommendations this strategy produced. */}
+                <dt>{t('strategy.list.recs')}</dt><dd className="tabular text-fg">{recCount.get(s.id) ?? 0}</dd>
                 <dt>{t('strategy.list.updated')}</dt><dd className="text-fg">{formatRelativeTime(s.updatedAt, locale)}</dd>
                 {s.status === 'scheduled' && s.activateAt && (
                   <>

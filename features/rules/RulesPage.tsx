@@ -67,6 +67,13 @@ export function RulesPage() {
     return [...map.values()];
   }, [conflicts]);
 
+  // J-03 footer impact: how many SKUs each rule collides on.
+  const conflictByRule = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const c of conflicts) for (const rid of c.ruleIds) m.set(rid, (m.get(rid) ?? 0) + 1);
+    return m;
+  }, [conflicts]);
+
   const run = () => {
     const r = runRules(user);
     if (!r.ok) { toast(t(`rules.err.${r.error}`)); return; }
@@ -136,7 +143,13 @@ export function RulesPage() {
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
                   <h2 className="truncate font-semibold">{r.name}</h2>
-                  <p className="text-xs text-muted">{r.id} · {t('rules.table.priority')} {r.priority}</p>
+                  <p className="flex items-center gap-1.5 text-xs text-muted">
+                    {r.id}
+                    {/* J-02: priority is a first-class badge — it decides conflict precedence. */}
+                    <span className="rounded-full bg-subtle px-1.5 py-px text-[11px] font-semibold tabular text-muted" title={t('rules.table.priority')}>
+                      P{r.priority}
+                    </span>
+                  </p>
                 </div>
                 <StatusBadge status={r.status} />
               </div>
@@ -145,9 +158,13 @@ export function RulesPage() {
                 <div className="flex gap-2">
                   <dt className="w-14 shrink-0 font-medium uppercase tracking-wide text-faint">{t('rules.table.when')}</dt>
                   <dd className="min-w-0 flex-1">
-                    <ul className="flex flex-wrap gap-1">
+                    <ul className="flex flex-wrap items-center gap-1">
                       {r.when.map((c, i) => (
-                        <li key={i} className="rounded-full bg-subtle px-2 py-0.5 text-fg">{describeCondition(c, t)}</li>
+                        <li key={i} className="flex items-center gap-1">
+                          {/* J-01: conditions are ANDed — make the connector visible, not implicit. */}
+                          {i > 0 && <span aria-hidden className="text-[10px] font-semibold uppercase tracking-wide text-faint">{t('rules.table.and')}</span>}
+                          <span className="rounded-full bg-subtle px-2 py-0.5 text-fg">{describeCondition(c, t)}</span>
+                        </li>
                       ))}
                     </ul>
                   </dd>
@@ -171,6 +188,9 @@ export function RulesPage() {
               <div className="mt-3 flex items-center justify-between gap-2 border-t border-line pt-2.5">
                 <p className="text-xs text-muted">
                   {t('rules.table.matches', { n: matchCount.get(r.id) ?? 0, total: products.data.length })} · {formatRelativeTime(r.updatedAt, locale)}
+                  {(conflictByRule.get(r.id) ?? 0) > 0 && (
+                    <span className="text-warn"> · {t('rules.table.conflicts', { n: conflictByRule.get(r.id)! })}</span>
+                  )}
                 </p>
                 {can('rule.manage') && (
                   <div className="flex gap-1.5">

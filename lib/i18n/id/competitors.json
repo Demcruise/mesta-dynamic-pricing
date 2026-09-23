@@ -7,7 +7,10 @@
   "skusObserved": "{n} SKU teramati",
   "avgGap": "gap rata-rata vs kita",
   "freshest": "terbaru {at}",
-  "action": { "expand": "Tampilkan SKU", "collapse": "Sembunyikan SKU" },
+  "action": {
+    "expand": "Tampilkan SKU",
+    "collapse": "Sembunyikan SKU"
+  },
   "tableCaption": "Harga teramati dari {name}",
   "col": {
     "sku": "SKU",
@@ -16,5 +19,11 @@
     "ours": "Harga kita",
     "gap": "Gap",
     "observed": "Teramati"
-  }
+  },
+  "direction": {
+    "cheaper": "Di bawah kita",
+    "parity": "Setara",
+    "pricier": "Lebih mahal dari kita"
+  },
+  "affectedRecs": "{n} rek pending"
 }

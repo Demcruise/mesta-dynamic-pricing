@@ -19,7 +19,9 @@
   },
   "action": {
     "resubmit": "Kirim ulang",
-    "reopen": "Buka kembali"
+    "reopen": "Buka kembali",
+    "investigate": "Investigasi",
+    "openDetail": "Buka detail lengkap"
   },
   "resubmit": {
     "title": "Kirim ulang rekomendasi",
@@ -46,5 +48,14 @@
     "title": "Rantai persetujuan",
     "desc": "Rekomendasi yang rantai persetujuan bertingkatnya belum selesai.",
     "waiting": "Menunggu {level} · {done}/{total} level selesai"
+  },
+  "queue": {
+    "caption": "Persetujuan pending — antrean ringkas",
+    "rec": "Rekomendasi",
+    "move": "Perubahan harga",
+    "impact": "Dampak margin",
+    "awaiting": "Menunggu",
+    "age": "Usia",
+    "investigate": "Investigasi"
   }
 }

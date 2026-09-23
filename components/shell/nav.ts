@@ -28,6 +28,7 @@ export const NAV_SECTIONS: NavSection[] = [
   {
     key: 'workflow',
     items: [
+      { href: '/overview', key: 'overview', icon: LayoutDashboard, action: 'overview.view', mobile: true },
       { href: '/catalog', key: 'catalog', icon: Package, action: 'catalog.view' },
       { href: '/strategy', key: 'strategy', icon: BarChart3, action: 'strategy.view' },
       { href: '/rules', key: 'rules', icon: ListChecks, action: 'rule.view' },
@@ -35,27 +36,26 @@ export const NAV_SECTIONS: NavSection[] = [
       { href: '/simulation', key: 'simulation', icon: FlaskConical, action: 'simulation.use' },
       { href: '/recommendations', key: 'recommendations', icon: Sparkles, action: 'recommendation.view', badge: 'pendingRecommendations' },
       { href: '/approvals', key: 'approvals', icon: Inbox, action: 'recommendation.decide' },
-      { href: '/deployment', key: 'deployment', icon: Send, action: 'deployment.view', mobile: true, badge: 'failedDeployments' },
     ],
   },
   {
     key: 'operations',
     items: [
+      { href: '/deployment', key: 'deployment', icon: Send, action: 'deployment.view', mobile: true, badge: 'failedDeployments' },
       { href: '/exceptions', key: 'exceptions', icon: Siren, action: 'exceptions.view' },
       { href: '/alerts', key: 'alerts', icon: BellRing, action: 'alerts.view' },
+      { href: '/monitoring', key: 'monitoring', icon: Activity, action: 'monitoring.view', mobile: true },
       { href: '/data', key: 'data', icon: Database, action: 'data.view' },
     ],
   },
   {
     key: 'insight',
     items: [
-      { href: '/monitoring', key: 'monitoring', icon: Activity, action: 'monitoring.view', mobile: true },
       { href: '/competitors', key: 'competitors', icon: Scale, action: 'competitors.view' },
       { href: '/signals', key: 'signals', icon: Radio, action: 'signals.view' },
       { href: '/analytics', key: 'analytics', icon: TrendingUp, action: 'analytics.view' },
       { href: '/experiments', key: 'experiments', icon: Beaker, action: 'experiment.view' },
       { href: '/audit', key: 'audit', icon: ScrollText, action: 'audit.view' },
-      { href: '/overview', key: 'overview', icon: LayoutDashboard, action: 'overview.view', mobile: true },
     ],
   },
   {

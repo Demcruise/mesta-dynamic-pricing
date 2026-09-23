@@ -92,7 +92,8 @@
     "resize": "Ubah lebar kolom {col}",
     "resizeHint": "Seret atau tombol panah · klik dua kali untuk reset",
     "groupBy": "Kelompokkan",
-    "groupNone": "Tidak ada"
+    "groupNone": "Tidak ada",
+    "colAbout": "Tentang {name}"
   },
   "perm": {
     "deniedTitle": "Akses ditolak",
@@ -123,7 +124,8 @@
     "allStoresInRegion": "Semua toko di wilayah",
     "reset": "Atur ulang cakupan",
     "category": "Kategori",
-    "allCategories": "Semua kategori"
+    "allCategories": "Semua kategori",
+    "dataAsOf": "Data per {at}"
   },
   "cmd": {
     "open": "Cari atau lompat ke…",
@@ -175,7 +177,9 @@
     "warning": "Peringatan",
     "critical": "Kritis",
     "running": "Berjalan",
-    "concluded": "Selesai"
+    "concluded": "Selesai",
+    "archived": "Diarsipkan",
+    "pending_manager_approval": "Menunggu persetujuan manajer"
   },
   "delta": {
     "up": "Naik",

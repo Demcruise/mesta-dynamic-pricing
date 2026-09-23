@@ -5,6 +5,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import { Drawer } from '@/components/ds/Drawer';
 import { PriceValue } from '@/components/ds/PriceValue';
+import { ProductIdentity } from '@/components/ds/ProductIdentity';
 import { StatusBadge } from '@/components/ds/StatusBadge';
 import { DocsLink, RecoveryNotice } from '@/components/ds/trust';
 import { ExecutionTimeline, FreshnessBadge, JobProgress, SyncStatus, type ExecStep } from '@/components/ds/system-status';
@@ -60,6 +61,7 @@ export function DeploymentPage() {
   const status = (sp.get('status') ?? '') as DeploymentStatus | '';
   const setStatus = (v: string) => router.replace(v ? `${pathname}?status=${v}` : pathname, { scroll: false });
   const names = useMemo(() => new Map(skus.data.map((p) => [p.sku, p.name])), [skus.data]);
+  const productsBySku = useMemo(() => new Map(skus.data.map((p) => [p.sku, p])), [skus.data]);
   const activeJobRecIds = useMemo(
     () => new Set(jobs.data.filter((j) => ['scheduled', 'publishing', 'partial', 'failed'].includes(liveJobStatus(j))).map((j) => j.recommendationId)),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -341,7 +343,14 @@ export function DeploymentPage() {
         {selected && (
           <div className="flex flex-col gap-3 text-sm">
             <dl className="grid grid-cols-2 gap-x-4 gap-y-2">
-              <div><dt className="text-xs text-muted">{t('deployment.table.sku')}</dt><dd><Link href={`/catalog/${selected.sku}`} className="tabular text-brand hover:underline">{selected.sku}</Link> <span className="text-muted">{names.get(selected.sku)}</span></dd></div>
+              <div>
+                <dt className="text-xs text-muted">{t('deployment.table.sku')}</dt>
+                <dd>
+                  {productsBySku.get(selected.sku)
+                    ? <Link href={`/catalog/${selected.sku}`} className="hover:underline"><ProductIdentity product={productsBySku.get(selected.sku)!} size="sm" /></Link>
+                    : <Link href={`/catalog/${selected.sku}`} className="tabular text-brand hover:underline">{selected.sku}</Link>}
+                </dd>
+              </div>
               <div><dt className="text-xs text-muted">{t('deployment.table.channel')}</dt><dd>{t(`common.channel.${selected.channel}`)}</dd></div>
               <div><dt className="text-xs text-muted">{t('deployment.table.status')}</dt><dd><StatusBadge status={selected.status} label={t(`deployment.status.${selected.status}`)} /></dd></div>
               <div>
@@ -371,7 +380,9 @@ export function DeploymentPage() {
               </section>
             )}
             {selected.errorReason && <p className="rounded-input bg-down-soft px-3 py-2 text-xs text-down">{t('deployment.table.error')}: {selected.errorReason}</p>}
-            {selected.status === 'failed' && <RecoveryNotice>{t('deployment.recovery.retry')} <DocsLink href="/audit">{t('common.action.viewAudit')}</DocsLink></RecoveryNotice>}
+            {selected.status === 'failed' && <RecoveryNotice>{t('deployment.recovery.retry')}</RecoveryNotice>}
+            {/* W-03: every deployment is auditable — the trail is one click away, not just on failure. */}
+            <DocsLink href="/audit">{t('common.action.viewAudit')}</DocsLink>
             <RoleGate action="deployment.execute">
               <div className="flex gap-2 border-t border-line pt-3">
                 {selected.status === 'failed' && (

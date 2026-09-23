@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowUpRight, Check } from 'lucide-react';
+import { ArrowUpRight, Check, X } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 
@@ -17,18 +17,36 @@ export interface OnboardingStep {
  * numbered tasks with a progress bar. Auto-hides via the caller once every
  * step is done — the steps reflect real store state, not user dismissal.
  */
-export function OnboardingChecklist({ title, subtitle, steps, doneLabel }: {
+export function OnboardingChecklist({ title, subtitle, steps, doneLabel, onDismiss, dismissLabel }: {
   title: string;
   subtitle: string;
   steps: OnboardingStep[];
   doneLabel: (n: number, total: number) => string;
+  /** When provided, renders a dismiss control — returning users can hide setup. */
+  onDismiss?: () => void;
+  dismissLabel?: string;
 }) {
   const done = steps.filter((s) => s.done).length;
   const pct = Math.round((done / steps.length) * 100);
   return (
     <section aria-label={title} className="mb-4 rounded-card border border-line bg-surface p-card shadow-e1">
-      <h2 className="text-sm font-semibold text-fg">{title}</h2>
-      <p className="mt-0.5 text-xs text-muted">{subtitle}</p>
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0">
+          <h2 className="text-sm font-semibold text-fg">{title}</h2>
+          <p className="mt-0.5 text-xs text-muted">{subtitle}</p>
+        </div>
+        {onDismiss && (
+          <button
+            type="button"
+            onClick={onDismiss}
+            aria-label={dismissLabel ?? title}
+            title={dismissLabel}
+            className="grid size-6 shrink-0 place-items-center rounded-input text-muted transition-colors duration-fast hover:bg-subtle hover:text-fg"
+          >
+            <X className="size-3.5" aria-hidden />
+          </button>
+        )}
+      </div>
       <div className="mt-3 flex items-center gap-3">
         <div role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} aria-label={doneLabel(done, steps.length)} className="h-1 min-w-0 flex-1 overflow-hidden rounded-full bg-subtle">
           <div className="h-full rounded-full bg-brand transition-[width] duration-slow ease-decelerate motion-reduce:transition-none" style={{ width: `${pct}%` }} />

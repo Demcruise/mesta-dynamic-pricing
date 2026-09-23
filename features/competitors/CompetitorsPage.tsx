@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { formatPrice, formatRelativeTime } from '@/lib/format';
 import { useTranslation } from '@/lib/i18n';
 import type { CompetitorObservation, Product } from '@/lib/ontology';
-import { useScopedSkuSet, useSkuList } from '@/lib/queries';
+import { useScopedRecommendations, useScopedSkuSet, useSkuList } from '@/lib/queries';
 import { useProductCatalogStore } from '@/lib/stores';
 
 interface CompetitorAgg {
@@ -20,6 +20,10 @@ interface CompetitorAgg {
   avgGap: number;
   freshest: string;
   stalest: string;
+  /** R-01: sign of avgGap — 'cheaper' | 'parity' | 'pricier' vs our price. */
+  direction: 'cheaper' | 'parity' | 'pricier';
+  /** Pending/escalated recs touching SKUs this competitor covers. */
+  affectedRecs: number;
   rows: { obs: CompetitorObservation; product: Product }[];
 }
 
@@ -28,7 +32,17 @@ export function CompetitorsPage() {
   const products = useSkuList();
   const all = useProductCatalogStore((s) => s.competitors);
   const scoped = useScopedSkuSet();
+  const recs = useScopedRecommendations();
   const [open, setOpen] = useState<string | null>(null);
+
+  // SKU → open recommendation count, for the "affected recommendations" column.
+  const recsBySku = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const r of recs.data) {
+      if (r.status === 'pending' || r.status === 'escalated') m.set(r.sku, (m.get(r.sku) ?? 0) + 1);
+    }
+    return m;
+  }, [recs.data]);
 
   const aggs = useMemo(() => {
     const bySku = new Map(products.data.map((p) => [p.sku, p]));
@@ -37,7 +51,7 @@ export function CompetitorsPage() {
     for (const o of obs) {
       const product = bySku.get(o.sku);
       if (!product) continue;
-      const a = map.get(o.competitor) ?? { name: o.competitor, skus: 0, avgGap: 0, freshest: o.observedAt, stalest: o.observedAt, rows: [] };
+      const a = map.get(o.competitor) ?? { name: o.competitor, skus: 0, avgGap: 0, freshest: o.observedAt, stalest: o.observedAt, direction: 'parity' as const, affectedRecs: 0, rows: [] };
       a.rows.push({ obs: o, product });
       if (o.observedAt > a.freshest) a.freshest = o.observedAt;
       if (o.observedAt < a.stalest) a.stalest = o.observedAt;
@@ -46,9 +60,11 @@ export function CompetitorsPage() {
     for (const a of map.values()) {
       a.skus = new Set(a.rows.map((r) => r.obs.sku)).size;
       a.avgGap = a.rows.reduce((s, r) => s + (r.obs.price / r.product.price - 1), 0) / a.rows.length;
+      a.direction = Math.abs(a.avgGap) < 0.01 ? 'parity' : a.avgGap > 0 ? 'pricier' : 'cheaper';
+      a.affectedRecs = new Set(a.rows.map((r) => r.obs.sku)).values().reduce((n, sku) => n + (recsBySku.get(sku) ?? 0), 0);
     }
     return [...map.values()].sort((a, b) => b.skus - a.skus);
-  }, [all, products.data, scoped]);
+  }, [all, products.data, scoped, recsBySku]);
 
   return (
     <>
@@ -66,7 +82,13 @@ export function CompetitorsPage() {
                 <span className="tabular text-xs text-muted">{t('competitors.skusObserved', { n: a.skus })}</span>
                 <span className="tabular flex items-center gap-1 text-xs text-muted">
                   {t('competitors.avgGap')} <DeltaBadge value={a.avgGap} />
+                  <span className="rounded-full bg-subtle px-1.5 py-px">{t(`competitors.direction.${a.direction}`)}</span>
                 </span>
+                {a.affectedRecs > 0 && (
+                  <Link href="/recommendations?status=pending" className="tabular text-xs text-brand hover:underline">
+                    {t('competitors.affectedRecs', { n: a.affectedRecs })}
+                  </Link>
+                )}
                 <FreshnessBadge at={a.freshest} label={t('competitors.freshest', { at: formatRelativeTime(a.freshest, locale) })} />
                 <Button size="sm" variant="secondary" className="ms-auto"
                   aria-expanded={open === a.name} onClick={() => setOpen(open === a.name ? null : a.name)}>

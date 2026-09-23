@@ -6,6 +6,7 @@ import { useMemo, useState } from 'react';
 import { DeltaBadge } from '@/components/ds/DeltaBadge';
 import { LiveDot } from '@/components/ds/LiveDot';
 import { PriceValue } from '@/components/ds/PriceValue';
+import { ProductIdentity } from '@/components/ds/ProductIdentity';
 import { SeverityChip } from '@/components/ds/SeverityChip';
 import { EmptyState, ErrorState, LoadingRows, PageHeader } from '@/components/ds/states';
 import { FreshnessBadge } from '@/components/ds/system-status';
@@ -16,7 +17,7 @@ import { flagForModelReview, groupAnomalies } from '@/lib/actions/monitoring';
 import { formatRelativeTime } from '@/lib/format';
 import { useTranslation } from '@/lib/i18n';
 import type { AnomalyAlert } from '@/lib/ontology';
-import { useAnomalies, useOutcomes, useScopedSkuSet } from '@/lib/queries';
+import { useAnomalies, useOutcomes, useScopedSkuList, useScopedSkuSet } from '@/lib/queries';
 import { useMonitoringStore, useSessionStore, useToastStore } from '@/lib/stores';
 import { cn } from '@/lib/utils';
 
@@ -31,6 +32,8 @@ export function MonitoringPage() {
   const outcomesAll = useOutcomes();
   const anomaliesAll = useAnomalies();
   const scopedSkuSet = useScopedSkuSet();
+  const scopedProducts = useScopedSkuList();
+  const productsBySku = useMemo(() => new Map(scopedProducts.data.map((p) => [p.sku, p])), [scopedProducts.data]);
   const outcomes = useMemo(
     () => ({ ...outcomesAll, data: scopedSkuSet ? outcomesAll.data.filter((o) => scopedSkuSet.has(o.sku)) : outcomesAll.data }),
     [outcomesAll, scopedSkuSet],
@@ -96,8 +99,8 @@ export function MonitoringPage() {
                   <caption className="sr-only">{t('monitoring.forecast.caption')}</caption>
                   <thead className="bg-subtle text-xs text-muted">
                     <tr className="h-row">
-                      {(['sku', 'forecastLabel', 'actualLabel', 'variance', 'trace'] as const).map((c) => (
-                        <th key={c} scope="col" className={cn('px-3 py-row font-medium', c === 'sku' || c === 'trace' ? 'text-left' : 'text-right')}>
+                      {(['sku', 'forecastLabel', 'actualLabel', 'variance', 'source', 'trace'] as const).map((c) => (
+                        <th key={c} scope="col" className={cn('px-3 py-row font-medium', c === 'sku' || c === 'trace' || c === 'source' ? 'text-left' : 'text-right')}>
                           {c === 'sku' ? t('monitoring.anomaly.sku') : t(`monitoring.forecast.${c}`)}
                         </th>
                       ))}
@@ -109,10 +112,18 @@ export function MonitoringPage() {
                       const fmt = (v: number) => (metric === 'units' ? String(Math.round(v)) : <PriceValue value={Math.round(v)} />);
                       return (
                         <tr key={o.id} className="h-row border-t border-line transition-colors duration-fast hover:bg-subtle">
-                          <td className="px-3 py-row"><Link href={`/catalog/${o.sku}`} className="tabular text-brand hover:underline">{o.sku}</Link></td>
+                          <td className="px-3 py-row">
+                            {productsBySku.get(o.sku)
+                              ? <Link href={`/catalog/${o.sku}`} className="hover:underline"><ProductIdentity product={productsBySku.get(o.sku)!} size="sm" /></Link>
+                              : <Link href={`/catalog/${o.sku}`} className="tabular text-brand hover:underline">{o.sku}</Link>}
+                          </td>
                           <td className="tabular px-3 text-right">{fmt(f)}</td>
                           <td className="tabular px-3 text-right">{fmt(a)}</td>
                           <td className="px-3 text-right"><DeltaBadge value={f ? (a - f) / f : 0} /></td>
+                          {/* Q-01: where the measured change came from — experiment treatment, deployed rec, or manual. */}
+                          <td className="px-3 text-xs text-muted">
+                            {o.experimentId ? t('monitoring.forecast.srcExperiment') : o.recommendationId ? t('monitoring.forecast.srcRecommendation') : t('monitoring.forecast.srcManual')}
+                          </td>
                           <td className="px-3">{o.recommendationId ? <Link href={`/recommendations/${o.recommendationId}`} className="tabular text-brand underline">{o.recommendationId}</Link> : '—'}</td>
                         </tr>
                       );

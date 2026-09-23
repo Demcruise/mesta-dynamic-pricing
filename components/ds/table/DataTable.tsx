@@ -6,6 +6,7 @@ import { Fragment, useEffect, useMemo, useRef, useState, type ReactNode } from '
 import { useTranslation } from '@/lib/i18n';
 import { useToastStore } from '@/lib/stores';
 import { cn } from '@/lib/utils';
+import { MetricDefinition } from '@/components/ds/trust';
 import { inputCls } from '@/components/ui/field';
 import { ColumnVisibilityMenu } from './ColumnVisibilityMenu';
 import { downloadCsv, rowsToCsv, type CsvCell } from './csv';
@@ -14,6 +15,8 @@ export interface DataColumn<T> {
   id: string;
   /** Translated column label. */
   header: string;
+  /** Optional definition shown via the glossary popover next to the header (S-03). */
+  headerHint?: string;
   /** When set (and `sort` prop is provided) the header renders a sort toggle. */
   sortKey?: string;
   align?: 'left' | 'right';
@@ -344,6 +347,9 @@ export function MestaDataTable<T>({
                       </button>
                     ) : (
                       c.header
+                    )}
+                    {c.headerHint && (
+                      <MetricDefinition label={t('common.table.colAbout', { name: c.header })} definition={c.headerHint} className="ml-1 align-middle" />
                     )}
                     {resizable && (
                       <span

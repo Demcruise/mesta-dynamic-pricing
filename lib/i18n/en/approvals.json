@@ -19,7 +19,9 @@
   },
   "action": {
     "resubmit": "Resubmit",
-    "reopen": "Reopen"
+    "reopen": "Reopen",
+    "investigate": "Investigate",
+    "openDetail": "Open full detail"
   },
   "resubmit": {
     "title": "Resubmit recommendation",
@@ -46,5 +48,14 @@
     "title": "Approval chains",
     "desc": "Recommendations whose multi-level approval chain is not yet complete.",
     "waiting": "Awaiting {level} · {done}/{total} levels done"
+  },
+  "queue": {
+    "caption": "Pending approvals — condensed queue",
+    "rec": "Recommendation",
+    "move": "Price move",
+    "impact": "Margin impact",
+    "awaiting": "Awaiting",
+    "age": "Age",
+    "investigate": "Investigate"
   }
 }

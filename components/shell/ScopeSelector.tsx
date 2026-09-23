@@ -1,9 +1,12 @@
 'use client';
 
 import { ChevronRight, MapPin } from 'lucide-react';
+import { FreshnessBadge } from '@/components/ds/system-status';
 import { useTranslation } from '@/lib/i18n';
 import { CATEGORIES } from '@/lib/categories';
+import { formatRelativeTime } from '@/lib/format';
 import { ALL_STORES, buOf, ORG_NAME, regionOfStore, REGIONS, STORES_BY_REGION, type Region } from '@/lib/scope';
+import { useDataSources } from '@/lib/queries';
 import { useUiStore } from '@/lib/stores';
 
 /**
@@ -11,11 +14,14 @@ import { useUiStore } from '@/lib/stores';
  * Persisted in the ui store; choosing a store pins its region implicitly.
  */
 export function ScopeSelector() {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const scope = useUiStore((s) => s.scope);
   const setScope = useUiStore((s) => s.setScope);
+  const sources = useDataSources();
   const stores = scope.region ? STORES_BY_REGION[scope.region] : ALL_STORES;
   const bu = scope.region ? buOf(scope.region) : null;
+  // Conservative freshness claim: scoped numbers are only as fresh as the oldest feed.
+  const dataAsOf = sources.data.length ? sources.data.map((s) => s.lastSyncAt).sort()[0] : null;
 
   return (
     <div
@@ -70,6 +76,11 @@ export function ScopeSelector() {
         >
           {t('common.scope.reset')}
         </button>
+      )}
+      {dataAsOf && (
+        <span className="ml-auto flex shrink-0 items-center gap-1.5">
+          <FreshnessBadge at={dataAsOf} label={t('common.scope.dataAsOf', { at: formatRelativeTime(dataAsOf, locale) })} className="text-muted" />
+        </span>
       )}
     </div>
   );

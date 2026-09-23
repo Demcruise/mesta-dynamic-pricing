@@ -1,13 +1,58 @@
 {
   "title": "Outcome monitoring",
   "subtitle": "Forecast versus actual results and anomaly alerts",
-  "forecast": { "title": "Forecast vs actual", "revenue": "Revenue", "margin": "Margin", "units": "Units", "forecastLabel": "Forecast", "actualLabel": "Actual", "variance": "Variance", "trace": "Source", "chart": "Chart", "table": "Data table", "caption": "Forecast versus actual per deployed change", "empty": "No deployed changes yet.", "aggregate": "Aggregate trend" },
-  "anomaly": {
-    "title": "Anomalies", "threshold": "Deviation threshold (%)", "mode": "View", "digest": "Digest", "granular": "Granular", "count": "{n} SKUs", "worst": "Worst deviation {pct}%",
-    "empty": "No anomalies above the threshold.", "sku": "SKU", "category": "Category", "deviation": "Deviation", "channel": "Channel", "severity": "Severity", "actions": "Actions", "caption": "Anomaly alerts",
-    "flag": "Flag for model review", "flagged": "Flagged", "flagAria": "Flag {sku} for model review", "digestAria": "{category}: {n} SKUs, worst deviation {pct}%", "expand": "Show SKUs"
+  "forecast": {
+    "title": "Forecast vs actual",
+    "revenue": "Revenue",
+    "margin": "Margin",
+    "units": "Units",
+    "forecastLabel": "Forecast",
+    "actualLabel": "Actual",
+    "variance": "Variance",
+    "trace": "Source",
+    "chart": "Chart",
+    "table": "Data table",
+    "caption": "Forecast versus actual per deployed change",
+    "empty": "No deployed changes yet.",
+    "aggregate": "Aggregate trend",
+    "source": "Source",
+    "srcExperiment": "Experiment",
+    "srcRecommendation": "Recommendation",
+    "srcManual": "Manual"
   },
-  "live": { "stream": "Live metric stream", "lastEvent": "last event {at}", "alerts": "{n} active alerts" },
-  "err": { "forbidden": "Your role cannot flag anomalies.", "already_flagged": "Already flagged.", "not_found": "Not found." },
-  "toast": { "flagged": "Flagged {sku} for model review" }
+  "anomaly": {
+    "title": "Anomalies",
+    "threshold": "Deviation threshold (%)",
+    "mode": "View",
+    "digest": "Digest",
+    "granular": "Granular",
+    "count": "{n} SKUs",
+    "worst": "Worst deviation {pct}%",
+    "empty": "No anomalies above the threshold.",
+    "sku": "SKU",
+    "category": "Category",
+    "deviation": "Deviation",
+    "channel": "Channel",
+    "severity": "Severity",
+    "actions": "Actions",
+    "caption": "Anomaly alerts",
+    "flag": "Flag for model review",
+    "flagged": "Flagged",
+    "flagAria": "Flag {sku} for model review",
+    "digestAria": "{category}: {n} SKUs, worst deviation {pct}%",
+    "expand": "Show SKUs"
+  },
+  "live": {
+    "stream": "Live metric stream",
+    "lastEvent": "last event {at}",
+    "alerts": "{n} active alerts"
+  },
+  "err": {
+    "forbidden": "Your role cannot flag anomalies.",
+    "already_flagged": "Already flagged.",
+    "not_found": "Not found."
+  },
+  "toast": {
+    "flagged": "Flagged {sku} for model review"
+  }
 }

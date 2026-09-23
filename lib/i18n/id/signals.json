@@ -23,5 +23,12 @@
     "stock": "Stok",
     "daysSupply": "Hari stok",
     "risk": "Risiko stok"
+  },
+  "def": {
+    "velocity": "Estimasi unit per bulan pada harga saat ini — dari model permintaan, bukan penjualan teramati.",
+    "elasticity": "Koefisien elastisitas harga dan band-nya; makin negatif, permintaan makin sensitif ke harga.",
+    "coverage": "Berapa banyak feed kompetitor yang melaporkan harga untuk SKU ini.",
+    "daysSupply": "Unit stok dibagi velocity harian ter-model. “—” bila velocity nol.",
+    "risk": "Stockout < 7 hari pasokan, low < 14 hari, overstock > 90 hari — ambang adalah estimasi model."
   }
 }

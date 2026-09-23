@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
+import { Drawer } from '@/components/ds/Drawer';
+import { PriceValue } from '@/components/ds/PriceValue';
 import { StatusBadge } from '@/components/ds/StatusBadge';
 import { EmptyState, ErrorState, LoadingRows, PageHeader } from '@/components/ds/states';
 import { RecoveryNotice } from '@/components/ds/trust';
@@ -26,6 +28,7 @@ export function ApprovalsPage() {
   const toast = useToastStore((s) => s.push);
   const [resubmitting, setResubmitting] = useState<Recommendation | null>(null);
   const [note, setNote] = useState('');
+  const [inspecting, setInspecting] = useState<Recommendation | null>(null);
 
   // The expiry sweep is a system maintenance step — run it whenever the inbox opens.
   useEffect(() => { expireStaleRecommendations(); }, []);
@@ -62,27 +65,15 @@ export function ApprovalsPage() {
       ) : total === 0 ? (
         <EmptyState variant="caughtUp" title={t('approvals.empty')} />
       ) : (
-        <div className="flex max-w-3xl flex-col gap-6">
+        <div className="flex max-w-5xl flex-col gap-6">
           {groups.chain.length > 0 && (
             <section aria-label={t('approvals.chain.title')}>
               <h2 className="mb-2 text-sm font-semibold">
                 {t('approvals.chain.title')} <span className="tabular text-muted">({groups.chain.length})</span>
               </h2>
               <p className="mb-2 text-xs text-muted">{t('approvals.chain.desc')}</p>
-              <ul className="grid grid-cols-1 gap-3">
-                {groups.chain.map((r) => {
-                  const level = pendingApprovalLevel(r);
-                  const chainLen = approvalChain(r).length;
-                  return (
-                    <li key={r.id}>
-                      <RecommendationCard rec={r} product={productsBySku.get(r.sku)} showStatus />
-                      <p className="mt-1 text-xs text-muted">
-                        {t('approvals.chain.waiting', { level: level ? t(`common.role.${level}`) : '—', done: r.approvals.length, total: chainLen })}
-                      </p>
-                    </li>
-                  );
-                })}
-              </ul>
+              {/* N-01 condensed queue: the chain group renders rows, not full cards. */}
+              <CondensedQueue recs={groups.chain} products={productsBySku} locale={locale} t={t} onInspect={setInspecting} showChain />
             </section>
           )}
 
@@ -92,11 +83,7 @@ export function ApprovalsPage() {
                 {t('approvals.escalated.title')} <span className="tabular text-muted">({groups.escalated.length})</span>
               </h2>
               <p className="mb-2 text-xs text-muted">{t('approvals.escalated.desc')}</p>
-              <ul className="grid grid-cols-1 gap-3">
-                {groups.escalated.map((r) => (
-                  <li key={r.id}><RecommendationCard rec={r} product={productsBySku.get(r.sku)} showStatus /></li>
-                ))}
-              </ul>
+              <CondensedQueue recs={groups.escalated} products={productsBySku} locale={locale} t={t} onInspect={setInspecting} />
             </section>
           )}
 
@@ -127,11 +114,82 @@ export function ApprovalsPage() {
           </div>
         </form>
       </Dialog>
+
+      {/* N-02 investigate drawer: full evidence inline without leaving the queue. */}
+      <Drawer
+        open={inspecting !== null}
+        onClose={() => setInspecting(null)}
+        title={inspecting ? `${inspecting.id} · ${inspecting.sku}` : ''}
+      >
+        {inspecting && (
+          <div className="flex flex-col gap-3">
+            <RecommendationCard rec={inspecting} product={productsBySku.get(inspecting.sku)} defaultOpen />
+            <Link href={`/recommendations/${inspecting.id}`} className="text-sm text-brand hover:underline">
+              {t('approvals.action.openDetail')} →
+            </Link>
+          </div>
+        )}
+      </Drawer>
     </>
   );
 }
 
 type T = (key: string, vars?: Record<string, string | number>) => string;
+
+/** N-01 condensed approval queue: one row per rec — identity, prices, impact, chain position, investigate. */
+function CondensedQueue({ recs, products, locale, t, onInspect, showChain = false }: {
+  recs: Recommendation[];
+  products: Map<string, import('@/lib/ontology').Product>;
+  locale: 'en' | 'id';
+  t: T;
+  onInspect: (r: Recommendation) => void;
+  showChain?: boolean;
+}) {
+  return (
+    <div className="overflow-x-auto rounded-card border border-line bg-surface shadow-e1">
+      <table className="w-full min-w-[640px] text-sm">
+        <caption className="sr-only">{t('approvals.queue.caption')}</caption>
+        <thead className="bg-subtle text-xs text-muted">
+          <tr className="h-row">
+            <th scope="col" className="px-3 py-row text-left font-medium">{t('approvals.queue.rec')}</th>
+            <th scope="col" className="px-3 py-row text-right font-medium">{t('approvals.queue.move')}</th>
+            <th scope="col" className="px-3 py-row text-right font-medium">{t('approvals.queue.impact')}</th>
+            {showChain && <th scope="col" className="px-3 py-row text-left font-medium">{t('approvals.queue.awaiting')}</th>}
+            <th scope="col" className="px-3 py-row text-left font-medium">{t('approvals.queue.age')}</th>
+            <th scope="col" className="px-3 py-row text-right font-medium"><span className="sr-only">{t('approvals.queue.investigate')}</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          {recs.map((r) => {
+            const level = pendingApprovalLevel(r);
+            const chainLen = approvalChain(r).length;
+            return (
+              <tr key={r.id} className="h-row border-t border-line transition-colors duration-fast hover:bg-subtle">
+                <td className="px-3 py-row">
+                  <Link href={`/recommendations/${r.id}`} className="tabular font-medium text-brand hover:underline">{r.id}</Link>
+                  <span className="tabular text-muted"> · {r.sku}</span>
+                </td>
+                <td className="tabular px-3 text-right">
+                  {formatPrice(r.currentPrice, locale)} → {formatPrice(r.proposedPrice, locale)}
+                </td>
+                <td className="px-3 text-right"><PriceValue value={r.projectedMarginImpact} /></td>
+                {showChain && (
+                  <td className="px-3 text-xs text-muted">
+                    {t('approvals.chain.waiting', { level: level ? t(`common.role.${level}`) : '—', done: r.approvals.length, total: chainLen })}
+                  </td>
+                )}
+                <td className="px-3 text-xs text-muted">{formatRelativeTime(r.createdAt, locale)}</td>
+                <td className="px-3 text-right">
+                  <Button size="sm" variant="secondary" onClick={() => onInspect(r)}>{t('approvals.action.investigate')}</Button>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+}
 
 /**
  * Manager's delegation strip: a live grant lets the named user approve

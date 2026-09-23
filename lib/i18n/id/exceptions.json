@@ -47,5 +47,18 @@
     "invalid_transition": "Permintaan ini sudah diputuskan",
     "stale": "Harga yang diminta tidak lagi memenuhi batas produk — tolak dan ajukan ulang",
     "reason_required": "Alasan wajib diisi"
+  },
+  "drawer": {
+    "severity": "Severity",
+    "kind": "Jenis",
+    "product": "Produk",
+    "category": "Kategori",
+    "detail": "Detail",
+    "age": "Usia",
+    "recTitle": "Rekomendasi",
+    "breachNote": "Harga yang diusulkan melanggar batas guardrail efektif.",
+    "staleNote": "Rekomendasi lebih tua dari jendela freshness-nya — verifikasi ulang sebelum memutuskan.",
+    "overrideTitle": "Permintaan override",
+    "openSurface": "Buka permukaan terkait"
   }
 }

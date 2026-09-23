@@ -411,7 +411,8 @@ function Wizard({ strategyId, initial, status, expectedUpdatedAt }: {
           </div>
         )}
 
-        <div className="mt-5 flex flex-wrap justify-between gap-2">
+        {/* I-05: the footer stays pinned — next/back and finish are always reachable mid-step. */}
+        <div className="sticky bottom-0 -mx-5 -mb-5 mt-5 flex flex-wrap justify-between gap-2 border-t border-line bg-surface/95 px-5 py-2 backdrop-blur">
           <Button variant="secondary" disabled={step === 0} onClick={() => go(step - 1)}>{t('strategy.action.back')}</Button>
           {fromReview && step < STEPS.length - 1 ? (
             <Button disabled={stepBlocked(step)} onClick={() => go(STEPS.length - 1)}>{t('strategy.action.backToReview')}</Button>

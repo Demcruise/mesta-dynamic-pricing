@@ -89,5 +89,6 @@
   "historical": {
     "none": "Belum ada riwayat harga",
     "vs": "vs {price} · {at}"
-  }
+  },
+  "scenarioLabel": "Skenario {letter}"
 }
