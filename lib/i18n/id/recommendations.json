@@ -12,7 +12,8 @@
     "elasticity": "Elastisitas",
     "stock": "Stok",
     "seasonality": "Musiman",
-    "title": "Mengapa harga ini"
+    "title": "Mengapa harga ini",
+    "rule": "Aturan"
   },
   "card": {
     "current": "Saat ini",

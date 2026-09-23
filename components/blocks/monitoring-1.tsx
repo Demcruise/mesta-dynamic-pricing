@@ -376,7 +376,7 @@ export default function Monitoring1() {
           </div>
         </div>
 
-        <div className="grid gap-1 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-1 sm:grid-cols-2 lg:grid-cols-4">
           {kpis.map((k) => {
             const first = k.values[0] ?? 0;
             const latest = k.values[k.values.length - 1] ?? 0;
@@ -429,7 +429,7 @@ export default function Monitoring1() {
           })}
         </div>
 
-        <div className="grid min-h-0 flex-1 gap-1 lg:grid-cols-[1fr_360px]">
+        <div className="grid min-h-0 flex-1 grid-cols-1 gap-1 lg:grid-cols-[1fr_360px]">
           <div
             className={cx(panel, "flex min-h-[280px] flex-col p-4 lg:min-h-0")}
           >

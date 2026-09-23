@@ -31,23 +31,11 @@
     "value": "Nilai",
     "add": "Tambah kondisi",
     "title": "Ketika (semua kondisi harus terpenuhi)",
-    "field.competitor_gap_pct": "Selisih vs rata-rata kompetitor",
-    "field.margin_pct": "Margin %",
-    "field.stock_units": "Unit stok",
-    "field.days_since_change": "Hari sejak perubahan terakhir",
-    "op.gt": "lebih dari",
-    "op.lt": "kurang dari",
-    "op.gte": "minimal",
-    "op.lte": "maksimal",
-    "op.eq": "sama dengan",
     "hint": "Semua nilai berupa angka — persen, unit, hari, atau harga."
   },
   "then": {
     "title": "Maka",
     "formula": "Formula",
-    "kind.delta_percent": "Sesuaikan harga sebesar %",
-    "kind.match_competitor": "Ikuti rata-rata kompetitor",
-    "kind.min_margin_pct": "Set harga untuk capai margin minimum %",
     "preview": "Formula: {v}"
   },
   "builder": {
@@ -56,14 +44,16 @@
     "nameLabel": "Nama",
     "priorityLabel": "Prioritas (lebih kecil menang)",
     "statusLabel": "Status",
-    "status.active": "Aktif",
-    "status.draft": "Draf",
-    "status.paused": "Dijeda",
     "previewTitle": "Pratinjau terhadap katalog saat ini",
     "previewEmpty": "Tidak ada SKU yang cocok dengan kondisi ini.",
     "save": "Simpan aturan",
     "validate": "Tambahkan minimal satu kondisi.",
-    "validated": "Tervalidasi"
+    "validated": "Tervalidasi",
+    "status": {
+      "active": "Aktif",
+      "draft": "Draf",
+      "paused": "Dijeda"
+    }
   },
   "run": {
     "cta": "Jalankan aturan",
@@ -100,5 +90,23 @@
     "desc": "Editan Anda pada aturan ini belum disimpan.",
     "keep": "Lanjutkan mengedit",
     "confirm": "Buang perubahan"
+  },
+  "fields": {
+    "competitor_gap_pct": "Selisih vs rata-rata kompetitor",
+    "margin_pct": "Margin %",
+    "stock_units": "Unit stok",
+    "days_since_change": "Hari sejak perubahan terakhir"
+  },
+  "ops": {
+    "gt": "lebih dari",
+    "lt": "kurang dari",
+    "gte": "minimal",
+    "lte": "maksimal",
+    "eq": "sama dengan"
+  },
+  "kinds": {
+    "delta_percent": "Sesuaikan harga sebesar %",
+    "match_competitor": "Ikuti rata-rata kompetitor",
+    "min_margin_pct": "Set harga untuk capai margin minimum %"
   }
 }

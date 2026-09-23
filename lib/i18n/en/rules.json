@@ -31,23 +31,11 @@
     "value": "Value",
     "add": "Add condition",
     "title": "When (all conditions must hold)",
-    "field.competitor_gap_pct": "Gap vs competitor avg",
-    "field.margin_pct": "Margin %",
-    "field.stock_units": "Stock units",
-    "field.days_since_change": "Days since last change",
-    "op.gt": "is greater than",
-    "op.lt": "is less than",
-    "op.gte": "is at least",
-    "op.lte": "is at most",
-    "op.eq": "equals",
     "hint": "All values are numeric — percent, units, days, or price."
   },
   "then": {
     "title": "Then",
     "formula": "Formula",
-    "kind.delta_percent": "Adjust price by %",
-    "kind.match_competitor": "Match competitor average",
-    "kind.min_margin_pct": "Set price to reach min margin %",
     "preview": "Formula: {v}"
   },
   "builder": {
@@ -56,14 +44,16 @@
     "nameLabel": "Name",
     "priorityLabel": "Priority (lower wins)",
     "statusLabel": "Status",
-    "status.active": "Active",
-    "status.draft": "Draft",
-    "status.paused": "Paused",
     "previewTitle": "Preview against current catalog",
     "previewEmpty": "No current SKUs match these conditions.",
     "save": "Save rule",
     "validate": "Add at least one condition.",
-    "validated": "Validated"
+    "validated": "Validated",
+    "status": {
+      "active": "Active",
+      "draft": "Draft",
+      "paused": "Paused"
+    }
   },
   "run": {
     "cta": "Run rules",
@@ -100,5 +90,23 @@
     "desc": "Your edits to this rule haven't been saved.",
     "keep": "Keep editing",
     "confirm": "Discard changes"
+  },
+  "fields": {
+    "competitor_gap_pct": "Gap vs competitor avg",
+    "margin_pct": "Margin %",
+    "stock_units": "Stock units",
+    "days_since_change": "Days since last change"
+  },
+  "ops": {
+    "gt": "is greater than",
+    "lt": "is less than",
+    "gte": "is at least",
+    "lte": "is at most",
+    "eq": "equals"
+  },
+  "kinds": {
+    "delta_percent": "Adjust price by %",
+    "match_competitor": "Match competitor average",
+    "min_margin_pct": "Set price to reach min margin %"
   }
 }

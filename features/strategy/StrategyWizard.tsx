@@ -345,7 +345,7 @@ function Wizard({ strategyId, initial, status, expectedUpdatedAt }: {
                       checked={draft.signals.includes(f)}
                       onChange={(e) => set({ signals: e.target.checked ? [...draft.signals, f] : draft.signals.filter((x) => x !== f) })}
                     />
-                    {t(`rules.when.field.${f}`)}
+                    {t(`rules.fields.${f}`)}
                   </label>
                 ))}
               </div>

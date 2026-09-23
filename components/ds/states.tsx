@@ -87,7 +87,7 @@ export function KpiCard({ label, value, format, hint, spark, delta }: {
   return (
     <div className="rounded-card border border-line bg-surface p-card shadow-e1">
       <div className="flex items-start justify-between gap-2">
-        <p className="text-xs text-muted">{label}</p>
+        <div className="text-xs text-muted">{label}</div>
         {spark && spark.length > 1 && <Sparkline points={spark} className="h-7 w-16 shrink-0 text-faint" />}
       </div>
       <p className="tabular mt-1 break-words text-xl font-semibold text-fg sm:text-2xl">{shown}</p>

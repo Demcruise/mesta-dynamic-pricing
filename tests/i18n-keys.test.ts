@@ -36,6 +36,19 @@ describe('i18n key hygiene', () => {
     expect(missing).toEqual([]);
   });
 
+  it('no leaf key contains a dot (unreachable under the key.split walker)', () => {
+    const offenders: string[] = [];
+    const scan = (locale: string, node: unknown, path: string) => {
+      if (typeof node !== 'object' || node === null) return;
+      for (const [k, v] of Object.entries(node as Record<string, unknown>)) {
+        if (k.includes('.')) offenders.push(`${locale}: ${path}${k}`);
+        scan(locale, v, `${path}${k}.`);
+      }
+    };
+    for (const l of ['id', 'en'] as const) scan(l, messages[l], '');
+    expect(offenders).toEqual([]);
+  });
+
   it('notification message keys exist', () => {
     const keys: string[] = [];
     for (const f of files) for (const m of readFileSync(f, 'utf8').matchAll(/messageKey:\s*'([^']+)'/g)) keys.push(m[1] as string);

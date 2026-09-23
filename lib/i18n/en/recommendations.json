@@ -12,7 +12,8 @@
     "elasticity": "Elasticity",
     "stock": "Stock",
     "seasonality": "Seasonality",
-    "title": "Why this price"
+    "title": "Why this price",
+    "rule": "Rule"
   },
   "card": {
     "current": "Current",

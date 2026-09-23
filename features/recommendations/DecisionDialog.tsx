@@ -26,7 +26,7 @@ export function DecisionDialog({ rec, product, mode, onClose }: {
 }) {
   const { t } = useTranslation();
   return (
-    <Dialog open={mode !== null} onClose={onClose} title={t(mode ? TITLES[mode] : '')}>
+    <Dialog open={mode !== null} onClose={onClose} title={mode ? t(TITLES[mode]) : ''}>
       {mode && <Form key={mode} rec={rec} product={product} mode={mode} onClose={onClose} />}
     </Dialog>
   );

@@ -165,7 +165,7 @@ export function RuleBuilderDialog({ rule, open, onClose }: { rule: Rule | null; 
               <div key={i} className="grid grid-cols-[1fr_auto_auto_auto] items-end gap-1.5">
                 <select aria-label={t('rules.when.field')} className={inputCls} value={c.field}
                   onChange={(e) => setWhen(i, { field: e.target.value as RuleConditionField })}>
-                  {FIELDS.map((f) => <option key={f} value={f}>{t(`rules.when.field.${f}`)}</option>)}
+                  {FIELDS.map((f) => <option key={f} value={f}>{t(`rules.fields.${f}`)}</option>)}
                 </select>
                 <select aria-label={t('rules.when.op')} className={`${inputCls} w-16`} value={c.op}
                   onChange={(e) => setWhen(i, { op: e.target.value as ConditionOp })}>
@@ -191,7 +191,7 @@ export function RuleBuilderDialog({ rule, open, onClose }: { rule: Rule | null; 
               {(p) => (
                 <select {...p} className={`${inputCls} w-56`} value={current.then.kind}
                   onChange={(e) => set({ then: { ...current.then, kind: e.target.value as RuleFormulaKind } })}>
-                  {KINDS.map((k) => <option key={k} value={k}>{t(`rules.then.kind.${k}`)}</option>)}
+                  {KINDS.map((k) => <option key={k} value={k}>{t(`rules.kinds.${k}`)}</option>)}
                 </select>
               )}
             </Field>

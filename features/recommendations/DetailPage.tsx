@@ -30,7 +30,7 @@ export function RecommendationDetailPage({ recId }: { recId: string }) {
       ) : (
         <>
           <PageHeader title={q.data.id} subtitle={q.data.sku} />
-          <div className="grid max-w-3xl gap-4">
+          <div className="grid max-w-3xl grid-cols-1 gap-4">
             <RecommendationCard rec={q.data} product={product} defaultOpen />
             <section className="rounded-card border border-line bg-surface p-card shadow-e1">
               <h2 className="mb-2 text-sm font-semibold">{t('recommendations.rules.title')}</h2>
