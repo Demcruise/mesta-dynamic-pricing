@@ -6,14 +6,18 @@ import { ErrorState, KpiCard, LoadingRows, PageHeader } from '@/components/ds/st
 import { MetricDefinition } from '@/components/ds/trust';
 import { formatPercent, formatPrice } from '@/lib/format';
 import { useTranslation } from '@/lib/i18n';
-import { useAuditLog, useDeploymentRecords, useScopedRecommendations, useScopedSkuSet, useSkuList } from '@/lib/queries';
+import type { StrategyObjective } from '@/lib/ontology';
+import { project } from '@/lib/projection';
+import { useAuditLog, useDeploymentRecords, useScopedRecommendations, useScopedSkuSet, useSkuList, useStrategies } from '@/lib/queries';
 
 const DAY_MS = 86_400_000;
+const OBJECTIVES: (StrategyObjective | 'none')[] = ['maximize_margin', 'maximize_revenue', 'match_competitor', 'clear_inventory', 'none'];
 
 export function AnalyticsPage() {
   const { t, locale } = useTranslation();
   const recs = useScopedRecommendations();
   const products = useSkuList();
+  const strategies = useStrategies();
   const deployments = useDeploymentRecords();
   const audit = useAuditLog();
   const scoped = useScopedSkuSet();
@@ -42,7 +46,25 @@ export function AnalyticsPage() {
     const deploySuccess = deployable.length ? deployable.filter((d) => d.status === 'synced').length / deployable.length : null;
     const overrides = audit.data.filter((e) => e.type === 'manual_override').length;
 
-    return { acceptance, avgLatencyDays, leakage, priceIndex, deploySuccess, overrides, decided: decided.length };
+    // AN-001 additions — all demand figures are demand-model estimates.
+    const unitsSold = list.length ? list.reduce((s, p) => s + project(p, p.price).units, 0) : null;
+    const asp = list.length ? list.reduce((s, p) => s + p.price, 0) / list.length : null;
+    const markdowned = list.filter((p) => p.priceHistory.length > 0 && p.price < p.priceHistory[0]!.price);
+    const markdownShare = list.length ? markdowned.length / list.length : null;
+    // Price-change success: approved recs whose deployments all synced (no failure/rollback).
+    const recIds = new Set(recs.data.filter((r) => r.status === 'approved' || r.status === 'adjusted').map((r) => r.id));
+    const deployedRecs = new Map<string, { ok: number; bad: number }>();
+    for (const d of deployments.data) {
+      if (!recIds.has(d.recommendationId)) continue;
+      const row = deployedRecs.get(d.recommendationId) ?? { ok: 0, bad: 0 };
+      if (d.status === 'synced') row.ok++;
+      else if (d.status === 'failed' || d.status === 'rolled_back') row.bad++;
+      deployedRecs.set(d.recommendationId, row);
+    }
+    const settled = [...deployedRecs.values()].filter((r) => r.ok + r.bad > 0);
+    const changeSuccess = settled.length ? settled.filter((r) => r.bad === 0 && r.ok > 0).length / settled.length : null;
+
+    return { acceptance, avgLatencyDays, leakage, priceIndex, deploySuccess, overrides, decided: decided.length, unitsSold, asp, markdownShare, changeSuccess };
   }, [recs.data, products.data, deployments.data, audit.data, scoped]);
 
   const byCategory = useMemo(() => {
@@ -77,7 +99,34 @@ export function AnalyticsPage() {
       .sort((a, b) => b.leakage - a.leakage);
   }, [products.data, recs.data, scoped]);
 
-  const loading = recs.isLoading || products.isLoading || deployments.isLoading || audit.isLoading;
+  // AN-003: performance grouped by the owning strategy's objective (unlinked recs → 'none').
+  const byObjective = useMemo(() => {
+    const objByStrategy = new Map(strategies.data.map((s) => [s.id, s.objective] as const));
+    const activeByObjective = new Map<StrategyObjective, number>();
+    for (const s of strategies.data) {
+      if (s.status === 'active') activeByObjective.set(s.objective, (activeByObjective.get(s.objective) ?? 0) + 1);
+    }
+    const rows = new Map<StrategyObjective | 'none', { recs: number; decided: number; accepted: number; margin: number }>();
+    for (const o of OBJECTIVES) rows.set(o, { recs: 0, decided: 0, accepted: 0, margin: 0 });
+    for (const r of recs.data) {
+      const obj = (r.strategyId && objByStrategy.get(r.strategyId)) || 'none';
+      const row = rows.get(obj)!;
+      row.recs++;
+      row.margin += r.projectedMarginImpact;
+      if (r.status === 'approved' || r.status === 'rejected' || r.status === 'adjusted') {
+        row.decided++;
+        if (r.status !== 'rejected') row.accepted++;
+      }
+    }
+    return OBJECTIVES.map((objective) => ({
+      objective,
+      activeStrategies: objective === 'none' ? null : (activeByObjective.get(objective as StrategyObjective) ?? 0),
+      ...rows.get(objective)!,
+      acceptance: rows.get(objective)!.decided ? rows.get(objective)!.accepted / rows.get(objective)!.decided : null,
+    }));
+  }, [strategies.data, recs.data]);
+
+  const loading = recs.isLoading || products.isLoading || strategies.isLoading || deployments.isLoading || audit.isLoading;
   const errored = recs.isError || products.isError || deployments.isError || audit.isError;
 
   return (
@@ -87,7 +136,7 @@ export function AnalyticsPage() {
         <ErrorState title={t('common.state.error')} onRetry={() => { recs.refetch(); products.refetch(); deployments.refetch(); audit.refetch(); }} />
       ) : (
         <>
-          <div className="mb-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <KpiCard
               label={<MetricDefinition label={t('analytics.kpi.acceptance')} definition={t('analytics.kpi.acceptanceDef')} />}
               value={stats.acceptance === null ? '—' : formatPercent(stats.acceptance, locale)}
@@ -110,7 +159,30 @@ export function AnalyticsPage() {
             />
           </div>
 
-          <div className="mb-6 grid gap-3 sm:grid-cols-2">
+          <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            <KpiCard
+              label={<MetricDefinition label={t('analytics.kpi.unitsSold')} definition={t('analytics.kpi.unitsSoldDef')} />}
+              value={stats.unitsSold === null ? '—' : Math.round(stats.unitsSold).toLocaleString(locale)}
+              hint={t('analytics.kpi.unitsSoldHint')}
+            />
+            <KpiCard
+              label={<MetricDefinition label={t('analytics.kpi.asp')} definition={t('analytics.kpi.aspDef')} />}
+              value={stats.asp === null ? '—' : formatPrice(Math.round(stats.asp), locale)}
+              hint={t('analytics.kpi.aspHint')}
+            />
+            <KpiCard
+              label={<MetricDefinition label={t('analytics.kpi.markdown')} definition={t('analytics.kpi.markdownDef')} />}
+              value={stats.markdownShare === null ? '—' : formatPercent(stats.markdownShare, locale)}
+              hint={t('analytics.kpi.markdownHint')}
+            />
+            <KpiCard
+              label={<MetricDefinition label={t('analytics.kpi.changeSuccess')} definition={t('analytics.kpi.changeSuccessDef')} />}
+              value={stats.changeSuccess === null ? '—' : formatPercent(stats.changeSuccess, locale)}
+              hint={t('analytics.kpi.deploySuccess')}
+            />
+          </div>
+
+          <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div className="rounded-card border border-line bg-surface p-3 shadow-e1">
               <p className="text-xs text-muted">{t('analytics.kpi.deploySuccess')}</p>
               <p className="mt-1 text-lg font-semibold tabular">
@@ -122,6 +194,35 @@ export function AnalyticsPage() {
               <p className="mt-1 text-lg font-semibold tabular">{stats.overrides}</p>
             </div>
           </div>
+
+          <section aria-label={t('analytics.byObjective.title')} className="mb-6">
+            <h2 className="mb-2 text-sm font-semibold">{t('analytics.byObjective.title')}</h2>
+            <div className="overflow-x-auto rounded-card border border-line bg-surface shadow-e1">
+              <table className="w-full min-w-[560px] text-sm">
+                <caption className="sr-only">{t('analytics.byObjective.title')}</caption>
+                <thead className="bg-subtle text-xs text-muted">
+                  <tr className="h-row">
+                    {(['objective', 'strategies', 'recs', 'acceptance', 'margin'] as const).map((c) => (
+                      <th key={c} scope="col" className="px-3 py-row text-left font-medium">{t(`analytics.objCol.${c}`)}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {byObjective.map((r) => (
+                    <tr key={r.objective} className="h-row border-t border-line transition-colors duration-fast hover:bg-subtle">
+                      <td className="px-3 py-row font-medium">
+                        {r.objective === 'none' ? t('analytics.byObjective.none') : t(`strategy.objective.${r.objective}`)}
+                      </td>
+                      <td className="tabular px-3">{r.activeStrategies === null ? '—' : r.activeStrategies}</td>
+                      <td className="tabular px-3">{r.recs}</td>
+                      <td className="tabular px-3">{r.acceptance === null ? '—' : formatPercent(r.acceptance, locale)}</td>
+                      <td className="tabular px-3">{formatPrice(Math.round(r.margin), locale)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
 
           <section aria-label={t('analytics.byCategory.title')}>
             <h2 className="mb-2 text-sm font-semibold">{t('analytics.byCategory.title')}</h2>

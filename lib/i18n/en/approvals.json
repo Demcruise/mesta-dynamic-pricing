@@ -41,5 +41,10 @@
     "forbidden": "Only managers can delegate approvals.",
     "invalid": "Invalid delegation target or duration.",
     "not_found": "Delegation not found."
+  },
+  "chain": {
+    "title": "Approval chains",
+    "desc": "Recommendations whose multi-level approval chain is not yet complete.",
+    "waiting": "Awaiting {level} · {done}/{total} levels done"
   }
 }

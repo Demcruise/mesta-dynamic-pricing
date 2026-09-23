@@ -125,7 +125,7 @@ describe('multi-level approval + delegation (E.3)', () => {
       strategyId: null, scenarioId: null, ruleId: null,
       // Postdates all seeded competitor observations so the rec reads as fresh, not stale.
       createdAt: '2026-10-01T00:00:00.000Z', ownerId: 'u-analyst-1',
-      decidedAt: null, decisionNote: null, deployed: false,
+      decidedAt: null, decisionNote: null, approvals: [], deployed: false,
     };
   };
   const hydrateRec = (rec: Recommendation) => useRecommendationStore.getState().hydrate([rec]);

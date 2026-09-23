@@ -10,6 +10,8 @@ export interface StagedDecision {
   proposedPrice: number | null;
   actorId: string;
   actorRole: Role;
+  /** The approval-chain level this decision satisfies, if any (multi-level approvals). */
+  level: Role | null;
   expiresAt: number;
 }
 

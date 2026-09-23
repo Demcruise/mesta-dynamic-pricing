@@ -1,4 +1,5 @@
 import { competitorGap, marginPct } from '@/lib/domain';
+import { pendingApprovalLevel } from '@/lib/actions/recommendation';
 import type {
   AnomalyAlert, AuditEvent, DeploymentRecord, Product, Recommendation, Role, Strategy, UserSession,
 } from '@/lib/ontology';
@@ -68,6 +69,11 @@ export function roleKpis(input: KpiInput): Kpi[] {
       { key: 'channelFailures', value: deployments.filter((d) => d.status === 'failed').length, kind: 'count', href: '/deployment?status=failed', ...seriesOf(deployments.filter((d) => d.status === 'failed').map((d) => d.updatedAt)) },
       { key: 'pendingSyncs', value: deployments.filter((d) => d.status === 'pending' || d.status === 'in_flight').length, kind: 'count', href: '/deployment?status=pending', ...seriesOf(deployments.filter((d) => d.status === 'pending' || d.status === 'in_flight').map((d) => d.updatedAt)) },
       { key: 'lastDeployment', value: input.lastDeploymentAt, kind: 'date', href: '/deployment', ...seriesOf(deployments.map((d) => d.updatedAt)) },
+    ],
+    approver: [
+      { key: 'awaitingExecutive', value: recs.filter((r) => pendingApprovalLevel(r) === 'approver').length, kind: 'count', href: '/approvals', ...seriesOf(recs.map((r) => r.createdAt)) },
+      { key: 'decidedByMe', value: audit.filter((e) => e.actorId === user.userId && DECISIONS.includes(e.type)).length, kind: 'count', href: '/audit', ...seriesOf(auditAt((e) => e.actorId === user.userId && DECISIONS.includes(e.type))) },
+      { key: 'executiveImpact', value: recs.filter((r) => r.approvals.some((a) => a.level === 'approver')).reduce((s, r) => s + r.projectedMarginImpact, 0), kind: 'money', href: '/recommendations?status=approved' },
     ],
     compliance: [
       { key: 'auditVolume', value: audit.length, kind: 'count', href: '/audit', ...seriesOf(audit.map((e) => e.timestamp)) },

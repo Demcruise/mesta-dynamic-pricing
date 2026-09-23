@@ -2,9 +2,20 @@
   "title": "Ringkasan",
   "greeting": "Masuk sebagai {name} ({role})",
   "kpi": {
-    "pendingApprovals": "Persetujuan tertunda", "reviewed": "Ditinjau oleh Anda", "activeAnomalies": "Anomali aktif", "marginImpact": "Dampak margin yang disetujui", "overrideRate": "Tingkat override manual",
-    "strategyHealth": "Strategi aktif", "pendingStrategies": "Strategi menunggu persetujuan", "channelFailures": "Kegagalan kanal", "pendingSyncs": "Sinkron tertunda", "lastDeployment": "Deployment terakhir",
-    "auditVolume": "Kejadian audit", "manualOverrides": "Override manual", "guardrailExceptions": "Pengecualian guardrail", "none": "Belum ada"
+    "pendingApprovals": "Persetujuan tertunda",
+    "reviewed": "Ditinjau oleh Anda",
+    "activeAnomalies": "Anomali aktif",
+    "marginImpact": "Dampak margin yang disetujui",
+    "overrideRate": "Tingkat override manual",
+    "strategyHealth": "Strategi aktif",
+    "pendingStrategies": "Strategi menunggu persetujuan",
+    "channelFailures": "Kegagalan kanal",
+    "pendingSyncs": "Sinkron tertunda",
+    "lastDeployment": "Deployment terakhir",
+    "auditVolume": "Kejadian audit",
+    "manualOverrides": "Override manual",
+    "guardrailExceptions": "Pengecualian guardrail",
+    "none": "Belum ada"
   },
   "kpiDef": {
     "pendingApprovals": "Rekomendasi yang saat ini menunggu keputusan.",
@@ -22,32 +33,90 @@
     "guardrailExceptions": "Rekomendasi yang ditandai karena melanggar guardrail."
   },
   "def": {
-    "about": "Tentang {name}", "scope": "Cakupan", "scopeValue": "Semua toko · semua kanal",
-    "source": "Sumber", "sourceValue": "Dataset simulasi", "updated": "Diperbarui", "updatedValue": "Langsung (dalam memori)"
+    "about": "Tentang {name}",
+    "scope": "Cakupan",
+    "scopeValue": "Semua toko · semua kanal",
+    "source": "Sumber",
+    "sourceValue": "Dataset simulasi",
+    "updated": "Diperbarui",
+    "updatedValue": "Langsung (dalam memori)"
   },
-  "links": { "pending": "Tinjau persetujuan tertunda", "breach": "Tinjau pelanggaran guardrail", "failures": "Buka kegagalan deployment", "strategies": "Tinjau strategi", "audit": "Buka log audit", "monitoring": "Buka monitoring" },
+  "links": {
+    "pending": "Tinjau persetujuan tertunda",
+    "breach": "Tinjau pelanggaran guardrail",
+    "failures": "Buka kegagalan deployment",
+    "strategies": "Tinjau strategi",
+    "audit": "Buka log audit",
+    "monitoring": "Buka monitoring"
+  },
   "charts": {
-    "marginTrend": "Tren margin rata-rata", "volume": "Keputusan perubahan harga per kategori", "gap": "Selisih kompetitor per kategori", "period": "Periode {n}", "category": "Kategori", "value": "Nilai", "chart": "Grafik", "table": "Tabel data",
-    "marginCaption": "Margin rata-rata per periode", "volumeCaption": "Keputusan per kategori", "gapCaption": "Rata-rata selisih kompetitor per kategori", "cheaper": "Lebih murah dari kompetitor", "pricier": "Lebih mahal dari kompetitor",
-    "metaMargin": "Satuan: margin % · jendela {days} hari", "metaVolume": "Satuan: jumlah SKU · dikelompokkan per kategori", "metaGap": "Satuan: selisih % vs rata-rata kompetitor · per kategori",
-    "periodLabel": "Periode grafik", "weekly": "Mingguan", "monthly": "Bulanan", "quarterly": "Triwulan", "avgMargin": "margin rata-rata"
+    "marginTrend": "Tren margin rata-rata",
+    "volume": "Keputusan perubahan harga per kategori",
+    "gap": "Selisih kompetitor per kategori",
+    "period": "Periode {n}",
+    "category": "Kategori",
+    "value": "Nilai",
+    "chart": "Grafik",
+    "table": "Tabel data",
+    "marginCaption": "Margin rata-rata per periode",
+    "volumeCaption": "Keputusan per kategori",
+    "gapCaption": "Rata-rata selisih kompetitor per kategori",
+    "cheaper": "Lebih murah dari kompetitor",
+    "pricier": "Lebih mahal dari kompetitor",
+    "metaMargin": "Satuan: margin % · jendela {days} hari",
+    "metaVolume": "Satuan: jumlah SKU · dikelompokkan per kategori",
+    "metaGap": "Satuan: selisih % vs rata-rata kompetitor · per kategori",
+    "periodLabel": "Periode grafik",
+    "weekly": "Mingguan",
+    "monthly": "Bulanan",
+    "quarterly": "Triwulan",
+    "avgMargin": "margin rata-rata"
   },
-  "movers": { "title": "Pergerakan harga teratas", "live": "Live", "empty": "Belum ada pergerakan harga.", "margin": "Margin" },
+  "movers": {
+    "title": "Pergerakan harga teratas",
+    "live": "Live",
+    "empty": "Belum ada pergerakan harga.",
+    "margin": "Margin"
+  },
   "onboarding": {
     "title": "Penyiapan workspace",
     "subtitle": "Tujuh langkah menuju loop pricing yang berjalan penuh.",
     "sample": "Ini workspace sampel — data seed berarti beberapa langkah sudah selesai.",
     "progress": "{n} dari {total} selesai",
     "step": {
-      "catalog": "Tinjau katalog", "catalogHint": "Pastikan SKU, batas, dan cakupan kompetitor sudah benar.",
-      "feeds": "Verifikasi feed data", "feedsHint": "Semua sumber harus berstatus healthy sebelum angka dipercaya.",
-      "strategy": "Aktifkan strategi", "strategyHint": "Atur guardrail dan cakupan untuk pricing otomatis.",
-      "rules": "Aktifkan aturan pricing", "rulesHint": "Aturan WHEN/AND/THEN menghasilkan rekomendasi secara deterministik.",
-      "simulate": "Jalankan simulasi", "simulateHint": "Bandingkan skenario sebelum harga bergerak.",
-      "decide": "Kosongkan antrean keputusan", "decideHint": "Setujui, sesuaikan, atau tolak — setiap keputusan teraudit.",
-      "publish": "Publikasikan perubahan harga", "publishHint": "Dorong rekomendasi yang disetujui ke channel."
+      "catalog": "Tinjau katalog",
+      "catalogHint": "Pastikan SKU, batas, dan cakupan kompetitor sudah benar.",
+      "feeds": "Verifikasi feed data",
+      "feedsHint": "Semua sumber harus berstatus healthy sebelum angka dipercaya.",
+      "strategy": "Aktifkan strategi",
+      "strategyHint": "Atur guardrail dan cakupan untuk pricing otomatis.",
+      "rules": "Aktifkan aturan pricing",
+      "rulesHint": "Aturan WHEN/AND/THEN menghasilkan rekomendasi secara deterministik.",
+      "simulate": "Jalankan simulasi",
+      "simulateHint": "Bandingkan skenario sebelum harga bergerak.",
+      "decide": "Kosongkan antrean keputusan",
+      "decideHint": "Setujui, sesuaikan, atau tolak — setiap keputusan teraudit.",
+      "publish": "Publikasikan perubahan harga",
+      "publishHint": "Dorong rekomendasi yang disetujui ke channel."
     }
   },
-  "activity": { "title": "Aktivitas terbaru", "empty": "Belum ada aktivitas." },
-  "glossary": "Glosarium"
+  "activity": {
+    "title": "Aktivitas terbaru",
+    "empty": "Belum ada aktivitas."
+  },
+  "glossary": "Glosarium",
+  "persona": {
+    "title": "Apa fokus kerja Anda?",
+    "subtitle": "Pilih persona — workspace, izin, dan checklist menyesuaikan.",
+    "analyst": "Analis harga",
+    "analystDesc": "Tinjau dan putuskan rekomendasi",
+    "manager": "Manajer harga",
+    "managerDesc": "Strategi, persetujuan, dan kebijakan",
+    "approver": "Approver finansial",
+    "approverDesc": "Persetujuan akhir perubahan berdampak besar",
+    "ops_lead": "Kepala operasional",
+    "ops_leadDesc": "Publishing dan feed data",
+    "compliance": "Kepatuhan",
+    "complianceDesc": "Jejak audit dan pengawasan"
+  }
 }

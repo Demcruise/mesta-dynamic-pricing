@@ -14,7 +14,7 @@ import { MestaDataTable, useColumnVisibility, type DataColumn } from '@/componen
 import { RoleGate } from '@/components/shell/RoleGate';
 import { Button } from '@/components/ui/button';
 import { inputCls } from '@/components/ui/field';
-import { cancelPublishJob, liveJobStatus, retryDeployment, runScheduledJob } from '@/lib/actions/deployment';
+import { cancelPublishJob, createPublishJob, liveJobStatus, retryDeployment, runScheduledJob } from '@/lib/actions/deployment';
 import { CHANNELS } from '@/lib/stores/deployment';
 import { formatDate, formatPercent, formatRelativeTime } from '@/lib/format';
 import { useCan } from '@/lib/hooks';
@@ -54,6 +54,7 @@ export function DeploymentPage() {
   const [selected, setSelected] = useState<DeploymentRecord | null>(null);
   const [publishRec, setPublishRec] = useState<Recommendation | null>(null);
   const [rollbackJob, setRollbackJob] = useState<PublishJob | null>(null);
+  const [publishSel, setPublishSel] = useState<Set<string>>(new Set());
   const columnVis = useColumnVisibility('deployment');
 
   const status = (sp.get('status') ?? '') as DeploymentStatus | '';
@@ -218,8 +219,15 @@ export function DeploymentPage() {
                         <StatusBadge status={live} />
                       </div>
                       {job.scheduledFor && (
-                        <p className="mt-1 text-xs text-muted">{t('deployment.jobs.scheduledFor')}: <span className="tabular">{formatDate(job.scheduledFor, locale)}</span></p>
+                        <p className="mt-1 text-xs text-muted">
+                          {t('deployment.jobs.scheduledFor')}: <span className="tabular">{formatDate(job.scheduledFor, locale)}</span>
+                          <span className="text-faint"> ({job.timezone})</span>
+                        </p>
                       )}
+                      {job.effectiveUntil && (
+                        <p className="mt-0.5 text-xs text-muted">{t('deployment.jobs.effectiveUntil')}: <span className="tabular">{formatDate(job.effectiveUntil, locale)}</span></p>
+                      )}
+                      <p className="mt-0.5 text-xs text-faint">{job.channels.map((c) => t(`common.channel.${c}`)).join(' · ')}</p>
                       <JobProgress done={synced} total={rs.length} label={t('deployment.board.progress')} className="mt-2" />
                       <RoleGate action="deployment.execute">
                         <div className="mt-2 flex flex-wrap gap-2">
@@ -247,16 +255,41 @@ export function DeploymentPage() {
           </section>
 
           <section className="mb-5">
-            <h2 className="mb-2 text-sm font-semibold">{t('deployment.queue.title')}</h2>
+            <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+              <h2 className="text-sm font-semibold">{t('deployment.queue.title')}</h2>
+              <RoleGate action="deployment.execute">
+                {awaiting.some((r) => publishSel.has(r.id)) && (
+                  <Button size="sm" onClick={() => {
+                    let n = 0;
+                    for (const r of awaiting) if (publishSel.has(r.id) && createPublishJob(user, r.id).ok) n++;
+                    toast(t('deployment.toast.bulkStarted', { n }));
+                    setPublishSel(new Set());
+                  }}>
+                    {t('deployment.queue.publishSelected', { n: publishSel.size })}
+                  </Button>
+                )}
+              </RoleGate>
+            </div>
             {awaiting.length === 0 ? (
               <EmptyState variant="caughtUp" title={t('deployment.queue.empty')} />
             ) : (
               <ul className="grid grid-cols-1 gap-2 md:grid-cols-2">
                 {awaiting.map((r) => (
                   <li key={r.id} className="flex flex-wrap items-center justify-between gap-2 rounded-card border border-line bg-surface p-3 text-sm shadow-e1">
-                    <div>
-                      <p><Link href={`/recommendations/${r.id}`} className="tabular text-brand hover:underline">{r.id}</Link> · <span className="tabular">{r.sku}</span> {names.get(r.sku)}</p>
-                      <p className="text-xs text-muted">{t('deployment.queue.proposed')}: <PriceValue value={r.proposedPrice} /></p>
+                    <div className="flex min-w-0 items-start gap-2">
+                      <RoleGate action="deployment.execute">
+                        <input
+                          type="checkbox"
+                          className="mt-1"
+                          aria-label={t('deployment.queue.select', { id: r.id })}
+                          checked={publishSel.has(r.id)}
+                          onChange={(e) => setPublishSel((s) => { const n = new Set(s); if (e.target.checked) n.add(r.id); else n.delete(r.id); return n; })}
+                        />
+                      </RoleGate>
+                      <div className="min-w-0">
+                        <p><Link href={`/recommendations/${r.id}`} className="tabular text-brand hover:underline">{r.id}</Link> · <span className="tabular">{r.sku}</span> {names.get(r.sku)}</p>
+                        <p className="text-xs text-muted">{t('deployment.queue.proposed')}: <PriceValue value={r.proposedPrice} /></p>
+                      </div>
                     </div>
                     <RoleGate action="deployment.execute">
                       <Button size="sm" onClick={() => setPublishRec(r)}>{t('deployment.queue.deploy')}</Button>

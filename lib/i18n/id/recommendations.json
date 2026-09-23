@@ -33,7 +33,10 @@
     "owner": "Pemilik",
     "reason": "Pendorong utama",
     "staleAck": "Saya sudah memeriksa ulang data terkini",
-    "requiresManager": "Perlu persetujuan manajer"
+    "requiresManager": "Perlu persetujuan manajer",
+    "chainRecorded": "Persetujuan tercatat — menunggu {level}",
+    "requires_manager": "Perlu manajer",
+    "requires_approver": "Perlu approver finansial"
   },
   "tabs": {
     "label": "Antrean kerja",
@@ -80,8 +83,19 @@
     "bulkImmediate": "Persetujuan massal berlaku segera — tanpa jeda pembatalan. Setiap persetujuan tercatat di jejak audit; pembalikan memerlukan keputusan baru per SKU.",
     "reason": {
       "stale": "usang",
-      "breach": "melanggar guardrail"
-    }
+      "breach": "melanggar guardrail",
+      "chain": "perlu level persetujuan lebih tinggi"
+    },
+    "mode": "Aksi massal",
+    "mode_approve": "Setujui",
+    "mode_reject": "Tolak",
+    "mode_escalate": "Eskalasi",
+    "bulkNote": "Catatan",
+    "bulkNoteHint": "Tercatat di setiap rekomendasi yang terdampak.",
+    "bulkImmediateOther": "Berlaku langsung pada setiap item terpilih — setiap perubahan diaudit satu per satu.",
+    "confirmBulk_approve": "Setujui {n}",
+    "confirmBulk_reject": "Tolak {n}",
+    "confirmBulk_escalate": "Eskalasi {n}"
   },
   "run": {
     "title": "Bagaimana rekomendasi ini dihasilkan",
@@ -96,7 +110,9 @@
     "approved": "{id} disetujui",
     "rejected": "{id} ditolak",
     "adjusted": "{id} disesuaikan",
-    "bulk": "{n} rekomendasi disetujui"
+    "bulk": "{n} rekomendasi disetujui",
+    "bulkRejected": "{n} rekomendasi ditolak",
+    "bulkEscalated": "{n} rekomendasi dieskalasi"
   },
   "filter": {
     "category": "Kategori",
@@ -138,7 +154,8 @@
     "exceeds_change": "Harga di luar guardrail strategi.",
     "stale": "Data berubah sejak rekomendasi dibuat — konfirmasi pemeriksaan keusangan untuk tetap menyetujui.",
     "invalid_transition": "Perubahan status itu tidak diizinkan.",
-    "requires_manager": "Persetujuan berdampak tinggi memerlukan manajer — atau delegasi yang aktif."
+    "requires_manager": "Persetujuan berdampak tinggi memerlukan manajer — atau delegasi yang aktif.",
+    "requires_approver": "Rekomendasi ini perlu approver finansial."
   },
   "notFound": "Rekomendasi tidak ditemukan.",
   "back": "Kembali ke antrean",
@@ -178,5 +195,28 @@
     "channels": "Kanal terdampak",
     "channelsValue": "Semua kanal terkonfigurasi",
     "undoNote": "Setujui, sesuaikan, atau tolak menahapkan keputusan — berlaku setelah jeda pembatalan {s} dtk dan tercatat di jejak audit."
+  },
+  "chain": {
+    "title": "Rantai persetujuan",
+    "complete": "rantai selesai"
+  },
+  "confidence": {
+    "title": "Rincian confidence",
+    "freshness": "Kesegaran data",
+    "coverage": "Cakupan kompetitor",
+    "agreement": "Kesesuaian sinyal",
+    "rule": "Kelengkapan aturan"
+  },
+  "logic": {
+    "title": "Logika yang diterapkan",
+    "strategy": "Strategi",
+    "rule": "Aturan",
+    "signals": "Sinyal",
+    "constraints": "Batasan",
+    "calculation": "Perhitungan",
+    "impact": "dampak margin terproyeksi",
+    "fromScenario": "dari skenario",
+    "none": "tidak ada",
+    "noProduct": "produk tidak ada di katalog"
   }
 }

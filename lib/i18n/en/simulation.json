@@ -1,27 +1,90 @@
 {
   "title": "Simulation",
   "subtitle": "Compare price scenarios against a baseline before sending them for review",
-  "context": { "sku": "SKU", "strategy": "Strategy", "noStrategy": "No strategy (product limits only)", "searchSku": "Search SKU or name", "pick": "Select an SKU to simulate.", "change": "Change SKU" },
+  "context": {
+    "sku": "SKU",
+    "strategy": "Strategy",
+    "noStrategy": "No strategy (product limits only)",
+    "searchSku": "Search SKU or name",
+    "pick": "Select an SKU to simulate.",
+    "change": "Change SKU"
+  },
   "baseline": "Baseline",
   "competitorFresh": "Competitor data {at}",
   "scenario": "Scenario {n}",
   "controls": {
-    "price": "Proposed price", "slider": "Price slider", "reset": "Reset to baseline", "add": "Add scenario", "remove": "Remove scenario {n}",
-    "range": "Allowed range {min} – {max}", "save": "Save draft", "send": "Send to Recommendations", "saved": "Saved as {id}", "sent": "Sent as {rec}", "discard": "Discard"
+    "price": "Proposed price",
+    "slider": "Price slider",
+    "reset": "Reset to baseline",
+    "add": "Add scenario",
+    "remove": "Remove scenario {n}",
+    "range": "Allowed range {min} – {max}",
+    "save": "Save draft",
+    "send": "Send to Recommendations",
+    "saved": "Saved as {id}",
+    "sent": "Sent as {rec}",
+    "discard": "Discard"
   },
-  "metric": { "price": "Price", "priceDelta": "Price change", "competitorAvg": "Competitor avg", "vsCompetitor": "Vs competitor avg", "units": "Monthly units", "demandChange": "Demand change", "revenue": "Revenue", "grossMargin": "Gross margin", "marginPct": "Margin %", "breakEven": "Break-even price" },
-  "compare": { "title": "Scenario comparison" },
-  "chart": { "title": "Demand curve", "toggleChart": "Chart", "toggleTable": "Data table", "x": "Price", "y": "Monthly units", "tableCaption": "Projected demand by price", "ci": "Demand interval" },
+  "metric": {
+    "price": "Price",
+    "priceDelta": "Price change",
+    "competitorAvg": "Competitor avg",
+    "vsCompetitor": "Vs competitor avg",
+    "units": "Monthly units",
+    "demandChange": "Demand change",
+    "revenue": "Revenue",
+    "grossMargin": "Gross margin",
+    "marginPct": "Margin %",
+    "breakEven": "Break-even price",
+    "customerResponse": "Customer response (modelled)",
+    "historical": "Vs nearest past price"
+  },
+  "compare": {
+    "title": "Scenario comparison"
+  },
+  "chart": {
+    "title": "Demand curve",
+    "toggleChart": "Chart",
+    "toggleTable": "Data table",
+    "x": "Price",
+    "y": "Monthly units",
+    "tableCaption": "Projected demand by price",
+    "ci": "Demand interval"
+  },
   "assumptions": {
-    "title": "Assumptions", "body": "Constant-elasticity model: units = {base} × (P / P0) ^ elasticity ({elasticity}). Demand interval is ±{ci}%. Competitor reactions and seasonality are not modelled. Break-even marker (E) is unit cost.",
-    "runState": "Running on {n} competitor observations · latest {at}", "noCompetitorData": "No competitor observations on file for this SKU"
+    "title": "Assumptions",
+    "body": "Constant-elasticity model: units = {base} × (P / P0) ^ elasticity ({elasticity}). Demand interval is ±{ci}%. Competitor reactions and seasonality are not modelled. Break-even marker (E) is unit cost.",
+    "runState": "Running on {n} competitor observations · latest {at}",
+    "noCompetitorData": "No competitor observations on file for this SKU"
   },
   "err": {
-    "invalid": "Enter a valid price.", "below_min": "Price is below the product minimum.", "above_max": "Price is above the product maximum.", "map_breach": "Price breaches MAP.",
-    "exceeds_change": "Price is outside the strategy guardrail.", "forbidden": "Your role cannot simulate.", "already_sent": "This scenario was already sent.", "not_found": "Not found."
+    "invalid": "Enter a valid price.",
+    "below_min": "Price is below the product minimum.",
+    "above_max": "Price is above the product maximum.",
+    "map_breach": "Price breaches MAP.",
+    "exceeds_change": "Price is outside the strategy guardrail.",
+    "forbidden": "Your role cannot simulate.",
+    "already_sent": "This scenario was already sent.",
+    "not_found": "Not found."
   },
-  "confirmDiscard": { "title": "Discard unsaved changes?", "body": "Your unsaved scenarios will be lost.", "confirm": "Discard", "cancel": "Keep editing" },
+  "confirmDiscard": {
+    "title": "Discard unsaved changes?",
+    "body": "Your unsaved scenarios will be lost.",
+    "confirm": "Discard",
+    "cancel": "Keep editing"
+  },
   "notFound": "Scenario not found.",
   "sentNotice": "Sent to the recommendation queue.",
-  "viewQueue": "Open queue"
+  "viewQueue": "Open queue",
+  "response": {
+    "strongDrop": "Strong drop likely",
+    "mildDrop": "Mild drop likely",
+    "neutral": "Roughly neutral",
+    "mildGain": "Mild gain likely",
+    "strongGain": "Strong gain likely"
+  },
+  "historical": {
+    "none": "No past price points",
+    "vs": "vs {price} · {at}"
+  }
 }

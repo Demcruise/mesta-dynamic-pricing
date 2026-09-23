@@ -1,0 +1,27 @@
+{
+  "page": {
+    "title": "Signals",
+    "desc": "Demand and inventory signals per SKU — the inputs the pricing engine reads.",
+    "honest": "All values are demand-model estimates derived from the catalog — not observed sales telemetry."
+  },
+  "empty": "No SKUs in scope.",
+  "risk": {
+    "title": "Stock risk",
+    "stockout": "Stockout risk",
+    "low": "Low stock",
+    "healthy": "Healthy",
+    "overstock": "Overstock"
+  },
+  "table": {
+    "caption": "Demand and inventory signals per SKU",
+    "sku": "SKU",
+    "name": "Name",
+    "category": "Category",
+    "velocity": "Velocity",
+    "elasticity": "Elasticity",
+    "coverage": "Coverage",
+    "stock": "Stock",
+    "daysSupply": "Days of supply",
+    "risk": "Stock risk"
+  }
+}

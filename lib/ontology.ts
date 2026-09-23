@@ -1,4 +1,4 @@
-export type Role = 'analyst' | 'manager' | 'ops_lead' | 'compliance';
+export type Role = 'analyst' | 'manager' | 'approver' | 'ops_lead' | 'compliance';
 
 export interface UserSession {
   userId: string;
@@ -14,6 +14,8 @@ export interface Product {
   sku: string;
   name: string;
   category: string;
+  /** Brand label — part of the product ontology (DATA-004). */
+  brand: string;
   /** Org → BU → Region → Store scope (BU derived via buOf). */
   region: string;
   store: string;
@@ -88,6 +90,15 @@ export interface RationaleFactor {
 export type RecommendationStatus = 'pending' | 'approved' | 'rejected' | 'adjusted' | 'changes_requested' | 'escalated' | 'expired';
 export type RecommendationSource = 'agent' | 'simulation' | 'manual';
 
+/** One recorded step in a multi-level approval chain (APR-003). */
+export interface ApprovalStep {
+  /** The chain level this step satisfies — e.g. 'manager' or 'approver'. */
+  level: Role;
+  actorId: string;
+  at: string;
+  note: string | null;
+}
+
 /** WHEN condition fields — every value derivable from stored product data. */
 export type RuleConditionField = 'competitor_gap_pct' | 'margin_pct' | 'stock_units' | 'days_since_change';
 export type ConditionOp = 'lt' | 'lte' | 'gt' | 'gte' | 'eq';
@@ -131,6 +142,8 @@ export interface Recommendation {
   ownerId: string;
   decidedAt: string | null;
   decisionNote: string | null;
+  /** Approval-chain steps already recorded; status flips to approved only when the chain completes. */
+  approvals: ApprovalStep[];
   deployed: boolean;
 }
 
@@ -158,6 +171,12 @@ export interface PublishJob {
   status: PublishJobStatus;
   /** ISO time the job is due; null = immediate. Scheduled jobs promote via runScheduledJob (no backend clock). */
   scheduledFor: string | null;
+  /** Channels this job targets — DeploymentRecords spawn only for these. */
+  channels: Channel[];
+  /** IANA-style label shown to operators ('Asia/Jakarta' default). Scheduling input is always local time. */
+  timezone: string;
+  /** Optional end of the publish window — the expiry sweep reverts the price after this time. */
+  effectiveUntil: string | null;
   createdBy: string;
   createdAt: string;
   updatedAt: string;
@@ -246,7 +265,7 @@ export interface DelegationGrant {
 }
 
 export type AuditEventType =
-  | 'strategy_submit' | 'strategy_activate' | 'strategy_reject' | 'strategy_rollback'
+  | 'strategy_submit' | 'strategy_activate' | 'strategy_reject' | 'strategy_rollback' | 'strategy_save'
   | 'strategy_schedule' | 'strategy_unschedule'
   | 'scenario_sent'
   | 'recommendation_approve' | 'recommendation_reject' | 'recommendation_adjust'
@@ -258,6 +277,7 @@ export type AuditEventType =
   | 'datasource_sync'
   | 'experiment_save' | 'experiment_start' | 'experiment_conclude' | 'experiment_cancel'
   | 'delegation_grant' | 'delegation_revoke'
+  | 'policy_override' | 'publish_window_end'
   | 'model_review_feedback' | 'manual_override';
 
 export interface AuditEvent {
@@ -265,7 +285,7 @@ export interface AuditEvent {
   type: AuditEventType;
   actorId: string;
   actorRole: Role;
-  entityType: 'strategy' | 'scenario' | 'recommendation' | 'deployment' | 'anomaly' | 'product' | 'rule' | 'override' | 'datasource' | 'experiment' | 'delegation';
+  entityType: 'strategy' | 'scenario' | 'recommendation' | 'deployment' | 'anomaly' | 'product' | 'rule' | 'override' | 'datasource' | 'experiment' | 'delegation' | 'policy';
   entityId: string;
   sku: string | null;
   source: 'ui' | 'agent' | 'system';

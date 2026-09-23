@@ -1,5 +1,5 @@
 import { checkPrice } from '../guardrails';
-import type { Product, Recommendation, RecommendationStatus, UserSession } from '../ontology';
+import type { Product, Recommendation, RecommendationStatus, Role, UserSession } from '../ontology';
 import { can } from '../rbac';
 import {
   UNDO_WINDOW_MS, useAuditStore, useNotificationStore, useProductCatalogStore, useRecommendationStore, useStrategyStore, useUndoStore,
@@ -15,14 +15,36 @@ const DECIDABLE = new Set<RecommendationStatus>(['pending', 'escalated']);
 export const REC_TTL_MS = 7 * 86_400_000;
 /** |projectedMarginImpact| above this (IDR) requires a manager decision — or an active delegation grant. */
 export const HIGH_IMPACT_IDR = 100_000;
+/** Above this, the chain extends: manager level first, then the finance approver (APR-003). */
+export const EXECUTIVE_IMPACT_IDR = 350_000;
+
+/** Ordered approval levels a rec needs; empty = any decider approves directly. */
+export function approvalChain(rec: Pick<Recommendation, 'projectedMarginImpact'>): Role[] {
+  const a = Math.abs(rec.projectedMarginImpact);
+  if (a >= EXECUTIVE_IMPACT_IDR) return ['manager', 'approver'];
+  if (a >= HIGH_IMPACT_IDR) return ['manager'];
+  return [];
+}
+
+/** The chain level still waiting for a decision — null when the chain is complete. */
+export function pendingApprovalLevel(rec: Pick<Recommendation, 'projectedMarginImpact' | 'approvals'>): Role | null {
+  return approvalChain(rec).find((l) => !rec.approvals.some((a) => a.level === l)) ?? null;
+}
 
 /** Second-level approval rule: high-impact recs need a manager unless a live grant covers the user. */
 export function requiresManager(rec: Pick<Recommendation, 'projectedMarginImpact'>): boolean {
   return Math.abs(rec.projectedMarginImpact) >= HIGH_IMPACT_IDR;
 }
 
+/** Whether the user may satisfy a chain level. 'manager' accepts a live grant; 'approver' does not — separation of duties. */
+export function canDecideAtLevel(user: UserSession, level: Role): boolean {
+  if (level === 'manager') return user.role === 'manager' || activeGrantFor(user.userId) !== null;
+  if (level === 'approver') return user.role === 'approver';
+  return can(user.role, 'recommendation.decide');
+}
+
 export function canDecideHighImpact(user: UserSession): boolean {
-  return user.role === 'manager' || activeGrantFor(user.userId) !== null;
+  return canDecideAtLevel(user, 'manager');
 }
 const AUDIT_TYPE = {
   approved: 'recommendation_approve',
@@ -75,6 +97,7 @@ function commit(recId: string) {
   const res = useRecommendationStore.getState().decide(recId, d.to, {
     ...(d.note ? { note: d.note } : {}),
     ...(d.proposedPrice !== null ? { proposedPrice: d.proposedPrice } : {}),
+    ...(d.level ? { step: { level: d.level, actorId: d.actorId, at: new Date().toISOString(), note: d.note } } : {}),
   });
   if (!res.ok || !rec) return;
   useAuditStore.getState().record({
@@ -107,8 +130,30 @@ export function stageDecision(
   if ((to === 'rejected' || to === 'adjusted') && !note) return fail('note_required');
   // Staleness re-check on approval: the product may have moved since the rec was formed.
   if (to === 'approved' && recommendationHealth(rec).stale && !opts.ackStale) return fail('stale');
-  // Multi-level approval: high-impact changes need a manager (or a live delegation grant).
-  if (to === 'approved' && requiresManager(rec) && !canDecideHighImpact(user)) return fail('requires_manager');
+  // Multi-level approval chain: high impact needs a manager (or live grant); executive impact
+  // additionally needs the finance approver afterwards. Mid-chain approvals record immediately.
+  if (to === 'approved') {
+    const level = pendingApprovalLevel(rec);
+    if (level && !canDecideAtLevel(user, level)) return fail(level === 'approver' ? 'requires_approver' : 'requires_manager');
+    if (level && approvalChain(rec).some((l) => l !== level && !rec.approvals.some((a) => a.level === l))) {
+      const step = { level, actorId: user.userId, at: new Date().toISOString(), note: note || null };
+      if (!useRecommendationStore.getState().recordApproval(recId, step)) return fail('invalid');
+      useAuditStore.getState().record({
+        type: 'recommendation_approve', actorId: user.userId, actorRole: user.role, entityType: 'recommendation',
+        entityId: recId, sku: rec.sku, source: 'ui', note: `approval chain: ${level}`,
+        snapshot: { oldPrice: rec.currentPrice, newPrice: rec.proposedPrice },
+      });
+      const next = pendingApprovalLevel({ ...rec, approvals: [...rec.approvals, step] });
+      if (next) {
+        useNotificationStore.getState().push({
+          targetRole: next, groupKey: `rec_chain:${recId}:${next}`, messageKey: 'common.notify.recAwaitingLevel',
+          params: { sku: rec.sku }, href: '/approvals',
+        });
+      }
+      track('recommendation_chain_step', { recId, level });
+      return { ok: true as const, awaiting: next };
+    }
+  }
   if (to === 'adjusted') {
     const product = useProductCatalogStore.getState().products.find((p) => p.sku === rec.sku);
     const strategy = rec.strategyId ? useStrategyStore.getState().items.find((s) => s.id === rec.strategyId) ?? null : null;
@@ -118,7 +163,9 @@ export function stageDecision(
   }
   useUndoStore.getState().stage({
     recId, to, note: note || null, proposedPrice: to === 'adjusted' ? (opts.proposedPrice as number) : null,
-    actorId: user.userId, actorRole: user.role, expiresAt: Date.now() + UNDO_WINDOW_MS,
+    actorId: user.userId, actorRole: user.role,
+    level: to === 'approved' ? pendingApprovalLevel(rec) : null,
+    expiresAt: Date.now() + UNDO_WINDOW_MS,
   });
   timers.set(recId, setTimeout(() => commit(recId), UNDO_WINDOW_MS));
   track(`recommendation_${to}`, { recId });
@@ -135,15 +182,19 @@ export function undoDecision(recId: string) {
   return d ? ok() : fail('not_staged');
 }
 
-/** Approves immediately the eligible set; stale or guardrail-breaching items are excluded. */
-export function bulkEligibility(recs: Recommendation[], minConfidence: number) {
+/** Approves immediately the eligible set; stale, breaching, or still-chain-blocked items are excluded. */
+export function bulkEligibility(recs: Recommendation[], minConfidence: number, user?: UserSession) {
   const staged = useUndoStore.getState().staged;
   const eligible: Recommendation[] = [];
-  const excluded: { rec: Recommendation; reason: 'stale' | 'breach' }[] = [];
+  const excluded: { rec: Recommendation; reason: 'stale' | 'breach' | 'chain' }[] = [];
   for (const r of recs) {
     if (!DECIDABLE.has(r.status) || staged[r.id] || r.confidence < minConfidence) continue;
+    const level = pendingApprovalLevel(r);
     const h = recommendationHealth(r);
-    if (h.stale) excluded.push({ rec: r, reason: 'stale' });
+    // A bulk approve must complete the chain in one step — a pending level the user can't
+    // satisfy (or any level when later levels remain) excludes the item.
+    if (level && (!user || !canDecideAtLevel(user, level) || approvalChain(r).length > 1)) excluded.push({ rec: r, reason: 'chain' });
+    else if (h.stale) excluded.push({ rec: r, reason: 'stale' });
     else if (h.breach) excluded.push({ rec: r, reason: 'breach' });
     else eligible.push(r);
   }
@@ -153,11 +204,13 @@ export function bulkEligibility(recs: Recommendation[], minConfidence: number) {
 export function bulkApprove(user: UserSession, recs: Recommendation[], minConfidence: number, onlyIds?: Set<string>) {
   if (!can(user.role, 'recommendation.bulk_approve')) return fail('forbidden');
   track('bulk_approval_initiated', { minConfidence });
-  const { eligible } = bulkEligibility(recs, minConfidence);
+  const { eligible } = bulkEligibility(recs, minConfidence, user);
   const targets = onlyIds ? eligible.filter((r) => onlyIds.has(r.id)) : eligible;
   let count = 0;
   for (const r of targets) {
-    if (useRecommendationStore.getState().decide(r.id, 'approved').ok) {
+    const level = pendingApprovalLevel(r);
+    const step = level ? { level, actorId: user.userId, at: new Date().toISOString(), note: 'bulk approval' } : undefined;
+    if (useRecommendationStore.getState().decide(r.id, 'approved', { ...(step ? { step } : {}) }).ok) {
       count++;
       useAuditStore.getState().record({
         type: 'recommendation_approve', actorId: user.userId, actorRole: user.role, entityType: 'recommendation',
@@ -173,6 +226,53 @@ export function bulkApprove(user: UserSession, recs: Recommendation[], minConfid
       params: { n: count }, href: '/deployment',
     });
   }
+  return { ok: true as const, count };
+}
+
+/**
+ * §17 bulk reject: applies 'rejected' with one shared note across selected decidable recs.
+ * Immediate like requestChanges — a rejection is not undoable via the undo window.
+ */
+export function bulkReject(user: UserSession, recs: Recommendation[], note: string) {
+  if (!can(user.role, 'recommendation.decide')) return fail('forbidden');
+  if (!note.trim()) return fail('note_required');
+  const staged = useUndoStore.getState().staged;
+  let count = 0;
+  for (const r of recs) {
+    if (!DECIDABLE.has(r.status) || staged[r.id]) continue;
+    if (!useRecommendationStore.getState().decide(r.id, 'rejected', { note }).ok) continue;
+    count++;
+    useAuditStore.getState().record({
+      type: 'recommendation_reject', actorId: user.userId, actorRole: user.role, entityType: 'recommendation',
+      entityId: r.id, sku: r.sku, source: 'ui', note: `bulk reject: ${note}`,
+      snapshot: { oldPrice: r.currentPrice, newPrice: r.proposedPrice },
+    });
+  }
+  track('bulk_reject', { n: count });
+  return { ok: true as const, count };
+}
+
+/** §17 bulk escalate: jumps selected decidable recs to the escalated band with one note. */
+export function bulkEscalate(user: UserSession, recs: Recommendation[], note: string) {
+  if (!can(user.role, 'recommendation.decide')) return fail('forbidden');
+  const staged = useUndoStore.getState().staged;
+  let count = 0;
+  for (const r of recs) {
+    if (!DECIDABLE.has(r.status) || staged[r.id]) continue;
+    if (!useRecommendationStore.getState().decide(r.id, 'escalated', { note: note || undefined }).ok) continue;
+    count++;
+    useAuditStore.getState().record({
+      type: 'recommendation_escalate', actorId: user.userId, actorRole: user.role, entityType: 'recommendation',
+      entityId: r.id, sku: r.sku, source: 'ui', note: note ? `bulk escalate: ${note}` : 'bulk escalate',
+    });
+  }
+  if (count > 0) {
+    useNotificationStore.getState().push({
+      targetRole: 'manager', groupKey: 'rec_bulk_escalated', messageKey: 'common.notify.recBulkEscalated',
+      params: { n: count }, href: '/approvals',
+    });
+  }
+  track('bulk_escalate', { n: count });
   return { ok: true as const, count };
 }
 

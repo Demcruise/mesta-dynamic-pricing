@@ -41,5 +41,10 @@
     "forbidden": "Hanya manajer yang dapat mendelegasikan persetujuan.",
     "invalid": "Target atau durasi delegasi tidak valid.",
     "not_found": "Delegasi tidak ditemukan."
+  },
+  "chain": {
+    "title": "Rantai persetujuan",
+    "desc": "Rekomendasi yang rantai persetujuan bertingkatnya belum selesai.",
+    "waiting": "Menunggu {level} · {done}/{total} level selesai"
   }
 }

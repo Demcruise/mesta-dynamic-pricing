@@ -1,8 +1,8 @@
 'use client';
 
 import {
-  Ban, CalendarClock, CheckCircle2, Database, Flag, FlaskConical, PenLine, Pencil, Play, RotateCw, Rocket, Send, Timer,
-  TriangleAlert, Undo2, UserMinus, UserPlus, XCircle, type LucideIcon,
+  Ban, CalendarClock, CheckCircle2, Database, Flag, FlaskConical, PenLine, Pencil, Play, RotateCw, Rocket, Send,
+  Settings2, Timer, TriangleAlert, Undo2, UserMinus, UserPlus, XCircle, type LucideIcon,
 } from 'lucide-react';
 import { formatRelativeTime } from '@/lib/format';
 import { useTranslation } from '@/lib/i18n';
@@ -15,6 +15,7 @@ const ICONS: Record<AuditEventType, LucideIcon> = {
   strategy_activate: CheckCircle2,
   strategy_reject: XCircle,
   strategy_rollback: Undo2,
+  strategy_save: Pencil,
   strategy_schedule: CalendarClock,
   strategy_unschedule: Ban,
   scenario_sent: FlaskConical,
@@ -43,6 +44,8 @@ const ICONS: Record<AuditEventType, LucideIcon> = {
   experiment_cancel: Ban,
   delegation_grant: UserPlus,
   delegation_revoke: UserMinus,
+  policy_override: Settings2,
+  publish_window_end: Timer,
   model_review_feedback: Flag,
   manual_override: PenLine,
 };

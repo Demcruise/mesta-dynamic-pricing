@@ -3,6 +3,7 @@
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useEffect, useMemo } from 'react';
+import { ArrowRight } from 'lucide-react';
 import { OnboardingChecklist } from '@/components/ds/OnboardingChecklist';
 import { TopMoversPanel } from '@/components/ds/TopMoversPanel';
 import { KpiCard, LoadingRows, PageHeader } from '@/components/ds/states';
@@ -10,7 +11,7 @@ import { MetricDefinition } from '@/components/ds/trust';
 import { recommendationHealth } from '@/lib/actions/recommendation';
 import { formatDate, formatPercent, formatPrice } from '@/lib/format';
 import { useTranslation } from '@/lib/i18n';
-import type { UserSession } from '@/lib/ontology';
+import type { Role, UserSession } from '@/lib/ontology';
 import {
   useAnomalies, useAuditLog, useDataSources, useDeploymentRecords, usePriceEvents, useRules, useScenarios, useScopedRecommendations, useScopedSkuList, useScopedSkuSet, useStrategies,
 } from '@/lib/queries';
@@ -84,6 +85,7 @@ export function OverviewPage() {
       <PageHeader title={t('overview.title')} subtitle={t('overview.greeting', { name: user.name, role: t(`common.role.${user.role}`) })} />
       {loading ? <LoadingRows rows={4} rowHeight={72} /> : (
         <>
+          <PersonaPrompt t={t} />
           <SetupChecklist
             t={t} user={user}
             skuCount={skus.data.length}
@@ -155,6 +157,49 @@ export function OverviewPage() {
 }
 
 type T = (key: string, vars?: Record<string, string | number>) => string;
+
+const PERSONAS: { role: Role; icon: string }[] = [
+  { role: 'analyst', icon: '◇' },
+  { role: 'manager', icon: '◈' },
+  { role: 'approver', icon: '◆' },
+  { role: 'ops_lead', icon: '▣' },
+  { role: 'compliance', icon: '◎' },
+];
+
+/**
+ * ONB-001: first-run "what do you work on?" prompt. Choosing a persona sets the
+ * session role, which reshapes nav, permissions, quick links, and the setup
+ * checklist below — the checklist stays role-aware via RBAC gating.
+ */
+function PersonaPrompt({ t }: { t: T }) {
+  const personaChosen = useSessionStore((s) => s.personaChosen);
+  const choosePersona = useSessionStore((s) => s.choosePersona);
+  if (personaChosen) return null;
+  return (
+    <section aria-label={t('overview.persona.title')} className="mb-4 rounded-card border border-brand/40 bg-brand-soft/30 p-card shadow-e1">
+      <h2 className="text-sm font-semibold text-fg">{t('overview.persona.title')}</h2>
+      <p className="mt-0.5 text-xs text-muted">{t('overview.persona.subtitle')}</p>
+      <ul className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-5">
+        {PERSONAS.map((p) => (
+          <li key={p.role}>
+            <button
+              type="button"
+              onClick={() => choosePersona(p.role)}
+              className="group flex w-full items-center gap-2.5 rounded-input border border-line bg-surface px-3 py-2.5 text-left transition-colors duration-fast hover:border-brand hover:bg-brand-soft"
+            >
+              <span aria-hidden className="text-brand">{p.icon}</span>
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-sm font-medium">{t(`overview.persona.${p.role}`)}</span>
+                <span className="block truncate text-xs text-muted">{t(`overview.persona.${p.role}Desc`)}</span>
+              </span>
+              <ArrowRight aria-hidden className="size-4 shrink-0 text-faint transition-colors duration-fast group-hover:text-brand" />
+            </button>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
 
 /**
  * Seven-step workspace setup tracker (E.2). Every step is derived from real

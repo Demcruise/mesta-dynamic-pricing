@@ -15,4 +15,5 @@ export * from './publish';
 export * from './rule';
 export * from './monitoring';
 export * from './ops';
+export * from './policy';
 export * from './feedback';

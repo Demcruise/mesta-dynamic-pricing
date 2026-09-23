@@ -61,7 +61,10 @@
     "audit": "Lihat audit",
     "applyStrategy": "Terapkan strategi",
     "selected": "{n} SKU dipilih",
-    "clearSelection": "Kosongkan pilihan"
+    "clearSelection": "Kosongkan pilihan",
+    "exportSelected": "Ekspor CSV",
+    "assignStrategy": "Tetapkan ke strategi…",
+    "bulkEdit": "Edit harga massal…"
   },
   "override": {
     "title": "Override harga manual",
@@ -115,5 +118,38 @@
     "prev": "Sebelumnya: {sku}",
     "next": "Berikutnya: {sku}",
     "position": "{i} dari {n}"
+  },
+  "bulk": {
+    "assignTitle": "Tetapkan ke strategi",
+    "assignTo": "Strategi tujuan",
+    "assignPlaceholder": "Pilih strategi",
+    "assignBody": "Menambahkan {n} SKU terpilih ke cakupan strategi. Riwayat strategi mencatat perubahan ini.",
+    "assignSummary": "{n} SKU akan masuk cakupan strategi.",
+    "assignConfirm": "Tetapkan",
+    "assigned": "{n} SKU ditetapkan ke strategi",
+    "editTitle": "Edit harga massal",
+    "delta": "Delta harga %",
+    "reason": "Alasan",
+    "analystNote": "Peran Anda mengajukan satu permintaan override per SKU — manajer menyetujuinya di Exceptions.",
+    "blocked": "{n} baris gagal cek guardrail dan akan dilewati.",
+    "editHonest": "Baris yang lolos diterapkan langsung dengan event harga dan entri audit. Baris yang diblokir tidak disentuh.",
+    "editSummary": "{n} baris lolos cek · {blocked} diblokir",
+    "editConfirm": "Terapkan {n} harga",
+    "requestConfirm": "Ajukan {n} override",
+    "applied": "{n} harga diterapkan · {blocked} diblokir",
+    "requested": "{n} permintaan override diajukan · {blocked} diblokir",
+    "err": {
+      "delta": "Masukkan delta bukan nol dalam ±50%.",
+      "note_required": "Alasan wajib diisi.",
+      "forbidden": "Peran Anda tidak dapat melakukan itu.",
+      "not_found": "Strategi tidak ditemukan."
+    },
+    "check": {
+      "below_min": "di bawah min",
+      "above_max": "di atas maks",
+      "map_breach": "pelanggaran MAP",
+      "exceeds_change": "melebihi batas perubahan",
+      "invalid": "tidak valid"
+    }
   }
 }

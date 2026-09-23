@@ -24,14 +24,14 @@ import { AuditTimeline } from './AuditTimeline';
 import { eventLinks, filterAudit, parseAuditFilters, serializeAuditFilters, type AuditFilters } from './audit-utils';
 
 const TYPES: AuditEventType[] = [
-  'strategy_submit', 'strategy_activate', 'strategy_reject', 'strategy_rollback', 'strategy_schedule', 'strategy_unschedule',
+  'strategy_submit', 'strategy_activate', 'strategy_reject', 'strategy_rollback', 'strategy_save', 'strategy_schedule', 'strategy_unschedule',
   'scenario_sent',
   'recommendation_approve', 'recommendation_reject', 'recommendation_adjust',
   'recommendation_request_changes', 'recommendation_escalate', 'recommendation_expire', 'recommendation_resubmit',
   'deployment_success', 'deployment_failure', 'deployment_retry', 'deployment_rollback', 'publish_scheduled', 'publish_cancelled',
   'rule_save', 'rule_run', 'override_request', 'override_approve', 'override_reject', 'datasource_sync',
   'experiment_save', 'experiment_start', 'experiment_conclude', 'experiment_cancel', 'delegation_grant', 'delegation_revoke',
-  'model_review_feedback', 'manual_override',
+  'policy_override', 'publish_window_end', 'model_review_feedback', 'manual_override',
 ];
 const PAGE = 100;
 

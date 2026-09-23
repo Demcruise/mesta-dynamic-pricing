@@ -6,11 +6,15 @@ import { ActionSummary, DocsLink, RecoveryNotice } from '@/components/ds/trust';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { Field, Input } from '@/components/ui/field';
-import { bulkApprove, bulkEligibility } from '@/lib/actions/recommendation';
+import { bulkApprove, bulkEligibility, bulkEscalate, bulkReject } from '@/lib/actions/recommendation';
+import { useCan } from '@/lib/hooks';
 import { useTranslation } from '@/lib/i18n';
 import type { Recommendation } from '@/lib/ontology';
-import { useSessionStore, useToastStore } from '@/lib/stores';
+import { useSessionStore, useToastStore, useUndoStore } from '@/lib/stores';
 
+type Mode = 'approve' | 'reject' | 'escalate';
+
+/** §17 bulk ops: approve (confidence-gated), reject and escalate (note-driven) over the filtered queue. */
 export function BulkDialog({ open, onClose, recs }: { open: boolean; onClose: () => void; recs: Recommendation[] }) {
   const { t } = useTranslation();
   return (
@@ -24,30 +28,72 @@ function Body({ recs, onClose }: { recs: Recommendation[]; onClose: () => void }
   const { t } = useTranslation();
   const user = useSessionStore((s) => s.user);
   const toast = useToastStore((s) => s.push);
+  const staged = useUndoStore((s) => s.staged);
+  const can = useCan();
+  const modes: Mode[] = can('recommendation.bulk_approve') ? ['approve', 'reject', 'escalate'] : ['reject', 'escalate'];
+  const [mode, setMode] = useState<Mode>(modes[0]!);
   const [threshold, setThreshold] = useState('85');
+  const [note, setNote] = useState('');
   const [deselected, setDeselected] = useState<Set<string>>(new Set());
   const min = Math.min(100, Math.max(0, Number(threshold) || 0));
-  const plan = useMemo(() => bulkEligibility(recs, min), [recs, min]);
+  const plan = useMemo(() => bulkEligibility(recs, min, user), [recs, min, user]);
   const stale = plan.excluded.filter((e) => e.reason === 'stale').length;
-  const breach = plan.excluded.length - stale;
+  const breach = plan.excluded.filter((e) => e.reason === 'breach').length;
+  const chain = plan.excluded.filter((e) => e.reason === 'chain').length;
 
-  const chosen = plan.eligible.filter((r) => !deselected.has(r.id));
+  // Reject/escalate don't need health gates — every decidable, unstaged rec is eligible.
+  const decidable = useMemo(
+    () => recs.filter((r) => (r.status === 'pending' || r.status === 'escalated') && !staged[r.id]),
+    [recs, staged],
+  );
+  const pool = mode === 'approve' ? plan.eligible : decidable;
+  const chosen = pool.filter((r) => !deselected.has(r.id));
   const impact = chosen.reduce((s, r) => s + r.projectedMarginImpact, 0);
+  const noteMissing = (mode === 'reject' || mode === 'escalate') && !note.trim();
   const toggle = (id: string) =>
     setDeselected((d) => { const n = new Set(d); if (n.has(id)) n.delete(id); else n.add(id); return n; });
 
   const confirm = () => {
-    const r = bulkApprove(user, recs, min, new Set(chosen.map((x) => x.id)));
-    if (!r.ok) { toast(t(`recommendations.err.${r.error}`)); return; }
-    toast(t('recommendations.toast.bulk', { n: r.count }));
+    const ids = new Set(chosen.map((x) => x.id));
+    if (mode === 'approve') {
+      const r = bulkApprove(user, recs, min, ids);
+      if (!r.ok) { toast(t(`recommendations.err.${r.error}`)); return; }
+      toast(t('recommendations.toast.bulk', { n: r.count }));
+    } else if (mode === 'reject') {
+      const r = bulkReject(user, chosen, note);
+      if (!r.ok) { toast(t(`recommendations.err.${r.error}`)); return; }
+      toast(t('recommendations.toast.bulkRejected', { n: r.count }));
+    } else {
+      const r = bulkEscalate(user, chosen, note);
+      if (!r.ok) { toast(t(`recommendations.err.${r.error}`)); return; }
+      toast(t('recommendations.toast.bulkEscalated', { n: r.count }));
+    }
     onClose();
   };
 
   return (
     <div className="flex flex-col gap-3">
-      <Field label={t('recommendations.dialog.threshold')}>
-        {(p) => <Input {...p} type="number" min={0} max={100} value={threshold} onChange={(e) => setThreshold(e.target.value)} />}
-      </Field>
+      <div role="group" aria-label={t('recommendations.dialog.mode')} className="flex gap-1">
+        {modes.map((m) => (
+          <Button key={m} size="sm" variant={mode === m ? 'primary' : 'secondary'} aria-pressed={mode === m} onClick={() => setMode(m)}>
+            {t(`recommendations.dialog.mode_${m}`)}
+          </Button>
+        ))}
+      </div>
+
+      {mode === 'approve' ? (
+        <Field label={t('recommendations.dialog.threshold')}>
+          {(p) => <Input {...p} type="number" min={0} max={100} value={threshold} onChange={(e) => setThreshold(e.target.value)} />}
+        </Field>
+      ) : (
+        <>
+          <Field label={t('recommendations.dialog.bulkNote')}>
+            {(p) => <Input {...p} value={note} onChange={(e) => setNote(e.target.value)} />}
+          </Field>
+          <p className="-mt-2 text-xs text-faint">{t('recommendations.dialog.bulkNoteHint')}</p>
+        </>
+      )}
+
       <div aria-live="polite" className="rounded-input bg-subtle p-3 text-sm">
         {chosen.length === 0 ? (
           <p>{t('recommendations.dialog.none')}</p>
@@ -57,13 +103,15 @@ function Body({ recs, onClose }: { recs: Recommendation[]; onClose: () => void }
             <p className="text-muted">{t('recommendations.dialog.impact')}: <PriceValue value={impact} /></p>
           </>
         )}
-        {plan.excluded.length > 0 && <p className="mt-1 text-xs text-warn">{t('recommendations.dialog.excluded', { n: plan.excluded.length, stale, breach })}</p>}
+        {mode === 'approve' && plan.excluded.length > 0 && (
+          <p className="mt-1 text-xs text-warn">{t('recommendations.dialog.excluded', { n: plan.excluded.length, stale, breach, chain })}</p>
+        )}
       </div>
-      {plan.eligible.length > 0 && (
+      {pool.length > 0 && (
         <fieldset className="rounded-input border border-line">
           <legend className="sr-only">{t('recommendations.dialog.checklist')}</legend>
           <ul className="max-h-56 divide-y divide-line overflow-auto text-xs">
-            {plan.eligible.map((r) => {
+            {pool.map((r) => {
               const on = !deselected.has(r.id);
               return (
                 <li key={r.id}>
@@ -80,7 +128,7 @@ function Body({ recs, onClose }: { recs: Recommendation[]; onClose: () => void }
           </ul>
         </fieldset>
       )}
-      {plan.excluded.length > 0 && (
+      {mode === 'approve' && plan.excluded.length > 0 && (
         <details className="text-xs text-muted">
           <summary className="cursor-pointer">{t('recommendations.dialog.excludedList', { n: plan.excluded.length })}</summary>
           <ul className="mt-1 flex flex-col gap-1 pl-4">
@@ -92,18 +140,23 @@ function Body({ recs, onClose }: { recs: Recommendation[]; onClose: () => void }
           </ul>
         </details>
       )}
-      <RecoveryNotice>{t('recommendations.dialog.bulkImmediate')} <DocsLink href="/audit">{t('common.action.viewAudit')}</DocsLink></RecoveryNotice>
+      <RecoveryNotice>
+        {mode === 'approve' ? t('recommendations.dialog.bulkImmediate') : t('recommendations.dialog.bulkImmediateOther')}
+        {' '}<DocsLink href="/audit">{t('common.action.viewAudit')}</DocsLink>
+      </RecoveryNotice>
       <ActionSummary
         consequence={
           <>
             {t('recommendations.dialog.targetsShort', { n: chosen.length })} · {t('recommendations.dialog.impact')} <PriceValue value={impact} />
-            {plan.excluded.length > 0 && <> · {t('recommendations.dialog.excludedShort', { n: plan.excluded.length })}</>}
+            {mode === 'approve' && plan.excluded.length > 0 && <> · {t('recommendations.dialog.excludedShort', { n: plan.excluded.length })}</>}
           </>
         }
         action={
           <>
             <Button variant="secondary" onClick={onClose}>{t('recommendations.action.cancel')}</Button>
-            <Button disabled={chosen.length === 0} onClick={confirm}>{t('recommendations.dialog.confirmBulk', { n: chosen.length })}</Button>
+            <Button disabled={chosen.length === 0 || noteMissing} onClick={confirm}>
+              {t(`recommendations.dialog.confirmBulk_${mode}`, { n: chosen.length })}
+            </Button>
           </>
         }
       />

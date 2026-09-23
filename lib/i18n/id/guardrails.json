@@ -33,6 +33,35 @@
       "name": "Keusangan harga",
       "desc": "Hari sejak perubahan harga terakhir. Dilacak untuk antrean tinjauan — bukan batas yang ditegakkan.",
       "detail": "tertua {v}h"
+    },
+    "change_frequency": {
+      "name": "Frekuensi perubahan",
+      "desc": "Menandai rekomendasi pending pada SKU yang diubah harganya di dalam jeda minimum.",
+      "detail": "jeda minimum {v}h"
+    },
+    "inventory": {
+      "name": "Batasan inventaris",
+      "desc": "Menandai kenaikan harga pada SKU yang stoknya menipis atau habis."
+    },
+    "approval_threshold": {
+      "name": "Ambang persetujuan",
+      "desc": "Rekomendasi di atas ambang dampak perlu persetujuan lebih tinggi sebelum publish.",
+      "detail": "ambang di {v} IDR"
+    },
+    "promotion": {
+      "name": "Batasan promosi",
+      "desc": "Kalender dan mekanik promo.",
+      "detail": "Katalog demo tidak membawa data promosi."
+    },
+    "regulatory": {
+      "name": "Batasan regulasi",
+      "desc": "Batas harga, subsidi, dan aturan yurisdiksi.",
+      "detail": "Tidak ada data yurisdiksi di demo."
+    },
+    "channel": {
+      "name": "Batasan channel",
+      "desc": "Aturan harga per channel.",
+      "detail": "Channel hanya ada pada job publish."
     }
   },
   "enforced": "Ditegakkan",
@@ -69,5 +98,6 @@
     "above_max": "Di atas maksimum",
     "map_breach": "Pelanggaran MAP",
     "exceeds_change": "Melebihi batas perubahan"
-  }
+  },
+  "notModelled": "Tidak dimodelkan"
 }

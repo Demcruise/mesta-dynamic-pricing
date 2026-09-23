@@ -16,6 +16,7 @@ import type { Product } from '@/lib/ontology';
 import { useRecommendations, useScopedSkuList } from '@/lib/queries';
 import { useCatalogSelectionStore, useUiStore } from '@/lib/stores';
 import { useDevStore } from '@/lib/stores/dev';
+import { BulkActionBar } from './BulkActions';
 import { CatalogTable } from './CatalogTable';
 import { FilterBar } from './FilterBar';
 import {
@@ -170,7 +171,8 @@ export function CatalogPage() {
           className="glass sticky bottom-16 z-20 mt-3 flex items-center justify-between gap-3 rounded-card border border-line p-3 shadow-e3 md:bottom-4"
         >
           <span className="text-sm font-medium" aria-live="polite">{t('catalog.action.selected', { n: selectedIds.length })}</span>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
+            <BulkActionBar products={rows.filter((r) => selected.has(r.sku))} onClear={clearSelection} />
             <RoleGate action="catalog.apply_strategy">
               <Link
                 href="/strategy/new"

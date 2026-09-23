@@ -65,6 +65,7 @@ export function sendScenario(user: UserSession, scenarioId: string): (Ok & { rec
     createdAt: new Date().toISOString(),
     decidedAt: null,
     decisionNote: null,
+    approvals: [],
     deployed: false,
   };
   useRecommendationStore.getState().add(rec);

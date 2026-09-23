@@ -2,6 +2,7 @@
 
 import { ChevronRight, MapPin } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
+import { CATEGORIES } from '@/lib/categories';
 import { ALL_STORES, buOf, ORG_NAME, regionOfStore, REGIONS, STORES_BY_REGION, type Region } from '@/lib/scope';
 import { useUiStore } from '@/lib/stores';
 
@@ -31,7 +32,7 @@ export function ScopeSelector() {
         id="scope-region"
         className="h-6 rounded-input border border-line bg-surface px-1.5 text-xs"
         value={scope.region ?? ''}
-        onChange={(e) => setScope({ region: (e.target.value || null) as Region | null, store: null })}
+        onChange={(e) => setScope({ ...scope, region: (e.target.value || null) as Region | null, store: null })}
       >
         <option value="">{t('common.scope.allRegions')}</option>
         {REGIONS.map((r) => <option key={r} value={r}>{r}</option>)}
@@ -44,17 +45,28 @@ export function ScopeSelector() {
         value={scope.store ?? ''}
         onChange={(e) => {
           const store = e.target.value || null;
-          setScope({ store, region: store ? regionOfStore(store) : scope.region });
+          setScope({ ...scope, store, region: store ? regionOfStore(store) : scope.region });
         }}
       >
         <option value="">{scope.region ? t('common.scope.allStoresInRegion') : t('common.scope.allStores')}</option>
         {stores.map((s) => <option key={s} value={s}>{s}</option>)}
       </select>
-      {(scope.region || scope.store) && (
+      <ChevronRight className="size-3 shrink-0 text-faint" aria-hidden />
+      <label className="sr-only" htmlFor="scope-category">{t('common.scope.category')}</label>
+      <select
+        id="scope-category"
+        className="h-6 rounded-input border border-line bg-surface px-1.5 text-xs"
+        value={scope.category ?? ''}
+        onChange={(e) => setScope({ ...scope, category: e.target.value || null })}
+      >
+        <option value="">{t('common.scope.allCategories')}</option>
+        {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+      </select>
+      {(scope.region || scope.store || scope.category) && (
         <button
           type="button"
           className="ml-1 shrink-0 text-brand transition-colors duration-fast hover:underline"
-          onClick={() => setScope({ region: null, store: null })}
+          onClick={() => setScope({ region: null, store: null, category: null })}
         >
           {t('common.scope.reset')}
         </button>

@@ -31,7 +31,8 @@
     "data": "Data health",
     "competitors": "Competitors",
     "analytics": "Analytics",
-    "experiments": "Experiments"
+    "experiments": "Experiments",
+    "signals": "Signals"
   },
   "crumb": {
     "new": "New",
@@ -52,14 +53,22 @@
     "accessBody": "Role × action policy matrix — read-only; policy changes require a code change in lib/rbac.ts.",
     "accessAction": "Action",
     "accessYes": "Allowed",
-    "accessNo": "Not allowed"
+    "accessNo": "Not allowed",
+    "accessBodyEdit": "Role × action policy matrix. Click a cell to override the code default — a dot marks overridden cells.",
+    "policyChanged": "Policy updated: {action} for {role}",
+    "policyReset": "Policy overrides cleared",
+    "policyResetAll": "Reset {n} overrides",
+    "policyLocked": "Locked — cannot be overridden",
+    "policyCell": "Toggle {action} for {role}",
+    "policyHonest": "Overrides persist in this browser only. They shape this demo workspace — real enforcement still lives in lib/rbac.ts."
   },
   "role": {
     "analyst": "Analyst",
     "manager": "Manager",
     "ops_lead": "Ops Lead",
     "compliance": "Compliance",
-    "switcher": "Switch role (dev)"
+    "switcher": "Switch role (dev)",
+    "approver": "Approver"
   },
   "state": {
     "loading": "Loading…",
@@ -112,7 +121,9 @@
     "allRegions": "All regions",
     "allStores": "All stores",
     "allStoresInRegion": "All stores in region",
-    "reset": "Reset scope"
+    "reset": "Reset scope",
+    "category": "Category",
+    "allCategories": "All categories"
   },
   "cmd": {
     "open": "Search or jump to…",
@@ -127,7 +138,11 @@
     "createStrategy": "Create strategy",
     "pendingApprovals": "Open pending approvals",
     "deployFailures": "Open deployment failures",
-    "recent": "Recent"
+    "recent": "Recent",
+    "scenario": "Scenario",
+    "approval": "Approval",
+    "category": "Category",
+    "store": "Store"
   },
   "status": {
     "draft": "Draft",
@@ -208,7 +223,10 @@
     "ruleRun": "Rule run: {n} new recommendations",
     "grouped": "{n} similar",
     "overrideRequested": "Override request filed for {sku}",
-    "overrideDecided": "Override request on {sku} was decided"
+    "overrideDecided": "Override request on {sku} was decided",
+    "recAwaitingLevel": "{sku} awaits the next approval level",
+    "recBulkEscalated": "{n} recommendations escalated",
+    "windowEnded": "{sku} publish window ended — price reverted"
   },
   "a11y": {
     "expandSidebar": "Expand sidebar",
@@ -273,7 +291,10 @@
     "experiment_conclude": "Experiment concluded",
     "experiment_cancel": "Experiment cancelled",
     "delegation_grant": "Approval delegated",
-    "delegation_revoke": "Delegation revoked"
+    "delegation_revoke": "Delegation revoked",
+    "strategy_save": "Strategy saved",
+    "policy_override": "Policy override changed",
+    "publish_window_end": "Publish window ended"
   },
   "channel": {
     "pos": "POS",

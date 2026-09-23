@@ -35,7 +35,7 @@ export const useScopedSkuSet = (): Set<string> | null => {
   const scope = useUiStore((s) => s.scope);
   const products = useProductCatalogStore((s) => s.products);
   return useMemo(() => {
-    if (!scope.region && !scope.store) return null;
+    if (!scope.region && !scope.store && !scope.category) return null;
     return new Set(products.filter((p) => inScope(p, scope)).map((p) => p.sku));
   }, [products, scope]);
 };

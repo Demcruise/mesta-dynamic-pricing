@@ -31,7 +31,8 @@
     "data": "Kesehatan data",
     "competitors": "Kompetitor",
     "analytics": "Analitik",
-    "experiments": "Eksperimen"
+    "experiments": "Eksperimen",
+    "signals": "Sinyal"
   },
   "crumb": {
     "new": "Baru",
@@ -52,14 +53,22 @@
     "accessBody": "Matriks kebijakan peran × aksi — hanya-baca; perubahan kebijakan memerlukan perubahan kode di lib/rbac.ts.",
     "accessAction": "Aksi",
     "accessYes": "Diizinkan",
-    "accessNo": "Tidak diizinkan"
+    "accessNo": "Tidak diizinkan",
+    "accessBodyEdit": "Matriks kebijakan peran × aksi. Klik sel untuk menimpa bawaan kode — titik menandai sel yang ditimpa.",
+    "policyChanged": "Kebijakan diperbarui: {action} untuk {role}",
+    "policyReset": "Override kebijakan dihapus",
+    "policyResetAll": "Reset {n} override",
+    "policyLocked": "Terkunci — tidak dapat ditimpa",
+    "policyCell": "Ubah {action} untuk {role}",
+    "policyHonest": "Override tersimpan hanya di browser ini dan membentuk workspace demo — penegakan asli tetap di lib/rbac.ts."
   },
   "role": {
     "analyst": "Analis",
     "manager": "Manajer",
     "ops_lead": "Ops Lead",
     "compliance": "Kepatuhan",
-    "switcher": "Ganti peran (dev)"
+    "switcher": "Ganti peran (dev)",
+    "approver": "Approver"
   },
   "state": {
     "loading": "Memuat…",
@@ -112,7 +121,9 @@
     "allRegions": "Semua wilayah",
     "allStores": "Semua toko",
     "allStoresInRegion": "Semua toko di wilayah",
-    "reset": "Atur ulang cakupan"
+    "reset": "Atur ulang cakupan",
+    "category": "Kategori",
+    "allCategories": "Semua kategori"
   },
   "cmd": {
     "open": "Cari atau lompat ke…",
@@ -127,7 +138,11 @@
     "createStrategy": "Buat strategi",
     "pendingApprovals": "Buka persetujuan tertunda",
     "deployFailures": "Buka kegagalan deployment",
-    "recent": "Terbaru"
+    "recent": "Terbaru",
+    "scenario": "Skenario",
+    "approval": "Persetujuan",
+    "category": "Kategori",
+    "store": "Toko"
   },
   "status": {
     "draft": "Draf",
@@ -208,7 +223,10 @@
     "ruleRun": "Eksekusi aturan: {n} rekomendasi baru",
     "grouped": "{n} serupa",
     "overrideRequested": "Permintaan override diajukan untuk {sku}",
-    "overrideDecided": "Permintaan override untuk {sku} telah diputuskan"
+    "overrideDecided": "Permintaan override untuk {sku} telah diputuskan",
+    "recAwaitingLevel": "{sku} menunggu level persetujuan berikutnya",
+    "recBulkEscalated": "{n} rekomendasi dieskalasi",
+    "windowEnded": "Jendela publish {sku} berakhir — harga dikembalikan"
   },
   "a11y": {
     "expandSidebar": "Perluas sidebar",
@@ -273,7 +291,10 @@
     "experiment_conclude": "Eksperimen diakhiri",
     "experiment_cancel": "Eksperimen dibatalkan",
     "delegation_grant": "Persetujuan didelegasikan",
-    "delegation_revoke": "Delegasi dicabut"
+    "delegation_revoke": "Delegasi dicabut",
+    "strategy_save": "Strategi disimpan",
+    "policy_override": "Override kebijakan diubah",
+    "publish_window_end": "Jendela publish berakhir"
   },
   "channel": {
     "pos": "POS",

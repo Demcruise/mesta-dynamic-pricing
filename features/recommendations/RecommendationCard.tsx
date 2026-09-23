@@ -13,7 +13,8 @@ import { Sparkline } from '@/components/ds/Sparkline';
 import { StatusChip } from '@/components/ds/StatusChip';
 import { RoleGate } from '@/components/shell/RoleGate';
 import { Button } from '@/components/ui/button';
-import { canDecideHighImpact, recommendationHealth, requiresManager, stageDecision } from '@/lib/actions/recommendation';
+import { ApprovalChain } from '@/components/ds/ApprovalChain';
+import { canDecideAtLevel, pendingApprovalLevel, recommendationHealth, stageDecision } from '@/lib/actions/recommendation';
 import { elasticityBand } from '@/lib/domain';
 import { formatDate, formatPrice } from '@/lib/format';
 import { useCan } from '@/lib/hooks';
@@ -40,9 +41,9 @@ export function RecommendationCard({ rec, product, defaultOpen = false, showStat
   const decidable = rec.status === 'pending' || rec.status === 'escalated';
   const locked = !!staged;
   const canDecide = decidable && !locked && can('recommendation.decide');
-  // Second-level rule: high-impact approvals need a manager or a live delegation grant.
-  const needsManager = decidable && requiresManager(rec);
-  const canApprove = canDecide && (!needsManager || canDecideHighImpact(user));
+  // Multi-level chain: the level currently awaiting a decision, if any.
+  const pendingLevel = decidable ? pendingApprovalLevel(rec) : null;
+  const canApprove = canDecide && (!pendingLevel || canDecideAtLevel(user, pendingLevel));
   const [staleAck, setStaleAck] = useState(false);
 
   const latestObs = competitors
@@ -70,6 +71,7 @@ export function RecommendationCard({ rec, product, defaultOpen = false, showStat
   const approve = () => {
     const r = stageDecision(user, rec.id, 'approved', health.stale ? { ackStale: staleAck } : {});
     if (!r.ok) toast(t(`recommendations.err.${r.error}`));
+    else if ('awaiting' in r && r.awaiting) toast(t('recommendations.card.chainRecorded', { level: t(`common.role.${r.awaiting}`) }));
   };
 
   return (
@@ -90,9 +92,9 @@ export function RecommendationCard({ rec, product, defaultOpen = false, showStat
         <div className="flex flex-wrap items-center gap-2">
           {showStatus && <StatusChip status={rec.status} />}
           {decidable && health.stale && <StatusChip status="stale" />}
-          {needsManager && (
+          {pendingLevel && (
             <span className="inline-flex items-center gap-1 rounded-full bg-warn-soft px-2 py-0.5 text-xs font-medium text-warn">
-              <TriangleAlert className="size-3" aria-hidden />{t('recommendations.card.requiresManager')}
+              <TriangleAlert className="size-3" aria-hidden />{t(`recommendations.card.requires_${pendingLevel}`)}
             </span>
           )}
         </div>
@@ -122,6 +124,7 @@ export function RecommendationCard({ rec, product, defaultOpen = false, showStat
       )}
 
       <RationaleBreakdown factors={rec.rationale} />
+      <ApprovalChain rec={rec} />
 
       <details open={defaultOpen} className="text-sm">
         <summary className="cursor-pointer text-xs font-medium text-muted">{t('recommendations.card.evidence')}</summary>
@@ -167,7 +170,7 @@ export function RecommendationCard({ rec, product, defaultOpen = false, showStat
             </label>
           )}
           <Button size="sm" disabled={!canApprove || (health.stale && !staleAck)} onClick={approve}
-            title={needsManager && !canDecideHighImpact(user) ? t('recommendations.card.requiresManager') : undefined}
+            title={pendingLevel && !canDecideAtLevel(user, pendingLevel) ? t(`recommendations.card.requires_${pendingLevel}`) : undefined}
           >{t('recommendations.action.approve')}</Button>
           <Button size="sm" variant="secondary" disabled={!canDecide} onClick={() => setDialog('adjust')}>{t('recommendations.action.adjust')}</Button>
           <Button size="sm" variant="secondary" disabled={!canDecide} onClick={() => setDialog('reject')}>{t('recommendations.action.reject')}</Button>

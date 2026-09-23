@@ -16,9 +16,14 @@ test('analyst: catalog → simulation → send → approve → audit', async ({ 
   const recId = (await page.getByText(/Sent as REC-S\d+/).first().textContent())!.match(/REC-S\d+/)![0];
 
   await go(page, `/recommendations/${recId}`);
-  await expect(page.getByRole('heading', { name: recId })).toBeVisible();
-  // Multi-level approval: a +1000 move on this SKU is high-impact — a manager decides it.
+  await expect(page.getByRole('heading', { name: recId })).toBeVisible({ timeout: 15_000 });
+  // Multi-level approval: a +1000 move lands above the executive-impact gate —
+  // the manager signs first, then the finance approver completes the chain.
   await setRole(page, 'manager');
+  await page.getByRole('button', { name: 'Approve' }).click();
+  // Mid-chain: still pending, the card now says the approver level is required.
+  await expect(page.getByText('Requires the finance approver')).toBeVisible({ timeout: 15_000 });
+  await setRole(page, 'approver');
   await page.getByRole('button', { name: 'Approve' }).click();
   await expect(page.getByRole('button', { name: 'Undo' })).toBeVisible();
   await expect(page.locator('article header').getByText('Approved')).toBeVisible({ timeout: 15_000 });

@@ -33,7 +33,10 @@
     "owner": "Owner",
     "reason": "Primary driver",
     "staleAck": "I re-checked the current data",
-    "requiresManager": "Manager approval required"
+    "requiresManager": "Manager approval required",
+    "chainRecorded": "Approval recorded — now awaiting {level}",
+    "requires_manager": "Requires a manager",
+    "requires_approver": "Requires the finance approver"
   },
   "tabs": {
     "label": "Work queues",
@@ -80,8 +83,19 @@
     "bulkImmediate": "Bulk approval applies immediately — no undo window. Each approval is recorded in the audit trail; reversing requires a new decision per SKU.",
     "reason": {
       "stale": "stale",
-      "breach": "guardrail breach"
-    }
+      "breach": "guardrail breach",
+      "chain": "needs a higher approval level"
+    },
+    "mode": "Bulk action",
+    "mode_approve": "Approve",
+    "mode_reject": "Reject",
+    "mode_escalate": "Escalate",
+    "bulkNote": "Note",
+    "bulkNoteHint": "Recorded on every affected recommendation.",
+    "bulkImmediateOther": "Applies immediately to each selected item — each change is audited individually.",
+    "confirmBulk_approve": "Approve {n}",
+    "confirmBulk_reject": "Reject {n}",
+    "confirmBulk_escalate": "Escalate {n}"
   },
   "run": {
     "title": "How this recommendation was generated",
@@ -96,7 +110,9 @@
     "approved": "{id} approved",
     "rejected": "{id} rejected",
     "adjusted": "{id} adjusted",
-    "bulk": "{n} recommendations approved"
+    "bulk": "{n} recommendations approved",
+    "bulkRejected": "{n} recommendations rejected",
+    "bulkEscalated": "{n} recommendations escalated"
   },
   "filter": {
     "category": "Category",
@@ -138,7 +154,8 @@
     "exceeds_change": "Price is outside the strategy guardrail.",
     "stale": "The data moved since this recommendation was formed — confirm the staleness acknowledgement to approve anyway.",
     "invalid_transition": "That status change is not allowed.",
-    "requires_manager": "High-impact approval requires a manager — or an active delegation grant."
+    "requires_manager": "High-impact approval requires a manager — or an active delegation grant.",
+    "requires_approver": "This recommendation needs the finance approver."
   },
   "notFound": "Recommendation not found.",
   "back": "Back to queue",
@@ -178,5 +195,28 @@
     "channels": "Channels affected",
     "channelsValue": "All configured channels",
     "undoNote": "Approve, adjust or reject stages the decision — it takes effect after a {s}s undo window and is recorded in the audit trail."
+  },
+  "chain": {
+    "title": "Approval chain",
+    "complete": "chain complete"
+  },
+  "confidence": {
+    "title": "Confidence breakdown",
+    "freshness": "Data freshness",
+    "coverage": "Competitor coverage",
+    "agreement": "Signal agreement",
+    "rule": "Rule completeness"
+  },
+  "logic": {
+    "title": "Applied logic",
+    "strategy": "Strategy",
+    "rule": "Rule",
+    "signals": "Signals",
+    "constraints": "Constraints",
+    "calculation": "Calculation",
+    "impact": "projected margin impact",
+    "fromScenario": "from scenario",
+    "none": "none",
+    "noProduct": "product not in catalog"
   }
 }

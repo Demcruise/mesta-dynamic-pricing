@@ -1,9 +1,9 @@
-import type { DeploymentRecord, PublishJob, Recommendation, UserSession } from '../ontology';
+import type { Channel, DeploymentRecord, PublishJob, Recommendation, UserSession } from '../ontology';
 import { checkPrice } from '../guardrails';
 import { project } from '../projection';
 import { can } from '../rbac';
 import {
-  useAuditStore, useDeploymentStore, useMonitoringStore, useNotificationStore, useProductCatalogStore,
+  CHANNELS, useAuditStore, useDeploymentStore, useMonitoringStore, useNotificationStore, useProductCatalogStore,
   usePublishJobStore, useRecommendationStore, useStrategyStore,
 } from '../stores';
 import { jobStatusOf } from '../stores/publish';
@@ -141,22 +141,32 @@ function run(id: string, user: UserSession) {
  * run every channel; scheduled jobs stay 'scheduled' until runScheduledJob promotes them
  * (the honest substitute for a backend clock in a frontend-only demo).
  */
-export function createPublishJob(user: UserSession, recommendationId: string, opts: { scheduledFor?: string } = {}) {
+export function createPublishJob(
+  user: UserSession,
+  recommendationId: string,
+  opts: { scheduledFor?: string; channels?: Channel[]; timezone?: string; effectiveUntil?: string } = {},
+) {
   if (!can(user.role, 'deployment.execute')) return fail('forbidden');
   const rec = findRec(recommendationId);
   if (!rec) return fail('not_found');
   const checks = preflight(recommendationId);
   if (checks.some((c) => c.severity === 'block' && !c.ok)) return fail('preflight_blocked');
+  const channels = opts.channels?.length ? opts.channels : CHANNELS;
   const jobId = `PJ-${recommendationId}-${Date.now().toString(36)}`;
   const scheduled = opts.scheduledFor ? new Date(opts.scheduledFor).toISOString() : null;
+  const until = opts.effectiveUntil ? new Date(opts.effectiveUntil).toISOString() : null;
+  // A window that ends before it starts is a user input error — fail closed.
+  if (until && scheduled && until <= scheduled) return fail('window_inverted');
+  if (until && !scheduled && new Date(until).getTime() <= Date.now()) return fail('window_inverted');
   const now = new Date().toISOString();
   const job: PublishJob = {
     id: jobId, recommendationId, sku: rec.sku,
     status: scheduled ? 'scheduled' : 'publishing',
-    scheduledFor: scheduled, createdBy: user.userId, createdAt: now, updatedAt: now,
+    scheduledFor: scheduled, channels, timezone: opts.timezone ?? 'Asia/Jakarta', effectiveUntil: until,
+    createdBy: user.userId, createdAt: now, updatedAt: now,
   };
   usePublishJobStore.getState().add(job);
-  const created = useDeploymentStore.getState().createFor(recommendationId, rec.sku, jobId);
+  const created = useDeploymentStore.getState().createFor(recommendationId, rec.sku, jobId, channels);
   track('deployment_triggered', { recommendationId, scheduled: !!scheduled });
   if (scheduled) {
     useAuditStore.getState().record({
@@ -209,32 +219,58 @@ export function rollbackPublishJob(user: UserSession, jobId: string) {
   if (status !== 'published' && status !== 'partial') return fail('not_rollbackable');
   const rec = findRec(job.recommendationId);
   if (!rec) return fail('not_found');
+  if (!revertJob(job, rec, user, 'deployment_rollback')) return fail('restore_bounds');
+  track('deployment_rollback', { jobId });
+  return ok();
+}
+
+/**
+ * Reverts a live job's price and marks its records — shared by user rollback and the
+ * publish-window expiry sweep. Returns false when the restore is blocked by bounds.
+ */
+function revertJob(job: PublishJob, rec: Recommendation, actor: { userId: string; role: UserSession['role'] }, auditType: 'deployment_rollback' | 'publish_window_end'): boolean {
   const cat = useProductCatalogStore.getState();
   const product = cat.products.find((p) => p.sku === rec.sku);
-  if (!product) return fail('not_found');
+  if (!product) return false;
   const deployedPrice = product.price;
-  if (product.price === rec.proposedPrice && !cat.applyPrice(rec.sku, rec.currentPrice, 'deployment', rec.id)) {
-    return fail('restore_bounds');
-  }
-  for (const r of records().filter((x) => x.jobId === jobId)) {
+  if (product.price === rec.proposedPrice && !cat.applyPrice(rec.sku, rec.currentPrice, 'deployment', rec.id)) return false;
+  for (const r of records().filter((x) => x.jobId === job.id)) {
     useDeploymentStore.getState().patch(r.id, {
       status: r.status === 'synced' ? 'rolled_back' : 'cancelled',
       errorReason: r.status === 'synced' ? null : r.errorReason,
     });
   }
-  usePublishJobStore.getState().patch(jobId, { status: 'rolled_back' });
+  usePublishJobStore.getState().patch(job.id, { status: 'rolled_back' });
   useRecommendationStore.getState().markUndeployed(rec.id);
   useAuditStore.getState().record({
-    type: 'deployment_rollback', actorId: user.userId, actorRole: user.role, entityType: 'deployment',
-    entityId: rec.id, sku: rec.sku, source: 'ui', note: jobId,
+    type: auditType, actorId: actor.userId, actorRole: actor.role, entityType: 'deployment',
+    entityId: rec.id, sku: rec.sku, source: auditType === 'publish_window_end' ? 'system' : 'ui', note: job.id,
     snapshot: { oldPrice: deployedPrice, newPrice: rec.currentPrice },
   });
   useNotificationStore.getState().push({
-    targetRole: 'all', groupKey: 'deployment_rollback', messageKey: 'common.notify.rolledBack',
+    targetRole: 'all',
+    groupKey: auditType === 'publish_window_end' ? 'publish_window_end' : 'deployment_rollback',
+    messageKey: auditType === 'publish_window_end' ? 'common.notify.windowEnded' : 'common.notify.rolledBack',
     params: { sku: rec.sku }, href: '/deployment',
   });
-  track('deployment_rollback', { jobId });
-  return ok();
+  return true;
+}
+
+/**
+ * Publish-window sweep: a job past its `effectiveUntil` reverts the price it set —
+ * the scheduled-rollback half of EXEC-002. Runs at bootstrap, audited as system.
+ */
+export function expirePublishWindows(now = Date.now()): number {
+  let n = 0;
+  for (const job of usePublishJobStore.getState().jobs) {
+    if (!job.effectiveUntil || new Date(job.effectiveUntil).getTime() > now) continue;
+    const status = jobStatusOf(job, records());
+    if (status !== 'published' && status !== 'partial') continue;
+    const rec = findRec(job.recommendationId);
+    if (!rec) continue;
+    if (revertJob(job, rec, { userId: 'system', role: 'compliance' }, 'publish_window_end')) n++;
+  }
+  return n;
 }
 
 /** Back-compat wrapper: publish immediately (job + channel fan-out in one call). */

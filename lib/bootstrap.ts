@@ -14,6 +14,7 @@ import { usePublishJobStore } from './stores/publish';
 import { useRuleStore } from './stores/rule';
 import { expireStaleRecommendations } from './actions/recommendation';
 import { promoteScheduledStrategies } from './actions/strategy';
+import { expirePublishWindows } from './actions/deployment';
 
 export const DEFAULT_PRODUCT_COUNT = 500;
 export const STRESS_PRODUCT_COUNT = 5000;
@@ -52,6 +53,7 @@ export function bootstrapMestaData({ productCount = DEFAULT_PRODUCT_COUNT, force
   useOverrideRequestStore.getState().hydrate(generateOverrideRequests(seeded.products));
   expireStaleRecommendations();
   promoteScheduledStrategies();
+  expirePublishWindows();
   useNotificationStore.getState().reset();
   useScenarioStore.getState().reset();
   cancelAllDecisionTimers();

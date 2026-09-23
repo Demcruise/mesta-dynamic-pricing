@@ -1,0 +1,27 @@
+{
+  "page": {
+    "title": "Sinyal",
+    "desc": "Sinyal permintaan dan inventaris per SKU — input yang dibaca mesin harga.",
+    "honest": "Semua nilai adalah estimasi model permintaan dari katalog — bukan telemetri penjualan teramati."
+  },
+  "empty": "Tidak ada SKU dalam cakupan.",
+  "risk": {
+    "title": "Risiko stok",
+    "stockout": "Risiko kehabisan",
+    "low": "Stok menipis",
+    "healthy": "Sehat",
+    "overstock": "Stok berlebih"
+  },
+  "table": {
+    "caption": "Sinyal permintaan dan inventaris per SKU",
+    "sku": "SKU",
+    "name": "Nama",
+    "category": "Kategori",
+    "velocity": "Velositas",
+    "elasticity": "Elastisitas",
+    "coverage": "Cakupan",
+    "stock": "Stok",
+    "daysSupply": "Hari stok",
+    "risk": "Risiko stok"
+  }
+}

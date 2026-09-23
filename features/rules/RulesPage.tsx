@@ -15,6 +15,7 @@ import { useRules, useSkuList, useStrategies } from '@/lib/queries';
 import { findConflicts, inRuleScope, ruleApplies, evalCondition } from '@/lib/rules';
 import { useSessionStore, useToastStore } from '@/lib/stores';
 import { RuleBuilderDialog } from './RuleBuilderDialog';
+import { ConflictDialog } from './ConflictDialog';
 import { describeCondition, describeFormula, describeScope } from './rule-format';
 
 const ORDER: Record<RuleStatus, number> = { active: 0, draft: 1, paused: 2 };
@@ -28,6 +29,7 @@ export function RulesPage() {
   const can = useCan();
   const toast = useToastStore((s) => s.push);
   const [builder, setBuilder] = useState<{ open: boolean; rule: Rule | null }>({ open: false, rule: null });
+  const [conflictPair, setConflictPair] = useState<{ ruleIds: string[]; skus: string[] } | null>(null);
 
   const now = Date.now();
   const matchCount = useMemo(() => {
@@ -52,6 +54,18 @@ export function RulesPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [rules.data, products.data, strategies.data],
   );
+
+  // The same rule pair can tie on many SKUs — group into one resolution target per pair.
+  const conflictPairs = useMemo(() => {
+    const map = new Map<string, { ruleIds: string[]; skus: string[] }>();
+    for (const c of conflicts) {
+      const key = [...c.ruleIds].sort().join('|');
+      const entry = map.get(key) ?? { ruleIds: c.ruleIds, skus: [] };
+      entry.skus.push(c.sku);
+      map.set(key, entry);
+    }
+    return [...map.values()];
+  }, [conflicts]);
 
   const run = () => {
     const r = runRules(user);
@@ -92,8 +106,16 @@ export function RulesPage() {
           </p>
           <p className="mt-0.5 text-xs text-warn">{t('rules.conflict.desc')}</p>
           <ul className="mt-1.5 space-y-0.5 text-xs text-warn">
-            {conflicts.slice(0, 5).map((c) => (
-              <li key={c.sku}>{t('rules.conflict.row', { sku: c.sku, a: c.ruleIds[0] ?? '', b: c.ruleIds.slice(1).join(', ') })}</li>
+            {conflictPairs.slice(0, 5).map((c) => (
+              <li key={c.ruleIds.join('|')}>
+                <button
+                  type="button"
+                  className="underline decoration-dotted underline-offset-2 hover:decoration-solid"
+                  onClick={() => setConflictPair(c)}
+                >
+                  {t('rules.conflict.pairRow', { a: c.ruleIds[0] ?? '', b: c.ruleIds.slice(1).join(', '), n: c.skus.length })}
+                </button>
+              </li>
             ))}
           </ul>
         </div>
@@ -168,6 +190,12 @@ export function RulesPage() {
         open={builder.open}
         rule={builder.rule}
         onClose={() => setBuilder({ open: false, rule: null })}
+      />
+      <ConflictDialog
+        conflict={conflictPair ? { sku: conflictPair.skus.join(', '), ruleIds: conflictPair.ruleIds } : null}
+        rules={rules.data}
+        onEdit={(rule) => setBuilder({ open: true, rule })}
+        onClose={() => setConflictPair(null)}
       />
     </>
   );

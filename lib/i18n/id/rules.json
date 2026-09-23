@@ -65,7 +65,12 @@
   "conflict": {
     "title": "Konflik prioritas",
     "desc": "Beberapa aturan aktif menargetkan SKU ini — hanya aturan berprioritas tertinggi yang akan berjalan:",
-    "row": "{sku}: {a} mengalahkan {b}"
+    "row": "{sku}: {a} mengalahkan {b}",
+    "dialogTitle": "Konflik pada {sku}",
+    "howTo": "Dua aturan menghasilkan harga berbeda untuk SKU yang sama. Prioritas lebih tinggi menang — selesaikan dengan menaikkan prioritas satu aturan atau menjeda yang lain.",
+    "pairRow": "{a} vs {b} pada {n} SKU",
+    "prioritize": "Naikkan prioritas",
+    "resolved": "Konflik diselesaikan"
   },
   "actions": {
     "activate": "Aktifkan",

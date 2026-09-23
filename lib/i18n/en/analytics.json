@@ -18,14 +18,38 @@
     "latencyValue": "{d} days",
     "latencyHint": "created → decided",
     "deploySuccess": "Deploy success rate",
-    "overrides": "Manual overrides"
+    "overrides": "Manual overrides",
+    "unitsSold": "Units sold (est.)",
+    "unitsSoldDef": "Modelled monthly units at current prices across in-scope SKUs.",
+    "unitsSoldHint": "demand-model estimate",
+    "asp": "Average selling price",
+    "aspDef": "Mean current price across in-scope SKUs.",
+    "aspHint": "in-scope mean",
+    "markdown": "Markdown share",
+    "markdownDef": "Share of in-scope SKUs priced below their first recorded price.",
+    "markdownHint": "vs first recorded price",
+    "changeSuccess": "Price-change success",
+    "changeSuccessDef": "Share of approved recommendations whose channel deployments all synced — no failure or rollback."
   },
-  "byCategory": { "title": "By category" },
+  "byCategory": {
+    "title": "By category"
+  },
   "col": {
     "category": "Category",
     "priceIndex": "Price index",
     "gap": "vs market",
     "acceptance": "Acceptance",
     "leakage": "Leakage"
+  },
+  "byObjective": {
+    "title": "By strategy objective",
+    "none": "No strategy"
+  },
+  "objCol": {
+    "objective": "Objective",
+    "strategies": "Active strategies",
+    "recs": "Recommendations",
+    "acceptance": "Acceptance",
+    "margin": "Projected margin"
   }
 }

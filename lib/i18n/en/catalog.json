@@ -61,7 +61,10 @@
     "audit": "View audit trail",
     "applyStrategy": "Apply strategy",
     "selected": "{n} SKUs selected",
-    "clearSelection": "Clear selection"
+    "clearSelection": "Clear selection",
+    "exportSelected": "Export CSV",
+    "assignStrategy": "Assign to strategy…",
+    "bulkEdit": "Bulk price edit…"
   },
   "override": {
     "title": "Manual price override",
@@ -115,5 +118,38 @@
     "prev": "Previous: {sku}",
     "next": "Next: {sku}",
     "position": "{i} of {n}"
+  },
+  "bulk": {
+    "assignTitle": "Assign to strategy",
+    "assignTo": "Target strategy",
+    "assignPlaceholder": "Pick a strategy",
+    "assignBody": "Adds {n} selected SKUs to the strategy scope. The strategy history records the change.",
+    "assignSummary": "{n} SKUs will join the strategy scope.",
+    "assignConfirm": "Assign",
+    "assigned": "{n} SKUs assigned to strategy",
+    "editTitle": "Bulk price edit",
+    "delta": "Price delta %",
+    "reason": "Reason",
+    "analystNote": "Your role files one override request per SKU — a manager approves them on Exceptions.",
+    "blocked": "{n} rows fail guardrail checks and will be skipped.",
+    "editHonest": "Passing rows apply immediately with price events and audit entries. Blocked rows are never touched.",
+    "editSummary": "{n} rows pass checks · {blocked} blocked",
+    "editConfirm": "Apply {n} prices",
+    "requestConfirm": "Request {n} overrides",
+    "applied": "{n} prices applied · {blocked} blocked",
+    "requested": "{n} override requests filed · {blocked} blocked",
+    "err": {
+      "delta": "Enter a non-zero delta within ±50%.",
+      "note_required": "A reason is required.",
+      "forbidden": "Your role cannot do that.",
+      "not_found": "Strategy not found."
+    },
+    "check": {
+      "below_min": "below min",
+      "above_max": "above max",
+      "map_breach": "MAP breach",
+      "exceeds_change": "exceeds change limit",
+      "invalid": "invalid"
+    }
   }
 }

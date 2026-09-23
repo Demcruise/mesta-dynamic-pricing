@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { Field, Input, inputCls } from '@/components/ui/field';
 import { delegateApproval, revokeDelegation } from '@/lib/actions/ops';
-import { expireStaleRecommendations, recommendationHealth, resubmitRecommendation } from '@/lib/actions/recommendation';
+import { approvalChain, expireStaleRecommendations, pendingApprovalLevel, recommendationHealth, resubmitRecommendation } from '@/lib/actions/recommendation';
 import { formatDate, formatPrice, formatRelativeTime } from '@/lib/format';
 import { useTranslation } from '@/lib/i18n';
 import type { Recommendation } from '@/lib/ontology';
@@ -33,12 +33,14 @@ export function ApprovalsPage() {
   const productsBySku = useMemo(() => new Map(skuList.data.map((p) => [p.sku, p])), [skuList.data]);
 
   const groups = useMemo(() => ({
+    // APR-003: decidable recs whose approval chain is not yet complete, by pending level.
+    chain: q.data.filter((r) => (r.status === 'pending' || r.status === 'escalated') && pendingApprovalLevel(r) !== null),
     escalated: q.data.filter((r) => r.status === 'escalated'),
     changes: q.data.filter((r) => r.status === 'changes_requested'),
     expired: q.data.filter((r) => r.status === 'expired'),
   }), [q.data]);
 
-  const total = groups.escalated.length + groups.changes.length + groups.expired.length;
+  const total = groups.chain.length + groups.escalated.length + groups.changes.length + groups.expired.length;
 
   const resubmit = () => {
     if (!resubmitting) return;
@@ -61,6 +63,29 @@ export function ApprovalsPage() {
         <EmptyState variant="caughtUp" title={t('approvals.empty')} />
       ) : (
         <div className="flex max-w-3xl flex-col gap-6">
+          {groups.chain.length > 0 && (
+            <section aria-label={t('approvals.chain.title')}>
+              <h2 className="mb-2 text-sm font-semibold">
+                {t('approvals.chain.title')} <span className="tabular text-muted">({groups.chain.length})</span>
+              </h2>
+              <p className="mb-2 text-xs text-muted">{t('approvals.chain.desc')}</p>
+              <ul className="grid grid-cols-1 gap-3">
+                {groups.chain.map((r) => {
+                  const level = pendingApprovalLevel(r);
+                  const chainLen = approvalChain(r).length;
+                  return (
+                    <li key={r.id}>
+                      <RecommendationCard rec={r} product={productsBySku.get(r.sku)} showStatus />
+                      <p className="mt-1 text-xs text-muted">
+                        {t('approvals.chain.waiting', { level: level ? t(`common.role.${level}`) : '—', done: r.approvals.length, total: chainLen })}
+                      </p>
+                    </li>
+                  );
+                })}
+              </ul>
+            </section>
+          )}
+
           {groups.escalated.length > 0 && (
             <section aria-label={t('approvals.escalated.title')}>
               <h2 className="mb-2 text-sm font-semibold">

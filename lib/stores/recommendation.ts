@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { Recommendation, RecommendationStatus } from '../ontology';
+import type { ApprovalStep, Recommendation, RecommendationStatus } from '../ontology';
 
 export type TransitionResult = { ok: true } | { ok: false; error: string };
 
@@ -23,7 +23,9 @@ interface RecommendationState {
   items: Recommendation[];
   hydrate: (items: Recommendation[]) => void;
   add: (r: Recommendation) => void;
-  decide: (id: string, to: RecommendationStatus, opts?: { note?: string; proposedPrice?: number }) => TransitionResult;
+  decide: (id: string, to: RecommendationStatus, opts?: { note?: string; proposedPrice?: number; step?: ApprovalStep }) => TransitionResult;
+  /** Records a mid-chain approval without changing status — the chain isn't complete yet. */
+  recordApproval: (id: string, step: ApprovalStep) => boolean;
   markDeployed: (id: string) => TransitionResult;
   /** Rollback path: the price went live once but was reverted — the rec becomes publishable again. */
   markUndeployed: (id: string) => void;
@@ -49,11 +51,18 @@ export const useRecommendationStore = create<RecommendationState>((set, get) => 
               decidedAt: new Date().toISOString(),
               decisionNote: opts.note?.trim() ?? null,
               proposedPrice: to === 'adjusted' ? (opts.proposedPrice as number) : x.proposedPrice,
+              approvals: opts.step ? [...x.approvals, opts.step] : x.approvals,
             }
           : x,
       ),
     }));
     return { ok: true };
+  },
+  recordApproval: (id, step) => {
+    const rec = get().items.find((x) => x.id === id);
+    if (!rec || rec.approvals.some((a) => a.level === step.level)) return false;
+    set((s) => ({ items: s.items.map((x) => (x.id === id ? { ...x, approvals: [...x.approvals, step] } : x)) }));
+    return true;
   },
   markDeployed: (id) => {
     const rec = get().items.find((x) => x.id === id);

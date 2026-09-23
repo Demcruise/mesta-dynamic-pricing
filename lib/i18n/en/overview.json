@@ -2,9 +2,20 @@
   "title": "Overview",
   "greeting": "Signed in as {name} ({role})",
   "kpi": {
-    "pendingApprovals": "Pending approvals", "reviewed": "Reviewed by you", "activeAnomalies": "Active anomalies", "marginImpact": "Approved margin impact", "overrideRate": "Manual override rate",
-    "strategyHealth": "Active strategies", "pendingStrategies": "Strategies awaiting approval", "channelFailures": "Channel failures", "pendingSyncs": "Pending syncs", "lastDeployment": "Last deployment",
-    "auditVolume": "Audit events", "manualOverrides": "Manual overrides", "guardrailExceptions": "Guardrail exceptions", "none": "None yet"
+    "pendingApprovals": "Pending approvals",
+    "reviewed": "Reviewed by you",
+    "activeAnomalies": "Active anomalies",
+    "marginImpact": "Approved margin impact",
+    "overrideRate": "Manual override rate",
+    "strategyHealth": "Active strategies",
+    "pendingStrategies": "Strategies awaiting approval",
+    "channelFailures": "Channel failures",
+    "pendingSyncs": "Pending syncs",
+    "lastDeployment": "Last deployment",
+    "auditVolume": "Audit events",
+    "manualOverrides": "Manual overrides",
+    "guardrailExceptions": "Guardrail exceptions",
+    "none": "None yet"
   },
   "kpiDef": {
     "pendingApprovals": "Recommendations currently waiting for a decision.",
@@ -22,32 +33,90 @@
     "guardrailExceptions": "Recommendations flagged for breaching guardrails."
   },
   "def": {
-    "about": "About {name}", "scope": "Scope", "scopeValue": "All stores · all channels",
-    "source": "Source", "sourceValue": "Simulated dataset", "updated": "Updated", "updatedValue": "Live (in-memory)"
+    "about": "About {name}",
+    "scope": "Scope",
+    "scopeValue": "All stores · all channels",
+    "source": "Source",
+    "sourceValue": "Simulated dataset",
+    "updated": "Updated",
+    "updatedValue": "Live (in-memory)"
   },
-  "links": { "pending": "Review pending approvals", "breach": "Review guardrail breaches", "failures": "Open deployment failures", "strategies": "Review strategies", "audit": "Open audit log", "monitoring": "Open monitoring" },
+  "links": {
+    "pending": "Review pending approvals",
+    "breach": "Review guardrail breaches",
+    "failures": "Open deployment failures",
+    "strategies": "Review strategies",
+    "audit": "Open audit log",
+    "monitoring": "Open monitoring"
+  },
   "charts": {
-    "marginTrend": "Average margin trend", "volume": "Price-change decisions by category", "gap": "Competitor gap by category", "period": "Period {n}", "category": "Category", "value": "Value", "chart": "Chart", "table": "Data table",
-    "marginCaption": "Average margin by period", "volumeCaption": "Decisions by category", "gapCaption": "Average competitor gap by category", "cheaper": "Cheaper than competitors", "pricier": "Pricier than competitors",
-    "metaMargin": "Unit: margin % · {days}-day window", "metaVolume": "Unit: SKU count · grouped by category", "metaGap": "Unit: % gap vs competitor average · by category",
-    "periodLabel": "Chart period", "weekly": "Weekly", "monthly": "Monthly", "quarterly": "Quarterly", "avgMargin": "average margin"
+    "marginTrend": "Average margin trend",
+    "volume": "Price-change decisions by category",
+    "gap": "Competitor gap by category",
+    "period": "Period {n}",
+    "category": "Category",
+    "value": "Value",
+    "chart": "Chart",
+    "table": "Data table",
+    "marginCaption": "Average margin by period",
+    "volumeCaption": "Decisions by category",
+    "gapCaption": "Average competitor gap by category",
+    "cheaper": "Cheaper than competitors",
+    "pricier": "Pricier than competitors",
+    "metaMargin": "Unit: margin % · {days}-day window",
+    "metaVolume": "Unit: SKU count · grouped by category",
+    "metaGap": "Unit: % gap vs competitor average · by category",
+    "periodLabel": "Chart period",
+    "weekly": "Weekly",
+    "monthly": "Monthly",
+    "quarterly": "Quarterly",
+    "avgMargin": "average margin"
   },
-  "movers": { "title": "Top price movers", "live": "Live", "empty": "No price movement yet.", "margin": "Margin" },
+  "movers": {
+    "title": "Top price movers",
+    "live": "Live",
+    "empty": "No price movement yet.",
+    "margin": "Margin"
+  },
   "onboarding": {
     "title": "Workspace setup",
     "subtitle": "Seven steps to a fully running pricing loop.",
     "sample": "This is a sample workspace — seeded data means some steps are already complete.",
     "progress": "{n} of {total} done",
     "step": {
-      "catalog": "Review the catalog", "catalogHint": "Confirm SKUs, bounds, and competitor coverage look right.",
-      "feeds": "Verify data feeds", "feedsHint": "All sources should report healthy before you trust the numbers.",
-      "strategy": "Activate a strategy", "strategyHint": "Set guardrails and scope for automated pricing.",
-      "rules": "Enable a pricing rule", "rulesHint": "WHEN/AND/THEN rules generate recommendations deterministically.",
-      "simulate": "Run a simulation", "simulateHint": "Compare scenarios before any price moves.",
-      "decide": "Clear the decision queue", "decideHint": "Approve, adjust, or reject — every decision is audited.",
-      "publish": "Publish a price change", "publishHint": "Push an approved recommendation to a channel."
+      "catalog": "Review the catalog",
+      "catalogHint": "Confirm SKUs, bounds, and competitor coverage look right.",
+      "feeds": "Verify data feeds",
+      "feedsHint": "All sources should report healthy before you trust the numbers.",
+      "strategy": "Activate a strategy",
+      "strategyHint": "Set guardrails and scope for automated pricing.",
+      "rules": "Enable a pricing rule",
+      "rulesHint": "WHEN/AND/THEN rules generate recommendations deterministically.",
+      "simulate": "Run a simulation",
+      "simulateHint": "Compare scenarios before any price moves.",
+      "decide": "Clear the decision queue",
+      "decideHint": "Approve, adjust, or reject — every decision is audited.",
+      "publish": "Publish a price change",
+      "publishHint": "Push an approved recommendation to a channel."
     }
   },
-  "activity": { "title": "Recent activity", "empty": "No activity yet." },
-  "glossary": "Glossary"
+  "activity": {
+    "title": "Recent activity",
+    "empty": "No activity yet."
+  },
+  "glossary": "Glossary",
+  "persona": {
+    "title": "What do you work on?",
+    "subtitle": "Pick a persona — the workspace, permissions and checklist adapt to it.",
+    "analyst": "Pricing analyst",
+    "analystDesc": "Review and decide recommendations",
+    "manager": "Pricing manager",
+    "managerDesc": "Strategies, approvals and policy",
+    "approver": "Finance approver",
+    "approverDesc": "Final sign-off on high-impact changes",
+    "ops_lead": "Operations lead",
+    "ops_leadDesc": "Publishing and data feeds",
+    "compliance": "Compliance",
+    "complianceDesc": "Audit trail and oversight"
+  }
 }

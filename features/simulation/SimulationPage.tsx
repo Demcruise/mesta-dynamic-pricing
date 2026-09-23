@@ -25,6 +25,14 @@ import { ScenarioCompare } from './ScenarioCompare';
 
 const MAX_SCENARIOS = 3;
 
+/** Closest historical price point to `price` — the "has this been tried before" comparison. */
+function nearestHistory(product: Product, price: number): { at: string; price: number; delta: number } | null {
+  const h = product.priceHistory;
+  if (!h.length) return null;
+  const nearest = h.reduce((a, b) => (Math.abs(b.price - price) < Math.abs(a.price - price) ? b : a));
+  return { at: nearest.at, price: nearest.price, delta: price / nearest.price - 1 };
+}
+
 interface Draft {
   key: number;
   price: string;
@@ -120,6 +128,18 @@ function Simulator({ sku, strategyId, initial, basePrice }: {
     { key: 'vsCompetitor', render: (p) => <DeltaBadge value={product.competitorAvg > 0 ? p.price / product.competitorAvg - 1 : 0} /> },
     { key: 'units', render: (p) => <span className="tabular">{Math.round(p.units)}</span> },
     { key: 'demandChange', render: (p) => <DeltaBadge value={p.demandChange} /> },
+    // SIM-004: customer response band derived from the same elasticity model (labelled in the row header tooltip).
+    { key: 'customerResponse', render: (p) => <span className="text-xs">{t(`simulation.response.${p.demandChange <= -0.15 ? 'strongDrop' : p.demandChange < -0.03 ? 'mildDrop' : p.demandChange >= 0.15 ? 'strongGain' : p.demandChange > 0.03 ? 'mildGain' : 'neutral'}`)}</span> },
+    // SIM-004: historical comparison — nearest observed price point for this SKU.
+    {
+      key: 'historical',
+      render: (p) => {
+        const h = nearestHistory(product, p.price);
+        return h === null
+          ? <span className="text-xs text-muted">{t('simulation.historical.none')}</span>
+          : <span className="text-xs"><DeltaBadge value={h.delta} /> <span className="text-muted">{t('simulation.historical.vs', { at: formatRelativeTime(h.at, locale), price: Math.round(h.price).toLocaleString(locale === 'id' ? 'id-ID' : 'en-US') })}</span></span>;
+      },
+    },
     { key: 'revenue', render: (p) => <PriceValue value={Math.round(p.revenue)} /> },
     { key: 'grossMargin', render: (p) => <PriceValue value={Math.round(p.grossMargin)} /> },
     { key: 'marginPct', render: (p) => <span className="tabular">{pct(p.marginPct)}</span> },

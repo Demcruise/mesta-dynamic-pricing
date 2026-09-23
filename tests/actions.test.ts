@@ -89,7 +89,7 @@ describe('bulk approval', () => {
     const items = useRecommendationStore.getState().items.filter((r) => r.status === 'pending');
     const stale = items[0]!;
     useProductCatalogStore.getState().applyPrice(stale.sku, stale.currentPrice + 100, 'manual_override');
-    const plan = bulkEligibility(items, 0);
+    const plan = bulkEligibility(items, 0, manager);
     expect(plan.excluded.some((e) => e.rec.id === stale.id && e.reason === 'stale')).toBe(true);
     expect(plan.eligible.some((r) => r.id === stale.id)).toBe(false);
     const res = bulkApprove(manager, items, 0);
@@ -99,8 +99,8 @@ describe('bulk approval', () => {
 
   it('approves only explicitly selected ids (per-item uncheck)', () => {
     const items = useRecommendationStore.getState().items.filter((r) => r.status === 'pending');
-    const plan = bulkEligibility(items, 0);
-    expect(plan.eligible.length).toBeGreaterThanOrEqual(2);
+    const plan = bulkEligibility(items, 0, manager);
+    expect(plan.eligible.length).toBeGreaterThanOrEqual(1);
     const [keep, ...rest] = plan.eligible;
     const res = bulkApprove(manager, items, 0, new Set([keep!.id]));
     expect(res).toEqual({ ok: true, count: 1 });

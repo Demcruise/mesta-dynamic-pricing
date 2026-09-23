@@ -90,7 +90,7 @@ export function QueuePage() {
         title={t('recommendations.title')}
         subtitle={t('recommendations.subtitle', { count: rows.length, total: recs.data.length })}
         actions={
-          <RoleGate action="recommendation.bulk_approve">
+          <RoleGate action="recommendation.decide">
             <Button onClick={() => { track('bulk_approval_dialog_opened'); setBulkOpen(true); }}>{t('recommendations.action.bulk')}</Button>
           </RoleGate>
         }

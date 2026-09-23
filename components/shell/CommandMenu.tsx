@@ -3,13 +3,16 @@
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Dialog } from '@/components/ui/dialog';
+import { CATEGORIES } from '@/lib/categories';
 import { useCan } from '@/lib/hooks';
 import { useTranslation } from '@/lib/i18n';
-import { useExperiments, useSkuList, useStrategies, useRecommendations, useRules } from '@/lib/queries';
+import { useExperiments, useScenarios, useSkuList, useStrategies, useRecommendations, useRules } from '@/lib/queries';
+import { ALL_STORES, regionOfStore } from '@/lib/scope';
+import { useUiStore } from '@/lib/stores';
 import { useCommandStore } from './command-store';
 import { NAV } from './nav';
 
-interface Item { id: string; group: string; label: string; hint?: string; href: string }
+interface Item { id: string; group: string; label: string; hint?: string; href: string; run?: () => void }
 
 function Highlight({ text, q }: { text: string; q: string }): ReactNode {
   const i = q ? text.toLowerCase().indexOf(q.toLowerCase()) : -1;
@@ -50,6 +53,8 @@ export function CommandMenu() {
   const recs = useRecommendations().data;
   const rules = useRules().data;
   const experiments = useExperiments().data;
+  const scenarios = useScenarios().data;
+  const setScope = useUiStore((s) => s.setScope);
   const [q, setQ] = useState('');
   const [cursor, setCursor] = useState(0);
   const listRef = useRef<HTMLUListElement>(null);
@@ -108,13 +113,34 @@ export function CommandMenu() {
       .filter((e) => match(e.name) || match(e.id))
       .slice(0, MAX_PER_GROUP)
       .map((e) => ({ id: e.id, group: t('common.cmd.experiment'), label: e.name, hint: e.id, href: '/experiments' }));
+    // Scenarios have no detail route — deep-link to the simulator.
+    const scnHits = scenarios
+      .filter((s) => match(s.id) || match(s.sku))
+      .slice(0, MAX_PER_GROUP)
+      .map((s) => ({ id: s.id, group: t('common.cmd.scenario'), label: s.id, hint: s.sku, href: '/simulation' }));
+    // Approvals: decidable recs jump to the inbox rather than the queue.
+    const aprHits = recs
+      .filter((r) => (r.status === 'pending' || r.status === 'escalated') && (match(r.id) || match(r.sku)))
+      .slice(0, MAX_PER_GROUP)
+      .map((r) => ({ id: `apr-${r.id}`, group: t('common.cmd.approval'), label: r.id, hint: r.sku, href: '/approvals' }));
+    const catHits = CATEGORIES
+      .filter((c) => match(c))
+      .map((c) => ({ id: `cat-${c}`, group: t('common.cmd.category'), label: c, href: `/catalog?cat=${encodeURIComponent(c)}` }));
+    const storeHits = ALL_STORES
+      .filter((s) => match(s))
+      .map((s) => ({
+        id: `store-${s}`, group: t('common.cmd.store'), label: s, href: '/catalog',
+        run: () => setScope({ region: regionOfStore(s), store: s, category: null }),
+      }));
     if (needle) {
       return [...skuHits.sort(rank(needle)), ...strHits.sort(rank(needle)), ...recHits.sort(rank(needle)),
-        ...ruleHits.sort(rank(needle)), ...expHits.sort(rank(needle)), ...filteredQuick.sort(rank(needle))];
+        ...aprHits.sort(rank(needle)), ...scnHits.sort(rank(needle)), ...ruleHits.sort(rank(needle)),
+        ...expHits.sort(rank(needle)), ...catHits.sort(rank(needle)), ...storeHits.sort(rank(needle)),
+        ...filteredQuick.sort(rank(needle))];
     }
     const recentItems = recent.map((r) => ({ ...r, id: `recent-${r.id}`, group: t('common.cmd.recent') }));
     return [...recentItems, ...filteredQuick, ...skuHits.slice(0, 3)];
-  }, [q, skus, strategies, recs, rules, experiments, can, t, recent]);
+  }, [q, skus, strategies, recs, rules, experiments, scenarios, can, t, recent, setScope]);
 
   useEffect(() => { setCursor(0); }, [q]);
   useEffect(() => {
@@ -125,6 +151,7 @@ export function CommandMenu() {
     if (!item) return;
     saveRecent({ ...item, id: item.id.replace(/^recent-/, '') });
     setOpen(false);
+    item.run?.();
     router.push(item.href);
   };
 

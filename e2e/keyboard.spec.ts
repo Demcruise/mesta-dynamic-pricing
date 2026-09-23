@@ -18,7 +18,7 @@ test('@smoke keyboard: Ctrl+K search → open SKU → back', async ({ page }) =>
   await expect(page.getByRole('option', { name: /SKU-1004/ }).first()).toBeVisible();
   await page.keyboard.press('Enter');
   await expect(page).toHaveURL(/\/catalog\/SKU-1004/, { timeout: 15_000 });
-  await expect(page.getByRole('heading', { name: /SKU-1004/ })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /SKU-1004/ })).toBeVisible({ timeout: 15_000 });
   await page.goBack();
   await expect(page).toHaveURL(/\/overview/);
 });

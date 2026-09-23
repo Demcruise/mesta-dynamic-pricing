@@ -44,19 +44,21 @@ describe('scope hierarchy', () => {
 
   it('inScope narrows org → region → store; store wins over region', () => {
     const p = products()[0]!;
-    expect(inScope(p, { region: null, store: null })).toBe(true);
-    expect(inScope(p, { region: p.region as never, store: null })).toBe(true);
-    expect(inScope(p, { region: REGIONS.find((r) => r !== p.region) as never, store: null })).toBe(false);
-    expect(inScope(p, { region: null, store: p.store })).toBe(true);
+    expect(inScope(p, { region: null, store: null, category: null })).toBe(true);
+    expect(inScope(p, { region: p.region as never, store: null, category: null })).toBe(true);
+    expect(inScope(p, { region: REGIONS.find((r) => r !== p.region) as never, store: null, category: null })).toBe(false);
+    expect(inScope(p, { region: null, store: p.store, category: null })).toBe(true);
+    expect(inScope(p, { region: null, store: null, category: p.category })).toBe(true);
+    expect(inScope(p, { region: null, store: null, category: 'NoSuchCategory' })).toBe(false);
     const otherStore = REGIONS.flatMap((r) => STORES_BY_REGION[r]).find((s) => s !== p.store)!;
-    expect(inScope(p, { region: p.region as never, store: otherStore })).toBe(false);
+    expect(inScope(p, { region: p.region as never, store: otherStore, category: null })).toBe(false);
   });
 
   it('inScopeSkus filters linked records by product scope', () => {
     const region = REGIONS[0]!;
     const items = products().map((p) => ({ sku: p.sku }));
     const map = new Map(products().map((p) => [p.sku, p]));
-    const scoped = inScopeSkus(items, map, { region, store: null });
+    const scoped = inScopeSkus(items, map, { region, store: null, category: null });
     expect(scoped.length).toBeGreaterThan(0);
     expect(scoped.length).toBeLessThan(items.length);
     expect(scoped.every((i) => map.get(i.sku)?.region === region)).toBe(true);

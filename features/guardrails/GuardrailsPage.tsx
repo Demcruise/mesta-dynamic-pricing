@@ -7,24 +7,29 @@ import { inputCls } from '@/components/ui/field';
 import { checkPrice, priceBounds } from '@/lib/guardrails';
 import { formatPercent, formatPrice } from '@/lib/format';
 import { useTranslation } from '@/lib/i18n';
-import { useRules, useScopedSkuList, useStrategies } from '@/lib/queries';
+import { useRules, useScopedRecommendations, useScopedSkuList, useStrategies } from '@/lib/queries';
 import { describeFormula } from '@/features/rules/rule-format';
 import { catalogRows, skuReport, type ConstraintId } from './report';
 
-const CONSTRAINT_ORDER: ConstraintId[] = ['bounds', 'map', 'max_change', 'auto_approve', 'margin_floor', 'staleness'];
+const CONSTRAINT_ORDER: ConstraintId[] = [
+  'bounds', 'map', 'max_change', 'auto_approve', 'margin_floor', 'staleness',
+  'change_frequency', 'inventory', 'approval_threshold',
+  'promotion', 'regulatory', 'channel',
+];
 
 export function GuardrailsPage() {
   const { t, locale } = useTranslation();
   const products = useScopedSkuList();
   const strategies = useStrategies();
   const rules = useRules();
+  const recs = useScopedRecommendations();
   const [sku, setSku] = useState('');
 
   const now = Date.now();
   const rows = useMemo(
-    () => catalogRows(products.data, strategies.data, rules.data, now),
+    () => catalogRows(products.data, strategies.data, rules.data, recs.data, now),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [products.data, strategies.data, rules.data],
+    [products.data, strategies.data, rules.data, recs.data],
   );
 
   const report = useMemo(() => {
@@ -53,15 +58,19 @@ export function GuardrailsPage() {
           {CONSTRAINT_ORDER.map((id) => {
             const r = rows.find((x) => x.id === id)!;
             return (
-              <li key={id} className="rounded-card border border-line bg-surface p-card shadow-e1">
+              <li key={id} className={`rounded-card border p-card shadow-e1 ${r.available ? 'border-line bg-surface' : 'border-dashed border-line bg-subtle'}`}>
                 <div className="flex items-start justify-between gap-2">
                   <h3 className="text-sm font-medium">{t(`guardrails.constraint.${id}.name`)}</h3>
-                  <StatusBadge status={r.breaches > 0 ? 'failed' : r.enforced ? 'active' : 'info'} label={r.breaches > 0 ? t('guardrails.breached', { n: r.breaches }) : t(r.enforced ? 'guardrails.enforced' : 'guardrails.observed')} />
+                  <StatusBadge
+                    status={!r.available ? 'info' : r.breaches > 0 ? 'failed' : r.enforced ? 'active' : 'info'}
+                    label={!r.available ? t('guardrails.notModelled') : r.breaches > 0 ? t('guardrails.breached', { n: r.breaches }) : t(r.enforced ? 'guardrails.enforced' : 'guardrails.observed')}
+                  />
                 </div>
                 <p className="mt-1 text-xs text-muted">{t(`guardrails.constraint.${id}.desc`)}</p>
                 <p className="mt-2 text-xs text-fg">
-                  {t('guardrails.covered', { n: r.covered })}
-                  {r.detail ? ` · ${t(`guardrails.constraint.${id}.detail`, { v: r.detail })}` : ''}
+                  {r.available
+                    ? <>{t('guardrails.covered', { n: r.covered })}{r.detail ? ` · ${t(`guardrails.constraint.${id}.detail`, { v: r.detail })}` : ''}</>
+                    : t(`guardrails.constraint.${id}.detail`)}
                 </p>
               </li>
             );

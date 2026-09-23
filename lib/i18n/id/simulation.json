@@ -1,27 +1,90 @@
 {
   "title": "Simulasi",
   "subtitle": "Bandingkan skenario harga dengan baseline sebelum dikirim untuk ditinjau",
-  "context": { "sku": "SKU", "strategy": "Strategi", "noStrategy": "Tanpa strategi (hanya batas produk)", "searchSku": "Cari SKU atau nama", "pick": "Pilih SKU untuk disimulasikan.", "change": "Ganti SKU" },
+  "context": {
+    "sku": "SKU",
+    "strategy": "Strategi",
+    "noStrategy": "Tanpa strategi (hanya batas produk)",
+    "searchSku": "Cari SKU atau nama",
+    "pick": "Pilih SKU untuk disimulasikan.",
+    "change": "Ganti SKU"
+  },
   "baseline": "Baseline",
   "competitorFresh": "Data kompetitor {at}",
   "scenario": "Skenario {n}",
   "controls": {
-    "price": "Harga usulan", "slider": "Slider harga", "reset": "Kembali ke baseline", "add": "Tambah skenario", "remove": "Hapus skenario {n}",
-    "range": "Rentang diizinkan {min} – {max}", "save": "Simpan draf", "send": "Kirim ke Rekomendasi", "saved": "Disimpan sebagai {id}", "sent": "Terkirim sebagai {rec}", "discard": "Buang"
+    "price": "Harga usulan",
+    "slider": "Slider harga",
+    "reset": "Kembali ke baseline",
+    "add": "Tambah skenario",
+    "remove": "Hapus skenario {n}",
+    "range": "Rentang diizinkan {min} – {max}",
+    "save": "Simpan draf",
+    "send": "Kirim ke Rekomendasi",
+    "saved": "Disimpan sebagai {id}",
+    "sent": "Terkirim sebagai {rec}",
+    "discard": "Buang"
   },
-  "metric": { "price": "Harga", "priceDelta": "Perubahan harga", "competitorAvg": "Rata-rata kompetitor", "vsCompetitor": "Vs rata-rata kompetitor", "units": "Unit per bulan", "demandChange": "Perubahan permintaan", "revenue": "Pendapatan", "grossMargin": "Margin kotor", "marginPct": "Margin %", "breakEven": "Harga impas" },
-  "compare": { "title": "Perbandingan skenario" },
-  "chart": { "title": "Kurva permintaan", "toggleChart": "Grafik", "toggleTable": "Tabel data", "x": "Harga", "y": "Unit per bulan", "tableCaption": "Proyeksi permintaan menurut harga", "ci": "Interval permintaan" },
+  "metric": {
+    "price": "Harga",
+    "priceDelta": "Perubahan harga",
+    "competitorAvg": "Rata-rata kompetitor",
+    "vsCompetitor": "Vs rata-rata kompetitor",
+    "units": "Unit per bulan",
+    "demandChange": "Perubahan permintaan",
+    "revenue": "Pendapatan",
+    "grossMargin": "Margin kotor",
+    "marginPct": "Margin %",
+    "breakEven": "Harga impas",
+    "customerResponse": "Respons pelanggan (model)",
+    "historical": "Vs harga terdekat sebelumnya"
+  },
+  "compare": {
+    "title": "Perbandingan skenario"
+  },
+  "chart": {
+    "title": "Kurva permintaan",
+    "toggleChart": "Grafik",
+    "toggleTable": "Tabel data",
+    "x": "Harga",
+    "y": "Unit per bulan",
+    "tableCaption": "Proyeksi permintaan menurut harga",
+    "ci": "Interval permintaan"
+  },
   "assumptions": {
-    "title": "Asumsi", "body": "Model elastisitas konstan: unit = {base} × (P / P0) ^ elastisitas ({elasticity}). Interval permintaan ±{ci}%. Reaksi kompetitor dan musiman tidak dimodelkan. Penanda impas (E) adalah biaya unit.",
-    "runState": "Berjalan pada {n} observasi kompetitor · terbaru {at}", "noCompetitorData": "Belum ada observasi kompetitor untuk SKU ini"
+    "title": "Asumsi",
+    "body": "Model elastisitas konstan: unit = {base} × (P / P0) ^ elastisitas ({elasticity}). Interval permintaan ±{ci}%. Reaksi kompetitor dan musiman tidak dimodelkan. Penanda impas (E) adalah biaya unit.",
+    "runState": "Berjalan pada {n} observasi kompetitor · terbaru {at}",
+    "noCompetitorData": "Belum ada observasi kompetitor untuk SKU ini"
   },
   "err": {
-    "invalid": "Masukkan harga yang valid.", "below_min": "Harga di bawah minimum produk.", "above_max": "Harga di atas maksimum produk.", "map_breach": "Harga melanggar MAP.",
-    "exceeds_change": "Harga di luar guardrail strategi.", "forbidden": "Peran Anda tidak dapat menyimulasikan.", "already_sent": "Skenario ini sudah dikirim.", "not_found": "Tidak ditemukan."
+    "invalid": "Masukkan harga yang valid.",
+    "below_min": "Harga di bawah minimum produk.",
+    "above_max": "Harga di atas maksimum produk.",
+    "map_breach": "Harga melanggar MAP.",
+    "exceeds_change": "Harga di luar guardrail strategi.",
+    "forbidden": "Peran Anda tidak dapat menyimulasikan.",
+    "already_sent": "Skenario ini sudah dikirim.",
+    "not_found": "Tidak ditemukan."
   },
-  "confirmDiscard": { "title": "Buang perubahan yang belum disimpan?", "body": "Skenario yang belum disimpan akan hilang.", "confirm": "Buang", "cancel": "Lanjut mengedit" },
+  "confirmDiscard": {
+    "title": "Buang perubahan yang belum disimpan?",
+    "body": "Skenario yang belum disimpan akan hilang.",
+    "confirm": "Buang",
+    "cancel": "Lanjut mengedit"
+  },
   "notFound": "Skenario tidak ditemukan.",
   "sentNotice": "Dikirim ke antrean rekomendasi.",
-  "viewQueue": "Buka antrean"
+  "viewQueue": "Buka antrean",
+  "response": {
+    "strongDrop": "Kemungkinan turun kuat",
+    "mildDrop": "Kemungkinan turun ringan",
+    "neutral": "Kurang lebih netral",
+    "mildGain": "Kemungkinan naik ringan",
+    "strongGain": "Kemungkinan naik kuat"
+  },
+  "historical": {
+    "none": "Belum ada riwayat harga",
+    "vs": "vs {price} · {at}"
+  }
 }

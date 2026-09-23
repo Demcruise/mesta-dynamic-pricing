@@ -101,6 +101,7 @@ export function runRules(user: UserSession): Fail | { ok: true; summary: RunSumm
       createdAt: new Date(now).toISOString(),
       decidedAt: null,
       decisionNote: null,
+      approvals: [],
       deployed: false,
     };
     recStore.add(rec);

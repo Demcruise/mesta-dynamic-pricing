@@ -18,14 +18,38 @@
     "latencyValue": "{d} hari",
     "latencyHint": "dibuat → diputuskan",
     "deploySuccess": "Tingkat sukses deploy",
-    "overrides": "Override manual"
+    "overrides": "Override manual",
+    "unitsSold": "Unit terjual (est.)",
+    "unitsSoldDef": "Estimasi unit bulanan pada harga saat ini untuk SKU dalam cakupan.",
+    "unitsSoldHint": "estimasi model permintaan",
+    "asp": "Harga jual rata-rata",
+    "aspDef": "Rata-rata harga saat ini untuk SKU dalam cakupan.",
+    "aspHint": "rata-rata dalam cakupan",
+    "markdown": "Porsi markdown",
+    "markdownDef": "Porsi SKU dalam cakupan yang dihargai di bawah harga pertama tercatat.",
+    "markdownHint": "vs harga pertama tercatat",
+    "changeSuccess": "Keberhasilan ubah harga",
+    "changeSuccessDef": "Porsi rekomendasi disetujui yang semua deployment channel-nya tersinkron — tanpa gagal atau rollback."
   },
-  "byCategory": { "title": "Per kategori" },
+  "byCategory": {
+    "title": "Per kategori"
+  },
   "col": {
     "category": "Kategori",
     "priceIndex": "Indeks harga",
     "gap": "vs pasar",
     "acceptance": "Penerimaan",
     "leakage": "Kebocoran"
+  },
+  "byObjective": {
+    "title": "Per objektif strategi",
+    "none": "Tanpa strategi"
+  },
+  "objCol": {
+    "objective": "Objektif",
+    "strategies": "Strategi aktif",
+    "recs": "Rekomendasi",
+    "acceptance": "Penerimaan",
+    "margin": "Margin terproyeksi"
   }
 }

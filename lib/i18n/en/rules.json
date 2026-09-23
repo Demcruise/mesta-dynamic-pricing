@@ -65,7 +65,12 @@
   "conflict": {
     "title": "Priority conflicts",
     "desc": "Multiple active rules target these SKUs — only the highest-priority rule will fire on each run:",
-    "row": "{sku}: {a} outranks {b}"
+    "row": "{sku}: {a} outranks {b}",
+    "dialogTitle": "Conflict on {sku}",
+    "howTo": "Two rules produce different prices for the same SKU. The higher priority wins — resolve by prioritizing one rule or pausing the other.",
+    "pairRow": "{a} vs {b} on {n} SKUs",
+    "prioritize": "Raise priority",
+    "resolved": "Conflict resolved"
   },
   "actions": {
     "activate": "Activate",

@@ -1,6 +1,6 @@
 import { expect, type Page } from '@playwright/test';
 
-export type RoleKey = 'analyst' | 'manager' | 'ops_lead' | 'compliance';
+export type RoleKey = 'analyst' | 'manager' | 'approver' | 'ops_lead' | 'compliance';
 
 /** English UI and fresh demo data for every test. */
 export async function open(page: Page, path: string, role: RoleKey = 'analyst', locale: 'en' | 'id' = 'en') {

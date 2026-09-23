@@ -33,6 +33,35 @@
       "name": "Price staleness",
       "desc": "Days since the last price change. Tracked for review queues — not an enforced bound.",
       "detail": "oldest {v}d"
+    },
+    "change_frequency": {
+      "name": "Change frequency",
+      "desc": "Flags pending recommendations on SKUs repriced inside the quiet window.",
+      "detail": "quiet window {v}d"
+    },
+    "inventory": {
+      "name": "Inventory constraint",
+      "desc": "Flags price increases on SKUs that are low on stock or stocked out."
+    },
+    "approval_threshold": {
+      "name": "Approval threshold",
+      "desc": "Recommendations above the impact gate need elevated approval before publishing.",
+      "detail": "gate at {v} IDR"
+    },
+    "promotion": {
+      "name": "Promotion constraint",
+      "desc": "Promo calendars and mechanics.",
+      "detail": "The demo catalog carries no promotion data."
+    },
+    "regulatory": {
+      "name": "Regulatory constraint",
+      "desc": "Price ceilings, subsidies and jurisdiction rules.",
+      "detail": "No jurisdiction data in the demo."
+    },
+    "channel": {
+      "name": "Channel constraint",
+      "desc": "Per-channel price rules.",
+      "detail": "Channels exist on publish jobs only."
     }
   },
   "enforced": "Enforced",
@@ -69,5 +98,6 @@
     "above_max": "Above maximum",
     "map_breach": "MAP breach",
     "exceeds_change": "Exceeds change limit"
-  }
+  },
+  "notModelled": "Not modelled"
 }

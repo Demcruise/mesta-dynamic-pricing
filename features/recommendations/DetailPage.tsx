@@ -2,13 +2,15 @@
 
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import { AppliedLogic } from '@/components/ds/AppliedLogic';
+import { ConfidenceBreakdown } from '@/components/ds/ConfidenceBreakdown';
 import { RuleEvaluation } from '@/components/ds/RuleEvaluation';
 import { EmptyState, ErrorState, LoadingRows, PageHeader } from '@/components/ds/states';
 import { ConsequencePreview, DocsLink, RecoveryNotice } from '@/components/ds/trust';
-import { UNDO_WINDOW_MS } from '@/lib/stores';
+import { UNDO_WINDOW_MS, useProductCatalogStore } from '@/lib/stores';
 import { formatDate, formatPrice } from '@/lib/format';
 import { useTranslation } from '@/lib/i18n';
-import { useAuditLog, useRecommendation, useSkuDetail } from '@/lib/queries';
+import { useAuditLog, useRecommendation, useRules, useScenario, useSkuDetail, useStrategies } from '@/lib/queries';
 import { RecommendationCard } from './RecommendationCard';
 
 export function RecommendationDetailPage({ recId }: { recId: string }) {
@@ -17,6 +19,12 @@ export function RecommendationDetailPage({ recId }: { recId: string }) {
   const product = useSkuDetail(q.data?.sku ?? '').data;
   const audit = useAuditLog();
   const events = audit.data.filter((e) => e.entityId === recId);
+  const strategies = useStrategies().data;
+  const rules = useRules().data;
+  const scenario = useScenario(q.data?.scenarioId ?? '').data;
+  const observations = useProductCatalogStore((s) => s.competitors);
+  const strategy = q.data?.strategyId ? strategies.find((s) => s.id === q.data!.strategyId) ?? null : null;
+  const rule = q.data?.ruleId ? rules.find((r) => r.id === q.data!.ruleId) ?? null : null;
 
   return (
     <>
@@ -32,6 +40,14 @@ export function RecommendationDetailPage({ recId }: { recId: string }) {
           <PageHeader title={q.data.id} subtitle={q.data.sku} />
           <div className="grid max-w-3xl grid-cols-1 gap-4">
             <RecommendationCard rec={q.data} product={product} defaultOpen />
+            <section className="rounded-card border border-line bg-surface p-card shadow-e1">
+              <h2 className="mb-2 text-sm font-semibold">{t('recommendations.logic.title')}</h2>
+              <AppliedLogic rec={q.data} product={product} strategy={strategy} rule={rule} scenario={scenario ?? null} />
+            </section>
+            <section className="rounded-card border border-line bg-surface p-card shadow-e1">
+              <h2 className="mb-2 text-sm font-semibold">{t('recommendations.confidence.title')}</h2>
+              <ConfidenceBreakdown rec={q.data} product={product} observations={observations} />
+            </section>
             <section className="rounded-card border border-line bg-surface p-card shadow-e1">
               <h2 className="mb-2 text-sm font-semibold">{t('recommendations.rules.title')}</h2>
               <RuleEvaluation rec={q.data} product={product} />

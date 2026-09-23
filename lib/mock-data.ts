@@ -35,6 +35,15 @@ const NOUNS: Record<string, string[]> = {
 };
 const SIZES = ['250ml', '500ml', '1L', '100g', '250g', '500g', '1kg'];
 const COMPETITORS = ['Alfamart', 'Indomaret', 'Tokopedia', 'Shopee'];
+const BRANDS: Record<string, string[]> = {
+  Beverages: ['Sosro', 'Teh Pucuk', 'Aqua', 'Frestea'],
+  Snacks: ['Chitato', 'Tango', 'Roma', 'Gery'],
+  Dairy: ['Ultra Milk', 'Frisian Flag', 'Greenfields', 'Diamond'],
+  'Personal Care': ['Lifebuoy', 'Pepsodent', 'Sunsilk', 'Nivea'],
+  Household: ['Rinso', 'Sunlight', 'Baygon', 'Stella'],
+  'Frozen Food': ['Fiesta', 'So Good', 'Belfoods', 'Cedea'],
+  Bakery: ['Sari Roti', 'Mr Bread', 'Holland', 'BreadTalk'],
+};
 
 export function skuId(i: number) {
   return `SKU-${String(1000 + i)}`;
@@ -65,6 +74,7 @@ export function generateProducts(count: number, seed = 42): Product[] {
       sku: skuId(i),
       name: `${noun} ${size}`,
       category,
+      brand: (BRANDS[category] ?? ['Generic'])[Math.floor(r() * (BRANDS[category]?.length ?? 1))] as string,
       cost,
       price,
       minPrice: Math.round((cost * 1.03) / 100) * 100,
@@ -149,6 +159,7 @@ export function generateRecommendations(products: Product[], count: number, seed
       createdAt: new Date(NOW - (i === 1 ? 8 : Math.floor(r() * 3)) * DAY).toISOString(),
       decidedAt: status === 'pending' ? null : new Date(NOW - Math.floor(r() * DAY)).toISOString(),
       decisionNote: status === 'rejected' ? 'Competitor data looked stale' : null,
+      approvals: [],
       deployed: false,
     });
   }
@@ -280,7 +291,8 @@ export function generateDeployments(recs: Recommendation[]): { jobs: PublishJob[
   // Two synced + one failed + one pending — a live partial-publish example out of the box.
   const jobs: PublishJob[] = [{
     id: jobId, recommendationId: target.id, sku: target.sku, status: 'publishing',
-    scheduledFor: null, createdBy: 'u-ops-1', createdAt: at, updatedAt: at,
+    scheduledFor: null, channels: ['pos', 'ecommerce', 'marketplace_a', 'marketplace_b'], timezone: 'Asia/Jakarta',
+    effectiveUntil: null, createdBy: 'u-ops-1', createdAt: at, updatedAt: at,
   }];
   return { jobs, records };
 }

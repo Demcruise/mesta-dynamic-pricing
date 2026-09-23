@@ -36,18 +36,21 @@ export interface ScopeSelection {
   region: Region | null;
   /** null = whole region. Store implies its region. */
   store: string | null;
+  /** null = all categories. Independent of store — the hierarchy's Category level (APP-002). */
+  category: string | null;
 }
 
-export const ORG_SCOPE: ScopeSelection = { region: null, store: null };
+export const ORG_SCOPE: ScopeSelection = { region: null, store: null, category: null };
 
-export function inScope(p: Pick<Product, 'region' | 'store'>, s: ScopeSelection): boolean {
+export function inScope(p: Pick<Product, 'region' | 'store' | 'category'>, s: ScopeSelection): boolean {
+  if (s.category && p.category !== s.category) return false;
   if (s.store) return p.store === s.store;
   if (s.region) return p.region === s.region;
   return true;
 }
 
 export function inScopeSkus<T extends { sku: string }>(items: T[], products: Map<string, Product>, s: ScopeSelection): T[] {
-  if (!s.region && !s.store) return items;
+  if (!s.region && !s.store && !s.category) return items;
   return items.filter((i) => {
     const p = products.get(i.sku);
     return p ? inScope(p, s) : false;
