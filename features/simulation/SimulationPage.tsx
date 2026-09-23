@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { DeltaBadge } from '@/components/ds/DeltaBadge';
 import { PriceValue } from '@/components/ds/PriceValue';
+import { ProductIdentity } from '@/components/ds/ProductIdentity';
 import { EmptyState, LoadingRows, PageHeader } from '@/components/ds/states';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
@@ -43,11 +44,14 @@ interface Draft {
 
 export function SimulationPage({ scenarioId }: { scenarioId?: string }) {
   const { t } = useTranslation();
+  const router = useRouter();
   const sp = useSearchParams();
   const saved = useScenario(scenarioId ?? '');
   const products = useSkuList();
   if (products.isLoading || (scenarioId && saved.isLoading)) return <LoadingRows rows={5} />;
-  if (scenarioId && !saved.data) return <EmptyState title={t('simulation.notFound')} />;
+  if (scenarioId && !saved.data) {
+    return <EmptyState title={t('simulation.notFound')} action={{ label: t('simulation.context.change'), onClick: () => router.push('/simulation') }} />;
+  }
   const sku = saved.data?.sku ?? sp.get('sku') ?? '';
   const strategyId = saved.data ? saved.data.strategyId : sp.get('strategyId');
   return <Simulator key={`${scenarioId ?? ''}|${sku}|${strategyId ?? ''}`} sku={sku} strategyId={strategyId} initial={saved.data ?? null} basePrice={products.data.find((p) => p.sku === sku)?.price ?? null} />;
@@ -186,6 +190,24 @@ function Simulator({ sku, strategyId, initial, basePrice }: {
                 onChange={(e) => update(s.key, { price: e.target.value, dirty: true })}
               />
               <p className="mt-1 text-xs text-faint">{t('simulation.controls.range', { min: bounds.min.toLocaleString(locale === 'id' ? 'id-ID' : 'en-US'), max: bounds.max.toLocaleString(locale === 'id' ? 'id-ID' : 'en-US') })}</p>
+              {/* SIM-002: quick presets derive from the current price; they fill the same draft as the input — validation is untouched. */}
+              <div role="group" aria-label={t('simulation.controls.presets')} className="mt-2 flex flex-wrap gap-1">
+                {([-0.05, -0.025, 0, 0.025, 0.05] as const).map((d) => {
+                  const v = Math.round(product.price * (1 + d));
+                  const active = Math.round(price || product.price) === v;
+                  return (
+                    <button key={d} type="button" disabled={disabled}
+                      aria-pressed={active}
+                      title={d === 0 ? t('simulation.controls.currentPrice', { price: product.price.toLocaleString(locale === 'id' ? 'id-ID' : 'en-US') }) : undefined}
+                      className={`h-7 rounded-input border px-2 text-xs tabular transition-colors duration-fast disabled:opacity-50 ${
+                        active ? 'border-brand bg-brand-soft text-brand' : 'border-line bg-surface text-muted hover:border-strong hover:text-fg'
+                      }`}
+                      onClick={() => update(s.key, { price: String(v), dirty: true })}>
+                      {d === 0 ? t('simulation.controls.current') : `${d > 0 ? '+' : '−'}${formatPercent(Math.abs(d), locale)}`}
+                    </button>
+                  );
+                })}
+              </div>
               {check !== 'ok' && <p id={errId} role="alert" className="mt-1 text-xs text-critical">{t(`simulation.err.${check}`)}</p>}
               <div className="mt-3 flex flex-wrap gap-2">
                 <Button size="sm" variant="secondary" disabled={disabled} onClick={() => update(s.key, { price: String(product.price), dirty: true })}>{t('simulation.controls.reset')}</Button>
@@ -304,7 +326,7 @@ function SkuPicker({ strategyId }: { strategyId: string | null }) {
             <li key={p.sku}>
               <button type="button" className="flex w-full items-center justify-between px-3 py-2 text-left text-sm transition-colors duration-fast hover:bg-subtle"
                 onClick={() => router.push(`/simulation?sku=${p.sku}${strategyId ? `&strategyId=${strategyId}` : ''}`)}>
-                <span><span className="tabular">{p.sku}</span> · {p.name}</span>
+                <ProductIdentity product={p} />
                 <PriceValue value={p.price} muted />
               </button>
             </li>

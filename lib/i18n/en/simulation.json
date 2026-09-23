@@ -23,7 +23,10 @@
     "send": "Send to Recommendations",
     "saved": "Saved as {id}",
     "sent": "Sent as {rec}",
-    "discard": "Discard"
+    "discard": "Discard",
+    "presets": "Quick price presets",
+    "current": "Current",
+    "currentPrice": "Current price {price}"
   },
   "metric": {
     "price": "Price",

@@ -89,7 +89,7 @@ function Form({ rec, product, mode, onClose }: { rec: Recommendation; product: P
       </Field>
       <div className="flex justify-end gap-2">
         <Button variant="secondary" onClick={onClose}>{t('recommendations.action.cancel')}</Button>
-        <Button type="submit" variant={mode === 'reject' ? 'destructive' : 'primary'}>{t('recommendations.action.confirm')}</Button>
+        <Button type="submit" variant={mode === 'reject' ? 'destructive' : 'primary'}>{t(`recommendations.action.confirm_${mode}`)}</Button>
       </div>
     </form>
   );

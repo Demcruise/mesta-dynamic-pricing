@@ -36,10 +36,10 @@ test('analyst: reject needs a note and undo leaves the item pending', async ({ p
   await open(page, '/recommendations');
   const card = page.locator('article').first();
   await card.getByRole('button', { name: 'Reject' }).click();
-  await page.getByRole('button', { name: 'Confirm' }).click();
+  await page.getByRole('button', { name: 'Reject recommendation' }).click();
   await expect(page.getByRole('alert').filter({ hasText: 'A note is required.' })).toBeVisible();
   await page.getByLabel('Note (required)').fill('data looked stale');
-  await page.getByRole('button', { name: 'Confirm' }).click();
+  await page.getByRole('button', { name: 'Reject recommendation' }).click();
   await page.getByRole('button', { name: 'Undo' }).click();
   // Undo leaves it decidable — Reject re-enables (Approve may stay manager-gated on high-impact recs).
   await expect(card.getByRole('button', { name: 'Reject' })).toBeEnabled();

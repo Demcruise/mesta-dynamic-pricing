@@ -83,7 +83,7 @@
     "exportCsv": "Export CSV",
     "exported": "Exported {n} rows",
     "views": "Saved views",
-    "saveView": "Save",
+    "saveView": "Save view",
     "viewName": "View name",
     "deleteView": "Delete view {name}",
     "noViews": "No saved views yet.",

@@ -83,7 +83,7 @@
     "exportCsv": "Ekspor CSV",
     "exported": "{n} baris diekspor",
     "views": "Tampilan tersimpan",
-    "saveView": "Simpan",
+    "saveView": "Simpan tampilan",
     "viewName": "Nama tampilan",
     "deleteView": "Hapus tampilan {name}",
     "noViews": "Belum ada tampilan tersimpan.",

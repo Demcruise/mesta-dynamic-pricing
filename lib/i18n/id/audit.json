@@ -26,6 +26,7 @@
     "source": "Sumber",
     "entity": "Entitas",
     "empty": "Tidak ada kejadian audit yang cocok.",
+    "none": "Belum ada kejadian audit yang tercatat.",
     "open": "Detail {id}"
   },
   "view": {

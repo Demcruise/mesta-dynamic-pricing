@@ -23,7 +23,10 @@
     "send": "Kirim ke Rekomendasi",
     "saved": "Disimpan sebagai {id}",
     "sent": "Terkirim sebagai {rec}",
-    "discard": "Buang"
+    "discard": "Buang",
+    "presets": "Preset harga cepat",
+    "current": "Saat ini",
+    "currentPrice": "Harga saat ini {price}"
   },
   "metric": {
     "price": "Harga",

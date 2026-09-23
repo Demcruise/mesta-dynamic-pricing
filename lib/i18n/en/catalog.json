@@ -70,7 +70,7 @@
     "title": "Manual price override",
     "newPrice": "New price",
     "reason": "Reason",
-    "submit": "Apply",
+    "submit": "Apply price override",
     "cancel": "Cancel",
     "err": {
       "invalid": "Enter a valid price.",

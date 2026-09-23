@@ -12,6 +12,7 @@ import { Dialog } from '@/components/ui/dialog';
 import { Field, Input } from '@/components/ui/field';
 import { cancelExperiment, concludeExperiment, experimentResults, saveExperiment, startExperiment } from '@/lib/actions/experiment';
 import { formatDate, formatPrice } from '@/lib/format';
+import { useCan } from '@/lib/hooks';
 import { useTranslation } from '@/lib/i18n';
 import type { Experiment } from '@/lib/ontology';
 import { useExperiments, useScopedSkuSet } from '@/lib/queries';
@@ -25,6 +26,7 @@ export function ExperimentsPage() {
   const toast = useToastStore((s) => s.push);
   const [building, setBuilding] = useState(false);
   const [confirming, setConfirming] = useState<Experiment | null>(null);
+  const can = useCan();
 
   const items = useMemo(
     () => (scoped ? q.data.filter((e) => e.skuIds.some((sku) => scoped.has(sku))) : q.data),
@@ -51,7 +53,10 @@ export function ExperimentsPage() {
       {q.isLoading ? <LoadingRows rows={3} rowHeight={96} /> : q.isError ? (
         <ErrorState title={t('common.state.error')} onRetry={q.refetch} />
       ) : items.length === 0 ? (
-        <EmptyState title={t('experiments.empty')} />
+        <EmptyState
+          title={t('experiments.empty')}
+          {...(can('experiment.manage') ? { action: { label: t('experiments.action.new'), onClick: () => setBuilding(true) } } : {})}
+        />
       ) : (
         <ul className="flex max-w-4xl flex-col gap-3">
           {items.map((e) => (

@@ -8,7 +8,7 @@ test('manager: activate strategy, bulk approve, verify audit', async ({ page }) 
   await expect(card.getByText('Active', { exact: true })).toBeVisible();
 
   await go(page, '/recommendations');
-  await page.getByRole('button', { name: 'Bulk approve' }).click();
+  await page.getByRole('button', { name: 'Bulk actions' }).click();
   const dialog = page.getByRole('dialog');
   await expect(dialog.getByText(/recommendations will be approved/)).toBeVisible();
   await dialog.getByRole('button', { name: /^Approve \d+$/ }).click();

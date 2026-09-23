@@ -1,6 +1,6 @@
 'use client';
 
-import { X } from 'lucide-react';
+import { LayoutGrid, Table2, X } from 'lucide-react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useMemo, useState } from 'react';
 import { EmptyState, ErrorState, LoadingRows, PageHeader } from '@/components/ds/states';
@@ -14,6 +14,7 @@ import { useAnomalies, useScopedRecommendations, useScopedSkuSet, useSkuList } f
 import { track } from '@/lib/telemetry';
 import { cn } from '@/lib/utils';
 import { BulkDialog } from './BulkDialog';
+import { QueueTable } from './QueueTable';
 import {
   DEFAULT_QUEUE_FILTERS, filterAndSort, HIGH_IMPACT_IDR, isDefaultFilters, parseQueueFilters, serializeQueueFilters,
   tabMatches, type QueueFilters, type QueueTab,
@@ -45,8 +46,16 @@ export function QueuePage() {
   );
   const [shown, setShown] = useState(PAGE_SIZE);
   const [bulkOpen, setBulkOpen] = useState(false);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [selBulk, setSelBulk] = useState(false);
 
   const query = sp.toString();
+  const view = sp.get('view') === 'table' ? 'table' : 'cards';
+  const setView = (v: 'cards' | 'table') => {
+    const next = new URLSearchParams(query);
+    if (v === 'cards') next.delete('view'); else next.set('view', v);
+    router.replace(next.toString() ? `${pathname}?${next}` : pathname, { scroll: false });
+  };
   const filters = useMemo(() => parseQueueFilters(new URLSearchParams(query)), [query]);
   const setFilters = useCallback((f: QueueFilters) => {
     const s = serializeQueueFilters(f).toString();
@@ -90,9 +99,19 @@ export function QueuePage() {
         title={t('recommendations.title')}
         subtitle={t('recommendations.subtitle', { count: rows.length, total: recs.data.length })}
         actions={
-          <RoleGate action="recommendation.decide">
-            <Button onClick={() => { track('bulk_approval_dialog_opened'); setBulkOpen(true); }}>{t('recommendations.action.bulk')}</Button>
-          </RoleGate>
+          <>
+            <div role="group" aria-label={t('recommendations.view.label')} className="flex gap-1">
+              {(['cards', 'table'] as const).map((v) => (
+                <Button key={v} size="sm" variant={view === v ? 'primary' : 'secondary'} aria-pressed={view === v} onClick={() => setView(v)}>
+                  {v === 'cards' ? <LayoutGrid className="size-4" aria-hidden /> : <Table2 className="size-4" aria-hidden />}
+                  {t(`recommendations.view.${v}`)}
+                </Button>
+              ))}
+            </div>
+            <RoleGate action="recommendation.decide">
+              <Button onClick={() => { track('bulk_approval_dialog_opened'); setBulkOpen(true); }}>{t('recommendations.action.bulk')}</Button>
+            </RoleGate>
+          </>
         }
       />
 
@@ -176,20 +195,52 @@ export function QueuePage() {
       ) : (
         <>
           {allStale && <p role="status" className="mb-3 rounded-input bg-warn-soft px-3 py-2 text-sm text-warn">{t('recommendations.empty.staleOnly')}</p>}
-          <ul className="grid grid-cols-1 gap-3 xl:grid-cols-2">
-            {rows.slice(0, shown).map((r) => (
-              <li key={r.id} className="min-w-0"><RecommendationCard rec={r} product={productMap.get(r.sku)} showStatus={filters.tab === 'all'} /></li>
-            ))}
-          </ul>
-          {rows.length > shown && (
-            <div className="mt-4 text-center">
-              <Button variant="secondary" onClick={() => setShown(shown + PAGE_SIZE)}>{t('recommendations.action.more', { n: rows.length - shown })}</Button>
-            </div>
+          {view === 'table' ? (
+            <QueueTable
+              rows={rows}
+              productMap={productMap}
+              sort={filters.sort}
+              onSort={(sort) => patch({ sort })}
+              selected={selected}
+              onToggle={(id) => setSelected((s) => { const n = new Set(s); if (n.has(id)) n.delete(id); else n.add(id); return n; })}
+              onToggleAll={() => setSelected((s) => (rows.length > 0 && rows.every((r) => s.has(r.id)) ? new Set() : new Set(rows.map((r) => r.id))))}
+              onOpen={(r) => router.push(`/recommendations/${r.id}`)}
+            />
+          ) : (
+            <>
+              <ul className="grid grid-cols-1 gap-3 xl:grid-cols-2">
+                {rows.slice(0, shown).map((r) => (
+                  <li key={r.id} className="min-w-0"><RecommendationCard rec={r} product={productMap.get(r.sku)} showStatus={filters.tab === 'all'} /></li>
+                ))}
+              </ul>
+              {rows.length > shown && (
+                <div className="mt-4 text-center">
+                  <Button variant="secondary" onClick={() => setShown(shown + PAGE_SIZE)}>{t('recommendations.action.more', { n: rows.length - shown })}</Button>
+                </div>
+              )}
+            </>
           )}
         </>
       )}
 
+      {view === 'table' && selected.size > 0 && (
+        <div
+          role="region"
+          aria-label={t('recommendations.table.selectedCount', { n: selected.size })}
+          className="glass sticky bottom-16 z-20 mt-3 flex items-center justify-between gap-3 rounded-card border border-line p-3 shadow-e3 md:bottom-4"
+        >
+          <span className="text-sm font-medium" aria-live="polite">{t('recommendations.table.selectedCount', { n: selected.size })}</span>
+          <div className="flex flex-wrap gap-2">
+            <RoleGate action="recommendation.decide">
+              <Button size="sm" onClick={() => setSelBulk(true)}>{t('recommendations.action.bulk')}</Button>
+            </RoleGate>
+            <Button size="sm" variant="secondary" onClick={() => setSelected(new Set())}>{t('catalog.action.clearSelection')}</Button>
+          </div>
+        </div>
+      )}
+
       <BulkDialog open={bulkOpen} onClose={() => setBulkOpen(false)} recs={rows} />
+      <BulkDialog open={selBulk} onClose={() => setSelBulk(false)} recs={rows} preselected={selected} />
     </>
   );
 }

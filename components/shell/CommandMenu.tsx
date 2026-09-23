@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Dialog } from '@/components/ui/dialog';
+import { CategoryIcon } from '@/components/ds/ProductIdentity';
 import { CATEGORIES } from '@/lib/categories';
 import { useCan } from '@/lib/hooks';
 import { useTranslation } from '@/lib/i18n';
@@ -12,7 +13,7 @@ import { useUiStore } from '@/lib/stores';
 import { useCommandStore } from './command-store';
 import { NAV } from './nav';
 
-interface Item { id: string; group: string; label: string; hint?: string; href: string; run?: () => void }
+interface Item { id: string; group: string; label: string; hint?: string; href: string; run?: () => void; icon?: ReactNode }
 
 function Highlight({ text, q }: { text: string; q: string }): ReactNode {
   const i = q ? text.toLowerCase().indexOf(q.toLowerCase()) : -1;
@@ -35,7 +36,8 @@ function loadRecent(): Item[] {
 }
 function saveRecent(item: Item) {
   try {
-    const next = [item, ...loadRecent().filter((r) => r.href !== item.href)].slice(0, MAX_RECENT);
+    const { icon: _icon, ...rest } = item; // ReactNode can't survive localStorage — recents render icon-less.
+    const next = [rest, ...loadRecent().filter((r) => r.href !== item.href)].slice(0, MAX_RECENT);
     localStorage.setItem(RECENT_KEY, JSON.stringify(next));
   } catch { /* storage unavailable */ }
 }
@@ -95,7 +97,10 @@ export function CommandMenu() {
     const skuHits = skus
       .filter((p) => match(p.sku) || match(p.name))
       .slice(0, MAX_PER_GROUP)
-      .map((p) => ({ id: p.sku, group: t('common.cmd.sku'), label: p.sku, hint: p.name, href: `/catalog/${p.sku}` }));
+      .map((p) => ({
+        id: p.sku, group: t('common.cmd.sku'), label: p.name, hint: `${p.sku} · ${p.category}`,
+        href: `/catalog/${p.sku}`, icon: <CategoryIcon category={p.category} className="size-4" />,
+      }));
     const strHits = strategies
       .filter((s) => match(s.name) || match(s.id))
       .slice(0, MAX_PER_GROUP)
@@ -193,10 +198,10 @@ export function CommandMenu() {
                   aria-selected={i === cursor}
                   onMouseMove={() => setCursor(i)}
                   onClick={() => go(it)}
-                  className={`flex cursor-pointer items-center justify-between rounded-input px-2 py-1.5 text-sm ${i === cursor ? 'bg-brand-soft text-brand' : ''}`}
+                  className={`flex cursor-pointer items-center justify-between gap-2 rounded-input px-2 py-1.5 text-sm ${i === cursor ? 'bg-brand-soft text-brand' : ''}`}
                 >
-                  <span><Highlight text={it.label} q={q.trim()} /></span>
-                  {it.hint && <span className="text-xs text-faint"><Highlight text={it.hint} q={q.trim()} /></span>}
+                  <span className="flex min-w-0 items-center gap-2">{it.icon}<span className="truncate"><Highlight text={it.label} q={q.trim()} /></span></span>
+                  {it.hint && <span className="shrink-0 text-xs text-faint"><Highlight text={it.hint} q={q.trim()} /></span>}
                 </div>
               </li>
             );

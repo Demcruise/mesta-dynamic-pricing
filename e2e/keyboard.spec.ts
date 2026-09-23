@@ -18,7 +18,8 @@ test('@smoke keyboard: Ctrl+K search → open SKU → back', async ({ page }) =>
   await expect(page.getByRole('option', { name: /SKU-1004/ }).first()).toBeVisible();
   await page.keyboard.press('Enter');
   await expect(page).toHaveURL(/\/catalog\/SKU-1004/, { timeout: 15_000 });
-  await expect(page.getByRole('heading', { name: /SKU-1004/ })).toBeVisible({ timeout: 15_000 });
+  // SKU-002: the heading is the product name; the SKU lives in the subtitle line.
+  await expect(page.locator('header p', { hasText: /SKU-1004/ })).toBeVisible({ timeout: 15_000 });
   await page.goBack();
   await expect(page).toHaveURL(/\/overview/);
 });

@@ -24,12 +24,12 @@ describe('reject dialog', () => {
     const rec = pending();
     const product = useProductCatalogStore.getState().products.find((p) => p.sku === rec.sku);
     render(<DecisionDialog rec={rec} product={product} mode="reject" onClose={() => {}} />);
-    fireEvent.click(screen.getByRole('button', { name: 'Confirm' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Reject recommendation' }));
     expect(screen.getByRole('alert')).toHaveTextContent('A note is required.');
     expect(useUndoStore.getState().staged[rec.id]).toBeUndefined();
 
     fireEvent.change(screen.getByLabelText('Note (required)'), { target: { value: 'stale competitor data' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Confirm' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Reject recommendation' }));
     expect(useUndoStore.getState().staged[rec.id]?.to).toBe('rejected');
   });
 });

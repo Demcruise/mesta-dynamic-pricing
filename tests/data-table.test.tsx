@@ -152,7 +152,7 @@ describe('SavedViewMenu', () => {
     }
     render(<Harness />);
     fireEvent.change(screen.getByLabelText('View name'), { target: { value: 'High-risk' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Save view' }));
     expect(JSON.parse(localStorage.getItem('mesta-views-test') ?? '[]')).toEqual([
       { name: 'High-risk', query: 'mh=critical', hidden: ['qty'] },
     ]);

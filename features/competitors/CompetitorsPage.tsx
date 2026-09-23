@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import { DeltaBadge } from '@/components/ds/DeltaBadge';
+import { ProductIdentity } from '@/components/ds/ProductIdentity';
 import { EmptyState, ErrorState, LoadingRows, PageHeader } from '@/components/ds/states';
 import { FreshnessBadge } from '@/components/ds/system-status';
 import { Button } from '@/components/ui/button';
@@ -87,7 +88,7 @@ export function CompetitorsPage() {
                       {a.rows.map(({ obs, product }) => (
                         <tr key={`${obs.sku}`} className="h-row border-t border-line transition-colors duration-fast hover:bg-subtle">
                           <td className="px-3 py-row"><Link href={`/catalog/${obs.sku}`} className="tabular text-brand hover:underline">{obs.sku}</Link></td>
-                          <td className="px-3 text-muted">{product.name}</td>
+                          <td className="px-3 text-muted"><ProductIdentity product={product} size="sm" /></td>
                           <td className="tabular px-3">{formatPrice(obs.price, locale)}</td>
                           <td className="tabular px-3">{formatPrice(product.price, locale)}</td>
                           <td className="px-3"><DeltaBadge value={obs.price / product.price - 1} /></td>

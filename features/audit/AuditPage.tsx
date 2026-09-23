@@ -21,7 +21,7 @@ import { useSessionStore } from '@/lib/stores';
 import { actionForPath } from '@/lib/rbac';
 import { track } from '@/lib/telemetry';
 import { AuditTimeline } from './AuditTimeline';
-import { eventLinks, filterAudit, parseAuditFilters, serializeAuditFilters, type AuditFilters } from './audit-utils';
+import { EMPTY_AUDIT_FILTERS, eventLinks, filterAudit, parseAuditFilters, serializeAuditFilters, type AuditFilters } from './audit-utils';
 
 const TYPES: AuditEventType[] = [
   'strategy_submit', 'strategy_activate', 'strategy_reject', 'strategy_rollback', 'strategy_save', 'strategy_schedule', 'strategy_unschedule',
@@ -122,7 +122,7 @@ export function AuditPage() {
           {TYPES.map((x) => <option key={x} value={x}>{t(`common.event.${x}`)}</option>)}
         </select>
         <Input type="search" aria-label={t('audit.filter.sku')} placeholder={t('audit.filter.search')} className="w-40" value={filters.sku} onChange={(e) => set({ sku: e.target.value })} />
-        <Button variant="ghost" onClick={() => { setShown(PAGE); setView(view); }}>{t('common.state.clearFilters')}</Button>
+        <Button variant="ghost" onClick={() => set(EMPTY_AUDIT_FILTERS)}>{t('common.state.clearFilters')}</Button>
         <div role="group" aria-label={t('audit.view.label')} className="ml-auto flex gap-1">
           {(['list', 'timeline'] as const).map((v) => (
             <Button
@@ -139,7 +139,11 @@ export function AuditPage() {
       {log.isLoading ? <LoadingRows rows={8} /> : log.isError ? (
         <ErrorState title={t('common.state.error')} onRetry={log.refetch} />
       ) : rows.length === 0 ? (
-        <EmptyState variant="filter" title={t('audit.list.empty')} />
+        <EmptyState
+          variant={serializeAuditFilters(filters).toString() !== '' ? 'filter' : 'empty'}
+          title={serializeAuditFilters(filters).toString() !== '' ? t('audit.list.empty') : t('audit.list.none')}
+          {...(serializeAuditFilters(filters).toString() !== '' ? { action: { label: t('common.state.clearFilters'), onClick: () => set(EMPTY_AUDIT_FILTERS) } } : {})}
+        />
       ) : view === 'timeline' ? (
         <>
           <AuditTimeline events={rows.slice(0, shown)} onSelect={setSelected} />

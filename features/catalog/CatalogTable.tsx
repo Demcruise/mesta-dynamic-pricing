@@ -4,6 +4,7 @@ import { Eye, FlaskConical, PencilLine, ScrollText, Sparkles } from 'lucide-reac
 import Link from 'next/link';
 import { useMemo, type ReactNode } from 'react';
 import { DeltaBadge } from '@/components/ds/DeltaBadge';
+import { CategoryIcon } from '@/components/ds/ProductIdentity';
 import { PriceValue } from '@/components/ds/PriceValue';
 import { Sparkline } from '@/components/ds/Sparkline';
 import { MestaDataTable, type ColumnVisibility, type CsvExport, type DataColumn } from '@/components/ds/table/DataTable';
@@ -56,7 +57,15 @@ export function CatalogTable({
       id: 'sku', defaultWidth: 116, header: t('catalog.col.sku'), sortKey: 'sku', required: true,
       cell: (p) => <Link className="tabular text-brand hover:underline" href={detailHref(p.sku)}>{p.sku}</Link>,
     },
-    { id: 'name', defaultWidth: 210, header: t('catalog.col.name'), sortKey: 'name', cell: (p) => <span className="block max-w-56 truncate">{p.name}</span> },
+    {
+      id: 'name', defaultWidth: 210, header: t('catalog.col.name'), sortKey: 'name',
+      cell: (p) => (
+        <span className="flex max-w-56 items-center gap-2">
+          <CategoryIcon category={p.category} className="size-4" />
+          <span className="truncate">{p.name}</span>
+        </span>
+      ),
+    },
     { id: 'category', defaultWidth: 116, header: t('catalog.col.category'), sortKey: 'category', cell: (p) => <span className="text-muted">{p.category}</span> },
     { id: 'cost', defaultWidth: 104, header: t('catalog.col.cost'), sortKey: 'cost', align: 'right', cell: (p) => <PriceValue value={p.cost} muted /> },
     {

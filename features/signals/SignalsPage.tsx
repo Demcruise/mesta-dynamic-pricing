@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import { StatusBadge, type MestaStatus } from '@/components/ds/StatusBadge';
+import { CategoryIcon } from '@/components/ds/ProductIdentity';
 import { EmptyState, ErrorState, LoadingRows, PageHeader } from '@/components/ds/states';
 import { MestaDataTable, useColumnVisibility, type DataColumn } from '@/components/ds/table/DataTable';
 import { useTranslation } from '@/lib/i18n';
@@ -41,7 +42,15 @@ export function SignalsPage() {
       id: 'sku', header: t('signals.table.sku'), required: true, defaultWidth: 110,
       cell: (r) => <Link href={`/catalog/${r.product.sku}`} className="tabular text-brand hover:underline">{r.product.sku}</Link>,
     },
-    { id: 'name', header: t('signals.table.name'), defaultWidth: 180, cell: (r) => <span className="text-fg">{r.product.name}</span> },
+    {
+      id: 'name', header: t('signals.table.name'), defaultWidth: 180,
+      cell: (r) => (
+        <span className="flex items-center gap-2">
+          <CategoryIcon category={r.product.category} className="size-4" />
+          <span className="truncate text-fg">{r.product.name}</span>
+        </span>
+      ),
+    },
     { id: 'category', header: t('signals.table.category'), defaultWidth: 120, cell: (r) => <span className="text-muted">{r.product.category}</span> },
     {
       id: 'velocity', header: t('signals.table.velocity'), defaultWidth: 110,

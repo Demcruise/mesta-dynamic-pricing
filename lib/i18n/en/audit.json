@@ -26,6 +26,7 @@
     "source": "Source",
     "entity": "Entity",
     "empty": "No audit events match.",
+    "none": "No audit events recorded yet.",
     "open": "Details {id}"
   },
   "view": {

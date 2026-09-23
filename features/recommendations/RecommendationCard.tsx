@@ -7,6 +7,7 @@ import { AgentBorderCard } from '@/components/ds/AgentBorderCard';
 import { AgentRunTimeline, type RunStep } from '@/components/ds/AgentRunTimeline';
 import { ConfidenceBar } from '@/components/ds/ConfidenceBar';
 import { DeltaBadge } from '@/components/ds/DeltaBadge';
+import { CategoryIcon } from '@/components/ds/ProductIdentity';
 import { PriceValue } from '@/components/ds/PriceValue';
 import { RationaleBreakdown } from '@/components/ds/RationaleBreakdown';
 import { Sparkline } from '@/components/ds/Sparkline';
@@ -79,8 +80,12 @@ export function RecommendationCard({ rec, product, defaultOpen = false, showStat
       <header className="flex flex-wrap items-start justify-between gap-2">
         <div className="min-w-0">
           <h2 className="text-sm font-semibold">
-            <Link href={`/catalog/${rec.sku}`} className="tabular text-brand hover:underline">{rec.sku}</Link>
-            {product && <span className="ml-2 font-normal">{product.name}</span>}
+            <Link href={`/catalog/${rec.sku}`} className="inline-flex min-h-6 items-center tabular text-brand hover:underline">{rec.sku}</Link>
+            {product && (
+              <span className="ml-2 inline-flex translate-y-0.5 items-center gap-1.5 font-normal">
+                <CategoryIcon category={product.category} className="size-3.5" />{product.name}
+              </span>
+            )}
           </h2>
           <p className="text-xs text-muted">
             <Link href={`/recommendations/${rec.id}`} className="tabular hover:underline">{rec.id}</Link>

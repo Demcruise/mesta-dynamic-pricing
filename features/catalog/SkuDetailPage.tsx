@@ -2,11 +2,12 @@
 
 import { ArrowLeft, ChevronLeft, ChevronRight, FlaskConical, ScrollText } from 'lucide-react';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useMemo } from 'react';
 import { DeltaBadge } from '@/components/ds/DeltaBadge';
 import { ConfidenceBar } from '@/components/ds/ConfidenceBar';
 import { PriceValue } from '@/components/ds/PriceValue';
+import { CategoryIcon } from '@/components/ds/ProductIdentity';
 import { Sparkline } from '@/components/ds/Sparkline';
 import { StatusChip } from '@/components/ds/StatusChip';
 import { EmptyState, ErrorState, LoadingRows, PageHeader } from '@/components/ds/states';
@@ -40,8 +41,13 @@ function Detail({ p }: { p: Product }) {
   return (
     <>
       <PageHeader
-        title={`${p.sku} · ${p.name}`}
-        subtitle={p.category}
+        title={
+          <span className="flex items-center gap-2.5">
+            <CategoryIcon category={p.category} className="size-5" />
+            {p.name}
+          </span>
+        }
+        subtitle={`${p.category} · ${p.sku}`}
         actions={
           <>
             <RoleGate action="simulation.use">
@@ -157,6 +163,7 @@ function Detail({ p }: { p: Product }) {
 
 export function SkuDetailPage({ sku }: { sku: string }) {
   const { t } = useTranslation();
+  const router = useRouter();
   const q = useSkuDetail(sku);
   const products = useSkuList();
   const sp = useSearchParams();
@@ -202,7 +209,12 @@ export function SkuDetailPage({ sku }: { sku: string }) {
       </div>
       {q.isLoading ? <LoadingRows rows={4} /> : q.isError ? (
         <ErrorState title={t('catalog.error')} onRetry={q.refetch} />
-      ) : q.data ? <Detail p={q.data} /> : <EmptyState title={t('catalog.detail.notFound')} />}
+      ) : q.data ? <Detail p={q.data} /> : (
+        <EmptyState
+          title={t('catalog.detail.notFound')}
+          action={{ label: t('catalog.detail.backToCatalog'), onClick: () => router.push('/catalog') }}
+        />
+      )}
     </>
   );
 }

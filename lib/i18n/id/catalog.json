@@ -70,7 +70,7 @@
     "title": "Override harga manual",
     "newPrice": "Harga baru",
     "reason": "Alasan",
-    "submit": "Terapkan",
+    "submit": "Terapkan harga override",
     "cancel": "Batal",
     "err": {
       "invalid": "Masukkan harga yang valid.",

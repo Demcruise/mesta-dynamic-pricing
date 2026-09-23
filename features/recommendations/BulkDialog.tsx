@@ -15,16 +15,20 @@ import { useSessionStore, useToastStore, useUndoStore } from '@/lib/stores';
 type Mode = 'approve' | 'reject' | 'escalate';
 
 /** §17 bulk ops: approve (confidence-gated), reject and escalate (note-driven) over the filtered queue. */
-export function BulkDialog({ open, onClose, recs }: { open: boolean; onClose: () => void; recs: Recommendation[] }) {
+export function BulkDialog({ open, onClose, recs, preselected }: {
+  open: boolean; onClose: () => void; recs: Recommendation[];
+  /** Table-view selection: only these ids start checked (still eligibility-filtered inside). */
+  preselected?: Set<string>;
+}) {
   const { t } = useTranslation();
   return (
     <Dialog open={open} onClose={onClose} title={t('recommendations.dialog.bulkTitle')} className="max-w-lg">
-      {open && <Body recs={recs} onClose={onClose} />}
+      {open && <Body recs={recs} preselected={preselected} onClose={onClose} />}
     </Dialog>
   );
 }
 
-function Body({ recs, onClose }: { recs: Recommendation[]; onClose: () => void }) {
+function Body({ recs, preselected, onClose }: { recs: Recommendation[]; preselected?: Set<string>; onClose: () => void }) {
   const { t } = useTranslation();
   const user = useSessionStore((s) => s.user);
   const toast = useToastStore((s) => s.push);
@@ -34,7 +38,8 @@ function Body({ recs, onClose }: { recs: Recommendation[]; onClose: () => void }
   const [mode, setMode] = useState<Mode>(modes[0]!);
   const [threshold, setThreshold] = useState('85');
   const [note, setNote] = useState('');
-  const [deselected, setDeselected] = useState<Set<string>>(new Set());
+  const [deselected, setDeselected] = useState<Set<string>>(() =>
+    preselected ? new Set(recs.filter((r) => !preselected.has(r.id)).map((r) => r.id)) : new Set());
   const min = Math.min(100, Math.max(0, Number(threshold) || 0));
   const plan = useMemo(() => bulkEligibility(recs, min, user), [recs, min, user]);
   const stale = plan.excluded.filter((e) => e.reason === 'stale').length;

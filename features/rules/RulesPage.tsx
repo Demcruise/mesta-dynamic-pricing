@@ -124,7 +124,11 @@ export function RulesPage() {
       {rules.isLoading ? <LoadingRows rows={3} rowHeight={96} /> : rules.isError ? (
         <ErrorState title={t('common.state.error')} onRetry={rules.refetch} />
       ) : rows.length === 0 ? (
-        <EmptyState variant="empty" title={t('rules.empty')} />
+        <EmptyState
+          variant="empty"
+          title={t('rules.empty')}
+          {...(can('rule.manage') ? { action: { label: t('rules.builder.new'), onClick: () => setBuilder({ open: true, rule: null }) } } : {})}
+        />
       ) : (
         <ul className="grid grid-cols-1 gap-3 lg:grid-cols-2">
           {rows.map((r) => (
