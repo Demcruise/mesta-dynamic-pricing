@@ -222,7 +222,11 @@
   },
   "chain": {
     "title": "Approval chain",
-    "complete": "chain complete"
+    "complete": "chain complete",
+    "elapsed": "{h}h elapsed",
+    "sla": "SLA {h}h",
+    "overdue": "Overdue",
+    "escalated": "Escalated"
   },
   "confidence": {
     "title": "Confidence breakdown",

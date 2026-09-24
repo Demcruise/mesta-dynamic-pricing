@@ -17,10 +17,11 @@ import { useCan } from '@/lib/hooks';
 import { useTranslation } from '@/lib/i18n';
 import type { AuditEvent, AuditEventType } from '@/lib/ontology';
 import { useAuditLog, useRecommendations } from '@/lib/queries';
-import { useSessionStore } from '@/lib/stores';
+import { useSessionStore, useToastStore } from '@/lib/stores';
 import { actionForPath } from '@/lib/rbac';
 import { track } from '@/lib/telemetry';
 import { AuditTimeline } from './AuditTimeline';
+import { copyText, downloadJson, evidencePackage } from './export';
 import { EMPTY_AUDIT_FILTERS, eventLinks, filterAudit, parseAuditFilters, serializeAuditFilters, type AuditFilters } from './audit-utils';
 
 const TYPES: AuditEventType[] = [
@@ -30,8 +31,10 @@ const TYPES: AuditEventType[] = [
   'recommendation_request_changes', 'recommendation_escalate', 'recommendation_expire', 'recommendation_resubmit',
   'deployment_success', 'deployment_failure', 'deployment_retry', 'deployment_rollback', 'publish_scheduled', 'publish_cancelled',
   'rule_save', 'rule_run', 'override_request', 'override_approve', 'override_reject', 'datasource_sync',
-  'experiment_save', 'experiment_start', 'experiment_conclude', 'experiment_cancel', 'delegation_grant', 'delegation_revoke',
+  'experiment_save', 'experiment_start', 'experiment_conclude', 'experiment_cancel',
+  'experiment_ready', 'experiment_complete', 'experiment_archive', 'delegation_grant', 'delegation_revoke',
   'policy_override', 'publish_window_end', 'model_review_feedback', 'manual_override',
+  'notification_acknowledge', 'notification_snooze', 'notification_escalate',
 ];
 const PAGE = 100;
 
@@ -42,6 +45,8 @@ export function AuditPage() {
   const sp = useSearchParams();
   const can = useCan();
   const role = useSessionStore((s) => s.user.role);
+  const user = useSessionStore((s) => s.user);
+  const toast = useToastStore((s) => s.push);
   const log = useAuditLog();
   const recs = useRecommendations();
   const [shown, setShown] = useState(PAGE);
@@ -123,6 +128,17 @@ export function AuditPage() {
         </select>
         <Input type="search" aria-label={t('audit.filter.sku')} placeholder={t('audit.filter.search')} className="w-40" value={filters.sku} onChange={(e) => set({ sku: e.target.value })} />
         <Button variant="ghost" onClick={() => set(EMPTY_AUDIT_FILTERS)}>{t('common.state.clearFilters')}</Button>
+        {/* AUD-009: CSV lives in the table toolbar; JSON + evidence package here. */}
+        {can('audit.export') && (
+          <div role="group" aria-label={t('audit.exportMenu.label')} className="flex gap-1">
+            <Button size="sm" variant="secondary" onClick={() => { downloadJson('mesta-audit.json', rows); track('audit_exported', { rows: rows.length, format: 'json' }); }}>
+              {t('audit.exportMenu.json')}
+            </Button>
+            <Button size="sm" variant="secondary" onClick={() => { downloadJson('mesta-audit-evidence.json', evidencePackage(rows, { scope, exportedBy: user.userId })); track('audit_exported', { rows: rows.length, format: 'evidence' }); }}>
+              {t('audit.exportMenu.evidence')}
+            </Button>
+          </div>
+        )}
         <div role="group" aria-label={t('audit.view.label')} className="ml-auto flex gap-1">
           {(['list', 'timeline'] as const).map((v) => (
             <Button
@@ -194,6 +210,10 @@ export function AuditPage() {
         {selected && (
           <div className="flex flex-col gap-3 text-sm">
             <p className="font-medium">{t(`common.event.${selected.type}`)} <span className="tabular text-xs text-muted">{selected.id}</span></p>
+            {/* AUD-009: the audit ID is the handle an auditor quotes — make it copyable. */}
+            <Button size="sm" variant="secondary" className="self-start" onClick={() => { void copyText(selected.id); toast(t('audit.detail.copied')); }}>
+              {t('audit.detail.copyId')}
+            </Button>
             <p className="text-xs text-muted"><span className="tabular">{formatDate(selected.timestamp, locale)}</span> · {selected.actorId} · {t(`common.source.${selected.source}`)}</p>
             <div>
               <h3 className="mb-1 text-xs font-medium text-muted">{t('audit.detail.price')}</h3>

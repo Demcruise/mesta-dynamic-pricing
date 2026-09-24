@@ -1,7 +1,7 @@
 'use client';
 
 import {
-  Ban, CalendarClock, CheckCircle2, Database, Flag, FlaskConical, PenLine, Pencil, Play, RotateCw, Rocket, Send,
+  Ban, Bell, CalendarClock, CheckCircle2, Database, Flag, FlaskConical, PenLine, Pencil, Play, RotateCw, Rocket, Send,
   Settings2, Timer, TriangleAlert, Undo2, UserMinus, UserPlus, XCircle, type LucideIcon,
 } from 'lucide-react';
 import { formatRelativeTime } from '@/lib/format';
@@ -48,6 +48,12 @@ const ICONS: Record<AuditEventType, LucideIcon> = {
   publish_window_end: Timer,
   model_review_feedback: Flag,
   manual_override: PenLine,
+  experiment_ready: Flag,
+  experiment_complete: CheckCircle2,
+  experiment_archive: Ban,
+  notification_acknowledge: Bell,
+  notification_snooze: Timer,
+  notification_escalate: TriangleAlert,
 };
 
 const TONE_CLS: Record<AuditTone, string> = {

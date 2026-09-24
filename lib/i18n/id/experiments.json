@@ -7,7 +7,10 @@
   "action": {
     "new": "Eksperimen baru",
     "start": "Mulai",
+    "ready": "Tandai siap",
+    "complete": "Selesaikan",
     "conclude": "Akhiri",
+    "archive": "Arsipkan",
     "cancel": "Batalkan"
   },
   "skuCount": "{n} SKU",
@@ -36,6 +39,9 @@
     "saved": "Eksperimen dibuat",
     "started": "Eksperimen dimulai — harga treatment diterapkan",
     "concluded": "Eksperimen diakhiri",
+    "ready": "Eksperimen ditandai siap",
+    "completed": "Rentang eksperimen selesai",
+    "archived": "Eksperimen diarsipkan",
     "cancelled": "Eksperimen dibatalkan"
   },
   "err": {

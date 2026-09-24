@@ -6,6 +6,11 @@
     "deployment": "Menampilkan kejadian terkait deployment.",
     "all": "Menampilkan semua kejadian."
   },
+  "exportMenu": {
+    "label": "Ekspor audit",
+    "json": "JSON",
+    "evidence": "Paket bukti"
+  },
   "filter": {
     "from": "Dari",
     "to": "Sampai",
@@ -40,6 +45,8 @@
   "detail": {
     "title": "Detail kejadian",
     "close": "Tutup",
+    "copyId": "Salin ID audit",
+    "copied": "ID audit disalin",
     "price": "Perubahan harga",
     "before": "Sebelum",
     "after": "Sesudah",

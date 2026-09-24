@@ -1,7 +1,7 @@
 'use client';
 
 import {
-  Archive, Ban, CalendarClock, Check, CircleCheck, CircleDashed, CircleX, Clock, Flag, GitMerge, Hourglass,
+  Archive, Ban, CalendarClock, Check, CircleCheck, CircleDashed, CircleX, Clock, Eye, Flag, GitMerge, Hourglass,
   Info, LoaderCircle, OctagonAlert, Pause, PenLine, Pencil, TimerOff, TriangleAlert, Undo2, X,
   type LucideIcon,
 } from 'lucide-react';
@@ -21,10 +21,13 @@ export type MestaStatus =
   // Execution — publish/deploy jobs, experiments
   | 'queued' | 'scheduled' | 'in_flight' | 'publishing' | 'published' | 'synced'
   | 'failed' | 'rolled_back' | 'cancelled' | 'partial' | 'running' | 'concluded'
+  | 'ready' | 'completed'
   // Data / sync health
   | 'healthy' | 'syncing' | 'delayed' | 'paused'
   // Governance
   | 'blocked' | 'conflicted'
+  // Guardrail / data-quality states (MESTA-COMP-003)
+  | 'observed' | 'breached' | 'not_modelled'
   // Signal severity
   | 'info' | 'warning' | 'critical';
 
@@ -51,6 +54,8 @@ const MAP: Record<MestaStatus, { icon: LucideIcon; cls: string; spin?: boolean }
   partial: { icon: CircleDashed, cls: 'bg-warn-soft text-warn' },
   running: { icon: LoaderCircle, cls: 'bg-info-soft text-info', spin: true },
   concluded: { icon: Flag, cls: 'bg-up-soft text-up' },
+  ready: { icon: Hourglass, cls: 'bg-info-soft text-info' },
+  completed: { icon: Check, cls: 'bg-info-soft text-info' },
   healthy: { icon: CircleCheck, cls: 'bg-up-soft text-up' },
   syncing: { icon: LoaderCircle, cls: 'bg-info-soft text-info', spin: true },
   delayed: { icon: Clock, cls: 'bg-warn-soft text-warn' },
@@ -59,6 +64,9 @@ const MAP: Record<MestaStatus, { icon: LucideIcon; cls: string; spin?: boolean }
   pending_manager_approval: { icon: Clock, cls: 'bg-warn-soft text-warn' },
   blocked: { icon: Ban, cls: 'bg-down-soft text-down' },
   conflicted: { icon: GitMerge, cls: 'bg-warn-soft text-warn' },
+  observed: { icon: Eye, cls: 'bg-info-soft text-info' },
+  breached: { icon: OctagonAlert, cls: 'bg-down-soft text-down' },
+  not_modelled: { icon: CircleDashed, cls: 'bg-subtle text-faint' },
   info: { icon: Info, cls: 'bg-info-soft text-info' },
   warning: { icon: TriangleAlert, cls: 'bg-warn-soft text-warn' },
   critical: { icon: CircleX, cls: 'bg-down-soft text-down' },

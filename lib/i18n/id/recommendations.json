@@ -222,7 +222,11 @@
   },
   "chain": {
     "title": "Rantai persetujuan",
-    "complete": "rantai selesai"
+    "complete": "rantai selesai",
+    "elapsed": "{h} jam berlalu",
+    "sla": "SLA {h} jam",
+    "overdue": "Terlambat",
+    "escalated": "Dieskalasi"
   },
   "confidence": {
     "title": "Rincian confidence",

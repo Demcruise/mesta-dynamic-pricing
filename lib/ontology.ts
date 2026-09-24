@@ -238,7 +238,7 @@ export interface OverrideRequest {
   decisionNote: string | null;
 }
 
-export type ExperimentStatus = 'draft' | 'running' | 'concluded' | 'cancelled';
+export type ExperimentStatus = 'draft' | 'ready' | 'running' | 'completed' | 'concluded' | 'archived' | 'cancelled';
 
 /** A price experiment: applies a treatment delta to a SKU scope and measures against the demand model. */
 export interface Experiment {
@@ -276,8 +276,10 @@ export type AuditEventType =
   | 'override_request' | 'override_approve' | 'override_reject'
   | 'datasource_sync'
   | 'experiment_save' | 'experiment_start' | 'experiment_conclude' | 'experiment_cancel'
+  | 'experiment_ready' | 'experiment_complete' | 'experiment_archive'
   | 'delegation_grant' | 'delegation_revoke'
   | 'policy_override' | 'publish_window_end'
+  | 'notification_acknowledge' | 'notification_snooze' | 'notification_escalate'
   | 'model_review_feedback' | 'manual_override';
 
 export interface AuditEvent {
@@ -285,7 +287,7 @@ export interface AuditEvent {
   type: AuditEventType;
   actorId: string;
   actorRole: Role;
-  entityType: 'strategy' | 'scenario' | 'recommendation' | 'deployment' | 'anomaly' | 'product' | 'rule' | 'override' | 'datasource' | 'experiment' | 'delegation' | 'policy';
+  entityType: 'strategy' | 'scenario' | 'recommendation' | 'deployment' | 'anomaly' | 'product' | 'rule' | 'override' | 'datasource' | 'experiment' | 'delegation' | 'policy' | 'notification';
   entityId: string;
   sku: string | null;
   source: 'ui' | 'agent' | 'system';

@@ -45,15 +45,20 @@ interface ExperimentState {
   items: Experiment[];
   hydrate: (items: Experiment[]) => void;
   upsert: (e: Experiment) => void;
-  /** Valid transitions: draft → running/cancelled, running → concluded/cancelled. */
+  /** Valid transitions: draft → ready/running/cancelled, ready → running, running → completed/concluded, completed → concluded, concluded → archived (MESTA-EXP-004). */
   transition: (id: string, to: ExperimentStatus) => boolean;
   reset: () => void;
 }
 
 const EXP_NEXT: Record<ExperimentStatus, ExperimentStatus[]> = {
-  draft: ['running', 'cancelled'],
-  running: ['concluded', 'cancelled'],
-  concluded: [],
+  // 'ready' is an explicit review gate; direct start stays allowed for back-compat.
+  draft: ['ready', 'running', 'cancelled'],
+  ready: ['running', 'cancelled'],
+  // 'completed' records that the run window closed; conclude stays direct for back-compat.
+  running: ['completed', 'concluded', 'cancelled'],
+  completed: ['concluded'],
+  concluded: ['archived'],
+  archived: [],
   cancelled: [],
 };
 
@@ -72,7 +77,7 @@ export const useExperimentStore = create<ExperimentState>((set, get) => ({
       items: s.items.map((x) => (x.id === id ? {
         ...x, status: to,
         startedAt: to === 'running' ? at : x.startedAt,
-        endedAt: to === 'concluded' || to === 'cancelled' ? at : x.endedAt,
+        endedAt: to === 'completed' || to === 'concluded' || to === 'cancelled' ? at : x.endedAt,
       } : x)),
     }));
     return true;

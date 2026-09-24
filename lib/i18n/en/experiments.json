@@ -7,7 +7,10 @@
   "action": {
     "new": "New experiment",
     "start": "Start",
+    "ready": "Mark ready",
+    "complete": "Complete",
     "conclude": "Conclude",
+    "archive": "Archive",
     "cancel": "Cancel"
   },
   "skuCount": "{n} SKUs",
@@ -36,6 +39,9 @@
     "saved": "Experiment created",
     "started": "Experiment started — treatment prices applied",
     "concluded": "Experiment concluded",
+    "ready": "Experiment marked ready",
+    "completed": "Experiment run completed",
+    "archived": "Experiment archived",
     "cancelled": "Experiment cancelled"
   },
   "err": {

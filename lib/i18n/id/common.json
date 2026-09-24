@@ -144,7 +144,13 @@
     "scenario": "Skenario",
     "approval": "Persetujuan",
     "category": "Kategori",
-    "store": "Toko"
+    "store": "Toko",
+    "guardrail": "Guardrail",
+    "signal": "Sinyal",
+    "competitor": "Kompetitor",
+    "exception": "Eksepsi",
+    "alert": "Peringatan",
+    "audit": "Peristiwa audit"
   },
   "status": {
     "draft": "Draf",
@@ -179,12 +185,19 @@
     "running": "Berjalan",
     "concluded": "Selesai",
     "archived": "Diarsipkan",
-    "pending_manager_approval": "Menunggu persetujuan manajer"
+    "pending_manager_approval": "Menunggu persetujuan manajer",
+    "observed": "Terpantau",
+    "breached": "Dilanggar",
+    "not_modelled": "Belum dimodelkan",
+    "ready": "Siap",
+    "completed": "Selesai dijalankan"
   },
   "delta": {
     "up": "Naik",
     "down": "Turun",
-    "flat": "Tetap"
+    "flat": "Tetap",
+    "unavailable": "Tidak tersedia",
+    "invalid": "Tidak valid"
   },
   "confidence": {
     "high": "Tinggi",
@@ -210,6 +223,11 @@
     "title": "Notifikasi",
     "empty": "Tidak ada notifikasi.",
     "markAll": "Tandai semua dibaca",
+    "acknowledge": "Akui",
+    "acknowledged": "Diakui",
+    "snooze": "Tunda 1 jam",
+    "escalate": "Eskalasi",
+    "escalated": "Dieskalasi",
     "dismiss": "Tutup",
     "strategyPending": "{name} menunggu aktivasi",
     "strategyActive": "{name} kini aktif",
@@ -281,6 +299,12 @@
     "publish_cancelled": "Publikasi terjadwal dibatalkan",
     "model_review_feedback": "Ditandai untuk tinjauan model",
     "manual_override": "Override manual",
+    "notification_acknowledge": "Notifikasi diakui",
+    "notification_snooze": "Notifikasi ditunda",
+    "notification_escalate": "Notifikasi dieskalasi",
+    "experiment_ready": "Eksperimen ditandai siap",
+    "experiment_complete": "Rentang eksperimen selesai",
+    "experiment_archive": "Eksperimen diarsipkan",
     "strategy_rollback": "Strategi dikembalikan",
     "strategy_schedule": "Aktivasi strategi dijadwalkan",
     "strategy_unschedule": "Jadwal strategi dibatalkan",

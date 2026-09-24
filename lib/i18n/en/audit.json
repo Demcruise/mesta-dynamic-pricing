@@ -6,6 +6,11 @@
     "deployment": "Showing deployment-related events.",
     "all": "Showing all events."
   },
+  "exportMenu": {
+    "label": "Export audit",
+    "json": "JSON",
+    "evidence": "Evidence package"
+  },
   "filter": {
     "from": "From",
     "to": "To",
@@ -40,6 +45,8 @@
   "detail": {
     "title": "Event details",
     "close": "Close",
+    "copyId": "Copy audit ID",
+    "copied": "Audit ID copied",
     "price": "Price change",
     "before": "Before",
     "after": "After",

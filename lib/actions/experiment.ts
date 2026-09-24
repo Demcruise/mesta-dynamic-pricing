@@ -45,7 +45,7 @@ export function startExperiment(user: UserSession, id: string): (Ok & { applied:
   if (!can(user.role, 'experiment.manage')) return fail('forbidden');
   const e = find(id);
   if (!e) return fail('not_found');
-  if (e.status !== 'draft') return fail('invalid');
+  if (e.status !== 'draft' && e.status !== 'ready') return fail('invalid');
   const cat = useProductCatalogStore.getState();
   const targets = e.skuIds.map((sku) => cat.products.find((p) => p.sku === sku));
   if (targets.some((p) => !p)) return fail('not_found');
@@ -98,6 +98,46 @@ export function cancelExperiment(user: UserSession, id: string) {
   if (!useExperimentStore.getState().transition(id, 'cancelled')) return fail('invalid');
   useAuditStore.getState().record({
     type: 'experiment_cancel', actorId: user.userId, actorRole: user.role, entityType: 'experiment',
+    entityId: id, sku: null, source: 'ui', note: e.name,
+  });
+  return ok();
+}
+
+/**
+ * MESTA-EXP-004 lifecycle steps beyond start/conclude. Every transition records
+ * an audit event — the lifecycle is the governance trail.
+ */
+export function readyExperiment(user: UserSession, id: string) {
+  if (!can(user.role, 'experiment.manage')) return fail('forbidden');
+  const e = find(id);
+  if (!e) return fail('not_found');
+  if (!useExperimentStore.getState().transition(id, 'ready')) return fail('invalid');
+  useAuditStore.getState().record({
+    type: 'experiment_ready', actorId: user.userId, actorRole: user.role, entityType: 'experiment',
+    entityId: id, sku: null, source: 'ui', note: e.name,
+  });
+  return ok();
+}
+
+export function completeExperiment(user: UserSession, id: string) {
+  if (!can(user.role, 'experiment.manage')) return fail('forbidden');
+  const e = find(id);
+  if (!e) return fail('not_found');
+  if (!useExperimentStore.getState().transition(id, 'completed')) return fail('invalid');
+  useAuditStore.getState().record({
+    type: 'experiment_complete', actorId: user.userId, actorRole: user.role, entityType: 'experiment',
+    entityId: id, sku: null, source: 'ui', note: e.name,
+  });
+  return ok();
+}
+
+export function archiveExperiment(user: UserSession, id: string) {
+  if (!can(user.role, 'experiment.manage')) return fail('forbidden');
+  const e = find(id);
+  if (!e) return fail('not_found');
+  if (!useExperimentStore.getState().transition(id, 'archived')) return fail('invalid');
+  useAuditStore.getState().record({
+    type: 'experiment_archive', actorId: user.userId, actorRole: user.role, entityType: 'experiment',
     entityId: id, sku: null, source: 'ui', note: e.name,
   });
   return ok();

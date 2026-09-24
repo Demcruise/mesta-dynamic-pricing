@@ -10,7 +10,7 @@ import { RoleGate } from '@/components/shell/RoleGate';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { Field, Input } from '@/components/ui/field';
-import { cancelExperiment, concludeExperiment, experimentResults, saveExperiment, startExperiment } from '@/lib/actions/experiment';
+import { archiveExperiment, cancelExperiment, completeExperiment, concludeExperiment, experimentResults, readyExperiment, saveExperiment, startExperiment } from '@/lib/actions/experiment';
 import { formatDate, formatPrice } from '@/lib/format';
 import { useCan } from '@/lib/hooks';
 import { useTranslation } from '@/lib/i18n';
@@ -64,6 +64,9 @@ export function ExperimentsPage() {
               onStart={() => setConfirming(e)}
               onConclude={() => act(() => concludeExperiment(user, e.id), 'experiments.toast.concluded')}
               onCancel={() => act(() => cancelExperiment(user, e.id), 'experiments.toast.cancelled')}
+              onReady={() => act(() => readyExperiment(user, e.id), 'experiments.toast.ready')}
+              onComplete={() => act(() => completeExperiment(user, e.id), 'experiments.toast.completed')}
+              onArchive={() => act(() => archiveExperiment(user, e.id), 'experiments.toast.archived')}
             />
           ))}
         </ul>
@@ -96,12 +99,13 @@ export function ExperimentsPage() {
 
 type T = (key: string, vars?: Record<string, string | number>) => string;
 
-function ExperimentCard({ e, t, locale, onStart, onConclude, onCancel }: {
+function ExperimentCard({ e, t, locale, onStart, onConclude, onCancel, onReady, onComplete, onArchive }: {
   e: Experiment; t: T; locale: 'en' | 'id';
   onStart: () => void; onConclude: () => void; onCancel: () => void;
+  onReady: () => void; onComplete: () => void; onArchive: () => void;
 }) {
   const res = useMemo(() => {
-    if (e.status === 'draft') return null;
+    if (e.status === 'draft' || e.status === 'ready') return null;
     const r = experimentResults(e);
     return r.n > 0 ? r : null;
   }, [e]);
@@ -131,11 +135,16 @@ function ExperimentCard({ e, t, locale, onStart, onConclude, onCancel }: {
           </p>
         </div>
       )}
-      <div className="mt-3 flex gap-2">
+      <div className="mt-3 flex flex-wrap gap-2">
         <RoleGate action="experiment.manage">
-          {e.status === 'draft' && <Button size="sm" onClick={onStart}>{t('experiments.action.start')}</Button>}
-          {e.status === 'running' && <Button size="sm" onClick={onConclude}>{t('experiments.action.conclude')}</Button>}
-          {(e.status === 'draft' || e.status === 'running') && (
+          {/* MESTA-EXP-004 lifecycle: draft → ready → running → completed → concluded → archived. */}
+          {e.status === 'draft' && <Button size="sm" variant="secondary" onClick={onReady}>{t('experiments.action.ready')}</Button>}
+          {(e.status === 'draft' || e.status === 'ready') && <Button size="sm" onClick={onStart}>{t('experiments.action.start')}</Button>}
+          {e.status === 'running' && <Button size="sm" onClick={onComplete}>{t('experiments.action.complete')}</Button>}
+          {e.status === 'running' && <Button size="sm" variant="secondary" onClick={onConclude}>{t('experiments.action.conclude')}</Button>}
+          {e.status === 'completed' && <Button size="sm" onClick={onConclude}>{t('experiments.action.conclude')}</Button>}
+          {e.status === 'concluded' && <Button size="sm" variant="secondary" onClick={onArchive}>{t('experiments.action.archive')}</Button>}
+          {(e.status === 'draft' || e.status === 'ready' || e.status === 'running') && (
             <Button size="sm" variant="secondary" onClick={onCancel}>{t('experiments.action.cancel')}</Button>
           )}
         </RoleGate>

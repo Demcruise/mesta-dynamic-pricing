@@ -144,7 +144,13 @@
     "scenario": "Scenario",
     "approval": "Approval",
     "category": "Category",
-    "store": "Store"
+    "store": "Store",
+    "guardrail": "Guardrail",
+    "signal": "Signal",
+    "competitor": "Competitor",
+    "exception": "Exception",
+    "alert": "Alert",
+    "audit": "Audit event"
   },
   "status": {
     "draft": "Draft",
@@ -179,12 +185,19 @@
     "running": "Running",
     "concluded": "Concluded",
     "archived": "Archived",
-    "pending_manager_approval": "Pending manager approval"
+    "pending_manager_approval": "Pending manager approval",
+    "observed": "Observed",
+    "breached": "Breached",
+    "not_modelled": "Not modelled",
+    "ready": "Ready",
+    "completed": "Completed"
   },
   "delta": {
     "up": "Increase",
     "down": "Decrease",
-    "flat": "No change"
+    "flat": "No change",
+    "unavailable": "Unavailable",
+    "invalid": "Invalid"
   },
   "confidence": {
     "high": "High",
@@ -210,6 +223,11 @@
     "title": "Notifications",
     "empty": "No notifications.",
     "markAll": "Mark all read",
+    "acknowledge": "Acknowledge",
+    "acknowledged": "Acknowledged",
+    "snooze": "Snooze 1h",
+    "escalate": "Escalate",
+    "escalated": "Escalated",
     "dismiss": "Dismiss",
     "strategyPending": "{name} awaits activation",
     "strategyActive": "{name} is now active",
@@ -281,6 +299,12 @@
     "publish_cancelled": "Scheduled publish cancelled",
     "model_review_feedback": "Flagged for model review",
     "manual_override": "Manual override",
+    "notification_acknowledge": "Notification acknowledged",
+    "notification_snooze": "Notification snoozed",
+    "notification_escalate": "Notification escalated",
+    "experiment_ready": "Experiment marked ready",
+    "experiment_complete": "Experiment run completed",
+    "experiment_archive": "Experiment archived",
     "strategy_rollback": "Strategy rolled back",
     "strategy_schedule": "Strategy activation scheduled",
     "strategy_unschedule": "Strategy schedule cancelled",

@@ -1,4 +1,5 @@
 import { cva, type VariantProps } from 'class-variance-authority';
+import { LoaderCircle } from 'lucide-react';
 import type { ButtonHTMLAttributes } from 'react';
 import { cn } from '@/lib/utils';
 
@@ -18,8 +19,22 @@ const button = cva(
   },
 );
 
-export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof button> {}
+export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof button> {
+  /** Async action in flight: spinner + aria-busy, interaction blocked. */
+  loading?: boolean;
+}
 
-export function Button({ className, variant, size, type = 'button', ...props }: ButtonProps) {
-  return <button type={type} className={cn(button({ variant, size }), className)} {...props} />;
+export function Button({ className, variant, size, type = 'button', loading = false, disabled, children, ...props }: ButtonProps) {
+  return (
+    <button
+      type={type}
+      className={cn(button({ variant, size }), className)}
+      disabled={disabled || loading}
+      aria-busy={loading || undefined}
+      {...props}
+    >
+      {loading && <LoaderCircle className="size-3.5 animate-spin" aria-hidden />}
+      {children}
+    </button>
+  );
 }

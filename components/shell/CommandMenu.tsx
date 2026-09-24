@@ -5,15 +5,21 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Dialog } from '@/components/ui/dialog';
 import { CategoryIcon } from '@/components/ds/ProductIdentity';
 import { CATEGORIES } from '@/lib/categories';
+import { deriveAlerts, deriveExceptions } from '@/lib/exceptions';
+import { catalogRows } from '@/features/guardrails/report';
+import { signalRows } from '@/lib/signals';
 import { useCan } from '@/lib/hooks';
 import { useTranslation } from '@/lib/i18n';
-import { useExperiments, useScenarios, useSkuList, useStrategies, useRecommendations, useRules } from '@/lib/queries';
+import {
+  useAnomalies, useAuditLog, useDataSources, useDeploymentRecords, useExperiments, useOverrideRequests,
+  useRecommendations, useRules, useScenarios, useSkuList, useStrategies,
+} from '@/lib/queries';
 import { ALL_STORES, regionOfStore } from '@/lib/scope';
-import { useUiStore } from '@/lib/stores';
+import { useProductCatalogStore, useUiStore } from '@/lib/stores';
 import { useCommandStore } from './command-store';
 import { NAV } from './nav';
 
-interface Item { id: string; group: string; label: string; hint?: string; href: string; run?: () => void; icon?: ReactNode }
+interface Item { id: string; group: string; label: string; hint?: string; /** Current state chip (MESTA-SEARCH-001 result anatomy). */ state?: string; href: string; run?: () => void; icon?: ReactNode }
 
 function Highlight({ text, q }: { text: string; q: string }): ReactNode {
   const i = q ? text.toLowerCase().indexOf(q.toLowerCase()) : -1;
@@ -56,10 +62,26 @@ export function CommandMenu() {
   const rules = useRules().data;
   const experiments = useExperiments().data;
   const scenarios = useScenarios().data;
+  const overrides = useOverrideRequests().data;
+  const deployments = useDeploymentRecords().data;
+  const anomalies = useAnomalies().data;
+  const sources = useDataSources().data;
+  const auditLog = useAuditLog().data;
+  const observations = useProductCatalogStore((s) => s.competitors);
   const setScope = useUiStore((s) => s.setScope);
   const [q, setQ] = useState('');
   const [cursor, setCursor] = useState(0);
   const listRef = useRef<HTMLUListElement>(null);
+
+  // MESTA-SEARCH-001 coverage: derived once per data change, filtered per keystroke
+  // so typing never re-runs the derivations (PERF-002).
+  const index = useMemo(() => ({
+    guardrails: catalogRows(skus, strategies, rules, recs, Date.now()),
+    signals: signalRows(skus, observations),
+    competitors: [...new Set(observations.map((o) => o.competitor))],
+    exceptions: deriveExceptions({ products: skus, competitors: observations, recs, overrides }),
+    alerts: deriveAlerts({ anomalies, deployments, sources }),
+  }), [skus, strategies, rules, recs, observations, overrides, anomalies, deployments, sources]);
 
   // Global shortcuts: Cmd/Ctrl+K toggles; "/" opens (unless typing in a field).
   useEffect(() => {
@@ -137,15 +159,59 @@ export function CommandMenu() {
         id: `store-${s}`, group: t('common.cmd.store'), label: s, href: '/catalog',
         run: () => setScope({ region: regionOfStore(s), store: s, category: null }),
       }));
+    // Guardrails / signals / competitors / exceptions / alerts / audit events —
+    // the remaining MESTA-SEARCH-001 entity types. Each carries its current state.
+    const grHits = index.guardrails
+      .filter((g) => match(t(`guardrails.constraint.${g.id}.name`)) || match(g.id))
+      .map((g) => ({
+        id: `gr-${g.id}`, group: t('common.cmd.guardrail'), label: t(`guardrails.constraint.${g.id}.name`),
+        state: t(`common.status.${!g.available ? 'not_modelled' : !g.enforced ? 'observed' : g.breaches > 0 ? 'breached' : 'active'}`),
+        hint: `${g.covered}`, href: '/guardrails',
+      }));
+    const sigHits = index.signals
+      .filter((s) => match(s.product.sku) || match(s.product.name))
+      .slice(0, MAX_PER_GROUP)
+      .map((s) => ({
+        id: `sig-${s.product.sku}`, group: t('common.cmd.signal'), label: s.product.name,
+        hint: `${s.product.sku} · ${s.product.category}`, state: t(`signals.risk.${s.stockRisk}`), href: '/signals',
+        icon: <CategoryIcon category={s.product.category} className="size-4" />,
+      }));
+    const cmpHits = index.competitors
+      .filter((c) => match(c))
+      .slice(0, MAX_PER_GROUP)
+      .map((c) => ({ id: `cmp-${c}`, group: t('common.cmd.competitor'), label: c, href: '/competitors' }));
+    const excHits = index.exceptions
+      .filter((x) => match(t(`exceptions.kind.${x.kind}`)) || match(x.sku ?? '') || match(x.refId ?? '') || match(x.category ?? ''))
+      .slice(0, MAX_PER_GROUP)
+      .map((x) => ({
+        id: `exc-${x.id}`, group: t('common.cmd.exception'), label: t(`exceptions.kind.${x.kind}`),
+        hint: x.sku ?? x.category ?? undefined, state: t(`common.severity.${x.severity}`), href: x.href,
+      }));
+    const alHits = index.alerts
+      .filter((a) => match(t(`alerts.kind.${a.kind}`)) || match(a.sku ?? '') || match(a.observed ?? ''))
+      .slice(0, MAX_PER_GROUP)
+      .map((a) => ({
+        id: `al-${a.id}`, group: t('common.cmd.alert'), label: t(`alerts.kind.${a.kind}`),
+        hint: a.sku ?? a.observed ?? undefined, state: t(`common.severity.${a.severity}`), href: a.href,
+      }));
+    const audHits = auditLog
+      .filter((e) => match(t(`common.event.${e.type}`)) || match(e.sku ?? '') || match(e.entityId))
+      .slice(0, MAX_PER_GROUP)
+      .map((e) => ({
+        id: `aud-${e.id}`, group: t('common.cmd.audit'), label: t(`common.event.${e.type}`),
+        hint: e.sku ?? e.entityId, href: '/audit',
+      }));
     if (needle) {
       return [...skuHits.sort(rank(needle)), ...strHits.sort(rank(needle)), ...recHits.sort(rank(needle)),
         ...aprHits.sort(rank(needle)), ...scnHits.sort(rank(needle)), ...ruleHits.sort(rank(needle)),
-        ...expHits.sort(rank(needle)), ...catHits.sort(rank(needle)), ...storeHits.sort(rank(needle)),
+        ...expHits.sort(rank(needle)), ...grHits.sort(rank(needle)), ...sigHits.sort(rank(needle)),
+        ...cmpHits.sort(rank(needle)), ...excHits.sort(rank(needle)), ...alHits.sort(rank(needle)),
+        ...audHits.sort(rank(needle)), ...catHits.sort(rank(needle)), ...storeHits.sort(rank(needle)),
         ...filteredQuick.sort(rank(needle))];
     }
     const recentItems = recent.map((r) => ({ ...r, id: `recent-${r.id}`, group: t('common.cmd.recent') }));
     return [...recentItems, ...filteredQuick, ...skuHits.slice(0, 3)];
-  }, [q, skus, strategies, recs, rules, experiments, scenarios, can, t, recent, setScope]);
+  }, [q, skus, strategies, recs, rules, experiments, scenarios, can, t, recent, setScope, index, auditLog]);
 
   useEffect(() => { setCursor(0); }, [q]);
   useEffect(() => {
@@ -201,7 +267,10 @@ export function CommandMenu() {
                   className={`flex cursor-pointer items-center justify-between gap-2 rounded-input px-2 py-1.5 text-sm ${i === cursor ? 'bg-brand-soft text-brand' : ''}`}
                 >
                   <span className="flex min-w-0 items-center gap-2">{it.icon}<span className="truncate"><Highlight text={it.label} q={q.trim()} /></span></span>
-                  {it.hint && <span className="shrink-0 text-xs text-faint"><Highlight text={it.hint} q={q.trim()} /></span>}
+                  <span className="flex shrink-0 items-center gap-2">
+                    {it.state && <span className="rounded-full bg-subtle px-1.5 py-0.5 text-[11px] text-muted">{it.state}</span>}
+                    {it.hint && <span className="text-xs text-faint"><Highlight text={it.hint} q={q.trim()} /></span>}
+                  </span>
                 </div>
               </li>
             );
