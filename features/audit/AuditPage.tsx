@@ -80,7 +80,8 @@ export function AuditPage() {
     {
       id: 'event', defaultWidth: 250, header: t('audit.list.event'), required: true,
       cell: (e) => (
-        <button type="button" aria-label={t('audit.list.open', { id: e.id })} onClick={() => setSelected(e)} className="text-left text-brand hover:underline">
+        // WCAG 2.5.3: the accessible name must contain the visible event label.
+        <button type="button" aria-label={`${t(`common.event.${e.type}`)} — ${t('audit.list.open', { id: e.id })}`} onClick={() => setSelected(e)} className="text-left text-brand hover:underline">
           {t(`common.event.${e.type}`)}
         </button>
       ),

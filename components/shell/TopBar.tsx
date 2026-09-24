@@ -90,7 +90,8 @@ export function TopBar() {
         </Button>
         <Button
           variant="ghost" size="sm"
-          aria-label={t('common.user.language')}
+          // WCAG 2.5.3: include the visible code ("EN"/"ID") in the accessible name.
+          aria-label={`${t('common.user.language')}: ${locale.toUpperCase()}`}
           onClick={() => setLocale(locale === 'id' ? 'en' : 'id')}
         >
           <Languages className="size-4" aria-hidden />

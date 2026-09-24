@@ -10,7 +10,7 @@ import { Sparkline } from '@/components/ds/Sparkline';
 import { MestaDataTable, type ColumnVisibility, type CsvExport, type DataColumn } from '@/components/ds/table/DataTable';
 import { RoleGate } from '@/components/shell/RoleGate';
 import { competitorGap, elasticityBand, marginHealth, marginPct } from '@/lib/domain';
-import { formatDate, formatPercent } from '@/lib/format';
+import { formatDate, formatPercent, formatPrice } from '@/lib/format';
 import { useCan } from '@/lib/hooks';
 import { useTranslation } from '@/lib/i18n';
 import type { Product } from '@/lib/ontology';
@@ -77,7 +77,8 @@ export function CatalogTable({
           type="button"
           onClick={() => onOverride(p)}
           title={`${t('catalog.action.override')} ${p.sku}`}
-          aria-label={`${t('catalog.action.override')} ${p.sku}`}
+          // WCAG 2.5.3: the accessible name must contain the visible label (the price).
+          aria-label={`${formatPrice(p.price, locale)} — ${t('catalog.action.override')} ${p.sku}`}
           className="-mx-1 rounded px-1 transition-colors duration-fast hover:bg-subtle"
         >
           <PriceValue value={p.price} animate />

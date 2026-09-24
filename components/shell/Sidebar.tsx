@@ -37,6 +37,10 @@ function ProfileCard({ labelCls }: { labelCls: string }) {
   const user = useSessionStore((s) => s.user);
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  // WCAG 2.5.3: the accessible name must contain the visible label. The avatar
+  // initials and the name/role spans are adjacent text nodes, so axe compares
+  // against their exact concatenation — build the name from the same pieces.
+  const identity = `${initials(user.name)}${user.name}${t(`common.role.${user.role}`)}`;
 
   useEffect(() => {
     if (!open) return;
@@ -51,7 +55,7 @@ function ProfileCard({ labelCls }: { labelCls: string }) {
     <div ref={ref} className="relative border-t border-line p-2">
       <button
         type="button"
-        aria-label={t('common.a11y.profile')}
+        aria-label={`${identity} — ${t('common.a11y.profile')}`}
         aria-expanded={open}
         aria-haspopup="menu"
         title={t('common.a11y.profile')}

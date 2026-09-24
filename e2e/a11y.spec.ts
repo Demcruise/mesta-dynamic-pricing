@@ -10,7 +10,14 @@ const ROUTES = [
 ];
 
 async function violations(page: Page, label: string): Promise<string[]> {
-  const res = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']).analyze();
+  const res = await new AxeBuilder({ page })
+    .options({
+      runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'] },
+      // axe ships this rule disabled (tagged `experimental`) even though it maps to
+      // WCAG 2.5.3, so a visible label missing from the accessible name would ship.
+      rules: { 'label-content-name-mismatch': { enabled: true } },
+    })
+    .analyze();
   return res.violations.map((v) => `[${label}] ${v.id} (${v.impact}) x${v.nodes.length}: ${v.nodes.slice(0, 2).map((n) => n.target.join(' ')).join(' | ')}`);
 }
 
