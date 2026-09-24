@@ -41,21 +41,21 @@ export function SettingsPage() {
       <section aria-label={t('common.settings.appearance')} className="max-w-lg divide-y divide-line rounded-card border border-line bg-surface px-card shadow-e1">
         <Row label={t('common.user.theme')}>
           {(['light', 'dark'] as const).map((v) => (
-            <Button key={v} size="sm" variant={theme === v ? 'primary' : 'secondary'} aria-pressed={theme === v} onClick={() => setTheme(v)}>
+            <Button key={v} size="sm" variant={theme === v ? 'selected' : 'secondary'} aria-pressed={theme === v} onClick={() => setTheme(v)}>
               {t(`common.user.${v}`)}
             </Button>
           ))}
         </Row>
         <Row label={t('common.user.language')}>
           {(['id', 'en'] as const).map((l: Locale) => (
-            <Button key={l} size="sm" variant={locale === l ? 'primary' : 'secondary'} aria-pressed={locale === l} onClick={() => setLocale(l)}>
+            <Button key={l} size="sm" variant={locale === l ? 'selected' : 'secondary'} aria-pressed={locale === l} onClick={() => setLocale(l)}>
               {l.toUpperCase()}
             </Button>
           ))}
         </Row>
         <Row label={t('common.density.label')}>
           {(['comfortable', 'compact'] as const).map((d) => (
-            <Button key={d} size="sm" variant={density === d ? 'primary' : 'secondary'} aria-pressed={density === d} onClick={() => setDensity(d)}>
+            <Button key={d} size="sm" variant={density === d ? 'selected' : 'secondary'} aria-pressed={density === d} onClick={() => setDensity(d)}>
               {t(`common.density.${d}`)}
             </Button>
           ))}
@@ -133,7 +133,7 @@ function PolicyMatrix() {
           )}
         </div>
         <div className="mt-3 max-h-96 overflow-auto rounded-input border border-line" tabIndex={0}>
-          <table className="w-full text-xs">
+          <table className="mesta-table w-full text-xs">
             <caption className="sr-only">{t('common.settings.access')}</caption>
             <thead className="sticky top-0 bg-surface text-muted">
               <tr className="border-b border-line">

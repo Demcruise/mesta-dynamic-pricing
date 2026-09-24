@@ -82,11 +82,11 @@ export function ExceptionsPage() {
       ) : (
         <>
           <div role="group" aria-label={t('exceptions.filterLabel')} className="mb-4 flex flex-wrap gap-1">
-            <Button size="sm" variant={kind === 'all' ? 'primary' : 'secondary'} aria-pressed={kind === 'all'} onClick={() => setKind('all')}>
+            <Button size="sm" variant={kind === 'all' ? 'selected' : 'secondary'} aria-pressed={kind === 'all'} onClick={() => setKind('all')}>
               {t('exceptions.kind.all')}
             </Button>
             {KINDS.map((k) => (
-              <Button key={k} size="sm" variant={kind === k ? 'primary' : 'secondary'} aria-pressed={kind === k} onClick={() => setKind(k)}>
+              <Button key={k} size="sm" variant={kind === k ? 'selected' : 'secondary'} aria-pressed={kind === k} onClick={() => setKind(k)}>
                 {t(`exceptions.kind.${k}`)} <span className="tabular">({counts.get(k) ?? 0})</span>
               </Button>
             ))}
@@ -140,7 +140,7 @@ export function ExceptionsPage() {
               <p className="rounded-card border border-line bg-surface p-3 text-xs text-muted shadow-e1">{t('exceptions.history.empty')}</p>
             ) : (
               <div className="overflow-x-auto rounded-card border border-line bg-surface shadow-e1">
-                <table className="w-full min-w-[640px] text-sm">
+                <table className="mesta-table w-full min-w-[640px] text-sm">
                   <caption className="sr-only">{t('exceptions.history.title')}</caption>
                   <thead className="bg-subtle text-xs text-muted">
                     <tr className="h-row">

@@ -17,6 +17,7 @@ import { useSessionStore, useToastStore } from '@/lib/stores';
 import { RuleBuilderDialog } from './RuleBuilderDialog';
 import { ConflictDialog } from './ConflictDialog';
 import { describeCondition, describeFormula, describeScope } from './rule-format';
+import { pillCls } from '@/components/ds/Pill';
 
 const ORDER: Record<RuleStatus, number> = { active: 0, draft: 1, paused: 2 };
 
@@ -146,7 +147,7 @@ export function RulesPage() {
                   <p className="flex items-center gap-1.5 text-xs text-muted">
                     {r.id}
                     {/* J-02: priority is a first-class badge — it decides conflict precedence. */}
-                    <span className="rounded-full bg-subtle px-1.5 py-px text-[11px] font-semibold tabular text-muted" title={t('rules.table.priority')}>
+                    <span className={`tabular ${pillCls('neutral', 'sm')}`} title={t('rules.table.priority')}>
                       P{r.priority}
                     </span>
                   </p>
@@ -163,7 +164,7 @@ export function RulesPage() {
                         <li key={i} className="flex items-center gap-1">
                           {/* J-01: conditions are ANDed — make the connector visible, not implicit. */}
                           {i > 0 && <span aria-hidden className="text-[10px] font-semibold uppercase tracking-wide text-faint">{t('rules.table.and')}</span>}
-                          <span className="rounded-full bg-subtle px-2 py-0.5 text-fg">{describeCondition(c, t)}</span>
+                          <span className={pillCls('neutral', 'sm')}>{describeCondition(c, t)}</span>
                         </li>
                       ))}
                     </ul>

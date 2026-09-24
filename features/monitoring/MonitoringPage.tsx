@@ -85,7 +85,7 @@ export function MonitoringPage() {
             <h2 className="text-sm font-semibold">{t('monitoring.forecast.title')}</h2>
             <div role="group" aria-label={t('monitoring.forecast.title')} className="flex gap-1">
               {(['revenue', 'margin', 'units'] as const).map((m) => (
-                <Button key={m} size="sm" variant={metric === m ? 'primary' : 'secondary'} aria-pressed={metric === m} onClick={() => setMetric(m)}>
+                <Button key={m} size="sm" variant={metric === m ? 'selected' : 'secondary'} aria-pressed={metric === m} onClick={() => setMetric(m)}>
                   {t(`monitoring.forecast.${m}`)}
                 </Button>
               ))}
@@ -95,12 +95,12 @@ export function MonitoringPage() {
             <>
               <ForecastCharts outcomes={sorted} metric={metric} />
               <div className="mt-4 overflow-x-auto rounded-card border border-line bg-surface shadow-e1">
-                <table className="w-full min-w-[640px] text-sm">
+                <table className="mesta-table w-full min-w-[640px] text-sm">
                   <caption className="sr-only">{t('monitoring.forecast.caption')}</caption>
                   <thead className="bg-subtle text-xs text-muted">
                     <tr className="h-row">
-                      {(['sku', 'forecastLabel', 'actualLabel', 'variance', 'source', 'trace'] as const).map((c) => (
-                        <th key={c} scope="col" className={cn('px-3 py-row font-medium', c === 'sku' || c === 'trace' || c === 'source' ? 'text-left' : 'text-right')}>
+                      {(['sku', 'forecastLabel', 'actualLabel', 'variance', 'source', 'traceLink'] as const).map((c) => (
+                        <th key={c} scope="col" className={cn('px-3 py-row font-medium', c === 'sku' || c === 'traceLink' || c === 'source' ? 'text-left' : 'text-right')}>
                           {c === 'sku' ? t('monitoring.anomaly.sku') : t(`monitoring.forecast.${c}`)}
                         </th>
                       ))}
@@ -143,7 +143,7 @@ export function MonitoringPage() {
                 </Field>
                 <div role="group" aria-label={t('monitoring.anomaly.mode')} className="flex gap-1">
                   {(['digest', 'granular'] as const).map((m) => (
-                    <Button key={m} variant={mode === m ? 'primary' : 'secondary'} aria-pressed={mode === m} onClick={() => setMode(m)}>{t(`monitoring.anomaly.${m}`)}</Button>
+                    <Button key={m} variant={mode === m ? 'selected' : 'secondary'} aria-pressed={mode === m} onClick={() => setMode(m)}>{t(`monitoring.anomaly.${m}`)}</Button>
                   ))}
                 </div>
               </div>
@@ -177,7 +177,7 @@ export function MonitoringPage() {
               </ul>
             ) : (
               <div className="overflow-x-auto rounded-card border border-line bg-surface shadow-e1">
-                <table className="w-full min-w-[640px] text-sm">
+                <table className="mesta-table w-full min-w-[640px] text-sm">
                   <caption className="sr-only">{t('monitoring.anomaly.caption')}</caption>
                   <thead className="bg-subtle text-xs text-muted">
                     <tr className="h-row">{(['sku', 'category', 'deviation', 'channel', 'severity', 'actions'] as const).map((c) => <th key={c} scope="col" className="px-3 py-row text-left font-medium">{t(`monitoring.anomaly.${c}`)}</th>)}</tr>

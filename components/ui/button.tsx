@@ -4,16 +4,19 @@ import type { ButtonHTMLAttributes } from 'react';
 import { cn } from '@/lib/utils';
 
 const button = cva(
-  'inline-flex items-center justify-center gap-1.5 rounded-input text-sm font-medium transition-colors duration-fast ease-standard disabled:pointer-events-none disabled:opacity-50',
+  'inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-input text-sm font-medium tracking-label transition-colors duration-fast ease-standard disabled:pointer-events-none disabled:opacity-50',
   {
     variants: {
       variant: {
-        primary: 'bg-brand text-brand-fg hover:opacity-90',
-        secondary: 'border border-line bg-surface text-fg hover:bg-subtle',
+        // Reference CTA: solid action blue, hairline light border, 1px inset top highlight.
+        primary: 'border border-white/20 bg-brand text-brand-fg shadow-cta hover:bg-brand-hover',
+        secondary: 'border border-line-strong bg-surface text-fg hover:bg-subtle',
         ghost: 'text-fg hover:bg-subtle',
-        destructive: 'bg-down text-brand-fg hover:opacity-90',
+        // Pressed state of a toggle/filter button — soft brand, never competes with the primary CTA.
+        selected: 'border border-brand/30 bg-brand-soft text-brand',
+        destructive: 'border border-white/20 bg-down text-brand-fg shadow-cta hover:opacity-90',
       },
-      size: { sm: 'h-7 px-2', md: 'h-9 px-3', icon: 'size-9 max-sm:size-11' },
+      size: { sm: 'h-8 px-2.5 text-xs', md: 'h-9 px-3.5 text-[13px]', icon: 'size-9 max-sm:size-11' },
     },
     defaultVariants: { variant: 'primary', size: 'md' },
   },

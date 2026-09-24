@@ -1,5 +1,6 @@
 'use client';
 
+import { cn } from '@/lib/utils';
 import { inputCls } from '@/components/ui/field';
 import { useTranslation } from '@/lib/i18n';
 import type { Role } from '@/lib/ontology';
@@ -17,7 +18,7 @@ export function DevRoleSelect() {
       <select
         value={role}
         onChange={(e) => setRole(e.target.value as Role)}
-        className={`${inputCls} h-8 w-28`}
+        className={cn(inputCls, 'h-8 w-28')}
       >
         {ROLES.map((r) => <option key={r} value={r}>{t(`common.role.${r}`)}</option>)}
       </select>

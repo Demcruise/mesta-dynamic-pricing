@@ -73,7 +73,7 @@ export function SavedViewMenu({ tableId, currentQuery, hidden, onApply, builtIns
       <summary
         aria-label={t('common.table.views')}
         title={t('common.table.views')}
-        className="grid size-9 cursor-pointer list-none place-items-center rounded-input text-muted transition-colors duration-fast hover:bg-subtle hover:text-fg"
+        className="grid size-9 cursor-pointer list-none place-items-center rounded-input border border-line-strong bg-input text-muted transition-colors duration-fast hover:bg-subtle hover:text-fg [&::-webkit-details-marker]:hidden"
       >
         <Bookmark className="size-4" aria-hidden />
       </summary>

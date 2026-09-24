@@ -141,47 +141,55 @@ export function AnalyticsPage() {
             <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-faint">{t('analytics.group.outcomes')}</h2>
           <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <KpiCard
-              label={<MetricDefinition label={t('analytics.kpi.acceptance')} definition={t('analytics.kpi.acceptanceDef')} />}
+              label={t('analytics.kpi.acceptance')}
               value={stats.acceptance === null ? '—' : formatPercent(stats.acceptance, locale)}
-              hint={t('analytics.kpi.acceptanceHint', { n: stats.decided })}
+              comparison={t('analytics.kpi.acceptanceHint', { n: stats.decided })}
+              hint={<MetricDefinition label={t('overview.def.about', { name: t('analytics.kpi.acceptance') })} definition={t('analytics.kpi.acceptanceDef')} />}
             />
             <KpiCard
-              label={<MetricDefinition label={t('analytics.kpi.priceIndex')} definition={t('analytics.kpi.priceIndexDef')} />}
+              label={t('analytics.kpi.priceIndex')}
               value={stats.priceIndex === null ? '—' : `${Math.round(stats.priceIndex * 100)}`}
-              hint={t('analytics.kpi.priceIndexHint')}
+              comparison={t('analytics.kpi.priceIndexHint')}
+              hint={<MetricDefinition label={t('overview.def.about', { name: t('analytics.kpi.priceIndex') })} definition={t('analytics.kpi.priceIndexDef')} />}
             />
             <KpiCard
-              label={<MetricDefinition label={t('analytics.kpi.leakage')} definition={t('analytics.kpi.leakageDef')} />}
+              label={t('analytics.kpi.leakage')}
               value={formatPrice(Math.round(stats.leakage), locale)}
-              hint={t('analytics.kpi.leakageHint')}
+              comparison={t('analytics.kpi.leakageHint')}
+              hint={<MetricDefinition label={t('overview.def.about', { name: t('analytics.kpi.leakage') })} definition={t('analytics.kpi.leakageDef')} />}
             />
             <KpiCard
-              label={<MetricDefinition label={t('analytics.kpi.latency')} definition={t('analytics.kpi.latencyDef')} />}
+              label={t('analytics.kpi.latency')}
               value={stats.avgLatencyDays === null ? '—' : t('analytics.kpi.latencyValue', { d: Math.round(stats.avgLatencyDays * 10) / 10 })}
-              hint={t('analytics.kpi.latencyHint')}
+              comparison={t('analytics.kpi.latencyHint')}
+              hint={<MetricDefinition label={t('overview.def.about', { name: t('analytics.kpi.latency') })} definition={t('analytics.kpi.latencyDef')} />}
             />
           </div>
 
           <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4" role="group" aria-label={t('analytics.group.outcomesSecondary')}>
             <KpiCard
-              label={<MetricDefinition label={t('analytics.kpi.unitsSold')} definition={t('analytics.kpi.unitsSoldDef')} />}
+              label={t('analytics.kpi.unitsSold')}
               value={stats.unitsSold === null ? '—' : Math.round(stats.unitsSold).toLocaleString(locale)}
-              hint={t('analytics.kpi.unitsSoldHint')}
+              comparison={t('analytics.kpi.unitsSoldHint')}
+              hint={<MetricDefinition label={t('overview.def.about', { name: t('analytics.kpi.unitsSold') })} definition={t('analytics.kpi.unitsSoldDef')} />}
             />
             <KpiCard
-              label={<MetricDefinition label={t('analytics.kpi.asp')} definition={t('analytics.kpi.aspDef')} />}
+              label={t('analytics.kpi.asp')}
               value={stats.asp === null ? '—' : formatPrice(Math.round(stats.asp), locale)}
-              hint={t('analytics.kpi.aspHint')}
+              comparison={t('analytics.kpi.aspHint')}
+              hint={<MetricDefinition label={t('overview.def.about', { name: t('analytics.kpi.asp') })} definition={t('analytics.kpi.aspDef')} />}
             />
             <KpiCard
-              label={<MetricDefinition label={t('analytics.kpi.markdown')} definition={t('analytics.kpi.markdownDef')} />}
+              label={t('analytics.kpi.markdown')}
               value={stats.markdownShare === null ? '—' : formatPercent(stats.markdownShare, locale)}
-              hint={t('analytics.kpi.markdownHint')}
+              comparison={t('analytics.kpi.markdownHint')}
+              hint={<MetricDefinition label={t('overview.def.about', { name: t('analytics.kpi.markdown') })} definition={t('analytics.kpi.markdownDef')} />}
             />
             <KpiCard
-              label={<MetricDefinition label={t('analytics.kpi.changeSuccess')} definition={t('analytics.kpi.changeSuccessDef')} />}
+              label={t('analytics.kpi.changeSuccess')}
               value={stats.changeSuccess === null ? '—' : formatPercent(stats.changeSuccess, locale)}
-              hint={t('analytics.kpi.deploySuccess')}
+              comparison={t('analytics.kpi.deploySuccess')}
+              hint={<MetricDefinition label={t('overview.def.about', { name: t('analytics.kpi.changeSuccess') })} definition={t('analytics.kpi.changeSuccessDef')} />}
             />
           </div>
 
@@ -205,7 +213,7 @@ export function AnalyticsPage() {
           <section aria-label={t('analytics.byObjective.title')} className="mb-6">
             <h2 className="mb-2 text-sm font-semibold">{t('analytics.byObjective.title')}</h2>
             <div className="overflow-x-auto rounded-card border border-line bg-surface shadow-e1">
-              <table className="w-full min-w-[560px] text-sm">
+              <table className="mesta-table w-full min-w-[560px] text-sm">
                 <caption className="sr-only">{t('analytics.byObjective.title')}</caption>
                 <thead className="bg-subtle text-xs text-muted">
                   <tr className="h-row">
@@ -234,7 +242,7 @@ export function AnalyticsPage() {
           <section aria-label={t('analytics.byCategory.title')}>
             <h2 className="mb-2 text-sm font-semibold">{t('analytics.byCategory.title')}</h2>
             <div className="overflow-x-auto rounded-card border border-line bg-surface shadow-e1">
-              <table className="w-full min-w-[560px] text-sm">
+              <table className="mesta-table w-full min-w-[560px] text-sm">
                 <caption className="sr-only">{t('analytics.byCategory.title')}</caption>
                 <thead className="bg-subtle text-xs text-muted">
                   <tr className="h-row">

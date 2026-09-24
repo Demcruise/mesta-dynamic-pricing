@@ -80,7 +80,7 @@ function Body({ recs, preselected, onClose }: { recs: Recommendation[]; preselec
     <div className="flex flex-col gap-3">
       <div role="group" aria-label={t('recommendations.dialog.mode')} className="flex gap-1">
         {modes.map((m) => (
-          <Button key={m} size="sm" variant={mode === m ? 'primary' : 'secondary'} aria-pressed={mode === m} onClick={() => setMode(m)}>
+          <Button key={m} size="sm" variant={mode === m ? 'selected' : 'secondary'} aria-pressed={mode === m} onClick={() => setMode(m)}>
             {t(`recommendations.dialog.mode_${m}`)}
           </Button>
         ))}

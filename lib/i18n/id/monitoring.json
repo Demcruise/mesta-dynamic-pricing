@@ -15,10 +15,11 @@
     "caption": "Prakiraan dan aktual per perubahan yang di-deploy",
     "empty": "Belum ada perubahan yang di-deploy.",
     "aggregate": "Tren agregat",
-    "source": "Sumber",
+    "source": "Asal",
     "srcExperiment": "Eksperimen",
     "srcRecommendation": "Rekomendasi",
-    "srcManual": "Manual"
+    "srcManual": "Manual",
+    "traceLink": "Catatan terkait"
   },
   "anomaly": {
     "title": "Anomali",

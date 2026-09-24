@@ -8,6 +8,7 @@ import { useTranslation } from '@/lib/i18n';
 import { useNotifications } from '@/lib/queries';
 import { groupNotifications, useNotificationStore, useSessionStore } from '@/lib/stores';
 import { cn } from '@/lib/utils';
+import { pillCls } from '@/components/ds/Pill';
 
 export function NotificationBell() {
   const { t } = useTranslation();
@@ -60,11 +61,11 @@ export function NotificationBell() {
                       {latest.message ?? t(latest.messageKey, latest.params)}
                     </button>
                   )}
-                  {count > 1 && <span className="ml-2 rounded-full bg-subtle px-1.5 text-xs">{t('common.notify.grouped', { n: count })}</span>}
+                  {count > 1 && <span className={`ml-2 ${pillCls('neutral', 'sm')}`}>{t('common.notify.grouped', { n: count })}</span>}
                   {/* AL-004: acknowledge / snooze / escalate, plus unread + deep link above. */}
                   <div className="mt-1 flex flex-wrap items-center gap-2 text-xs">
                     {latest.acknowledged ? (
-                      <span className="rounded-full bg-up-soft px-1.5 py-0.5 text-up">{t('common.notify.acknowledged')}</span>
+                      <span className={pillCls('up', 'sm')}>{t('common.notify.acknowledged')}</span>
                     ) : (
                       <button type="button" className="text-brand hover:underline" onClick={() => useNotificationStore.getState().acknowledge(latest.id)}>
                         {t('common.notify.acknowledge')}
@@ -74,7 +75,7 @@ export function NotificationBell() {
                       {t('common.notify.snooze')}
                     </button>
                     {latest.escalated ? (
-                      <span className="rounded-full bg-warn-soft px-1.5 py-0.5 text-warn">{t('common.notify.escalated')}</span>
+                      <span className={pillCls('warn', 'sm')}>{t('common.notify.escalated')}</span>
                     ) : (
                       <button type="button" className="text-muted hover:underline" onClick={() => useNotificationStore.getState().escalate(latest.id, user)}>
                         {t('common.notify.escalate')}

@@ -41,7 +41,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             <Button size="sm" variant="secondary" onClick={clearDenied}>{t('common.perm.dismiss')}</Button>
           </div>
         )}
-        <main id="main" tabIndex={-1} className="min-w-0 flex-1 p-4 pb-20 md:p-6 md:pb-6">
+        <main id="main" tabIndex={-1} className="min-w-0 flex-1 bg-bg px-4 pb-20 pt-4 sm:px-6 md:pb-12 lg:px-7">
           <div className="mx-auto w-full max-w-[1600px]">
             <RouteGuard>{children}</RouteGuard>
           </div>

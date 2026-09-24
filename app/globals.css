@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@import '@fontsource-variable/inter';
 @import '../styles/tokens.css';
 
 @custom-variant dark (&:is(.dark *, [data-theme='dark'] *));
@@ -10,18 +11,27 @@
   --color-surface: var(--bg-surface);
   --color-subtle: var(--bg-subtle);
   --color-selected: var(--bg-selected);
+  --color-sidebar: var(--bg-sidebar);
+  --color-head: var(--bg-head);
+  --color-row: var(--bg-row);
+  --color-icon: var(--bg-icon);
+  --color-input: var(--bg-input);
   --color-fg: var(--text);
   --color-muted: var(--text-muted);
   --color-faint: var(--text-faint);
   --color-line: var(--border);
   --color-line-strong: var(--border-strong);
+  --color-line-icon: var(--border-icon);
   --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
   --color-brand-fg: var(--brand-fg);
   --color-brand-soft: var(--brand-soft);
   --color-up: var(--up);
   --color-up-soft: var(--up-soft);
+  --color-up-graphic: var(--up-graphic);
   --color-down: var(--down);
   --color-down-soft: var(--down-soft);
+  --color-down-graphic: var(--down-graphic);
   --color-hold: var(--hold);
   --color-hold-soft: var(--hold-soft);
   --color-info: var(--info);
@@ -31,8 +41,13 @@
   --color-critical: var(--critical);
   --color-critical-soft: var(--critical-soft);
   --color-agent: var(--agent);
-  --radius-card: var(--radius-card);
+  --color-agent-soft: var(--agent-soft);
+  --color-chart-1: var(--chart-1);
+  --color-chart-grid: var(--chart-grid);
+  --radius-row: var(--radius-row);
   --radius-input: var(--radius-input);
+  --radius-card: var(--radius-card);
+  --radius-panel: var(--radius-panel);
   --color-rb-accent-fg: var(--rb-accent-fg);
   --color-rb-accent: var(--rb-accent);
 
@@ -60,10 +75,17 @@
 }
 
 html, body { background: var(--bg); color: var(--text); font-family: var(--font-ui); }
-body { font-size: 14px; line-height: 1.45; }
+body {
+  font-size: 14px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'cv11', 'ss01';
+}
+::selection { background: color-mix(in srgb, var(--brand) 22%, transparent); }
 
 /* focus-visible on every interactive element */
-:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
   outline: 2px solid var(--focus);
   outline-offset: 2px;
 }
@@ -72,7 +94,11 @@ body { font-size: 14px; line-height: 1.45; }
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
 
-.tabular { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+/* Numbers: the reference sets figures in the UI face with tabular numerals (not a mono face),
+   so columns align while reading as one typographic system. */
+.tabular { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum', 'cv11', 'ss01'; }
+/* Identifiers that must read as code (hashes, API keys) opt into the mono face explicitly. */
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
 
 /* Token-driven motion durations — use instead of duration-<number>. */
 @utility duration-fast { transition-duration: var(--motion-fast); }
@@ -88,10 +114,51 @@ body { font-size: 14px; line-height: 1.45; }
 /* Floating surfaces: translucent token background + backdrop blur.
    Pair with shadow-e3 — used on popovers, sticky bars, toasts, command menu. */
 @utility glass {
-  background-color: color-mix(in srgb, var(--bg-surface) 86%, transparent);
+  background-color: color-mix(in srgb, var(--bg-surface) 90%, transparent);
   backdrop-filter: blur(12px) saturate(1.4);
   -webkit-backdrop-filter: blur(12px) saturate(1.4);
 }
+
+/* Pills inside data-table cells always render at the compact size so every row keeps one
+   height, whatever size the call site asked for. */
+table td .pill { height: 1.25rem; padding-inline: 0.375rem; font-size: 11px; gap: 0.25rem; }
+table td .pill svg { width: 0.75rem; height: 0.75rem; }
+
+/* Named chrome shadows (components never use arbitrary shadow values):
+   cta = reference button top highlight · pin-edge = sticky column divider ·
+   head-mask = paints the surface above a sticky table header so rows don't show through the gap. */
+@utility shadow-cta { box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.38); }
+@utility shadow-pin-edge { box-shadow: inset -1px 0 0 var(--border); }
+@utility shadow-head-mask { box-shadow: 0 -12px 0 var(--bg-surface); }
+@utility shadow-pin-head { box-shadow: inset -1px 0 0 var(--border), 0 -12px 0 var(--bg-surface); }
+
+/* ── mesta-table: the reference table grammar for hand-built <table>s ──────────────────
+   Same anatomy as MestaDataTable (components/ds/table): header band + separated row bands,
+   8px radius, 6px row gap, 11px/600 headers, 12px/500 cells. Deliberately unlayered so it
+   overrides legacy per-cell utilities (row borders, tinted theads, text-sm) inside these
+   tables — alignment utilities (text-right …) are untouched. */
+table.mesta-table { border-collapse: separate; border-spacing: 0 6px; font-size: 12px; font-weight: 500; color: var(--text); }
+table.mesta-table > thead { background: transparent; }
+table.mesta-table > thead > tr { height: 40px; }
+table.mesta-table > tbody > tr { height: auto; }
+table.mesta-table > thead > tr > th {
+  background: var(--bg-head); border: 0; padding: 10px; height: 40px;
+  font-size: 11px; font-weight: 600; letter-spacing: -0.02em; color: var(--text-muted); white-space: nowrap;
+}
+table.mesta-table > tbody > tr > th,
+table.mesta-table > tbody > tr > td { background: var(--bg-row); border: 0; padding: 10px; vertical-align: middle; }
+table.mesta-table > tbody > tr > th { font-weight: 500; }
+table.mesta-table > * > tr > :first-child { border-top-left-radius: var(--radius-row); border-bottom-left-radius: var(--radius-row); }
+table.mesta-table > * > tr > :last-child { border-top-right-radius: var(--radius-row); border-bottom-right-radius: var(--radius-row); }
+table.mesta-table > tbody > tr { transition: background-color var(--motion-fast); }
+table.mesta-table > tbody > tr:hover > * { background: var(--bg-subtle); }
+table.mesta-table > thead > tr > th[class*='sticky'] { background: var(--bg-head); }
+/* A bordered card that directly wraps a mesta-table gets inner gutters so the bands float. */
+.rounded-card:has(> table.mesta-table:first-child) { padding: 0 12px 6px; }
+
+/* Reference type scale for figures: tight tracking on large numerals. */
+@utility tracking-figure { letter-spacing: -0.025em; }
+@utility tracking-label { letter-spacing: -0.02em; }
 
 /* React Bits Pro blocks theme hooks — aliased to Mesta tokens (styles/tokens.css).
    Accent/radius follow the active theme automatically; do not add raw hex here. */

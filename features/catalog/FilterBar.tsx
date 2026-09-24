@@ -1,19 +1,21 @@
 'use client';
 
+import { cn } from '@/lib/utils';
 import { ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input, inputCls } from '@/components/ui/field';
 import { CATEGORIES } from '@/lib/categories';
 import { useTranslation } from '@/lib/i18n';
 import { activeFilterCount, type CatalogFilters } from './filters';
+import { pillCls } from '@/components/ds/Pill';
 
 function MultiSelect<T extends string>({
   label, options, value, onChange,
 }: { label: string; options: { value: T; label: string }[]; value: T[]; onChange: (v: T[]) => void }) {
   return (
     <details className="relative max-sm:static max-sm:w-full">
-      <summary className={`${inputCls} flex cursor-pointer list-none items-center justify-between gap-2 whitespace-nowrap`}>
-        <span>{label}{value.length > 0 && <span className="ml-1 rounded bg-brand-soft px-1 text-xs text-brand">{value.length}</span>}</span>
+      <summary className={cn(inputCls, 'flex cursor-pointer list-none items-center justify-between gap-2 whitespace-nowrap')}>
+        <span>{label}{value.length > 0 && <span className={`ml-1.5 ${pillCls('brand', 'sm')}`}>{value.length}</span>}</span>
         <ChevronDown className="size-3.5" aria-hidden />
       </summary>
       <fieldset className="glass absolute left-0 top-10 z-20 min-w-44 rounded-card border border-line p-2 shadow-e3 max-sm:static max-sm:mt-1 max-sm:w-full">
@@ -72,7 +74,7 @@ export function FilterBar({ filters, onChange, onClear }: Props) {
 
       {count > 0 && (
         <>
-          <span className="rounded-full bg-brand-soft px-2 py-1 text-xs font-medium text-brand" aria-live="polite">
+          <span className={pillCls('brand')} aria-live="polite">
             {t('catalog.filter.count', { n: count })}
           </span>
           <Button variant="ghost" onClick={onClear}>{t('common.state.clearFilters')}</Button>

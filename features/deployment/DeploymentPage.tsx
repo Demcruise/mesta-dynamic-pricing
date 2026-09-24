@@ -289,7 +289,7 @@ export function DeploymentPage() {
                         />
                       </RoleGate>
                       <div className="min-w-0">
-                        <p><Link href={`/recommendations/${r.id}`} className="tabular text-brand hover:underline">{r.id}</Link> · <span className="tabular">{r.sku}</span> {names.get(r.sku)}</p>
+                        <p><Link href={`/recommendations/${r.id}`} className="tabular text-brand underline decoration-brand/40 underline-offset-2 hover:decoration-brand">{r.id}</Link> · <span className="tabular">{r.sku}</span> {names.get(r.sku)}</p>
                         <p className="text-xs text-muted">{t('deployment.queue.proposed')}: <PriceValue value={r.proposedPrice} /></p>
                       </div>
                     </div>
@@ -305,7 +305,7 @@ export function DeploymentPage() {
           <section>
             <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
               <h2 className="text-sm font-semibold">{t('deployment.table.title')}</h2>
-              <select aria-label={t('deployment.status.all')} className={`${inputCls} w-48`} value={status} onChange={(e) => setStatus(e.target.value)}>
+              <select aria-label={t('deployment.status.all')} className={cn(inputCls, 'w-48')} value={status} onChange={(e) => setStatus(e.target.value)}>
                 <option value="">{t('deployment.status.all')}</option>
                 {STATUSES.map((s) => <option key={s} value={s}>{t(`deployment.status.${s}`)}</option>)}
               </select>
@@ -366,7 +366,7 @@ export function DeploymentPage() {
                 <dt className="text-xs text-muted">{t('deployment.table.recommendation')}</dt>
                 <dd>
                   {can('recommendation.view') ? (
-                    <Link className="tabular text-brand hover:underline" href={`/recommendations/${selected.recommendationId}`}>{selected.recommendationId}</Link>
+                    <Link className="tabular text-brand underline decoration-brand/40 underline-offset-2 hover:decoration-brand" href={`/recommendations/${selected.recommendationId}`}>{selected.recommendationId}</Link>
                   ) : (
                     <span className="tabular">{selected.recommendationId}</span>
                   )}

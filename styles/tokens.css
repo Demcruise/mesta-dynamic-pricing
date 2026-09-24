@@ -1,53 +1,86 @@
-/* Mesta design tokens. Feature components must use these via Tailwind classes, never raw hex. */
+/* Mesta design tokens. Feature components must use these via Tailwind classes, never raw hex.
+ *
+ * Palette source: the Vestra reference (vestra-dashboard01.vercel.app), captured from its live
+ * CSS custom properties — see docs/vestra-reference-tokens.json for the raw capture and mapping.
+ * Deviations from the raw capture are deliberate and documented there: gain/loss/faint text
+ * colors are darkened (same hue) so every text pair keeps WCAG AA 4.5:1; the original
+ * saturated gain/loss hues are kept for graphics (--up-graphic / --down-graphic).
+ */
 :root {
-  --font-ui: 'Inter', 'IBM Plex Sans', system-ui, sans-serif;
-  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+  color-scheme: light;
+  --font-ui: 'Inter Variable', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', monospace;
 
-  --bg: #f7f8fa;
-  --bg-surface: #ffffff;
-  --bg-subtle: #eef0f4;
-  --bg-selected: #e8f0ff;
-  --text: #111827;
-  --text-muted: #4b5563;
-  --text-faint: #6b7280;
-  --border: #d9dde5;
-  --border-strong: #b8bfcc;
+  /* Surfaces */
+  --bg: #ffffff;              /* page — vestra-bg */
+  --bg-surface: #ffffff;      /* card — vestra-card */
+  --bg-subtle: #f1f5f9;       /* hover / muted fill — vestra-hover, vestra-muted-bg */
+  --bg-selected: #eff6ff;     /* selected / active nav — vestra-nav-active */
+  --bg-sidebar: #f8f8f8;      /* vestra-sidebar */
+  --bg-head: #f7f7f8;         /* table header band — vestra-head */
+  --bg-row: #f6f6f6;          /* table row band — vestra-row (#18181b0a) flattened over white */
+  --bg-icon: #f8fafc;         /* icon box — vestra-icon-bg */
+  --bg-input: #fcfcfc;        /* vestra-input */
 
-  --brand: #2f5bea;
+  /* Text: fg > muted > faint, all AA on every surface above */
+  --text: #020617;            /* vestra-text */
+  --text-muted: #475569;      /* vestra-secondary */
+  --text-faint: #5f6b7e;      /* vestra-muted/faint hue, darkened to 5.0:1 on row bands */
+
+  /* Borders (alpha, like the reference) */
+  --border: rgb(24 24 27 / 0.06);         /* vestra-card-border */
+  --border-strong: rgb(24 24 27 / 0.14);  /* inputs, dividers that must stay visible */
+  --border-icon: rgb(24 24 27 / 0.06);    /* vestra-icon-border */
+
+  /* Brand — Mesta keeps its identity (logo, agent violet); the action blue follows the reference */
+  --brand: #2563eb;           /* vestra-cta */
+  --brand-hover: #1d4ed8;     /* vestra-cta-hover */
   --brand-fg: #ffffff;
-  --brand-soft: #e8eeff;
+  --brand-soft: #eff6ff;
 
-  --up: #0f7a3d;
-  --up-soft: #e3f5ea;
-  --down: #b42318;
-  --down-soft: #fdeceb;
-  --hold: #566070;
-  --hold-soft: #eef0f4;
-  --info: #175cd3;
-  --info-soft: #e8f0ff;
+  /* Semantic */
+  --up: #007f4c;              /* gain text (hue of #00B36A) */
+  --up-soft: #e6f7f0;         /* vestra-gain-soft (#00b36a1a) flattened */
+  --up-graphic: #00b36a;      /* vestra gain — sparklines, chart fills, icons */
+  --down: #c42748;            /* loss text (hue of #F14D6E) */
+  --down-soft: #feedf1;       /* vestra-lose-soft (#f14d6e1a) flattened */
+  --down-graphic: #f14d6e;    /* vestra loss — sparklines, chart fills, icons */
+  --hold: #475569;
+  --hold-soft: #f1f5f9;
+  --info: #1d4ed8;
+  --info-soft: #eff6ff;
   --warn: #b54708;
   --warn-soft: #fef3e2;
-  --critical: #b42318;
-  --critical-soft: #fdeceb;
+  --critical: #c42748;
+  --critical-soft: #fef2f2;   /* vestra-danger-soft */
   --agent: #7a3ff2;
-  --focus: #2f5bea;
+  --agent-soft: #f3edfe;
+  --focus: #2563eb;
 
-  --radius-card: 10px;
-  --radius-input: 6px;
+  /* Charts */
+  --chart-1: #3b82f6;         /* reference series blue */
+  --chart-grid: rgb(0 0 0 / 0.04); /* vestra-line */
+
+  /* Radius: row 8 · control 10 · card 12 · panel 16 · pill full */
+  --radius-row: 8px;
+  --radius-input: 10px;
+  --radius-card: 12px;
+  --radius-panel: 16px;
   --space: 4px;
 
   /* Density: row height, row cell padding, card padding.
      Compact shrinks all three via [data-density='compact'] below. */
-  --row-h: 44px;
-  --row-py: 8px;
+  --row-h: 48px;              /* single-line rows; two-line tables (Catalog) pass 56 explicitly */
+  --row-py: 6px;
+  --row-gap: 6px;
   --card-pad: 16px;
 
-  /* Elevation scale — use via shadow-e* utilities, never raw shadow-*.
+  /* Elevation — the reference is flat: resting cards use the 1px edge only.
      e1 resting card · e2 raised/sticky · e3 overlay/popover · e4 modal */
-  --elev-1: 0 1px 2px 0 rgb(17 24 39 / 0.05);
-  --elev-2: 0 2px 6px -1px rgb(17 24 39 / 0.08), 0 1px 2px 0 rgb(17 24 39 / 0.05);
-  --elev-3: 0 8px 24px -8px rgb(17 24 39 / 0.16), 0 2px 6px 0 rgb(17 24 39 / 0.06);
-  --elev-4: 0 20px 48px -12px rgb(17 24 39 / 0.24), 0 4px 12px 0 rgb(17 24 39 / 0.08);
+  --elev-1: 0 0 0 0 transparent;
+  --elev-2: 0 1px 2px 0 rgb(2 6 23 / 0.04);
+  --elev-3: 0 8px 24px rgb(0 0 0 / 0.05), 0 0 0 1px rgb(0 0 0 / 0.04); /* vestra-shadow-pop + ring */
+  --elev-4: 0 20px 48px -12px rgb(2 6 23 / 0.18), 0 0 0 1px rgb(0 0 0 / 0.04);
 
   /* Motion: fast = hover/micro feedback, base = enter/exit, slow = dialogs/page-level.
      Reduced-motion users get ~0ms via the media query in app/globals.css. */
@@ -60,42 +93,55 @@
 }
 
 :root[data-density='compact'] {
-  --row-h: 34px;
+  --row-h: 40px;
   --row-py: 4px;
+  --row-gap: 4px;
   --card-pad: 12px;
 }
 
 :root[data-theme='dark'] {
-  --bg: #0d1117;
-  --bg-surface: #161b22;
-  --bg-subtle: #1f2630;
-  --bg-selected: #172447;
-  --text: #f0f3f6;
-  --text-muted: #b1bac4;
-  --text-faint: #8b949e;
-  --border: #30363d;
-  --border-strong: #484f58;
-  --brand: #6b8cff;
-  --brand-fg: #0d1117;
-  --brand-soft: #172447;
-  --up: #4ade80;
-  --up-soft: #12301f;
-  --down: #ff8a80;
-  --down-soft: #3a1815;
-  --hold: #9ca3af;
-  --hold-soft: #1f2630;
-  --info: #7aa7ff;
-  --info-soft: #172447;
+  color-scheme: dark; /* native controls (checkbox, select, scrollbars) follow the theme */
+  --bg: #121212;
+  --bg-surface: #141414;
+  --bg-subtle: #1e1e1e;
+  --bg-selected: #1f2937;
+  --bg-sidebar: #191919;
+  --bg-head: #101010;
+  --bg-row: #1d1d1d;
+  --bg-icon: #1e1e1e;
+  --bg-input: #141414;
+  --text: #fafafa;
+  --text-muted: #a1a1aa;
+  --text-faint: #8b8b94;      /* reference #71717a darkened-for-AA equivalent on dark */
+  --border: rgb(255 255 255 / 0.06);
+  --border-strong: rgb(255 255 255 / 0.14);
+  --border-icon: rgb(255 255 255 / 0.06);
+  --brand: #60a5fa;           /* reference #3b82f6 lifted so brand text/buttons stay AA */
+  --brand-hover: #93c5fd;
+  --brand-fg: #0a0a0a;
+  --brand-soft: #172033;
+  --up: #00b36a;
+  --up-soft: #12241c;
+  --up-graphic: #00b36a;
+  --down: #f14d6e;
+  --down-soft: #2a1519;
+  --down-graphic: #f14d6e;
+  --hold: #a1a1aa;
+  --hold-soft: #1e1e1e;
+  --info: #60a5fa;
+  --info-soft: #172033;
   --warn: #fbbf24;
   --warn-soft: #3a2a0b;
-  --critical: #ff8a80;
-  --critical-soft: #3a1815;
+  --critical: #f14d6e;
+  --critical-soft: #2a1519;
   --agent: #b794ff;
-  --focus: #8aa5ff;
+  --agent-soft: #221a33;
+  --focus: #60a5fa;
+  --chart-1: #3b82f6;
+  --chart-grid: rgb(255 255 255 / 0.05);
 
-  /* Dark elevation needs heavier black alpha to read against dark surfaces. */
-  --elev-1: 0 1px 2px 0 rgb(0 0 0 / 0.5);
-  --elev-2: 0 2px 6px -1px rgb(0 0 0 / 0.5), 0 1px 2px 0 rgb(0 0 0 / 0.4);
-  --elev-3: 0 8px 24px -8px rgb(0 0 0 / 0.6), 0 2px 6px 0 rgb(0 0 0 / 0.45);
-  --elev-4: 0 20px 48px -12px rgb(0 0 0 / 0.7), 0 4px 12px 0 rgb(0 0 0 / 0.5);
+  --elev-1: 0 0 0 0 transparent;
+  --elev-2: 0 1px 2px 0 rgb(0 0 0 / 0.4);
+  --elev-3: 0 8px 30px rgb(0 0 0 / 0.35), 0 0 0 1px rgb(255 255 255 / 0.04);
+  --elev-4: 0 20px 48px -12px rgb(0 0 0 / 0.7), 0 0 0 1px rgb(255 255 255 / 0.05);
 }

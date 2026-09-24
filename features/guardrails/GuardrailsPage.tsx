@@ -17,6 +17,7 @@ import { cn } from '@/lib/utils';
 import { inRuleScope } from '@/lib/rules';
 import { describeFormula } from '@/features/rules/rule-format';
 import { catalogRows, skuReport, MIN_DAYS_BETWEEN_CHANGES, type ConstraintId, type ConstraintRow } from './report';
+import { pillCls } from '@/components/ds/Pill';
 
 const CONSTRAINT_ORDER: ConstraintId[] = [
   'bounds', 'map', 'max_change', 'auto_approve', 'margin_floor', 'staleness',
@@ -153,7 +154,7 @@ export function GuardrailsPage() {
                         )}
                         {r.config.lastChangedAt && <span>· {t('guardrails.config.changed', { at: formatDate(r.config.lastChangedAt, locale) })}</span>}
                         {r.config.approvalRequired && (
-                          <span className="rounded-full bg-warn-soft px-1.5 text-warn">{t('guardrails.config.approval')}</span>
+                          <span className={pillCls('warn', 'sm')}>{t('guardrails.config.approval')}</span>
                         )}
                         <span>
                           · {r.config.editableBy.length
@@ -205,7 +206,7 @@ export function GuardrailsPage() {
             {/* K-04 entry point: inspect any SKU, not only breached ones. */}
             <select
               aria-label={t('guardrails.drill.pick')}
-              className={`${inputCls} w-56`}
+              className={cn(inputCls, 'w-56')}
               value=""
               onChange={(e) => { if (e.target.value) setDrawerSku(e.target.value); }}
             >
@@ -218,7 +219,7 @@ export function GuardrailsPage() {
           <EmptyState variant="caughtUp" title={t('guardrails.breaches.none')} />
         ) : (
           <div className="overflow-x-auto rounded-card border border-line bg-surface shadow-e1">
-            <table className="w-full min-w-[560px] text-sm">
+            <table className="mesta-table w-full min-w-[560px] text-sm">
               <caption className="sr-only">{t('guardrails.breaches.caption')}</caption>
               <thead className="bg-subtle text-xs text-muted">
                 <tr className="h-row">
@@ -237,7 +238,7 @@ export function GuardrailsPage() {
                     <td className="tabular px-3 text-right">{formatPrice(b.product.price, locale)}</td>
                     <td className="px-3 text-xs text-muted">
                       {b.detail === 'flag'
-                        ? <>{t('guardrails.breaches.flagged')} {b.recId && <Link href={`/recommendations/${b.recId}`} className="tabular text-brand hover:underline">{b.recId}</Link>}</>
+                        ? <>{t('guardrails.breaches.flagged')} {b.recId && <Link href={`/recommendations/${b.recId}`} className="tabular text-brand underline decoration-brand/40 underline-offset-2 hover:decoration-brand">{b.recId}</Link>}</>
                         : b.detail.startsWith('floor:')
                           ? t('guardrails.breaches.floorDetail', { v: b.detail.slice(6) })
                           : t(`guardrails.check.${b.detail}`)}

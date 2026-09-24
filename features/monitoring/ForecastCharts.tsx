@@ -23,10 +23,11 @@ export function ForecastCharts({ outcomes, metric }: { outcomes: Outcome[]; metr
         <LineChart
           label={t('monitoring.forecast.aggregate')}
           labels={cumulative.map((c) => c.id)}
-          format={(v) => (metric === 'units' ? String(Math.round(v)) : `${Math.round(v / 1_000_000)}M`)}
+          format={fmt}
+          axisFormat={(v) => (metric === 'units' ? String(Math.round(v)) : `${Math.round(v / 1_000_000)}M`)}
           series={[
-            { name: t('monitoring.forecast.forecastLabel'), points: cumulative.map((c) => c.f), cls: 'stroke-hold', dash: true },
-            { name: t('monitoring.forecast.actualLabel'), points: cumulative.map((c) => c.a), cls: 'stroke-brand' },
+            { name: t('monitoring.forecast.forecastLabel'), points: cumulative.map((c) => c.f), tone: 'muted', dash: true },
+            { name: t('monitoring.forecast.actualLabel'), points: cumulative.map((c) => c.a), tone: 'brand' },
           ]}
         />
       }

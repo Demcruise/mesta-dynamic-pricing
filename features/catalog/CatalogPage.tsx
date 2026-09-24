@@ -5,6 +5,8 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useMemo, useState } from 'react';
 import { EmptyState, ErrorState, KpiCard, LoadingRows, PageHeader } from '@/components/ds/states';
 import { useColumnVisibility } from '@/components/ds/table/DataTable';
+import { Segmented } from '@/components/ui/segmented';
+import { Percent, Rows3, Rows4, Scale, ShieldAlert, Sparkles } from 'lucide-react';
 import { SavedViewMenu } from '@/components/ds/table/SavedViewMenu';
 import { Button } from '@/components/ui/button';
 import { RoleGate } from '@/components/shell/RoleGate';
@@ -26,7 +28,8 @@ import {
 import { OverrideDialog } from './OverrideDialog';
 import { SkuDrawer } from './SkuDrawer';
 
-const ROW_HEIGHT = { compact: 34, comfortable: 44 } as const;
+/** Reference row rhythm: 56px comfortable (two-line cells), 44px compact. */
+const ROW_HEIGHT = { compact: 44, comfortable: 56 } as const;
 const isDev = process.env.NODE_ENV !== 'production';
 
 export function CatalogPage() {
@@ -47,7 +50,8 @@ export function CatalogPage() {
   const setFailQueries = useDevStore((s) => s.setFailQueries);
   const [overrideTarget, setOverrideTarget] = useState<Product | null>(null);
   const [drawerTarget, setDrawerTarget] = useState<Product | null>(null);
-  const columnVis = useColumnVisibility('catalog');
+  // Category is shown under the product name; the standalone column stays available for sorting.
+  const columnVis = useColumnVisibility('catalog', ['category']);
   const can = useCan();
 
   // Filters live in the URL so KPIs, table and shared links agree.
@@ -96,6 +100,7 @@ export function CatalogPage() {
   const loading = skus.isLoading || recs.isLoading;
   const error = skus.isError || recs.isError;
 
+  const scope = t('catalog.kpi.inScope', { n: rows.length.toLocaleString(locale === 'id' ? 'id-ID' : 'en-US') });
   return (
     <>
       <PageHeader
@@ -103,13 +108,15 @@ export function CatalogPage() {
         subtitle={t('catalog.subtitle', { count: rows.length, total: skus.data.length })}
         actions={
           <>
-            <div role="group" aria-label={t('common.density.label')} className="flex gap-1">
-              {(['comfortable', 'compact'] as const).map((d) => (
-                <Button key={d} size="sm" variant={density === d ? 'primary' : 'secondary'} aria-pressed={density === d} onClick={() => setDensity(d)}>
-                  {t(`common.density.${d}`)}
-                </Button>
-              ))}
-            </div>
+            <Segmented
+              label={t('common.density.label')}
+              value={density}
+              onChange={setDensity}
+              options={[
+                { value: 'comfortable', label: t('common.density.comfortable'), icon: Rows3 },
+                { value: 'compact', label: t('common.density.compact'), icon: Rows4 },
+              ]}
+            />
             {isDev && (
               <Button size="sm" variant="ghost" aria-pressed={failQueries} onClick={() => setFailQueries(!failQueries)}>
                 {t('catalog.simulateError')}
@@ -119,11 +126,11 @@ export function CatalogPage() {
         }
       />
 
-      <section aria-label={t('common.a11y.kpi')} className="mb-4 grid grid-cols-1 gap-3 min-[420px]:grid-cols-2 lg:grid-cols-4">
-        <KpiCard label={t('catalog.kpi.avgMargin')} value={kpis.avgMargin} format={(n) => formatPercent(n, locale)} />
-        <KpiCard label={t('catalog.kpi.belowMap')} value={kpis.belowMap} />
-        <KpiCard label={t('catalog.kpi.pendingAi')} value={kpis.pendingAi} />
-        <KpiCard label={t('catalog.kpi.avgGap')} value={kpis.avgGap} format={(n) => formatPercent(n, locale)} />
+      <section aria-label={t('common.a11y.kpi')} className="mb-3 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <KpiCard icon={Percent} label={t('catalog.kpi.avgMargin')} value={kpis.avgMargin} format={(n) => formatPercent(n, locale)} comparison={scope} />
+        <KpiCard icon={ShieldAlert} label={t('catalog.kpi.belowMap')} value={kpis.belowMap} comparison={scope} />
+        <KpiCard icon={Sparkles} label={t('catalog.kpi.pendingAi')} value={kpis.pendingAi} comparison={scope} />
+        <KpiCard icon={Scale} label={t('catalog.kpi.avgGap')} value={kpis.avgGap} format={(n) => formatPercent(n, locale)} comparison={scope} />
       </section>
 
       <FilterBar

@@ -22,8 +22,8 @@ const KINDS: RuleFormulaKind[] = ['match_competitor', 'delta_percent', 'min_marg
 const STATUSES: RuleStatus[] = ['draft', 'active', 'paused'];
 
 const chipCls = (on: boolean) => cn(
-  'rounded-full border px-2.5 py-1 text-xs transition-colors duration-fast',
-  on ? 'border-brand bg-brand-soft text-brand' : 'border-line bg-surface text-muted hover:bg-subtle',
+  'inline-flex h-7 items-center whitespace-nowrap rounded-full border px-3 text-xs font-medium tracking-label transition-colors duration-fast',
+  on ? 'border-brand bg-brand-soft text-brand' : 'border-line-strong bg-surface text-muted hover:bg-subtle',
 );
 
 function ToggleChips({ options, selected, onToggle }: { options: string[]; selected: string[]; onToggle: (v: string) => void }) {
@@ -167,7 +167,7 @@ export function RuleBuilderDialog({ rule, open, onClose }: { rule: Rule | null; 
                   onChange={(e) => setWhen(i, { field: e.target.value as RuleConditionField })}>
                   {FIELDS.map((f) => <option key={f} value={f}>{t(`rules.fields.${f}`)}</option>)}
                 </select>
-                <select aria-label={t('rules.when.op')} className={`${inputCls} w-16`} value={c.op}
+                <select aria-label={t('rules.when.op')} className={cn(inputCls, 'w-16')} value={c.op}
                   onChange={(e) => setWhen(i, { op: e.target.value as ConditionOp })}>
                   {OPS.map((o) => <option key={o.op} value={o.op}>{o.label}</option>)}
                 </select>
@@ -189,7 +189,7 @@ export function RuleBuilderDialog({ rule, open, onClose }: { rule: Rule | null; 
           <div className="flex flex-wrap items-end gap-2">
             <Field label={t('rules.then.formula')}>
               {(p) => (
-                <select {...p} className={`${inputCls} w-56`} value={current.then.kind}
+                <select {...p} className={cn(inputCls, 'w-56')} value={current.then.kind}
                   onChange={(e) => set({ then: { ...current.then, kind: e.target.value as RuleFormulaKind } })}>
                   {KINDS.map((k) => <option key={k} value={k}>{t(`rules.kinds.${k}`)}</option>)}
                 </select>

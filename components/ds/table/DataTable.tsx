@@ -129,6 +129,12 @@ export interface MestaDataTableProps<T> {
 }
 
 const OVERSCAN = 12;
+/** Vertical gap between row bands (reference: 6px). Mirrors --row-gap for the virtualizer. */
+const ROW_GAP = 6;
+
+/** Cell chrome shared by every body cell: band fill, 10px inline padding, rounded ends. */
+const cellBase = 'px-2.5 align-middle first:rounded-l-row last:rounded-r-row';
+const checkboxCls = 'size-4 cursor-pointer rounded accent-brand';
 
 export function MestaDataTable<T>({
   tableId, caption, columns, rows, getRowId, sort, selection, onRowClick,
@@ -187,7 +193,7 @@ export function MestaDataTable<T>({
   const virt = useVirtualizer({
     count: rows.length,
     getScrollElement: () => scrollRef.current,
-    estimateSize: () => rowHeight,
+    estimateSize: () => rowHeight + ROW_GAP,
     overscan: OVERSCAN,
     enabled: virtualize,
   });
@@ -240,17 +246,22 @@ export function MestaDataTable<T>({
       onKeyDown={(e) => rowKey(e, row, index)}
       onClick={(e) => rowClick(e, row)}
       style={virtualize ? { height: rowHeight } : undefined}
+      aria-selected={selection ? selection.selected.has(getRowId(row)) : undefined}
       className={cn(
-        'border-b border-line transition-colors duration-fast',
+        // Each cell paints the band so the row reads as one rounded pill (reference table row).
+        'group/row outline-none [&>td]:transition-colors [&>td]:duration-fast focus-visible:[&>td]:bg-brand-soft',
         !virtualize && 'h-row',
-        selection?.selected.has(getRowId(row)) ? 'bg-selected' : 'bg-surface hover:bg-subtle',
+        selection?.selected.has(getRowId(row))
+          ? '[&>td]:bg-selected'
+          : '[&>td]:bg-row hover:[&>td]:bg-subtle',
         onRowClick && 'cursor-pointer',
       )}
     >
       {selection && (
-        <td className="border-b border-line px-3">
+        <td className={cn(cellBase, 'w-10 text-center')}>
           <input
             type="checkbox"
+            className={checkboxCls}
             aria-label={`${selection.label} ${getRowId(row)}`}
             checked={selection.selected.has(getRowId(row))}
             onChange={() => selection.onToggle(getRowId(row))}
@@ -261,11 +272,12 @@ export function MestaDataTable<T>({
         <td
           key={c.id}
           className={cn(
-            'border-b border-line px-3',
+            cellBase,
+            'py-row',
             c.align === 'right' && 'text-right',
             resizable && 'overflow-hidden',
-            // Pinned cell inherits the row background so it occludes scrolled content.
-            stickyFirst && c.id === firstColId && 'sticky left-0 z-[5] border-r bg-inherit',
+            // Pinned cell keeps the band fill so it occludes scrolled content; hairline edge on the right.
+            stickyFirst && c.id === firstColId && 'sticky left-0 z-[5] shadow-pin-edge',
           )}
         >
           {c.cell(row)}
@@ -275,8 +287,8 @@ export function MestaDataTable<T>({
   );
 
   const groupHeaderRow = (key: string) => (
-    <tr key={`group-${key}`} className="bg-subtle">
-      <td colSpan={visible.length + (selection ? 1 : 0)} className="border-b border-line px-3 py-1.5 text-xs font-medium text-muted">
+    <tr key={`group-${key}`}>
+      <td colSpan={visible.length + (selection ? 1 : 0)} className="px-2.5 pb-0.5 pt-3 text-[11px] font-semibold tracking-label text-muted">
         {activeGroup!.format ? activeGroup!.format(key) : key} <span className="tabular text-faint">· {groupCounts.get(key) ?? 0}</span>
       </td>
     </tr>
@@ -285,7 +297,7 @@ export function MestaDataTable<T>({
   return (
     <div>
       {(visibility || csv || toolbar || (groups && groups.length > 0)) && (
-        <div className="mb-2 flex items-center justify-end gap-1">
+        <div className="mb-3 flex items-center justify-end gap-2">
           {toolbar}
           {groups && groups.length > 0 && !virtualize && (
             <select
@@ -294,8 +306,8 @@ export function MestaDataTable<T>({
               value={groupId}
               onChange={(e) => chooseGroup(e.target.value)}
             >
-              <option value="">{t('common.table.groupNone')}</option>
-              {groups.map((g) => <option key={g.id} value={g.id}>{g.label}</option>)}
+              <option value="">{`${t('common.table.groupBy')}: ${t('common.table.groupNone')}`}</option>
+              {groups.map((g) => <option key={g.id} value={g.id}>{`${t('common.table.groupBy')}: ${g.label}`}</option>)}
             </select>
           )}
           {csv && (
@@ -304,7 +316,7 @@ export function MestaDataTable<T>({
               onClick={exportCsv}
               aria-label={t('common.table.exportCsv')}
               title={t('common.table.exportCsv')}
-              className="grid size-9 place-items-center rounded-input text-muted transition-colors duration-fast hover:bg-subtle hover:text-fg"
+              className="grid size-9 place-items-center rounded-input border border-line-strong bg-input text-muted transition-colors duration-fast hover:bg-subtle hover:text-fg"
             >
               <Download className="size-4" aria-hidden />
             </button>
@@ -318,21 +330,26 @@ export function MestaDataTable<T>({
           )}
         </div>
       )}
-      <div ref={scrollRef} className={cn('rounded-card border border-line bg-surface shadow-e1', virtualize ? 'max-h-[65vh] overflow-auto' : 'overflow-x-auto')}>
-        <table className="w-full border-separate border-spacing-0 text-sm" style={{ minWidth, tableLayout: resizable ? 'fixed' : undefined }}>
+      <div ref={scrollRef} className={cn('rounded-panel border border-line bg-surface px-3 pb-2', virtualize ? 'max-h-[70vh] overflow-auto' : 'overflow-x-auto')}>
+        <table
+          className="w-full border-separate text-xs font-medium text-fg"
+          style={{ minWidth, tableLayout: resizable ? 'fixed' : undefined, borderSpacing: `0 ${ROW_GAP}px` }}
+        >
           <caption className="sr-only">{caption}</caption>
           {resizable && (
             <colgroup>
-              {selection && <col style={{ width: 40 }} />}
+              {selection && <col style={{ width: 44 }} />}
               {visible.map((c) => <col key={c.id} style={{ width: widths[c.id] ?? c.defaultWidth ?? FALLBACK_COL_W }} />)}
             </colgroup>
           )}
-          <thead className="sticky top-0 z-10 bg-subtle">
-            <tr className={virtualize ? undefined : 'h-row'}>
+          <thead className="sticky top-0 z-10">
+            {/* The surface band above the header hides rows scrolling under the sticky head. */}
+            <tr className="h-10 [&>th]:shadow-head-mask">
               {selection && (
-                <th scope="col" className="w-8 border-b border-line px-3 py-row">
+                <th scope="col" className="w-10 bg-head px-2.5 text-center first:rounded-l-row">
                   <input
                     type="checkbox"
+                    className={checkboxCls}
                     aria-label={selection.label}
                     checked={allSelected ?? false}
                     ref={(el) => { if (el) el.indeterminate = someSelected ?? false; }}
@@ -352,24 +369,29 @@ export function MestaDataTable<T>({
                     scope="col"
                     aria-sort={active ? (dir === 'asc' ? 'ascending' : 'descending') : sortable ? 'none' : undefined}
                     className={cn(
-                      'border-b border-line px-3 py-row text-left text-xs font-medium text-muted',
+                      'whitespace-nowrap bg-head px-2.5 text-left text-[11px] font-semibold tracking-label text-muted first:rounded-l-row last:rounded-r-row',
                       c.align === 'right' && 'text-right',
                       resizable && 'relative',
-                      pinned && 'sticky left-0 z-20 border-r bg-subtle',
+                      pinned && 'sticky left-0 z-20 shadow-pin-head',
                     )}
                   >
                     {sortable ? (
                       <button
                         type="button"
                         onClick={(e) => sort.onSort(c.sortKey!, e.shiftKey || e.metaKey || e.ctrlKey)}
-                        className={cn('inline-flex items-center gap-1 transition-colors duration-fast hover:text-fg', c.align === 'right' && 'flex-row-reverse')}
+                        className={cn(
+                          'group/sort inline-flex min-h-6 max-w-full items-center gap-1 rounded transition-colors duration-fast hover:text-fg',
+                          active && 'text-fg',
+                          // Right-aligned columns keep the label flush with the figures; the arrow sits before it.
+                          c.align === 'right' && 'flex-row-reverse',
+                        )}
                       >
-                        {c.header}
+                        <span className="truncate">{c.header}</span>
                         {active
-                          ? (dir === 'asc' ? <ArrowUp className="size-3" aria-hidden /> : <ArrowDown className="size-3" aria-hidden />)
-                          : <ArrowUpDown className="size-3 opacity-40" aria-hidden />}
+                          ? (dir === 'asc' ? <ArrowUp className="size-3 shrink-0 text-brand" aria-hidden /> : <ArrowDown className="size-3 shrink-0 text-brand" aria-hidden />)
+                          : <ArrowUpDown className="size-3 shrink-0 opacity-0 transition-opacity duration-fast group-hover/sort:opacity-60 group-focus-visible/sort:opacity-60" aria-hidden />}
                         {active && sortLevels.length > 1 && (
-                          <span className="tabular rounded-full bg-subtle px-1 text-[10px]" aria-label={t('common.table.sortPriority', { n: level + 1 })}>{level + 1}</span>
+                          <span className="tabular grid size-4 place-items-center rounded-full bg-brand-soft text-[10px] text-brand" aria-label={t('common.table.sortPriority', { n: level + 1 })}>{level + 1}</span>
                         )}
                       </button>
                     ) : (

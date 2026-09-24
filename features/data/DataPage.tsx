@@ -49,7 +49,7 @@ export function DataPage() {
             <h2 className="mb-2 text-sm font-semibold">{t('data.sources.title')}</h2>
             <p className="mb-3 text-xs text-muted">{t('data.sources.desc')}</p>
             <div className="overflow-x-auto rounded-card border border-line bg-surface shadow-e1">
-              <table className="w-full min-w-[720px] text-sm">
+              <table className="mesta-table w-full min-w-[720px] text-sm">
                 <caption className="sr-only">{t('data.sources.title')}</caption>
                 <thead className="bg-subtle text-xs text-muted">
                   <tr className="h-row">

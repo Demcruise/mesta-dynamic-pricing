@@ -1,5 +1,6 @@
 'use client';
 
+import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { LayoutList, ListTree } from 'lucide-react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
@@ -115,15 +116,15 @@ export function AuditPage() {
       <div className="mb-3 flex flex-wrap items-end gap-2" role="search">
         <label className="flex flex-col gap-1 text-xs text-muted">{t('audit.filter.from')}<Input type="date" value={filters.from} onChange={(e) => set({ from: e.target.value })} /></label>
         <label className="flex flex-col gap-1 text-xs text-muted">{t('audit.filter.to')}<Input type="date" value={filters.to} onChange={(e) => set({ to: e.target.value })} /></label>
-        <select aria-label={t('audit.filter.actor')} className={`${inputCls} w-44`} value={filters.actor} onChange={(e) => set({ actor: e.target.value })}>
+        <select aria-label={t('audit.filter.actor')} className={cn(inputCls, 'w-44')} value={filters.actor} onChange={(e) => set({ actor: e.target.value })}>
           <option value="">{t('audit.filter.actor')}</option>
           {actors.map((a) => <option key={a} value={a}>{a}</option>)}
         </select>
-        <select aria-label={t('audit.filter.source')} className={`${inputCls} w-36`} value={filters.source} onChange={(e) => set({ source: e.target.value })}>
+        <select aria-label={t('audit.filter.source')} className={cn(inputCls, 'w-36')} value={filters.source} onChange={(e) => set({ source: e.target.value })}>
           <option value="">{t('audit.filter.source')}</option>
           {(['ui', 'agent', 'system'] as const).map((s) => <option key={s} value={s}>{t(`common.source.${s}`)}</option>)}
         </select>
-        <select aria-label={t('audit.filter.type')} className={`${inputCls} w-56`} value={filters.type} onChange={(e) => set({ type: e.target.value })}>
+        <select aria-label={t('audit.filter.type')} className={cn(inputCls, 'w-56')} value={filters.type} onChange={(e) => set({ type: e.target.value })}>
           <option value="">{t('audit.filter.type')}</option>
           {TYPES.map((x) => <option key={x} value={x}>{t(`common.event.${x}`)}</option>)}
         </select>
@@ -143,7 +144,7 @@ export function AuditPage() {
         <div role="group" aria-label={t('audit.view.label')} className="ml-auto flex gap-1">
           {(['list', 'timeline'] as const).map((v) => (
             <Button
-              key={v} size="sm" variant={view === v ? 'primary' : 'secondary'} aria-pressed={view === v}
+              key={v} size="sm" variant={view === v ? 'selected' : 'secondary'} aria-pressed={view === v}
               onClick={() => setView(v)}
             >
               {v === 'list' ? <LayoutList className="size-4" aria-hidden /> : <ListTree className="size-4" aria-hidden />}

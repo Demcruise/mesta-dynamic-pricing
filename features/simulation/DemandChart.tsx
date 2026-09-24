@@ -33,7 +33,7 @@ export function DemandChart({ product, markers }: { product: Product; markers: M
         <h2 className="text-sm font-semibold">{t('simulation.chart.title')}</h2>
         <div role="group" className="flex gap-1">
           {(['chart', 'table'] as const).map((v) => (
-            <Button key={v} size="sm" variant={view === v ? 'primary' : 'secondary'} aria-pressed={view === v} onClick={() => setView(v)}>
+            <Button key={v} size="sm" variant={view === v ? 'selected' : 'secondary'} aria-pressed={view === v} onClick={() => setView(v)}>
               {t(v === 'chart' ? 'simulation.chart.toggleChart' : 'simulation.chart.toggleTable')}
             </Button>
           ))}
@@ -63,7 +63,7 @@ export function DemandChart({ product, markers }: { product: Product; markers: M
         </svg>
       ) : (
         <div className="max-h-64 overflow-auto">
-          <table className="w-full text-sm">
+          <table className="mesta-table w-full text-sm">
             <caption className="sr-only">{t('simulation.chart.tableCaption')}</caption>
             <thead className="sticky top-0 bg-surface text-xs text-muted">
               <tr>

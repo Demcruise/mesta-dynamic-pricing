@@ -15,7 +15,11 @@
     "auditVolume": "Audit events",
     "manualOverrides": "Manual overrides",
     "guardrailExceptions": "Guardrail exceptions",
-    "none": "None yet"
+    "none": "None yet",
+    "awaitingExecutive": "Awaiting executive approval",
+    "decidedByMe": "Decided by you",
+    "executiveImpact": "Executive-approved impact",
+    "vsPrev": "vs previous period"
   },
   "kpiDef": {
     "pendingApprovals": "Recommendations currently waiting for a decision.",
@@ -30,7 +34,10 @@
     "lastDeployment": "Most recent completed channel deployment.",
     "auditVolume": "Total recorded audit events in this workspace.",
     "manualOverrides": "Price changes made manually, outside recommendations.",
-    "guardrailExceptions": "Recommendations flagged for breaching guardrails."
+    "guardrailExceptions": "Recommendations flagged for breaching guardrails.",
+    "awaitingExecutive": "Recommendations whose next approval step needs the executive approver level.",
+    "decidedByMe": "Recommendation decisions (approve, reject, adjust) recorded under your user.",
+    "executiveImpact": "Projected margin impact of recommendations that received executive-level approval."
   },
   "def": {
     "about": "About {name}",
@@ -70,7 +77,9 @@
     "weekly": "Weekly",
     "monthly": "Monthly",
     "quarterly": "Quarterly",
-    "avgMargin": "average margin"
+    "avgMargin": "average margin",
+    "periodCol": "Period",
+    "vsStart": "vs start of window"
   },
   "movers": {
     "title": "Top price movers",

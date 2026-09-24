@@ -18,10 +18,13 @@ import { StatusBadge } from '@/components/ds/StatusBadge';
 import { StatusChip } from '@/components/ds/StatusChip';
 import { ExecutionTimeline, FreshnessBadge, JobProgress, SyncStatus } from '@/components/ds/system-status';
 import { ActionSummary, ConsequencePreview, DocsLink, MetricDefinition, RecoveryNotice } from '@/components/ds/trust';
-import { EmptyState, KpiCard, LoadingRows, PageHeader } from '@/components/ds/states';
+import { EmptyState, KpiCard, LoadingRows, PageHeader, Panel } from '@/components/ds/states';
 import { MestaDataTable, useColumnVisibility } from '@/components/ds/table/DataTable';
 import { RoleGate } from '@/components/shell/RoleGate';
 import { Button } from '@/components/ui/button';
+import { Segmented } from '@/components/ui/segmented';
+import { Pill } from '@/components/ds/Pill';
+import { Check } from 'lucide-react';
 import { Dialog } from '@/components/ui/dialog';
 import { Field, Input } from '@/components/ui/field';
 
@@ -92,6 +95,11 @@ const DEMO_REC = {
   strategyId: null, scenarioId: null, ruleId: null, createdAt: '2026-09-21T09:00:00Z', ownerId: 'agent', decidedAt: null, decisionNote: null, approvals: [], deployed: false,
 };
 
+function SegmentedDemo() {
+  const [v, setV] = useState<'chart' | 'table'>('chart');
+  return <Segmented label="View" value={v} onChange={setV} options={[{ value: 'chart', label: 'Chart' }, { value: 'table', label: 'Data table' }]} />;
+}
+
 function DialogDemo() {
   const [open, setOpen] = useState(false);
   return (
@@ -106,7 +114,7 @@ function DialogDemo() {
 
 const ENTRIES: Entry[] = [
   {
-    name: 'PriceValue', file: 'components/ds/PriceValue.tsx', summary: 'IDR amount in mono tabular numerals, locale-aware.',
+    name: 'PriceValue', file: 'components/ds/PriceValue.tsx', summary: 'IDR amount in tabular numerals (UI face), locale-aware.',
     props: 'value: number · muted?: boolean · loading?: boolean · animate?: boolean · className?',
     a11y: 'Plain text, so screen readers read the formatted currency. Count-up is skipped under reduced-motion.',
     doText: 'Use for every money value so digits align in tables; set animate where a deploy visibly changes it.', dontText: 'Do not format prices with toLocaleString in feature code.',
@@ -308,26 +316,50 @@ const ENTRIES: Entry[] = [
   },
   {
     name: 'Charts (ChartWithTable)', file: 'components/ds/charts.tsx', summary: 'SVG line/bar charts that always ship an accessible data-table twin.',
-    props: 'LineChart{series,labels,format?,label} · BarChart{items,format,label} · ChartWithTable{title,caption,chart,columns,rows,controls?,headline?}',
-    a11y: 'The data table is the screen-reader twin; charts are decorative. controls slot holds period pickers.',
-    doText: 'Always render through ChartWithTable so the twin cannot be skipped.', dontText: 'Do not render a bare chart without its tabular equivalent.',
+    props: 'LineChart{series:{name,points,tone?,dash?,area?}[],labels,format?,axisFormat?,label,height?} · BarChart{items,format,label} · ChartWithTable{variant:hero|panel,icon?,title,caption,chart,columns,rows,controls?,headline?,meta?} · ChartHeadline{value}',
+    a11y: 'The data table is the screen-reader twin. The line chart is focusable: ←/→/Home/End move the crosshair and a live tooltip reads the values. Rendered in real pixels so axis text stays 12px at every width.',
+    doText: 'Always render through ChartWithTable so the twin cannot be skipped. Use variant="hero" for the single most important trend on a page (reference "Total Portfolio Value" anatomy), "panel" for secondary analysis.', dontText: 'Do not render a bare chart without its tabular equivalent, and never more than one hero per page.',
     reactBits: 'Blocks › dashboard-1, analytics-2',
   },
   {
     name: 'KpiCard / PageHeader / EmptyState / LoadingRows / PageSkeleton', file: 'components/ds/states.tsx · components/ds/PageSkeleton.tsx', summary: 'Page scaffolding and state placeholders.',
-    props: 'KpiCard{label,value:number|ReactNode,format?,hint?,spark?,delta?} · EmptyState{title,variant?:"empty"|"filter"|"caughtUp",action?} · PageSkeleton{variant}',
+    props: 'KpiCard{label,value:number|ReactNode,format?,icon?,hint?,spark?,delta?,polarity?:higher-better|lower-better|neutral,comparison?} · EmptyState{title,variant?:"empty"|"filter"|"caughtUp",action?} · PageSkeleton{variant}',
     a11y: 'LoadingRows + PageSkeleton are role="status" aria-live; ErrorState is role="alert". EmptyState icons are decorative.',
-    doText: 'Every data view handles loading, empty, error; match the EmptyState variant to the context.', dontText: 'Do not invent one-off skeletons or variant-less empty boxes.',
+    doText: 'Every data view handles loading, empty, error; match the EmptyState variant to the context. KpiCard follows the reference metric card: fixed 152px, icon tile + label, 28px figure, coloured delta then comparison text, sentiment-coloured sparkline — set polarity so "fewer anomalies" reads green.', dontText: 'Do not invent one-off skeletons or variant-less empty boxes; do not colour a KPI delta by direction alone.',
     reactBits: 'Application UI › Layout, Empty states · Blocks › empty-state-1',
-    demo: <div className="grid grid-cols-1 gap-3 sm:grid-cols-2"><KpiCard label="Pending" value={12} hint="since Monday" /><EmptyState variant="caughtUp" title="Nothing here yet" /><div className="sm:col-span-2"><LoadingRows rows={2} rowHeight={28} /></div></div>,
+    demo: <div className="grid grid-cols-1 gap-3 sm:grid-cols-2"><KpiCard icon={Check} label="Pending" value={12} delta={-0.18} polarity="lower-better" comparison="vs previous period" spark={[9, 12, 10, 14, 13, 12]} /><EmptyState variant="caughtUp" title="Nothing here yet" /><div className="sm:col-span-2"><LoadingRows rows={2} rowHeight={28} /></div></div>,
   },
   {
     name: 'Button', file: 'components/ui/button.tsx', summary: 'Primary action primitive (shadcn-style).',
-    props: 'variant: primary | secondary | ghost | destructive · size: sm | md | icon',
+    props: 'variant: primary | secondary | ghost | selected | destructive · size: sm | md | icon · loading?',
     a11y: 'Native button; visible focus ring from global focus-visible rule; icon buttons need aria-label.',
-    doText: 'One primary action per surface.', dontText: 'Do not use a link styled as a button for actions that mutate state.',
+    doText: 'One primary action per surface. Use variant="selected" for the pressed state of toggle/filter buttons.', dontText: 'Do not use primary for a toggled filter — primary is reserved for the action; do not use a link styled as a button for actions that mutate state.',
     reactBits: 'Application UI › Buttons',
-    demo: <div className="flex flex-wrap gap-2"><Button>Primary</Button><Button variant="secondary">Secondary</Button><Button variant="ghost">Ghost</Button><Button variant="destructive">Destructive</Button><Button disabled>Disabled</Button></div>,
+    demo: <div className="flex flex-wrap gap-2"><Button>Primary</Button><Button variant="secondary">Secondary</Button><Button variant="selected">Selected</Button><Button variant="ghost">Ghost</Button><Button variant="destructive">Destructive</Button><Button disabled>Disabled</Button></div>,
+  },
+  {
+    name: 'Pill', file: 'components/ds/Pill.tsx', summary: 'The one pill anatomy for every badge, chip, count and tag (StatusBadge, DeltaBadge, SeverityChip build on it).',
+    props: 'tone: neutral | faint | brand | up | down | warn | info | critical | agent · size: sm | md · icon? · spin? — or pillCls(tone, size) for links/buttons that must look like a pill',
+    a11y: 'Icon is aria-hidden; the label is always text. Neutral tones are outlined so they stay legible on tinted row bands. Inside table cells pills are forced to sm so rows keep one height.',
+    doText: 'Status, counts, tags, small metadata. sm in rows and dense lists, md in headers and filters.', dontText: 'Do not hand-roll rounded-full spans with bespoke padding — every pill must come from Pill/pillCls.',
+    reactBits: 'Application UI › Data display › Badge',
+    demo: <div className="flex flex-wrap items-center gap-2"><Pill tone="neutral">Neutral</Pill><Pill tone="brand">Brand</Pill><Pill tone="up" icon={Check}>Approved</Pill><Pill tone="warn">Warning</Pill><Pill tone="down">Down</Pill><Pill tone="agent" size="sm">Agent · sm</Pill></div>,
+  },
+  {
+    name: 'Panel / IconBox', file: 'components/ds/states.tsx', summary: 'Standard content card (reference "Holdings" panel): icon box + title + optional description and actions.',
+    props: 'Panel{title,icon?,description?,actions?,className?,bodyClassName?,as?} · IconBox{icon,variant:tile|box}',
+    a11y: 'Renders a <section> with an <h2> title; pass aria-label when the title is not unique on the page.',
+    doText: 'Every dashboard/aside section, so padding and header rhythm are identical across pages.', dontText: 'Do not re-create card headers with ad-hoc h2 + margin combinations.',
+    reactBits: 'Application UI › Cards',
+    demo: <Panel icon={Check} title="Decision queue" description="Top pending recommendations" actions={<Pill tone="brand" size="sm">5</Pill>}><p className="text-[13px] text-muted">Panel body.</p></Panel>,
+  },
+  {
+    name: 'Segmented', file: 'components/ui/segmented.tsx', summary: 'Either/or switch in one bordered control — chart vs table, density, view modes.',
+    props: 'Segmented{value,onChange,options:{value,label,icon?}[],label,iconOnly?,compactOnMobile?}',
+    a11y: 'role="group" with a label; each segment is a button with aria-pressed. Icon-only segments keep the label as the accessible name.',
+    doText: 'Mutually exclusive view switches with 2–4 options.', dontText: 'Do not use for filters that combine (use chips) or for navigation between pages (use tabs/links).',
+    reactBits: 'Application UI › Forms › Toggle group',
+    demo: <SegmentedDemo />,
   },
 ];
 
@@ -402,7 +434,7 @@ export function DesignSystemPage() {
             Mesta component that carries its pattern and where that component ships.
           </p>
           <div className="mt-3 overflow-x-auto">
-            <table className="w-full min-w-[560px] text-sm">
+            <table className="mesta-table w-full min-w-[560px] text-sm">
               <caption className="sr-only">React Bits Pro block to production component mapping</caption>
               <thead className="text-left text-xs text-muted">
                 <tr><th scope="col" className="py-1 font-medium">Block</th><th scope="col" className="py-1 font-medium">Production component</th><th scope="col" className="py-1 font-medium">Surface</th></tr>
@@ -413,7 +445,7 @@ export function DesignSystemPage() {
         </section>
         <section aria-labelledby="ds-guide" className="rounded-card border border-line bg-surface p-card shadow-e1">
           <h2 id="ds-guide" className="mb-2 text-base font-semibold">Which component do I use?</h2>
-          <table className="w-full text-sm">
+          <table className="mesta-table w-full text-sm">
             <caption className="sr-only">Component decision guide</caption>
             <thead className="text-left text-xs text-muted"><tr><th scope="col" className="py-1 font-medium">Choice</th><th scope="col" className="py-1 font-medium">Rule</th></tr></thead>
             <tbody>{GUIDE.map(([n, d]) => <tr key={n} className="border-t border-line"><th scope="row" className="py-1 pr-3 text-left font-medium">{n}</th><td className="py-1">{d}</td></tr>)}</tbody>

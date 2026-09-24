@@ -9,6 +9,7 @@ import { useTranslation } from '@/lib/i18n';
 import type { Rule } from '@/lib/ontology';
 import { useSessionStore, useToastStore } from '@/lib/stores';
 import { describeCondition, describeFormula, describeScope } from './rule-format';
+import { pillCls } from '@/components/ds/Pill';
 
 interface Props {
   /** The conflicting set — ruleIds tied on one SKU. Null closes the dialog. */
@@ -61,7 +62,7 @@ export function ConflictDialog({ conflict, rules, onEdit, onClose }: Props) {
                 <dt className="w-14 shrink-0 font-medium uppercase tracking-wide text-faint">{t('rules.table.when')}</dt>
                 <dd className="min-w-0 flex-1">
                   <ul className="flex flex-wrap gap-1">
-                    {r.when.map((c, i) => <li key={i} className="rounded-full bg-surface px-2 py-0.5">{describeCondition(c, t)}</li>)}
+                    {r.when.map((c, i) => <li key={i} className={pillCls('neutral', 'sm')}>{describeCondition(c, t)}</li>)}
                   </ul>
                 </dd>
               </div>

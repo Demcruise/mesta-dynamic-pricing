@@ -60,7 +60,7 @@ export function SkuDrawer({ product, pendingSkus, detailQuery = '', onClose, onO
           </p>
           <section>
             <h3 className="mb-1 text-xs font-medium text-muted">{t('catalog.detail.history')}</h3>
-            <Sparkline points={product.priceHistory.map((h) => h.price)} className="h-16 w-full text-brand" />
+            <Sparkline points={product.priceHistory.map((h) => h.price)} tone="brand" className="h-16 w-full" />
           </section>
           <div className="flex flex-wrap gap-2 border-t border-line pt-3">
             <RoleGate action="simulation.use">

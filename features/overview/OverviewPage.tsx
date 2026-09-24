@@ -3,10 +3,16 @@
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useEffect, useMemo } from 'react';
-import { ArrowRight } from 'lucide-react';
+import {
+  Activity, ArrowRight, ArrowUpRight, BadgeDollarSign, Briefcase, CheckCheck, ClipboardList, Gauge, History, Hourglass,
+  LineChart as LineChartIcon, ListChecks, PencilLine, RefreshCw, Rocket, Scale, ScrollText, ServerCrash, ShieldAlert,
+  Stamp, Target, TrendingUp, TriangleAlert, Users, type LucideIcon,
+} from 'lucide-react';
 import { OnboardingChecklist } from '@/components/ds/OnboardingChecklist';
 import { TopMoversPanel } from '@/components/ds/TopMoversPanel';
-import { KpiCard, LoadingRows, PageHeader } from '@/components/ds/states';
+import type { Polarity } from '@/components/ds/DeltaBadge';
+import { KpiCard, LoadingRows, PageHeader, Panel } from '@/components/ds/states';
+import { Button } from '@/components/ui/button';
 import { MetricDefinition } from '@/components/ds/trust';
 import { canDecideAtLevel, pendingApprovalLevel, recommendationHealth } from '@/lib/actions/recommendation';
 import { formatDate, formatPercent, formatPrice, formatRelativeTime } from '@/lib/format';
@@ -113,6 +119,8 @@ export function OverviewPage() {
   const onboardingDismissed = useUiStore((s) => s.onboardingDismissed);
   const setOnboardingDismissed = useUiStore((s) => s.setOnboardingDismissed);
 
+  const kpiCols = view.kpis.length >= 4 ? 'xl:grid-cols-4' : view.kpis.length === 3 ? 'xl:grid-cols-3' : 'xl:grid-cols-2';
+
   return (
     <>
       <PageHeader
@@ -120,32 +128,36 @@ export function OverviewPage() {
         subtitle={t('overview.greeting', { name: user.name, role: t(`common.role.${user.role}`) })}
         actions={
           onboardingDismissed ? (
-            <button type="button" onClick={() => setOnboardingDismissed(false)} className="text-sm text-brand hover:underline">
+            <Button variant="secondary" size="sm" onClick={() => setOnboardingDismissed(false)}>
+              <ListChecks aria-hidden className="size-3.5" />
               {t('overview.onboarding.reopen')}
-            </button>
+            </Button>
           ) : undefined
         }
       />
       {loading ? <LoadingRows rows={4} rowHeight={72} /> : (
-        <>
+        <div className="flex flex-col gap-3">
           <PersonaPrompt t={t} />
           {/* G-02 §1 attention: the role-prioritized "what needs me" strip leads the dashboard. */}
           {view.attention.length > 0 && (
-            <section aria-label={t('overview.attention.title')} className="mb-4 rounded-card border border-warn/40 bg-warn-soft/30 p-card shadow-e1">
-              <h2 className="mb-2 text-sm font-semibold">{t('overview.attention.title')}</h2>
+            <Panel
+              aria-label={t('overview.attention.title')}
+              icon={TriangleAlert}
+              title={t('overview.attention.title')}
+              className="border-warn/25 bg-warn-soft/40"
+            >
               <ul className="flex flex-wrap gap-2">
                 {view.attention.map((a) => (
                   <li key={a.key}>
-                    <Link href={a.href} onClick={() => quick(a.href)}
-                      className="inline-flex items-center gap-1.5 rounded-full border border-line bg-surface px-3 py-1.5 text-sm transition-colors duration-fast hover:bg-subtle">
-                      <span className="tabular font-semibold">{a.n}</span>
+                    <Link href={a.href} onClick={() => quick(a.href)} className={chipLinkCls}>
+                      <span className="tabular font-semibold text-fg">{a.n}</span>
                       <span className="text-muted">{t(`overview.attention.${a.key}`)}</span>
                       <ArrowRight aria-hidden className="size-3.5 text-faint" />
                     </Link>
                   </li>
                 ))}
               </ul>
-            </section>
+            </Panel>
           )}
           {!onboardingDismissed && (
             <SetupChecklist
@@ -160,101 +172,141 @@ export function OverviewPage() {
               onDismiss={() => setOnboardingDismissed(true)}
             />
           )}
-          <section aria-label={t('common.a11y.kpi')} className="mb-4 grid grid-cols-1 gap-3 min-[420px]:grid-cols-2 lg:grid-cols-4">
-            {view.kpis.map((k) => (
-              <KpiCard
-                key={k.key}
-                label={
-                  <Link href={k.href ?? '/overview'} onClick={() => quick(k.href ?? '/overview')} className="rounded transition-colors duration-fast hover:text-fg hover:underline">
-                    {t(`overview.kpi.${k.key}`)}
-                  </Link>
-                }
-                value={typeof k.value === 'number' ? k.value : fmt(k)}
-                format={k.kind === 'money' ? (n) => formatPrice(n, locale) : k.kind === 'percent' ? (n) => formatPercent(n, locale) : undefined}
-                spark={k.spark} delta={k.delta}
-                hint={
-                  <MetricDefinition
-                    label={t('overview.def.about', { name: t(`overview.kpi.${k.key}`) })}
-                    definition={t(`overview.kpiDef.${k.key}`)}
-                    rows={[
-                      { label: t('overview.def.scope'), value: t('overview.def.scopeValue') },
-                      { label: t('overview.def.source'), value: t('overview.def.sourceValue') },
-                      { label: t('overview.def.updated'), value: t('overview.def.updatedValue') },
-                    ]}
-                  />
-                }
-              />
-            ))}
+          <section aria-label={t('common.a11y.kpi')} className={cn('grid grid-cols-1 gap-3 sm:grid-cols-2', kpiCols)}>
+            {view.kpis.map((k) => {
+              const meta = KPI_META[k.key] ?? { icon: Gauge, polarity: 'neutral' as const };
+              return (
+                <KpiCard
+                  key={k.key}
+                  icon={meta.icon}
+                  polarity={meta.polarity}
+                  label={
+                    <Link href={k.href ?? '/overview'} onClick={() => quick(k.href ?? '/overview')} className="inline-flex min-h-6 items-center rounded transition-colors duration-fast hover:text-brand hover:underline">
+                      {t(`overview.kpi.${k.key}`)}
+                    </Link>
+                  }
+                  value={typeof k.value === 'number' ? k.value : fmt(k)}
+                  format={k.kind === 'money' ? (n) => formatPrice(n, locale) : k.kind === 'percent' ? (n) => formatPercent(n, locale) : undefined}
+                  spark={k.spark}
+                  delta={k.delta}
+                  comparison={k.delta !== undefined ? t('overview.kpi.vsPrev') : undefined}
+                  hint={
+                    <MetricDefinition
+                      label={t('overview.def.about', { name: t(`overview.kpi.${k.key}`) })}
+                      definition={t(`overview.kpiDef.${k.key}`)}
+                      rows={[
+                        { label: t('overview.def.scope'), value: t('overview.def.scopeValue') },
+                        { label: t('overview.def.source'), value: t('overview.def.sourceValue') },
+                        { label: t('overview.def.updated'), value: t('overview.def.updatedValue') },
+                      ]}
+                    />
+                  }
+                />
+              );
+            })}
           </section>
 
-          <nav aria-label={t('overview.title')} className="mb-6 flex flex-wrap gap-2">
+          <nav aria-label={t('overview.title')} className="flex flex-wrap gap-2">
             {links.map((l) => (
-              <Link key={l.key} href={l.href} onClick={() => quick(l.href)} className="rounded-full border border-line bg-surface px-3 py-1 text-sm transition-colors duration-fast hover:bg-subtle">
+              <Link key={l.key} href={l.href} onClick={() => quick(l.href)} className={chipLinkCls}>
                 {t(`overview.links.${l.key}`)}
+                <ArrowUpRight aria-hidden className="size-3.5 text-faint" />
               </Link>
             ))}
           </nav>
 
-          <div className="grid grid-cols-1 gap-4 xl:grid-cols-[2fr_1fr]">
-            <OverviewCharts products={skus.data} volume={view.volume} gap={view.gap} />
-            <div className="flex min-w-0 flex-col gap-4">
+          <div className="grid grid-cols-1 gap-3 xl:grid-cols-12">
+            <div className="min-w-0 xl:col-span-8">
+              <OverviewCharts products={skus.data} volume={view.volume} gap={view.gap} />
+            </div>
+            <div className="flex min-w-0 flex-col gap-3 xl:col-span-4">
               {/* G-02 §5 decision queue: top pending recommendations by absolute impact. */}
-              <section className="rounded-card border border-line bg-surface p-card shadow-e1">
-                <h2 className="mb-2 flex items-baseline justify-between gap-2 text-sm font-semibold">
-                  {t('overview.queue.title')}
-                  <Link href="/recommendations?status=pending" onClick={() => quick('/recommendations?status=pending')} className="text-xs font-normal text-brand hover:underline">
+              <Panel
+                icon={ListChecks}
+                title={t('overview.queue.title')}
+                actions={
+                  <Link href="/recommendations?status=pending" onClick={() => quick('/recommendations?status=pending')} className="text-xs font-medium text-brand hover:underline">
                     {t('overview.queue.all')}
                   </Link>
-                </h2>
-                {view.queue.length === 0 ? <p className="text-sm text-muted">{t('overview.queue.empty')}</p> : (
-                  <ul className="divide-y divide-line text-sm">
+                }
+              >
+                {view.queue.length === 0 ? <p className="text-[13px] text-muted">{t('overview.queue.empty')}</p> : (
+                  <ul className="flex flex-col gap-1.5">
                     {view.queue.map((r) => (
-                      <li key={r.id} className="flex items-center justify-between gap-2 py-1.5">
-                        <Link href={`/recommendations/${r.id}`} className="min-w-0 truncate hover:underline">
-                          <span className="tabular font-medium text-brand">{r.id}</span>
-                          <span className="tabular text-muted"> · {r.sku}</span>
-                        </Link>
-                        <span className="tabular shrink-0 text-muted">
-                          {formatPrice(r.proposedPrice, locale)}
-                          <span className={cn('ml-2 font-medium', r.projectedMarginImpact >= 0 ? 'text-up' : 'text-down')}>
+                      <li key={r.id}>
+                        <Link href={`/recommendations/${r.id}`} className={rowLinkCls}>
+                          <span className="min-w-0">
+                            <span className="tabular block truncate text-[13px] font-semibold text-fg">{r.id}</span>
+                            <span className="tabular block truncate text-[11px] text-faint">{r.sku} · {formatPrice(r.proposedPrice, locale)}</span>
+                          </span>
+                          <span className={cn('tabular shrink-0 text-xs font-semibold', r.projectedMarginImpact >= 0 ? 'text-up' : 'text-down')}>
                             {r.projectedMarginImpact >= 0 ? '+' : ''}{formatPrice(Math.round(r.projectedMarginImpact), locale)}
                           </span>
-                        </span>
+                        </Link>
                       </li>
                     ))}
                   </ul>
                 )}
-              </section>
+              </Panel>
               <TopMoversPanel products={skus.data} />
-              <section className="rounded-card border border-line bg-surface p-card shadow-e1">
-                <h2 className="mb-2 text-sm font-semibold">{t('overview.activity.title')}</h2>
-                {audit.data.length === 0 ? <p className="text-sm text-muted">{t('overview.activity.empty')}</p> : (
-                  <ul className="divide-y divide-line text-sm">
-                    {audit.data.slice(0, 8).map((e) => (
-                      <li key={e.id} className="flex flex-wrap justify-between gap-2 py-1.5">
-                        <span>{t(`common.event.${e.type}`)} · <span className="tabular">{e.sku ?? e.entityId}</span></span>
-                        <span className="tabular text-muted">{formatDate(e.timestamp, locale)}</span>
+              <Panel icon={History} title={t('overview.activity.title')}>
+                {audit.data.length === 0 ? <p className="text-[13px] text-muted">{t('overview.activity.empty')}</p> : (
+                  <ul className="flex flex-col gap-1.5">
+                    {audit.data.slice(0, 5).map((e) => (
+                      <li key={e.id} className="flex items-center justify-between gap-3 rounded-row bg-row px-2.5 py-2">
+                        <span className="min-w-0">
+                          <span className="block truncate text-[13px] font-medium text-fg">{t(`common.event.${e.type}`)}</span>
+                          <span className="tabular block truncate text-[11px] text-faint">{e.sku ?? e.entityId}</span>
+                        </span>
+                        <time dateTime={e.timestamp} className="tabular shrink-0 text-[11px] font-medium text-faint">{formatRelativeTime(e.timestamp, locale)}</time>
                       </li>
                     ))}
                   </ul>
                 )}
-              </section>
+              </Panel>
             </div>
           </div>
-        </>
+        </div>
       )}
     </>
   );
 }
 
+/** Pill-shaped navigation chip (attention counts, quick links) — one anatomy for both rows. */
+const chipLinkCls =
+  'inline-flex h-8 items-center gap-1.5 whitespace-nowrap rounded-full border border-line-strong bg-surface px-3 text-[13px] font-medium tracking-label text-fg transition-colors duration-fast hover:bg-subtle';
+/** Reference list row: tinted band, 8px radius, primary line + meta line. */
+const rowLinkCls =
+  'flex items-center justify-between gap-3 rounded-row bg-row px-2.5 py-2 transition-colors duration-fast hover:bg-subtle';
+
+/** Icon + sentiment per KPI: the arrow shows direction, colour shows whether that direction is good. */
+const KPI_META: Record<string, { icon: LucideIcon; polarity: Polarity }> = {
+  pendingApprovals: { icon: ClipboardList, polarity: 'lower-better' },
+  reviewed: { icon: CheckCheck, polarity: 'higher-better' },
+  activeAnomalies: { icon: Activity, polarity: 'lower-better' },
+  marginImpact: { icon: TrendingUp, polarity: 'higher-better' },
+  overrideRate: { icon: PencilLine, polarity: 'lower-better' },
+  strategyHealth: { icon: Target, polarity: 'higher-better' },
+  pendingStrategies: { icon: Hourglass, polarity: 'neutral' },
+  channelFailures: { icon: ServerCrash, polarity: 'lower-better' },
+  pendingSyncs: { icon: RefreshCw, polarity: 'lower-better' },
+  lastDeployment: { icon: Rocket, polarity: 'neutral' },
+  awaitingExecutive: { icon: Stamp, polarity: 'lower-better' },
+  decidedByMe: { icon: CheckCheck, polarity: 'higher-better' },
+  executiveImpact: { icon: BadgeDollarSign, polarity: 'higher-better' },
+  auditVolume: { icon: ScrollText, polarity: 'neutral' },
+  manualOverrides: { icon: PencilLine, polarity: 'lower-better' },
+  guardrailExceptions: { icon: ShieldAlert, polarity: 'lower-better' },
+};
+
 type T = (key: string, vars?: Record<string, string | number>) => string;
 
-const PERSONAS: { role: Role; icon: string }[] = [
-  { role: 'analyst', icon: '◇' },
-  { role: 'manager', icon: '◈' },
-  { role: 'approver', icon: '◆' },
-  { role: 'ops_lead', icon: '▣' },
-  { role: 'compliance', icon: '◎' },
+const PERSONAS: { role: Role; icon: LucideIcon }[] = [
+  { role: 'analyst', icon: LineChartIcon },
+  { role: 'manager', icon: Briefcase },
+  { role: 'approver', icon: Stamp },
+  { role: 'ops_lead', icon: Rocket },
+  { role: 'compliance', icon: Scale },
 ];
 
 /**
@@ -267,28 +319,28 @@ function PersonaPrompt({ t }: { t: T }) {
   const choosePersona = useSessionStore((s) => s.choosePersona);
   if (personaChosen) return null;
   return (
-    <section aria-label={t('overview.persona.title')} className="mb-4 rounded-card border border-brand/40 bg-brand-soft/30 p-card shadow-e1">
-      <h2 className="text-sm font-semibold text-fg">{t('overview.persona.title')}</h2>
-      <p className="mt-0.5 text-xs text-muted">{t('overview.persona.subtitle')}</p>
-      <ul className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-5">
+    <Panel aria-label={t('overview.persona.title')} icon={Users} title={t('overview.persona.title')} description={t('overview.persona.subtitle')}>
+      <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-5">
         {PERSONAS.map((p) => (
           <li key={p.role}>
             <button
               type="button"
               onClick={() => choosePersona(p.role)}
-              className="group flex w-full items-center gap-2.5 rounded-input border border-line bg-surface px-3 py-2.5 text-left transition-colors duration-fast hover:border-brand hover:bg-brand-soft"
+              className="group flex w-full items-center gap-2.5 rounded-row bg-row px-2.5 py-2 text-left transition-colors duration-fast hover:bg-brand-soft"
             >
-              <span aria-hidden className="text-brand">{p.icon}</span>
+              <span aria-hidden className="grid size-8 shrink-0 place-items-center rounded-[10px] border border-line-icon bg-icon text-brand">
+                <p.icon className="size-4" />
+              </span>
               <span className="min-w-0 flex-1">
-                <span className="block truncate text-sm font-medium">{t(`overview.persona.${p.role}`)}</span>
-                <span className="block truncate text-xs text-muted">{t(`overview.persona.${p.role}Desc`)}</span>
+                <span className="block truncate text-[13px] font-semibold text-fg">{t(`overview.persona.${p.role}`)}</span>
+                <span className="block truncate text-[11px] text-faint">{t(`overview.persona.${p.role}Desc`)}</span>
               </span>
               <ArrowRight aria-hidden className="size-4 shrink-0 text-faint transition-colors duration-fast group-hover:text-brand" />
             </button>
           </li>
         ))}
       </ul>
-    </section>
+    </Panel>
   );
 }
 

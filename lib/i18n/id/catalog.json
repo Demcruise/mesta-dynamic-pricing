@@ -6,7 +6,8 @@
     "avgMargin": "Margin rata-rata",
     "belowMap": "SKU di bawah MAP",
     "pendingAi": "Rekomendasi AI tertunda",
-    "avgGap": "Selisih harga kompetitor"
+    "avgGap": "Selisih harga kompetitor",
+    "inScope": "{n} SKU dalam tampilan"
   },
   "col": {
     "select": "Pilih",
@@ -22,7 +23,8 @@
     "lastChange": "Perubahan terakhir",
     "trend": "Tren",
     "ai": "AI",
-    "actions": "Aksi"
+    "actions": "Aksi",
+    "product": "Produk"
   },
   "elasticity": {
     "inelastic": "Inelastis",

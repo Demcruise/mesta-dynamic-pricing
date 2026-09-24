@@ -24,6 +24,7 @@ import type { Product, Recommendation } from '@/lib/ontology';
 import { useProductCatalogStore, useSessionStore, useToastStore, useUndoStore } from '@/lib/stores';
 import { DecisionDialog, type DialogMode } from './DecisionDialog';
 import { changeRatio } from './filters';
+import { pillCls } from '@/components/ds/Pill';
 
 export function RecommendationCard({ rec, product, defaultOpen = false, showStatus = true, stickyActions = false }: {
   rec: Recommendation; product: Product | undefined; defaultOpen?: boolean;
@@ -100,8 +101,8 @@ export function RecommendationCard({ rec, product, defaultOpen = false, showStat
           {showStatus && <StatusChip status={rec.status} />}
           {decidable && health.stale && <StatusChip status="stale" />}
           {pendingLevel && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-warn-soft px-2 py-0.5 text-xs font-medium text-warn">
-              <TriangleAlert className="size-3" aria-hidden />{t(`recommendations.card.requires_${pendingLevel}`)}
+            <span className={pillCls('warn')}>
+              <TriangleAlert className="size-3.5" aria-hidden />{t(`recommendations.card.requires_${pendingLevel}`)}
             </span>
           )}
         </div>
@@ -145,7 +146,7 @@ export function RecommendationCard({ rec, product, defaultOpen = false, showStat
           <div className="mt-2 grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div>
               <p className="mb-1 text-xs text-muted">{t('recommendations.card.trend')}</p>
-              <Sparkline points={product.priceHistory.map((h) => h.price)} className="h-10 w-full text-brand" />
+              <Sparkline points={product.priceHistory.map((h) => h.price)} tone="brand" className="h-10 w-full" />
             </div>
             <dl className="grid grid-cols-2 gap-1 text-xs">
               <dt className="text-muted">{t('recommendations.card.current')}</dt><dd><PriceValue value={product.price} /></dd>

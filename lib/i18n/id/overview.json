@@ -15,7 +15,11 @@
     "auditVolume": "Kejadian audit",
     "manualOverrides": "Override manual",
     "guardrailExceptions": "Pengecualian guardrail",
-    "none": "Belum ada"
+    "none": "Belum ada",
+    "awaitingExecutive": "Menunggu persetujuan eksekutif",
+    "decidedByMe": "Diputuskan oleh Anda",
+    "executiveImpact": "Dampak disetujui eksekutif",
+    "vsPrev": "vs periode sebelumnya"
   },
   "kpiDef": {
     "pendingApprovals": "Rekomendasi yang saat ini menunggu keputusan.",
@@ -30,7 +34,10 @@
     "lastDeployment": "Deployment kanal terakhir yang selesai.",
     "auditVolume": "Total kejadian audit yang tercatat di workspace ini.",
     "manualOverrides": "Perubahan harga manual di luar rekomendasi.",
-    "guardrailExceptions": "Rekomendasi yang ditandai karena melanggar guardrail."
+    "guardrailExceptions": "Rekomendasi yang ditandai karena melanggar guardrail.",
+    "awaitingExecutive": "Rekomendasi yang langkah persetujuan berikutnya membutuhkan level approver eksekutif.",
+    "decidedByMe": "Keputusan rekomendasi (setujui, tolak, sesuaikan) yang tercatat atas nama Anda.",
+    "executiveImpact": "Proyeksi dampak margin dari rekomendasi yang mendapat persetujuan level eksekutif."
   },
   "def": {
     "about": "Tentang {name}",
@@ -70,7 +77,9 @@
     "weekly": "Mingguan",
     "monthly": "Bulanan",
     "quarterly": "Triwulan",
-    "avgMargin": "margin rata-rata"
+    "avgMargin": "margin rata-rata",
+    "periodCol": "Periode",
+    "vsStart": "vs awal periode"
   },
   "movers": {
     "title": "Pergerakan harga teratas",

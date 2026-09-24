@@ -20,12 +20,13 @@ import {
   tabMatches, type QueueFilters, type QueueTab,
 } from './filters';
 import { RecommendationCard } from './RecommendationCard';
+import { pillCls } from '@/components/ds/Pill';
 
 const PAGE_SIZE = 50;
 
 function Select({ label, value, onChange, children }: { label: string; value: string; onChange: (v: string) => void; children: React.ReactNode }) {
   return (
-    <select aria-label={label} className={`${inputCls} w-44`} value={value} onChange={(e) => onChange(e.target.value)}>
+    <select aria-label={label} className={cn(inputCls, 'w-44')} value={value} onChange={(e) => onChange(e.target.value)}>
       {children}
     </select>
   );
@@ -102,7 +103,7 @@ export function QueuePage() {
           <>
             <div role="group" aria-label={t('recommendations.view.label')} className="flex gap-1">
               {(['cards', 'table'] as const).map((v) => (
-                <Button key={v} size="sm" variant={view === v ? 'primary' : 'secondary'} aria-pressed={view === v} onClick={() => setView(v)}>
+                <Button key={v} size="sm" variant={view === v ? 'selected' : 'secondary'} aria-pressed={view === v} onClick={() => setView(v)}>
                   {v === 'cards' ? <LayoutGrid className="size-4" aria-hidden /> : <Table2 className="size-4" aria-hidden />}
                   {t(`recommendations.view.${v}`)}
                 </Button>
@@ -129,7 +130,7 @@ export function QueuePage() {
             )}
           >
             {t(`recommendations.tabs.${tab}`)}
-            <span className="tabular rounded-full bg-subtle px-1.5 py-px text-[11px] text-muted">{n}</span>
+            <span className={`tabular ${pillCls('neutral', 'sm')}`}>{n}</span>
           </button>
         ))}
       </nav>
@@ -159,14 +160,14 @@ export function QueuePage() {
           {(['small', 'medium', 'large'] as const).map((s) => <option key={s} value={s}>{t(`recommendations.filter.mag.${s}`)}</option>)}
         </Select>
         <Select label={t('recommendations.filter.sort')} value={filters.sort} onChange={(v) => patch({ sort: v as QueueFilters['sort'] })}>
-          {(['confidence', 'impact', 'age', 'category'] as const).map((s) => <option key={s} value={s}>{t(`recommendations.sort.${s}`)}</option>)}
+          {(['confidence', 'impact', 'age', 'category'] as const).map((s) => <option key={s} value={s}>{`${t('recommendations.filter.sort')}: ${t(`recommendations.sort.${s}`)}`}</option>)}
         </Select>
       </div>
 
       {chips.length > 0 && (
         <div className="mb-3 flex flex-wrap items-center gap-1.5" aria-label={t('recommendations.filter.active')}>
           {chips.map((c) => (
-            <span key={c.key} className="inline-flex items-center gap-1 rounded-full bg-brand-soft py-0.5 pl-2.5 pr-1 text-xs font-medium text-brand">
+            <span key={c.key} className={`${pillCls('brand')} pr-1`}>
               {c.label}
               <button
                 type="button"

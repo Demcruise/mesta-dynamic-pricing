@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import { EmptyState, ErrorState, LoadingRows, PageHeader } from '@/components/ds/states';
+import { StatusBadge } from '@/components/ds/StatusBadge';
 import { RoleGate } from '@/components/shell/RoleGate';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
@@ -19,14 +20,6 @@ import { useSessionStore, useToastStore } from '@/lib/stores';
 import { cn } from '@/lib/utils';
 
 const STATUS_ORDER: StrategyStatus[] = ['active', 'scheduled', 'pending_manager_approval', 'draft', 'archived'];
-const CHIP: Record<StrategyStatus, string> = {
-  active: 'bg-up-soft text-up',
-  scheduled: 'bg-info-soft text-info',
-  pending_manager_approval: 'bg-warn-soft text-warn',
-  draft: 'bg-hold-soft text-hold',
-  archived: 'bg-subtle text-faint',
-};
-
 export function StrategyListPage() {
   const { t, locale } = useTranslation();
   const q = useStrategies();
@@ -75,15 +68,15 @@ export function StrategyListPage() {
       />
       <div className="mb-3 flex flex-wrap gap-2" role="search">
         <Input type="search" aria-label={t('strategy.search')} placeholder={t('strategy.search')} className="w-52" value={search} onChange={(e) => setSearch(e.target.value)} />
-        <select aria-label={t('strategy.status.all')} className={`${inputCls} w-52`} value={status} onChange={(e) => setStatus(e.target.value)}>
+        <select aria-label={t('strategy.status.all')} className={cn(inputCls, 'w-52')} value={status} onChange={(e) => setStatus(e.target.value)}>
           <option value="">{t('strategy.status.all')}</option>
           {STATUS_ORDER.map((s) => <option key={s} value={s}>{t(`strategy.status.${s}`)}</option>)}
         </select>
-        <select aria-label={t('strategy.objective.all')} className={`${inputCls} w-52`} value={objective} onChange={(e) => setObjective(e.target.value)}>
+        <select aria-label={t('strategy.objective.all')} className={cn(inputCls, 'w-52')} value={objective} onChange={(e) => setObjective(e.target.value)}>
           <option value="">{t('strategy.objective.all')}</option>
           {(['maximize_margin', 'maximize_revenue', 'match_competitor', 'clear_inventory'] as const).map((o) => <option key={o} value={o}>{t(`strategy.objective.${o}`)}</option>)}
         </select>
-        <select aria-label={t('strategy.list.category')} className={`${inputCls} w-44`} value={category} onChange={(e) => setCategory(e.target.value)}>
+        <select aria-label={t('strategy.list.category')} className={cn(inputCls, 'w-44')} value={category} onChange={(e) => setCategory(e.target.value)}>
           <option value="">{t('strategy.list.category')}</option>
           {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
         </select>
@@ -97,14 +90,14 @@ export function StrategyListPage() {
         <ul className="grid grid-cols-1 gap-3 lg:grid-cols-2">
           {rows.map((s) => (
             <li key={s.id} className="rounded-card border border-line bg-surface p-card shadow-e1">
-              <div className="flex items-start justify-between gap-2">
-                <div>
-                  <h2 className="font-semibold">
+              <div className="flex flex-wrap items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <h2 className="text-sm font-semibold tracking-label">
                     <Link href={`/strategy/${s.id}`} className="hover:underline">{s.name}</Link>
                   </h2>
                   <p className="text-xs text-muted">{t(`strategy.objective.${s.objective}`)}</p>
                 </div>
-                <span className={cn('rounded-full px-2 py-0.5 text-xs font-medium', CHIP[s.status])}>{t(`strategy.status.${s.status}`)}</span>
+                <StatusBadge status={s.status} label={t(`strategy.status.${s.status}`)} />
               </div>
               <dl className="mt-3 grid grid-cols-2 gap-1 text-xs text-muted">
                 <dt>{t('strategy.field.skus')}</dt>

@@ -2,7 +2,11 @@ import { useId, type InputHTMLAttributes, type ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 
 export const inputCls =
-  'h-9 w-full rounded-input border border-line bg-surface px-2 text-sm text-fg transition-colors duration-fast ease-standard placeholder:text-faint';
+  'h-9 w-full rounded-input border border-line-strong bg-input px-3 text-[13px] text-fg transition-colors duration-fast ease-standard placeholder:text-faint hover:border-line-strong hover:bg-surface';
+
+/** Compact header control (period selects, segmented toggles) — reference "Weekly ▾" button. */
+export const controlCls =
+  'h-9 rounded-input border border-line-strong bg-input px-3 text-xs font-medium tracking-label text-fg transition-colors duration-fast ease-standard hover:bg-subtle';
 
 export function Field({
   label, error, children,

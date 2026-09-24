@@ -1,5 +1,6 @@
 'use client';
 
+import { ArrowUpDown } from 'lucide-react';
 import Link from 'next/link';
 import { marginHealth, marginPct } from '@/lib/domain';
 import { formatPercent } from '@/lib/format';
@@ -8,10 +9,12 @@ import type { Product } from '@/lib/ontology';
 import { cn } from '@/lib/utils';
 import { DeltaBadge } from './DeltaBadge';
 import { LiveDot } from './LiveDot';
+import { Pill } from './Pill';
 import { PriceValue } from './PriceValue';
+import { Panel } from './states';
 
-const HEALTH_BAR = { healthy: 'bg-up', thin: 'bg-warn', critical: 'bg-down' } as const;
-const MAX_ITEMS = 6;
+const HEALTH_BAR = { healthy: 'bg-up-graphic', thin: 'bg-warn', critical: 'bg-down-graphic' } as const;
+const MAX_ITEMS = 5;
 
 /**
  * "Top price movers" side list — SKUs with the largest latest price move,
@@ -30,15 +33,14 @@ export function TopMoversPanel({ products }: { products: Product[] }) {
     .slice(0, MAX_ITEMS);
 
   return (
-    <section aria-label={t('overview.movers.title')} className="rounded-card border border-line bg-surface p-card shadow-e1">
-      <div className="mb-2 flex items-center justify-between gap-2">
-        <h2 className="text-sm font-semibold">{t('overview.movers.title')}</h2>
-        <span className="flex items-center gap-1.5 rounded-full bg-up-soft px-2 py-0.5 text-[11px] font-medium text-up">
-          <LiveDot /> {t('overview.movers.live')}
-        </span>
-      </div>
-      {movers.length === 0 ? <p className="text-sm text-muted">{t('overview.movers.empty')}</p> : (
-        <ul className="divide-y divide-line">
+    <Panel
+      aria-label={t('overview.movers.title')}
+      icon={ArrowUpDown}
+      title={t('overview.movers.title')}
+      actions={<Pill tone="up" size="sm"><LiveDot /> {t('overview.movers.live')}</Pill>}
+    >
+      {movers.length === 0 ? <p className="text-[13px] text-muted">{t('overview.movers.empty')}</p> : (
+        <ul className="flex flex-col gap-1.5">
           {movers.map(({ p, delta }) => {
             const m = marginPct(p);
             const health = marginHealth(p);
@@ -46,27 +48,29 @@ export function TopMoversPanel({ products }: { products: Product[] }) {
               <li key={p.sku}>
                 <Link
                   href={`/catalog?q=${encodeURIComponent(p.sku)}`}
-                  className="flex items-center gap-3 py-2 transition-colors duration-fast hover:bg-subtle"
+                  className="grid grid-cols-[minmax(0,1fr)_3rem_auto] items-center gap-3 rounded-row bg-row px-2.5 py-2 transition-colors duration-fast hover:bg-subtle"
                 >
-                  <span className="min-w-0 flex-1">
-                    <span className="tabular block truncate text-sm font-medium">{p.sku}</span>
-                    <span className="block truncate text-xs text-muted">{p.name}</span>
+                  <span className="min-w-0">
+                    <span className="block truncate text-[13px] font-semibold text-fg">{p.name}</span>
+                    <span className="tabular block truncate text-[11px] text-faint">{p.sku}</span>
                   </span>
                   <span
                     role="meter" aria-label={t('overview.movers.margin')} aria-valuemin={0} aria-valuemax={100}
                     aria-valuenow={Math.round(m * 100)} aria-valuetext={formatPercent(m, locale)}
-                    className="h-1.5 w-12 shrink-0 overflow-hidden rounded-full bg-subtle"
+                    className="h-1.5 w-12 overflow-hidden rounded-full bg-subtle"
                   >
                     <span className={cn('block h-full rounded-full', HEALTH_BAR[health])} style={{ width: `${Math.min(100, Math.max(0, m * 100))}%` }} />
                   </span>
-                  <PriceValue value={p.price} muted className="shrink-0 text-xs" />
-                  <DeltaBadge value={delta} className="shrink-0" />
+                  <span className="flex flex-col items-end gap-0.5">
+                    <PriceValue value={p.price} className="text-xs font-semibold" />
+                    <DeltaBadge value={delta} variant="text" size="sm" />
+                  </span>
                 </Link>
               </li>
             );
           })}
         </ul>
       )}
-    </section>
+    </Panel>
   );
 }

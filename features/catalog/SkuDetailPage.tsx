@@ -80,8 +80,8 @@ function Detail({ p }: { p: Product }) {
         </Card>
 
         <Card title={t('catalog.detail.history')}>
-          <Sparkline points={p.priceHistory.map((h) => h.price)} />
-          <table className="mt-3 w-full text-sm">
+          <Sparkline points={p.priceHistory.map((h) => h.price)} tone="brand" className="h-20 w-full" />
+          <table className="mesta-table mt-3 w-full text-sm">
             <thead>
               <tr className="text-left text-xs text-muted">
                 <th scope="col" className="py-1 font-medium">{t('catalog.detail.date')}</th>
@@ -103,7 +103,7 @@ function Detail({ p }: { p: Product }) {
           {comps.data.length === 0 ? (
             <p className="text-sm text-muted">{t('catalog.detail.none')}</p>
           ) : (
-            <table className="w-full text-sm">
+            <table className="mesta-table w-full text-sm">
               <thead>
                 <tr className="text-left text-xs text-muted">
                   <th scope="col" className="py-1 font-medium">{t('catalog.detail.competitor')}</th>

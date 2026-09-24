@@ -15,10 +15,11 @@
     "caption": "Forecast versus actual per deployed change",
     "empty": "No deployed changes yet.",
     "aggregate": "Aggregate trend",
-    "source": "Source",
+    "source": "Origin",
     "srcExperiment": "Experiment",
     "srcRecommendation": "Recommendation",
-    "srcManual": "Manual"
+    "srcManual": "Manual",
+    "traceLink": "Linked record"
   },
   "anomaly": {
     "title": "Anomalies",

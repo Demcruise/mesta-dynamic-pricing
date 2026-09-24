@@ -57,7 +57,7 @@ describe('virtualised catalog table', () => {
   it('exposes sortable column headers with aria-sort and hides write actions from ops leads', () => {
     render(<CatalogTable {...props(products)} sort="price" dir="desc" />);
     expect(screen.getByRole('columnheader', { name: /Price/ })).toHaveAttribute('aria-sort', 'descending');
-    expect(screen.getByRole('columnheader', { name: /Name/ })).toHaveAttribute('aria-sort', 'none');
+    expect(screen.getByRole('columnheader', { name: /Product/ })).toHaveAttribute('aria-sort', 'none');
     expect(screen.getAllByRole('button', { name: /^Override price SKU-/ }).length).toBeGreaterThan(0);
     cleanup();
     useSessionStore.getState().setRole('ops_lead');

@@ -18,6 +18,7 @@ import { ALL_STORES, regionOfStore } from '@/lib/scope';
 import { useProductCatalogStore, useUiStore } from '@/lib/stores';
 import { useCommandStore } from './command-store';
 import { NAV } from './nav';
+import { pillCls } from '@/components/ds/Pill';
 
 interface Item { id: string; group: string; label: string; hint?: string; /** Current state chip (MESTA-SEARCH-001 result anatomy). */ state?: string; href: string; run?: () => void; icon?: ReactNode }
 
@@ -268,7 +269,7 @@ export function CommandMenu() {
                 >
                   <span className="flex min-w-0 items-center gap-2">{it.icon}<span className="truncate"><Highlight text={it.label} q={q.trim()} /></span></span>
                   <span className="flex shrink-0 items-center gap-2">
-                    {it.state && <span className="rounded-full bg-subtle px-1.5 py-0.5 text-[11px] text-muted">{it.state}</span>}
+                    {it.state && <span className={pillCls('neutral', 'sm')}>{it.state}</span>}
                     {it.hint && <span className="text-xs text-faint"><Highlight text={it.hint} q={q.trim()} /></span>}
                   </span>
                 </div>

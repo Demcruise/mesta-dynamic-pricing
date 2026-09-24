@@ -17,6 +17,7 @@ import { useTranslation } from '@/lib/i18n';
 import type { Experiment } from '@/lib/ontology';
 import { useExperiments, useScopedSkuSet } from '@/lib/queries';
 import { useSessionStore, useToastStore } from '@/lib/stores';
+import { pillCls } from '@/components/ds/Pill';
 
 export function ExperimentsPage() {
   const { t, locale } = useTranslation();
@@ -121,7 +122,7 @@ function ExperimentCard({ e, t, locale, onStart, onConclude, onCancel, onReady, 
       <p className="mt-1.5 text-xs text-muted">“{e.hypothesis}”</p>
       <p className="mt-1 flex flex-wrap gap-1.5">
         {e.skuIds.map((sku) => (
-          <Link key={sku} href={`/catalog/${sku}`} className="tabular rounded-full border border-line px-2 py-0.5 text-xs text-brand hover:underline">{sku}</Link>
+          <Link key={sku} href={`/catalog/${sku}`} className={`tabular ${pillCls('neutral', 'sm')} text-brand hover:underline`}>{sku}</Link>
         ))}
       </p>
       {res && (

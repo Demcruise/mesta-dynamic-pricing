@@ -1,0 +1,68 @@
+{
+  "source": "https://vestra-dashboard01.vercel.app (live CSS custom properties + computed styles)",
+  "capturedAt": "2026-09-24",
+  "method": "document.styleSheets rules for :root and .dark, plus getComputedStyle on the Overview metric card, the 'Total Portfolio Value' chart card and the Portfolio 'Holdings' table rows",
+  "backlogItem": "DS-REF-001 / DS-COLOR-001..005 (mesta_vestra_design_system_full_audit_backlog.md)",
+  "palette": {
+    "light": {
+      "vestra-bg": { "raw": "#fff", "mesta": "--bg / --bg-surface", "category": "surface" },
+      "vestra-card": { "raw": "#fff", "mesta": "--bg-surface", "category": "surface" },
+      "vestra-row": { "raw": "#18181b0a", "mesta": "--bg-row (#f6f6f6, flattened over white)", "category": "table row band" },
+      "vestra-head": { "raw": "#f7f7f8", "mesta": "--bg-head", "category": "table header band" },
+      "vestra-sidebar": { "raw": "#f8f8f8", "mesta": "--bg-sidebar", "category": "surface" },
+      "vestra-text": { "raw": "#020617", "mesta": "--text", "category": "text-primary" },
+      "vestra-secondary": { "raw": "#475569", "mesta": "--text-muted", "category": "text-secondary" },
+      "vestra-muted": { "raw": "#64748b", "mesta": "--text-faint (#5f6b7e)", "category": "text-tertiary", "deviation": "darkened: #64748b is 4.40:1 on row bands; #5f6b7e is 4.99:1" },
+      "vestra-faint": { "raw": "#94a3b8", "mesta": "--text-faint (#5f6b7e)", "category": "text-tertiary", "deviation": "#94a3b8 is 2.56:1 on white — fails WCAG AA for text" },
+      "vestra-card-border": { "raw": "#18181b0f", "mesta": "--border", "category": "border-default" },
+      "vestra-control-border": { "raw": "#18181b0d", "mesta": "--border-strong (#18181b24)", "deviation": "inputs raised to 14% alpha so field boundaries stay perceivable" },
+      "vestra-line": { "raw": "#0000000a", "mesta": "--chart-grid", "category": "chart grid" },
+      "vestra-input": { "raw": "#fcfcfc", "mesta": "--bg-input", "category": "control surface" },
+      "vestra-icon-bg": { "raw": "#f8fafc", "mesta": "--bg-icon", "category": "icon box" },
+      "vestra-icon-border": { "raw": "#18181b0f", "mesta": "--border-icon", "category": "icon box" },
+      "vestra-nav-active": { "raw": "#eff6ff", "mesta": "--bg-selected / --brand-soft", "category": "selected" },
+      "vestra-cta": { "raw": "#2563eb", "mesta": "--brand", "category": "action primary" },
+      "vestra-cta-hover": { "raw": "#1d4ed8", "mesta": "--brand-hover", "category": "action hover" },
+      "vestra-cta-inset": { "raw": "inset 0 1px 0 #ffffff61", "mesta": "shadow-cta utility", "category": "button highlight" },
+      "vestra-hover": { "raw": "#f1f5f9", "mesta": "--bg-subtle", "category": "hover" },
+      "vestra-gain": { "raw": "#00B36A", "mesta": "--up-graphic (graphics) · --up #007f4c (text)", "deviation": "#00B36A is 2.74:1 on white; text uses same hue at 5.07:1" },
+      "vestra-gain-soft": { "raw": "#00b36a1a", "mesta": "--up-soft (#e6f7f0)", "category": "success-bg" },
+      "vestra-lose": { "raw": "#F14D6E", "mesta": "--down-graphic (graphics) · --down #c42748 (text)", "deviation": "#F14D6E is 3.48:1 on white; text uses same hue at 5.63:1" },
+      "vestra-lose-soft": { "raw": "#f14d6e1a", "mesta": "--down-soft (#feedf1)", "category": "critical-bg" },
+      "vestra-danger-soft": { "raw": "#fef2f2", "mesta": "--critical-soft", "category": "critical-bg" },
+      "chart-series": { "raw": "#3B82F6 (line 2.5px, area gradient 0.14→0)", "mesta": "--chart-1", "category": "chart" },
+      "vestra-shadow-pop": { "raw": "0px 8px 24px #0000000d", "mesta": "--elev-3", "category": "overlay" },
+      "vestra-selection": { "raw": "#dbeafe", "mesta": "::selection (brand 22%)", "category": "selection" }
+    },
+    "dark": {
+      "vestra-bg": { "raw": "#121212", "mesta": "--bg" },
+      "vestra-card": { "raw": "#141414", "mesta": "--bg-surface" },
+      "vestra-row": { "raw": "#ffffff0a", "mesta": "--bg-row (#1d1d1d)" },
+      "vestra-head": { "raw": "#101010", "mesta": "--bg-head" },
+      "vestra-sidebar": { "raw": "#191919", "mesta": "--bg-sidebar" },
+      "vestra-text": { "raw": "#fafafa", "mesta": "--text" },
+      "vestra-muted": { "raw": "#a1a1aa", "mesta": "--text-muted" },
+      "vestra-faint": { "raw": "#71717a", "mesta": "--text-faint (#8b8b94)", "deviation": "#71717a is 3.81:1 on the dark card" },
+      "vestra-cta": { "raw": "#3b82f6", "mesta": "--brand (#60a5fa)", "deviation": "white on #3b82f6 is 3.68:1; brand lifted with dark foreground to keep AA" }
+    }
+  },
+  "typography": {
+    "family": "Inter (self-hosted via @fontsource-variable/inter)",
+    "numerals": "Inter tabular-nums (reference does not use a mono face for figures)",
+    "metricCardLabel": "12px / 500 / tracking -0.3px",
+    "metricCardValue": "28px / 600 / tracking -0.7px / line-height 1",
+    "metricCardDelta": "12px / 500, coloured arrow + %, then muted comparison text",
+    "chartCardTitle": "14px (16px ≥ sm) / 500 / muted",
+    "chartCardValue": "30px (36px ≥ sm) / 700 / tracking -0.03em",
+    "axisLabels": "12px / 500 / muted",
+    "tableHeader": "10px / 600 / text-secondary (Mesta uses 11px for legibility)",
+    "tableCell": "12px / 500; primary identity 13px / 600 over 10–11px meta line"
+  },
+  "geometry": {
+    "metricCard": { "height": 152, "padding": 16, "radius": 12, "border": "1px vestra-card-border", "shadow": "none", "iconTile": "20px, radius 6, nav-active fill", "sparkline": "58×26, stroke 1.5, gradient fill 0.25→0" },
+    "chartCard": { "radius": 16, "padding": "16px → 20px (sm) → 36px (md)", "headerGap": "20px → 28px", "iconBox": "26px, radius 7, icon-bg + icon-border", "control": "36px high, radius 9, input fill, 12px/500" },
+    "grid": { "gap": 12, "kpiColumns": "1 → 2 (sm) → 4 (xl)", "sectionGap": 16 },
+    "page": { "padding": "16px top, 28px inline (lg), 48px bottom" },
+    "table": { "headBand": "40px, radius 8, padding 6px 10px", "rowBand": "radius 8, padding 6px 10px, 6px gap between rows", "columnGap": 8, "assetIcon": "32px, radius 10" }
+  }
+}

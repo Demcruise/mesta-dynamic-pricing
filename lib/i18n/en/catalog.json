@@ -6,7 +6,8 @@
     "avgMargin": "Avg margin",
     "belowMap": "SKUs below MAP",
     "pendingAi": "Pending AI recommendations",
-    "avgGap": "Avg competitor price gap"
+    "avgGap": "Avg competitor price gap",
+    "inScope": "{n} SKUs in view"
   },
   "col": {
     "select": "Select",
@@ -22,7 +23,8 @@
     "lastChange": "Last change",
     "trend": "Trend",
     "ai": "AI",
-    "actions": "Actions"
+    "actions": "Actions",
+    "product": "Product"
   },
   "elasticity": {
     "inelastic": "Inelastic",

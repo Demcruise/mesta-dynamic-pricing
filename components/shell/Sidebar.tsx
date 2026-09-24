@@ -95,8 +95,8 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        'sticky top-0 hidden h-screen shrink-0 flex-col border-r border-line bg-surface transition-[width] duration-base ease-standard md:flex',
-        rail ? 'w-14' : 'w-14 lg:w-56',
+        'sticky top-0 hidden h-screen shrink-0 flex-col border-r border-line bg-sidebar transition-[width] duration-base ease-standard md:flex',
+        rail ? 'w-14' : 'w-14 lg:w-60',
       )}
     >
       <button
@@ -130,15 +130,15 @@ export function Sidebar() {
                       aria-current={active ? 'page' : undefined}
                       title={t(`common.nav.${key}`)}
                       className={cn(
-                        'relative flex h-9 items-center gap-3 rounded-input px-2.5 text-sm transition-colors duration-fast',
-                        active ? 'bg-brand-soft font-medium text-brand' : 'text-muted hover:bg-subtle hover:text-fg',
+                        'relative flex h-9 items-center gap-2.5 rounded-row px-2.5 text-[13px] tracking-label transition-colors duration-fast',
+                        active ? 'bg-brand-soft font-semibold text-brand' : 'font-medium text-muted hover:bg-subtle hover:text-fg',
                       )}
                     >
                       <Icon className="size-4 shrink-0" aria-hidden />
                       <span className={cn('truncate', labelCls)}>{t(`common.nav.${key}`)}</span>
                       {count > 0 && badge && (
                         <>
-                          <span className={cn('tabular ml-auto rounded-full px-1.5 text-xs font-medium', BADGE_CLS[badge].chip, labelCls)}>
+                          <span className={cn('tabular ml-auto grid h-5 min-w-5 place-items-center rounded-full px-1.5 text-[11px] font-semibold leading-none', BADGE_CLS[badge].chip, labelCls)}>
                             {count}
                           </span>
                           <span className={cn('absolute right-1.5 top-1.5 size-2 rounded-full', BADGE_CLS[badge].dot, rail ? '' : 'lg:hidden')} aria-hidden />

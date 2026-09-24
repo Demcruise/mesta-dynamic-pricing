@@ -5,6 +5,7 @@ import { approvalChain, pendingApprovalLevel } from '@/lib/actions/recommendatio
 import { useTranslation } from '@/lib/i18n';
 import type { Recommendation } from '@/lib/ontology';
 import { cn } from '@/lib/utils';
+import { pillCls } from './Pill';
 
 /**
  * APR-003 / MESTA-APP-002 stepper: which approval levels a rec needs, which are
@@ -32,10 +33,7 @@ export function ApprovalChain({ rec }: { rec: Recommendation }) {
             <li key={level} className="flex items-center gap-2">
               {i > 0 && <span aria-hidden className="text-faint">→</span>}
               <span
-                className={cn(
-                  'inline-flex items-center gap-1 rounded-full px-2 py-0.5 font-medium',
-                  done ? 'bg-up-soft text-up' : isPending ? 'bg-warn-soft text-warn' : 'bg-subtle text-muted',
-                )}
+                className={pillCls(done ? 'up' : isPending ? 'warn' : 'neutral', 'sm')}
               >
                 {done && <Check className="size-3" aria-hidden />}
                 {t(`common.role.${level}`)}
@@ -51,8 +49,8 @@ export function ApprovalChain({ rec }: { rec: Recommendation }) {
       <p className="flex flex-wrap items-center gap-2 text-[11px] text-muted">
         <span className="tabular">{t('recommendations.chain.elapsed', { h: elapsedH })}</span>
         <span className={cn('tabular', overdue && 'text-warn')}>{t('recommendations.chain.sla', { h: SLA_HOURS })}</span>
-        {escalated && <span className="rounded-full bg-warn-soft px-1.5 py-0.5 text-warn">{t('recommendations.chain.escalated')}</span>}
-        {overdue && !escalated && <span className="rounded-full bg-warn-soft px-1.5 py-0.5 text-warn">{t('recommendations.chain.overdue')}</span>}
+        {escalated && <span className={pillCls('warn', 'sm')}>{t('recommendations.chain.escalated')}</span>}
+        {overdue && !escalated && <span className={pillCls('warn', 'sm')}>{t('recommendations.chain.overdue')}</span>}
       </p>
     </div>
   );

@@ -7,7 +7,7 @@ import { useSessionStore } from '@/lib/stores/session';
 import { useCountUp } from '@/lib/use-count-up';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { DeltaBadge } from './DeltaBadge';
+import { DeltaBadge, type Polarity } from './DeltaBadge';
 import { Sparkline } from './Sparkline';
 
 const EMPTY_ICONS: Record<string, { icon: LucideIcon; cls: string }> = {
@@ -28,7 +28,7 @@ export function EmptyState({
 }) {
   const { icon: Icon, cls } = EMPTY_ICONS[variant]!;
   return (
-    <div className={cn('flex flex-col items-center gap-3 rounded-card border border-dashed border-line p-10 text-center', className)}>
+    <div className={cn('flex flex-col items-center gap-3 rounded-card border border-dashed border-line-strong p-10 text-center', className)}>
       <span aria-hidden className={cn('grid size-10 place-items-center rounded-full', cls)}><Icon className="size-5" /></span>
       <p className="text-sm text-muted">{title}</p>
       {children}
@@ -50,11 +50,9 @@ export function ErrorState({ title, onRetry }: { title: string; onRetry: () => v
 export function LoadingRows({ rows = 8, rowHeight = 'var(--row-h)' }: { rows?: number; rowHeight?: number | string }) {
   const { t } = useTranslation();
   return (
-    <div role="status" aria-live="polite" aria-label={t('common.state.loading')} className="divide-y divide-line">
+    <div role="status" aria-live="polite" aria-label={t('common.state.loading')} className="flex flex-col gap-1.5">
       {Array.from({ length: rows }, (_, i) => (
-        <div key={i} className="animate-pulse px-3 py-2" style={{ height: rowHeight }}>
-          <div className="h-full rounded bg-subtle" />
-        </div>
+        <div key={i} className="animate-pulse rounded-row bg-row" style={{ height: rowHeight }} />
       ))}
     </div>
   );
@@ -62,41 +60,114 @@ export function LoadingRows({ rows = 8, rowHeight = 'var(--row-h)' }: { rows?: n
 
 export function PageHeader({ title, subtitle, actions }: { title: ReactNode; subtitle?: ReactNode; actions?: ReactNode }) {
   return (
-    <header className="mb-4 flex flex-wrap items-end justify-between gap-3">
+    <header className="mb-5 flex flex-wrap items-end justify-between gap-3">
       <div className="min-w-0">
-        <h1 className="text-xl font-semibold text-fg">{title}</h1>
-        {subtitle && <p className="text-sm text-muted">{subtitle}</p>}
+        <h1 className="text-xl font-semibold tracking-label text-fg">{title}</h1>
+        {subtitle && <p className="mt-1 text-[13px] text-muted">{subtitle}</p>}
       </div>
-      {actions && <div className="flex items-center gap-2">{actions}</div>}
+      {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
     </header>
   );
 }
 
-export function KpiCard({ label, value, format, hint, spark, delta }: {
+/**
+ * Reference icon tile. `tile` = 20px soft-brand tile used on metric cards;
+ * `box` = 26px neutral bordered tile used on panel/chart headers.
+ */
+export function IconBox({ icon: Icon, variant = 'box', className }: { icon: LucideIcon; variant?: 'tile' | 'box'; className?: string }) {
+  return (
+    <span
+      aria-hidden
+      className={cn(
+        'grid shrink-0 place-items-center text-fg',
+        variant === 'tile' ? 'size-5 rounded-md bg-brand-soft' : 'size-[26px] rounded-[7px] border border-line-icon bg-icon',
+        className,
+      )}
+    >
+      <Icon className={variant === 'tile' ? 'size-3' : 'size-3.5'} strokeWidth={2} />
+    </span>
+  );
+}
+
+/**
+ * Standard content card (reference "Holdings"-style panel): 12px radius, 1px edge, flat,
+ * header = icon box + title (+ optional description) + optional trailing actions.
+ * Every Overview/aside section uses this so padding and header rhythm are identical.
+ */
+export function Panel({ title, icon, description, actions, children, className, bodyClassName, as: Tag = 'section', 'aria-label': ariaLabel }: {
+  title: ReactNode;
+  icon?: LucideIcon;
+  description?: ReactNode;
+  actions?: ReactNode;
+  children: ReactNode;
+  className?: string;
+  bodyClassName?: string;
+  as?: 'section' | 'div';
+  'aria-label'?: string;
+}) {
+  return (
+    <Tag aria-label={ariaLabel} className={cn('min-w-0 rounded-card border border-line bg-surface p-4', className)}>
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex min-w-0 items-center gap-2">
+          {icon && <IconBox icon={icon} />}
+          <div className="min-w-0">
+            <h2 className="truncate text-sm font-medium tracking-label text-fg">{title}</h2>
+            {description && <p className="mt-0.5 truncate text-xs text-faint">{description}</p>}
+          </div>
+        </div>
+        {actions && <div className="flex shrink-0 items-center gap-2">{actions}</div>}
+      </div>
+      <div className={cn('mt-3', bodyClassName)}>{children}</div>
+    </Tag>
+  );
+}
+
+/**
+ * Metric card — reference anatomy: fixed 152px height; header = 20px icon tile + 12px
+ * medium label (+ definition trigger right); footer = 28px figure over a delta line
+ * (coloured arrow + %, then the comparison label), sparkline bottom-right coloured by
+ * sentiment. Flat surface, 12px radius, 1px edge.
+ */
+export function KpiCard({ label, value, format, hint, spark, delta, icon, polarity = 'higher-better', comparison, className }: {
   label: ReactNode; value: number | ReactNode; hint?: ReactNode;
   /** Formats the animated number (e.g. percent/currency). Defaults to rounded integer. */
   format?: (value: number) => string;
   /** Per-period series for the inline sparkline (same source as the KPI value). */
   spark?: number[];
-  /** Ratio change between the last two periods — icon+label badge, never colour alone. */
+  /** Ratio change between the last two periods — icon+label, never colour alone. */
   delta?: number;
+  icon?: LucideIcon;
+  /** Whether a rise is good, bad or neither — drives delta/sparkline colour, never the arrow. */
+  polarity?: Polarity;
+  /** Label after the delta, e.g. "vs previous period". */
+  comparison?: ReactNode;
+  className?: string;
 }) {
   const numeric = typeof value === 'number';
   const animated = useCountUp(numeric ? value : 0, numeric);
   const shown = numeric ? (format ? format(animated) : String(Math.round(animated))) : value;
+  const good = delta === undefined || Math.abs(delta) < 0.0005 || polarity === 'neutral'
+    ? 'muted'
+    : (delta > 0) === (polarity === 'higher-better') ? 'up' : 'down';
   return (
-    <div className="rounded-card border border-line bg-surface p-card shadow-e1">
-      <div className="flex items-start justify-between gap-2">
-        <div className="text-xs text-muted">{label}</div>
-        {spark && spark.length > 1 && <Sparkline points={spark} className="h-7 w-16 shrink-0 text-faint" />}
+    <div className={cn('flex h-[152px] min-w-0 flex-col justify-between rounded-card border border-line bg-surface p-4', className)}>
+      <div className="flex items-center gap-1.5">
+        {icon && <IconBox icon={icon} variant="tile" />}
+        <div className="min-w-0 flex-1 truncate text-xs font-medium leading-none tracking-label text-fg">{label}</div>
+        {hint}
       </div>
-      <p className="tabular mt-1 break-words text-xl font-semibold text-fg sm:text-2xl">{shown}</p>
-      {(delta !== undefined || hint) && (
-        <div className="mt-1 flex items-center gap-2 text-xs text-faint">
-          {delta !== undefined && <DeltaBadge value={delta} />}
-          {hint}
+      <div className="flex items-end justify-between gap-2">
+        <div className="flex min-w-0 flex-col gap-2">
+          <p className="tabular truncate text-[28px] font-semibold leading-none tracking-figure text-fg">{shown}</p>
+          {(delta !== undefined || comparison) && (
+            <div className="flex min-w-0 items-center gap-1.5 text-xs leading-none">
+              {delta !== undefined && <DeltaBadge value={delta} variant="text" polarity={polarity} />}
+              {comparison && <span className="truncate font-medium tracking-label text-faint">{comparison}</span>}
+            </div>
+          )}
         </div>
-      )}
+        {spark && spark.length > 1 && <Sparkline points={spark} tone={good} className="h-[26px] w-[58px] shrink-0" />}
+      </div>
     </div>
   );
 }
@@ -105,7 +176,7 @@ export function PermissionDeniedState() {
   const { t } = useTranslation();
   const role = useSessionStore((s) => s.user.role);
   return (
-    <div role="alert" className="flex flex-col items-center gap-2 rounded-card border border-line bg-surface p-10 text-center shadow-e1">
+    <div role="alert" className="flex flex-col items-center gap-2 rounded-card border border-line bg-surface p-10 text-center">
       <Lock className="size-6 text-faint" aria-hidden />
       <h2 className="text-base font-semibold">{t('common.perm.deniedTitle')}</h2>
       <p className="text-sm text-muted">{t('common.perm.deniedBody', { role: t(`common.role.${role}`) })}</p>

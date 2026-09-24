@@ -20,6 +20,7 @@ import { GuardrailPreview } from './GuardrailPreview';
 import { useCatalogSelectionStore, useSessionStore, useStrategyDraftStore, useToastStore } from '@/lib/stores';
 import { cn } from '@/lib/utils';
 import { formatDate } from '@/lib/format';
+import { pillCls } from '@/components/ds/Pill';
 
 const OBJECTIVES: StrategyObjective[] = ['maximize_margin', 'maximize_revenue', 'match_competitor', 'clear_inventory'];
 const STEPS = ['objective', 'scope', 'guardrail', 'rules', 'review'] as const;
@@ -280,9 +281,9 @@ function Wizard({ strategyId, initial, status, expectedUpdatedAt }: {
               ) : (
                 <ul className="flex flex-wrap gap-1.5">
                   {draft.skuIds.map((s) => (
-                    <li key={s} className="tabular flex items-center gap-1 rounded-full bg-subtle px-2 py-0.5 text-xs">
+                    <li key={s} className={`tabular ${pillCls('neutral')} pr-1`}>
                       {s}
-                      <button type="button" aria-label={t('strategy.field.removeSku', { sku: s })} onClick={() => set({ skuIds: draft.skuIds.filter((x) => x !== s) })}>×</button>
+                      <button type="button" aria-label={t('strategy.field.removeSku', { sku: s })} onClick={() => set({ skuIds: draft.skuIds.filter((x) => x !== s) })} className="grid size-4 place-items-center rounded-full leading-none transition-colors duration-fast hover:bg-subtle hover:text-fg">×</button>
                     </li>
                   ))}
                 </ul>

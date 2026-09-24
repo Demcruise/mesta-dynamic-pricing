@@ -17,7 +17,7 @@ export function ColumnVisibilityMenu({ columns, hidden, onToggle }: Props) {
       <summary
         aria-label={t('common.table.columns')}
         title={t('common.table.columns')}
-        className="grid size-9 cursor-pointer list-none place-items-center rounded-input text-muted transition-colors duration-fast hover:bg-subtle hover:text-fg"
+        className="grid size-9 cursor-pointer list-none place-items-center rounded-input border border-line-strong bg-input text-muted transition-colors duration-fast hover:bg-subtle hover:text-fg [&::-webkit-details-marker]:hidden"
       >
         <Columns3 className="size-4" aria-hidden />
       </summary>

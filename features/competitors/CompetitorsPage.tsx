@@ -12,6 +12,7 @@ import { useTranslation } from '@/lib/i18n';
 import type { CompetitorObservation, Product } from '@/lib/ontology';
 import { useScopedRecommendations, useScopedSkuSet, useSkuList } from '@/lib/queries';
 import { useProductCatalogStore } from '@/lib/stores';
+import { pillCls } from '@/components/ds/Pill';
 
 interface CompetitorAgg {
   name: string;
@@ -82,7 +83,7 @@ export function CompetitorsPage() {
                 <span className="tabular text-xs text-muted">{t('competitors.skusObserved', { n: a.skus })}</span>
                 <span className="tabular flex items-center gap-1 text-xs text-muted">
                   {t('competitors.avgGap')} <DeltaBadge value={a.avgGap} />
-                  <span className="rounded-full bg-subtle px-1.5 py-px">{t(`competitors.direction.${a.direction}`)}</span>
+                  <span className={pillCls('neutral', 'sm')}>{t(`competitors.direction.${a.direction}`)}</span>
                 </span>
                 {a.affectedRecs > 0 && (
                   <Link href="/recommendations?status=pending" className="tabular text-xs text-brand hover:underline">
@@ -97,7 +98,7 @@ export function CompetitorsPage() {
               </div>
               {open === a.name && (
                 <div className="mt-3 overflow-x-auto rounded-card border border-line">
-                  <table className="w-full min-w-[560px] text-sm">
+                  <table className="mesta-table w-full min-w-[560px] text-sm">
                     <caption className="sr-only">{t('competitors.tableCaption', { name: a.name })}</caption>
                     <thead className="bg-subtle text-xs text-muted">
                       <tr className="h-row">
