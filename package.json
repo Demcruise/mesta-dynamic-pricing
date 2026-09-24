@@ -11,7 +11,6 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
-    "@hookform/resolvers": "^5.9.1",
     "@tanstack/react-query": "^5.103.1",
     "@tanstack/react-virtual": "^3.14.13",
     "class-variance-authority": "^0.7.1",
@@ -22,9 +21,7 @@
     "next": "^16.3.5",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
-    "react-hook-form": "^7.88.0",
     "tailwind-merge": "^3.7.0",
-    "zod": "^4.6.5",
     "zustand": "^5.0.15"
   },
   "devDependencies": {
