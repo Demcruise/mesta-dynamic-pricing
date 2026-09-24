@@ -171,4 +171,57 @@ describe('SavedViewMenu', () => {
     expect(localStorage.getItem('legacy-presets')).toBeNull();
     expect(JSON.parse(localStorage.getItem('mesta-views-legacy') ?? '[]')).toEqual([{ name: 'Old', query: 'q=x', hidden: [] }]);
   });
+
+  it('pins the first column when stickyFirst is set (TABLE-001)', () => {
+    render(
+      <MestaDataTable
+        tableId="sticky"
+        caption="Sticky table"
+        columns={columns}
+        rows={rows}
+        getRowId={(r) => r.id}
+        stickyFirst
+      />,
+    );
+    const head = screen.getByRole('columnheader', { name: 'ID' });
+    expect(head.className).toContain('sticky');
+    expect(head.className).toContain('left-0');
+    // The second column is not pinned.
+    expect(screen.getByRole('columnheader', { name: 'Name' }).className).not.toContain('sticky');
+  });
+
+  it('reports additive sort clicks and renders priority badges for multi-sort', () => {
+    const clicks: [string, boolean | undefined][] = [];
+    const { rerender } = render(
+      <MestaDataTable
+        tableId="multi"
+        caption="Multi-sort table"
+        columns={columns}
+        rows={rows}
+        getRowId={(r) => r.id}
+        sort={{ key: 'id', dir: 'asc', levels: [{ key: 'name', dir: 'desc' }], onSort: (k, additive) => clicks.push([k, additive]) }}
+      />,
+    );
+    // Shift-click adds a level; a plain click does not.
+    fireEvent.click(screen.getByRole('button', { name: /Name/ }), { shiftKey: true });
+    fireEvent.click(screen.getByRole('button', { name: /ID/ }));
+    expect(clicks).toEqual([['name', true], ['id', false]]);
+
+    // Both active levels show a priority badge.
+    expect(screen.getByLabelText('Sort priority 1')).toBeInTheDocument();
+    expect(screen.getByLabelText('Sort priority 2')).toBeInTheDocument();
+
+    // A single-level sort renders no badges.
+    rerender(
+      <MestaDataTable
+        tableId="multi"
+        caption="Multi-sort table"
+        columns={columns}
+        rows={rows}
+        getRowId={(r) => r.id}
+        sort={{ key: 'id', dir: 'asc', onSort: () => {} }}
+      />,
+    );
+    expect(screen.queryByLabelText('Sort priority 1')).toBeNull();
+  });
 });

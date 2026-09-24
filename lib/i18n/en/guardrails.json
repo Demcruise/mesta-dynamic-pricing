@@ -112,6 +112,19 @@
     "exceeds_change": "Exceeds change limit"
   },
   "notModelled": "Not modelled",
+  "config": {
+    "scope": {
+      "product": "Configured on the product",
+      "strategy": "Configured on a strategy",
+      "rule": "Configured on a rule",
+      "derived": "Derived from pricing history",
+      "none": "Not configured"
+    },
+    "changed": "last changed {at}",
+    "approval": "Gates approvals",
+    "editable": "Editable by {roles}",
+    "locked": "Not editable in-app"
+  },
   "group": {
     "breached": "Breached",
     "enforced": "Enforced",

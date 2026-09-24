@@ -93,7 +93,8 @@
     "resizeHint": "Seret atau tombol panah · klik dua kali untuk reset",
     "groupBy": "Kelompokkan",
     "groupNone": "Tidak ada",
-    "colAbout": "Tentang {name}"
+    "colAbout": "Tentang {name}",
+    "sortPriority": "Prioritas urutan {n}"
   },
   "perm": {
     "deniedTitle": "Akses ditolak",

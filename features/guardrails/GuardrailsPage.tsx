@@ -9,7 +9,7 @@ import { EmptyState, ErrorState, LoadingRows, PageHeader } from '@/components/ds
 import { Button } from '@/components/ui/button';
 import { inputCls } from '@/components/ui/field';
 import { checkPrice, governingStrategy } from '@/lib/guardrails';
-import { formatPercent, formatPrice } from '@/lib/format';
+import { formatDate, formatPercent, formatPrice } from '@/lib/format';
 import { useTranslation } from '@/lib/i18n';
 import type { Product } from '@/lib/ontology';
 import { useRules, useScopedRecommendations, useScopedSkuList, useStrategies } from '@/lib/queries';
@@ -145,6 +145,22 @@ export function GuardrailsPage() {
                           : t(`guardrails.constraint.${r.id}.detail`)}
                       </p>
                       {clickable && <p className="mt-1 text-xs text-brand">{t(active ? 'guardrails.filterOn' : 'guardrails.filterHint')}</p>}
+                      {/* GR-005: configuration provenance — scope, sources, last change, who can change it. */}
+                      <p className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-0.5 border-t border-line pt-2 text-[11px] text-muted">
+                        <span>{t(`guardrails.config.scope.${r.config.scope}`)}</span>
+                        {r.config.sources.length > 0 && (
+                          <span>· {r.config.sources.slice(0, 2).join(', ')}{r.config.sources.length > 2 ? ` +${r.config.sources.length - 2}` : ''}</span>
+                        )}
+                        {r.config.lastChangedAt && <span>· {t('guardrails.config.changed', { at: formatDate(r.config.lastChangedAt, locale) })}</span>}
+                        {r.config.approvalRequired && (
+                          <span className="rounded-full bg-warn-soft px-1.5 text-warn">{t('guardrails.config.approval')}</span>
+                        )}
+                        <span>
+                          · {r.config.editableBy.length
+                            ? t('guardrails.config.editable', { roles: r.config.editableBy.map((x) => t(`common.role.${x}`)).join(', ') })
+                            : t('guardrails.config.locked')}
+                        </span>
+                      </p>
                     </>
                   );
                   return (

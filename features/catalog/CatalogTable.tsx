@@ -24,7 +24,9 @@ interface Props {
   pendingSkus: Set<string>;
   sort: SortKey;
   dir: 'asc' | 'desc';
-  onSort: (k: SortKey) => void;
+  /** TABLE-001 secondary sort levels (beyond the primary key/dir). */
+  sortLevels?: { key: SortKey; dir: 'asc' | 'desc' }[];
+  onSort: (k: SortKey, additive?: boolean) => void;
   onToggle: (sku: string) => void;
   onToggleAll: () => void;
   onOverride: (p: Product) => void;
@@ -44,7 +46,7 @@ const HEALTH_CLS = { healthy: 'text-up', thin: 'text-warn', critical: 'text-down
 const HEALTH_BAR = { healthy: 'bg-up', thin: 'bg-warn', critical: 'bg-down' } as const;
 
 export function CatalogTable({
-  rows, rowHeight, selected, pendingSkus, sort, dir, onSort, onToggle, onToggleAll, onOverride,
+  rows, rowHeight, selected, pendingSkus, sort, dir, sortLevels, onSort, onToggle, onToggleAll, onOverride,
   onRowClick, detailQuery = '', visibility, toolbar, csv,
 }: Props) {
   const { t, locale } = useTranslation();
@@ -151,13 +153,14 @@ export function CatalogTable({
       columns={columns}
       rows={rows}
       getRowId={(p) => p.sku}
-      sort={{ key: sort, dir, onSort: (k) => onSort(k as SortKey) }}
+      sort={{ key: sort, dir, ...(sortLevels ? { levels: sortLevels } : {}), onSort: (k, additive) => onSort(k as SortKey, additive) }}
       selection={{ selected, onToggle, onToggleAll, label: t('catalog.col.select') }}
       onRowClick={onRowClick}
       virtualize
       rowHeight={rowHeight}
       minWidth={1280}
       resizable
+      stickyFirst
       csv={csv}
       toolbar={toolbar}
       visibility={visibility}

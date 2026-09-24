@@ -112,6 +112,19 @@
     "exceeds_change": "Melebihi batas perubahan"
   },
   "notModelled": "Tidak dimodelkan",
+  "config": {
+    "scope": {
+      "product": "Dikonfigurasi pada produk",
+      "strategy": "Dikonfigurasi pada strategi",
+      "rule": "Dikonfigurasi pada aturan",
+      "derived": "Diturunkan dari riwayat harga",
+      "none": "Belum dikonfigurasi"
+    },
+    "changed": "terakhir diubah {at}",
+    "approval": "Mengatur persetujuan",
+    "editable": "Dapat diubah oleh {roles}",
+    "locked": "Tidak dapat diubah di aplikasi"
+  },
   "group": {
     "breached": "Dilanggar",
     "enforced": "Ditegakkan",

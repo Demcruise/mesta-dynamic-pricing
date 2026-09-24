@@ -93,7 +93,14 @@ export interface MestaDataTableProps<T> {
   columns: DataColumn<T>[];
   rows: T[];
   getRowId: (row: T) => string;
-  sort?: { key: string; dir: 'asc' | 'desc'; onSort: (key: string) => void };
+  sort?: {
+    key: string;
+    dir: 'asc' | 'desc';
+    /** Reports a header click. `additive` is true when Shift/Cmd was held (TABLE-001 multi-sort). */
+    onSort: (key: string, additive?: boolean) => void;
+    /** Secondary levels after the primary, rendered as priority badges in the header. */
+    levels?: { key: string; dir: 'asc' | 'desc' }[];
+  };
   selection?: {
     selected: Set<string>;
     onToggle: (id: string) => void;
@@ -115,6 +122,8 @@ export interface MestaDataTableProps<T> {
   visibility?: ColumnVisibility;
   /** Draggable + keyboard column resize, widths persisted per `tableId`. Switches the table to fixed layout. */
   resizable?: boolean;
+  /** Pins the first visible column while the rest scrolls horizontally (TABLE-001). */
+  stickyFirst?: boolean;
   /** Row grouping options surfaced as a toolbar select. Ignored when `virtualize` is set. */
   groups?: TableGroupOption<T>[];
 }
@@ -124,7 +133,7 @@ const OVERSCAN = 12;
 export function MestaDataTable<T>({
   tableId, caption, columns, rows, getRowId, sort, selection, onRowClick,
   virtualize = false, rowHeight = 44, minWidth = 680, csv, toolbar, visibility,
-  resizable = false, groups,
+  resizable = false, stickyFirst = false, groups,
 }: MestaDataTableProps<T>) {
   const { t } = useTranslation();
   const toast = useToastStore((s) => s.push);
@@ -184,6 +193,11 @@ export function MestaDataTable<T>({
   });
 
   const visible = columns.filter((c) => c.required || !visibility?.hidden.has(c.id));
+  const firstColId = stickyFirst ? visible[0]?.id : undefined;
+  // Multi-sort priority: primary key plus any secondary levels.
+  const sortLevels = sort ? [{ key: sort.key, dir: sort.dir }, ...(sort.levels ?? [])] : [];
+  const levelOf = (key: string | undefined) => (key === undefined ? -1 : sortLevels.findIndex((l) => l.key === key));
+  const dirOf = (key: string | undefined) => sortLevels.find((l) => l.key === key)?.dir;
   const items = virtualize ? virt.getVirtualItems() : null;
   const top = items?.length ? items[0]!.start : 0;
   const bottom = items?.length ? virt.getTotalSize() - items[items.length - 1]!.end : 0;
@@ -229,7 +243,7 @@ export function MestaDataTable<T>({
       className={cn(
         'border-b border-line transition-colors duration-fast',
         !virtualize && 'h-row',
-        selection?.selected.has(getRowId(row)) ? 'bg-selected' : 'hover:bg-subtle',
+        selection?.selected.has(getRowId(row)) ? 'bg-selected' : 'bg-surface hover:bg-subtle',
         onRowClick && 'cursor-pointer',
       )}
     >
@@ -246,7 +260,13 @@ export function MestaDataTable<T>({
       {visible.map((c) => (
         <td
           key={c.id}
-          className={cn('border-b border-line px-3', c.align === 'right' && 'text-right', resizable && 'overflow-hidden')}
+          className={cn(
+            'border-b border-line px-3',
+            c.align === 'right' && 'text-right',
+            resizable && 'overflow-hidden',
+            // Pinned cell inherits the row background so it occludes scrolled content.
+            stickyFirst && c.id === firstColId && 'sticky left-0 z-[5] border-r bg-inherit',
+          )}
         >
           {c.cell(row)}
         </td>
@@ -321,29 +341,36 @@ export function MestaDataTable<T>({
                 </th>
               )}
               {visible.map((c) => {
-                const active = sort !== undefined && c.sortKey === sort.key;
+                const level = levelOf(c.sortKey);
+                const active = sort !== undefined && level >= 0;
+                const dir = dirOf(c.sortKey);
                 const sortable = sort !== undefined && c.sortKey !== undefined;
+                const pinned = stickyFirst && c.id === firstColId;
                 return (
                   <th
                     key={c.id}
                     scope="col"
-                    aria-sort={active ? (sort.dir === 'asc' ? 'ascending' : 'descending') : sortable ? 'none' : undefined}
+                    aria-sort={active ? (dir === 'asc' ? 'ascending' : 'descending') : sortable ? 'none' : undefined}
                     className={cn(
                       'border-b border-line px-3 py-row text-left text-xs font-medium text-muted',
                       c.align === 'right' && 'text-right',
                       resizable && 'relative',
+                      pinned && 'sticky left-0 z-20 border-r bg-subtle',
                     )}
                   >
                     {sortable ? (
                       <button
                         type="button"
-                        onClick={() => sort.onSort(c.sortKey!)}
+                        onClick={(e) => sort.onSort(c.sortKey!, e.shiftKey || e.metaKey || e.ctrlKey)}
                         className={cn('inline-flex items-center gap-1 transition-colors duration-fast hover:text-fg', c.align === 'right' && 'flex-row-reverse')}
                       >
                         {c.header}
                         {active
-                          ? (sort.dir === 'asc' ? <ArrowUp className="size-3" aria-hidden /> : <ArrowDown className="size-3" aria-hidden />)
+                          ? (dir === 'asc' ? <ArrowUp className="size-3" aria-hidden /> : <ArrowDown className="size-3" aria-hidden />)
                           : <ArrowUpDown className="size-3 opacity-40" aria-hidden />}
+                        {active && sortLevels.length > 1 && (
+                          <span className="tabular rounded-full bg-subtle px-1 text-[10px]" aria-label={t('common.table.sortPriority', { n: level + 1 })}>{level + 1}</span>
+                        )}
                       </button>
                     ) : (
                       c.header

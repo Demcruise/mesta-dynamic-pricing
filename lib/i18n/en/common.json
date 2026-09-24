@@ -93,7 +93,8 @@
     "resizeHint": "Drag or use arrow keys · double-click to reset",
     "groupBy": "Group by",
     "groupNone": "None",
-    "colAbout": "About {name}"
+    "colAbout": "About {name}",
+    "sortPriority": "Sort priority {n}"
   },
   "perm": {
     "deniedTitle": "Access denied",

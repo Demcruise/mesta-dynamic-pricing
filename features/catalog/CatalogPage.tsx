@@ -66,12 +66,26 @@ export function CatalogPage() {
     [recs.data],
   );
   const filtered = useMemo(() => applyFilters(skus.data, filters), [skus.data, filters]);
-  const rows = useMemo(() => sortProducts(filtered, filters.sort, filters.dir), [filtered, filters.sort, filters.dir]);
+  const sortLevels = useMemo(
+    () => [{ key: filters.sort, dir: filters.dir }, ...(filters.sort2 ? [{ key: filters.sort2, dir: filters.dir2 }] : [])],
+    [filters.sort, filters.dir, filters.sort2, filters.dir2],
+  );
+  const rows = useMemo(() => sortProducts(filtered, sortLevels), [filtered, sortLevels]);
   const kpis = useMemo(() => computeKpis(filtered, pendingSkus), [filtered, pendingSkus]);
   const selected = useMemo(() => new Set(selectedIds), [selectedIds]);
 
-  const onSort = (k: SortKey) =>
-    setFilters({ ...filters, sort: k, dir: filters.sort === k && filters.dir === 'asc' ? 'desc' : 'asc' });
+  /**
+   * Plain click sets the primary sort (re-click flips direction). Shift/Cmd-click
+   * adds or flips the secondary level — TABLE-001 multi-sort, "where relevant".
+   */
+  const onSort = (k: SortKey, additive = false) => {
+    if (additive && k !== filters.sort) {
+      if (filters.sort2 === k) setFilters({ ...filters, dir2: filters.dir2 === 'asc' ? 'desc' : 'asc' });
+      else setFilters({ ...filters, sort2: k, dir2: 'asc' });
+      return;
+    }
+    setFilters({ ...filters, sort: k, dir: filters.sort === k && filters.dir === 'asc' ? 'desc' : 'asc', sort2: filters.sort2 === k ? null : filters.sort2 });
+  };
 
   const onToggleAll = () => {
     const allIn = rows.length > 0 && rows.every((r) => selected.has(r.sku));
@@ -136,6 +150,7 @@ export function CatalogPage() {
           pendingSkus={pendingSkus}
           sort={filters.sort}
           dir={filters.dir}
+          sortLevels={filters.sort2 ? [{ key: filters.sort2, dir: filters.dir2 }] : undefined}
           onSort={onSort}
           onToggle={toggle}
           onToggleAll={onToggleAll}

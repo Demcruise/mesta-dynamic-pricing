@@ -16,10 +16,13 @@ export interface CatalogFilters {
   gapMax: number | null;
   sort: SortKey;
   dir: 'asc' | 'desc';
+  /** TABLE-001 multi-sort: optional secondary level, applied after the primary. */
+  sort2: SortKey | null;
+  dir2: 'asc' | 'desc';
 }
 
 export const EMPTY_FILTERS: CatalogFilters = {
-  q: '', category: [], elasticity: [], margin: [], stock: [], gapMin: null, gapMax: null, sort: 'sku', dir: 'asc',
+  q: '', category: [], elasticity: [], margin: [], stock: [], gapMin: null, gapMax: null, sort: 'sku', dir: 'asc', sort2: null, dir2: 'asc',
 };
 
 const list = (v: string | null) => (v ? v.split(',').filter(Boolean) : []);
@@ -29,6 +32,7 @@ const SORT_KEYS: SortKey[] = ['sku', 'name', 'category', 'cost', 'price', 'compe
 
 export function parseFilters(sp: URLSearchParams): CatalogFilters {
   const sort = sp.get('sort') as SortKey | null;
+  const sort2 = sp.get('sort2') as SortKey | null;
   return {
     q: sp.get('q') ?? '',
     category: list(sp.get('cat')),
@@ -39,6 +43,8 @@ export function parseFilters(sp: URLSearchParams): CatalogFilters {
     gapMax: num(sp.get('gmax')),
     sort: sort && SORT_KEYS.includes(sort) ? sort : 'sku',
     dir: sp.get('dir') === 'desc' ? 'desc' : 'asc',
+    sort2: sort2 && SORT_KEYS.includes(sort2) && sort2 !== sort ? sort2 : null,
+    dir2: sp.get('dir2') === 'desc' ? 'desc' : 'asc',
   };
 }
 
@@ -53,6 +59,7 @@ export function serializeFilters(f: CatalogFilters): URLSearchParams {
   if (f.gapMax !== null) sp.set('gmax', String(f.gapMax));
   if (f.sort !== 'sku') sp.set('sort', f.sort);
   if (f.dir !== 'asc') sp.set('dir', f.dir);
+  if (f.sort2) { sp.set('sort2', f.sort2); if (f.dir2 !== 'asc') sp.set('dir2', f.dir2); }
   return sp;
 }
 
@@ -92,14 +99,29 @@ const value: Record<SortKey, (p: Product) => string | number> = {
   lastChange: (p) => p.lastChangeAt,
 };
 
-export function sortProducts(products: Product[], key: SortKey, dir: 'asc' | 'desc'): Product[] {
-  const get = value[key];
-  const sign = dir === 'asc' ? 1 : -1;
+export interface SortLevel {
+  key: SortKey;
+  dir: 'asc' | 'desc';
+}
+
+/**
+ * TABLE-001: sorts by one key, or by an ordered list of levels for multi-sort.
+ * Ties always fall back to SKU so the order is stable and deterministic.
+ */
+export function sortProducts(products: Product[], levels: SortLevel[]): Product[];
+export function sortProducts(products: Product[], key: SortKey, dir: 'asc' | 'desc'): Product[];
+export function sortProducts(products: Product[], keyOrLevels: SortKey | SortLevel[], dir?: 'asc' | 'desc'): Product[] {
+  const levels: SortLevel[] = Array.isArray(keyOrLevels) ? keyOrLevels : [{ key: keyOrLevels, dir: dir ?? 'asc' }];
   return [...products].sort((a, b) => {
-    const x = get(a);
-    const y = get(b);
-    const c = typeof x === 'number' && typeof y === 'number' ? x - y : String(x).localeCompare(String(y), undefined, { numeric: true });
-    return c * sign || a.sku.localeCompare(b.sku);
+    for (const { key, dir: d } of levels) {
+      const get = value[key];
+      const x = get(a);
+      const y = get(b);
+      const c = typeof x === 'number' && typeof y === 'number' ? x - y : String(x).localeCompare(String(y), undefined, { numeric: true });
+      const r = c * (d === 'asc' ? 1 : -1);
+      if (r !== 0) return r;
+    }
+    return a.sku.localeCompare(b.sku);
   });
 }
 
