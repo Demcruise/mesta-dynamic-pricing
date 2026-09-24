@@ -1,12 +1,11 @@
 'use client';
 
-import { Check, TriangleAlert } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { EmptyState, LoadingRows, PageHeader } from '@/components/ds/states';
 import { PriceValue } from '@/components/ds/PriceValue';
 import { Button } from '@/components/ui/button';
-import { Field, Input, inputCls } from '@/components/ui/field';
+import { AffixInput, Field, fieldInputCls, Input } from '@/components/ui/field';
 import { activateStrategy, rollbackStrategy, saveStrategy, submitStrategy } from '@/lib/actions/strategy';
 import { CATEGORIES } from '@/lib/categories';
 import { useCan } from '@/lib/hooks';
@@ -17,6 +16,7 @@ import {
   emptyDraft, hasBlocker, overlapSkus, toDraft, validateDraft, type Issue, type IssueCode, type StrategyDraft,
 } from '@/lib/strategy-rules';
 import { GuardrailPreview } from './GuardrailPreview';
+import { StrategyStepNavigation, type StepState } from './StrategyStepNavigation';
 import { useCatalogSelectionStore, useSessionStore, useStrategyDraftStore, useToastStore } from '@/lib/stores';
 import { cn } from '@/lib/utils';
 import { formatDate } from '@/lib/format';
@@ -194,47 +194,27 @@ function Wizard({ strategyId, initial, status, expectedUpdatedAt }: {
         </div>
       )}
 
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[17rem_1fr]">
-        <nav aria-label={t('strategy.step.progress', { n: step + 1, total: STEPS.length })} className="min-w-0 rounded-card border border-line bg-surface p-3 shadow-e1 lg:self-start">
-          <ol className="flex gap-1 overflow-x-auto lg:flex-col lg:gap-0 lg:overflow-visible">
-            {STEPS.map((s, i) => {
+      {/* STRATEGY-001/002 — deterministic two-column contract: 360px rail + fluid form, both stretched
+          to the same row height so the cards share top and bottom edges on every step. */}
+      <div className="grid grid-cols-1 items-stretch gap-6 lg:grid-cols-[minmax(17rem,360px)_minmax(0,1fr)]">
+        <div className="min-w-0 rounded-card border border-line bg-surface p-3">
+          <StrategyStepNavigation
+            label={t('strategy.step.progress', { n: step + 1, total: STEPS.length })}
+            onSelect={(i) => go(i)}
+            steps={STEPS.map((id, i) => {
               const blocked = stepBlocked(i);
-              const done = i < step && !blocked;
-              return (
-                <li key={s} className="lg:border-l lg:border-line lg:first:border-transparent" aria-current={i === step ? 'step' : undefined}>
-                  <button
-                    type="button"
-                    onClick={() => go(i)}
-                    className={cn(
-                      'flex w-full items-start gap-3 rounded-input px-3 py-2 text-left transition-colors duration-fast',
-                      i === step ? 'bg-brand-soft text-brand' : 'text-fg hover:bg-subtle',
-                    )}
-                  >
-                    <span
-                      aria-hidden
-                      className={cn(
-                        'mt-0.5 grid size-6 shrink-0 place-items-center rounded-full border text-xs font-semibold',
-                        i === step ? 'border-brand bg-brand text-brand-fg' : done ? 'border-up bg-up-soft text-up' : blocked ? 'border-critical bg-critical-soft text-critical' : 'border-line text-muted',
-                      )}
-                    >
-                      {done ? <Check className="size-3.5" /> : blocked ? <TriangleAlert className="size-3.5" /> : i + 1}
-                    </span>
-                    <span className="min-w-0">
-                      <span className="block text-sm font-medium">{t(`strategy.step.${s}`)}</span>
-                      <span className={cn('block truncate text-xs', i === step ? 'text-brand' : 'text-faint')}>{stepSummaries[i]}</span>
-                    </span>
-                  </button>
-                </li>
-              );
+              const state: StepState = i === step ? 'current' : blocked ? 'blocked' : i < step ? 'completed' : 'upcoming';
+              return { id, title: t(`strategy.step.${id}`), summary: stepSummaries[i] ?? '—', state };
             })}
-          </ol>
-        </nav>
+          />
+        </div>
 
-        <section className="min-w-0 rounded-card border border-line bg-surface p-5 shadow-e1">
+        <section className="flex min-w-0 flex-col rounded-card border border-line bg-surface">
+        <div className="flex-1 p-6">
         {step === 0 && (
           <div className="flex flex-col gap-4">
             <Field label={t('strategy.field.name')} error={stepBlocked(0) && draft.name === '' ? issueText({ severity: 'blocker', code: 'name_required' }) : undefined}>
-              {(p) => <Input {...p} value={draft.name} onChange={(e) => set({ name: e.target.value })} />}
+              {(p) => <input {...p} className={fieldInputCls} value={draft.name} onChange={(e) => set({ name: e.target.value })} />}
             </Field>
             <fieldset>
               <legend className="mb-1 text-xs font-medium text-muted">{t('strategy.objective.label')}</legend>
@@ -312,24 +292,37 @@ function Wizard({ strategyId, initial, status, expectedUpdatedAt }: {
         )}
 
         {step === 2 && (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <Field label={t('strategy.field.minPrice')}>
-              {(p) => <Input {...p} type="number" value={g.minPrice ?? ''} onChange={(e) => setG({ minPrice: numOrNull(e.target.value) })} />}
-            </Field>
-            <Field label={t('strategy.field.maxPrice')} error={issues.some((i) => i.code === 'min_ge_max') ? issueText({ severity: 'blocker', code: 'min_ge_max' }) : undefined}>
-              {(p) => <Input {...p} type="number" value={g.maxPrice ?? ''} onChange={(e) => setG({ maxPrice: numOrNull(e.target.value) })} />}
-            </Field>
-            <Field label={t('strategy.field.maxChange')} error={issues.some((i) => i.code === 'change_range') ? issueText({ severity: 'blocker', code: 'change_range' }) : undefined}>
-              {(p) => <Input {...p} type="number" value={g.maxChangePercent} onChange={(e) => setG({ maxChangePercent: Number(e.target.value) })} />}
-            </Field>
-            <Field label={t('strategy.field.threshold')} error={issues.some((i) => i.code === 'threshold_range') ? issueText({ severity: 'blocker', code: 'threshold_range' }) : undefined}>
-              {(p) => <Input {...p} type="number" value={g.autoApproveThreshold} onChange={(e) => setG({ autoApproveThreshold: Number(e.target.value) })} />}
-            </Field>
-            <label className="flex items-center gap-2 text-sm sm:col-span-2">
-              <input type="checkbox" checked={g.mapEnforced} onChange={(e) => setG({ mapEnforced: e.target.checked })} />
-              {t('strategy.field.map')}
-            </label>
-            <GuardrailPreview draft={draft} products={products} />
+          <div className="flex flex-col gap-8">
+            <div>
+              <h2 className="text-section">{t('strategy.guardrailForm.title')}</h2>
+              <p className="mt-1 text-body-sm text-muted">{t('strategy.guardrailForm.desc')}</p>
+            </div>
+            {/* STRATEGY-005 — one 2-column field grid, 20px row / 24px column gap, 44px controls. */}
+            <div className="grid grid-cols-1 gap-x-6 gap-y-5 md:grid-cols-2">
+              <Field label={t('strategy.field.minPrice')} optional={t('common.form.optional')} hint={t('strategy.guardrailForm.minHint')}>
+                {(p) => <AffixInput {...p} prefix="IDR" type="number" inputMode="numeric" min={0} value={g.minPrice ?? ''} onChange={(e) => setG({ minPrice: numOrNull(e.target.value) })} />}
+              </Field>
+              <Field label={t('strategy.field.maxPrice')} optional={t('common.form.optional')} hint={t('strategy.guardrailForm.maxHint')}
+                error={issues.some((i) => i.code === 'min_ge_max') ? issueText({ severity: 'blocker', code: 'min_ge_max' }) : undefined}>
+                {(p) => <AffixInput {...p} prefix="IDR" type="number" inputMode="numeric" min={0} value={g.maxPrice ?? ''} onChange={(e) => setG({ maxPrice: numOrNull(e.target.value) })} />}
+              </Field>
+              <Field label={t('strategy.field.maxChange')} hint={t('strategy.guardrailForm.changeHint')}
+                error={issues.some((i) => i.code === 'change_range') ? issueText({ severity: 'blocker', code: 'change_range' }) : undefined}>
+                {(p) => <AffixInput {...p} suffix="%" type="number" inputMode="decimal" value={g.maxChangePercent} onChange={(e) => setG({ maxChangePercent: Number(e.target.value) })} />}
+              </Field>
+              <Field label={t('strategy.field.threshold')} hint={t('strategy.guardrailForm.thresholdHint')}
+                error={issues.some((i) => i.code === 'threshold_range') ? issueText({ severity: 'blocker', code: 'threshold_range' }) : undefined}>
+                {(p) => <AffixInput {...p} suffix="%" type="number" inputMode="numeric" value={g.autoApproveThreshold} onChange={(e) => setG({ autoApproveThreshold: Number(e.target.value) })} />}
+              </Field>
+              <label className="flex items-start gap-3 rounded-input border border-line-strong px-3.5 py-3 md:col-span-2">
+                <input type="checkbox" className="mt-0.5 size-4 accent-brand" checked={g.mapEnforced} onChange={(e) => setG({ mapEnforced: e.target.checked })} />
+                <span>
+                  <span className="block text-label text-fg">{t('strategy.field.map')}</span>
+                  <span className="block text-caption text-faint">{t('strategy.guardrailForm.mapHint')}</span>
+                </span>
+              </label>
+            </div>
+            <GuardrailPreview draft={draft} products={products} className="border-t border-divider pt-6" />
           </div>
         )}
 
@@ -412,8 +405,10 @@ function Wizard({ strategyId, initial, status, expectedUpdatedAt }: {
           </div>
         )}
 
-        {/* I-05: the footer stays pinned — next/back and finish are always reachable mid-step. */}
-        <div className="sticky bottom-0 -mx-5 -mb-5 mt-5 flex flex-wrap justify-between gap-2 border-t border-line bg-surface/95 px-5 py-2 backdrop-blur">
+        </div>
+        {/* STRATEGY-018 / I-05: footer at the bottom of the form card (sticky while scrolling long steps),
+            Back left, primary right, stable 64px height. */}
+        <div className="sticky bottom-0 flex min-h-16 flex-wrap items-center justify-between gap-2 rounded-b-card border-t border-divider bg-surface/95 px-6 py-3 backdrop-blur">
           <Button variant="secondary" disabled={step === 0} onClick={() => go(step - 1)}>{t('strategy.action.back')}</Button>
           {fromReview && step < STEPS.length - 1 ? (
             <Button disabled={stepBlocked(step)} onClick={() => go(STEPS.length - 1)}>{t('strategy.action.backToReview')}</Button>

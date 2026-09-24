@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { Drawer } from '@/components/ds/Drawer';
-import { PriceValue } from '@/components/ds/PriceValue';
+import { Money, PriceMove } from '@/components/ds/numeric';
 import { StatusBadge } from '@/components/ds/StatusBadge';
 import { EmptyState, ErrorState, LoadingRows, PageHeader } from '@/components/ds/states';
 import { RecoveryNotice } from '@/components/ds/trust';
@@ -65,13 +65,13 @@ export function ApprovalsPage() {
       ) : total === 0 ? (
         <EmptyState variant="caughtUp" title={t('approvals.empty')} />
       ) : (
-        <div className="flex max-w-5xl flex-col gap-6">
+        <div className="flex flex-col gap-8">
           {groups.chain.length > 0 && (
             <section aria-label={t('approvals.chain.title')}>
-              <h2 className="mb-2 text-sm font-semibold">
+              <h2 className="text-section">
                 {t('approvals.chain.title')} <span className="tabular text-muted">({groups.chain.length})</span>
               </h2>
-              <p className="mb-2 text-xs text-muted">{t('approvals.chain.desc')}</p>
+              <p className="mb-4 mt-1 text-body-sm text-muted">{t('approvals.chain.desc')}</p>
               {/* N-01 condensed queue: the chain group renders rows, not full cards. */}
               <CondensedQueue recs={groups.chain} products={productsBySku} locale={locale} t={t} onInspect={setInspecting} showChain />
             </section>
@@ -79,10 +79,10 @@ export function ApprovalsPage() {
 
           {groups.escalated.length > 0 && (
             <section aria-label={t('approvals.escalated.title')}>
-              <h2 className="mb-2 text-sm font-semibold">
+              <h2 className="text-section">
                 {t('approvals.escalated.title')} <span className="tabular text-muted">({groups.escalated.length})</span>
               </h2>
-              <p className="mb-2 text-xs text-muted">{t('approvals.escalated.desc')}</p>
+              <p className="mb-4 mt-1 text-body-sm text-muted">{t('approvals.escalated.desc')}</p>
               <CondensedQueue recs={groups.escalated} products={productsBySku} locale={locale} t={t} onInspect={setInspecting} />
             </section>
           )}
@@ -120,14 +120,11 @@ export function ApprovalsPage() {
         open={inspecting !== null}
         onClose={() => setInspecting(null)}
         title={inspecting ? `${inspecting.id} · ${inspecting.sku}` : ''}
+        href={inspecting ? `/recommendations/${inspecting.id}` : undefined}
+        hrefLabel={t('approvals.action.openDetail')}
       >
         {inspecting && (
-          <div className="flex flex-col gap-3">
-            <RecommendationCard rec={inspecting} product={productsBySku.get(inspecting.sku)} defaultOpen />
-            <Link href={`/recommendations/${inspecting.id}`} className="text-sm text-brand hover:underline">
-              {t('approvals.action.openDetail')} →
-            </Link>
-          </div>
+          <RecommendationCard rec={inspecting} product={productsBySku.get(inspecting.sku)} variant="panel" />
         )}
       </Drawer>
     </>
@@ -136,7 +133,13 @@ export function ApprovalsPage() {
 
 type T = (key: string, vars?: Record<string, string | number>) => string;
 
-/** N-01 condensed approval queue: one row per rec — identity, prices, impact, chain position, investigate. */
+/**
+ * N-01 condensed approval queue — APPROVAL-001…007/025/028. Fixed column tracks shared by header
+ * and rows (Recommendation 3fr · Price move · Margin impact · Awaiting · Age · Action), price move as
+ * one PriceMove value, margin impact as one signed Money token (no detached minus), numeric columns
+ * right-aligned on one edge, identity on two controlled lines. Age folds into the identity line
+ * below xl so the medium layout keeps five readable columns.
+ */
 function CondensedQueue({ recs, products, locale, t, onInspect, showChain = false }: {
   recs: Recommendation[];
   products: Map<string, import('@/lib/ontology').Product>;
@@ -146,41 +149,53 @@ function CondensedQueue({ recs, products, locale, t, onInspect, showChain = fals
   showChain?: boolean;
 }) {
   return (
-    <div className="overflow-x-auto rounded-card border border-line bg-surface shadow-e1">
-      <table className="mesta-table w-full min-w-[640px] text-sm">
+    <div className="overflow-x-auto rounded-card border border-line bg-surface">
+      <table className="mesta-table rows-lg min-w-[880px]" style={{ tableLayout: 'fixed' }}>
         <caption className="sr-only">{t('approvals.queue.caption')}</caption>
-        <thead className="bg-subtle text-xs text-muted">
-          <tr className="h-row">
-            <th scope="col" className="px-3 py-row text-left font-medium">{t('approvals.queue.rec')}</th>
-            <th scope="col" className="px-3 py-row text-right font-medium">{t('approvals.queue.move')}</th>
-            <th scope="col" className="px-3 py-row text-right font-medium">{t('approvals.queue.impact')}</th>
-            {showChain && <th scope="col" className="px-3 py-row text-left font-medium">{t('approvals.queue.awaiting')}</th>}
-            <th scope="col" className="px-3 py-row text-left font-medium">{t('approvals.queue.age')}</th>
-            <th scope="col" className="px-3 py-row text-right font-medium"><span className="sr-only">{t('approvals.queue.investigate')}</span></th>
+        <colgroup>
+          <col />
+          <col style={{ width: 256 }} />
+          <col style={{ width: 160 }} />
+          {showChain && <col style={{ width: 200 }} />}
+          <col className="max-xl:hidden" style={{ width: 120 }} />
+          <col style={{ width: 144 }} />
+        </colgroup>
+        <thead>
+          <tr>
+            <th scope="col" className="text-left">{t('approvals.queue.rec')}</th>
+            <th scope="col" className="text-right">{t('approvals.queue.move')}</th>
+            <th scope="col" className="text-right">{t('approvals.queue.impact')}</th>
+            {showChain && <th scope="col" className="text-left">{t('approvals.queue.awaiting')}</th>}
+            <th scope="col" className="text-left max-xl:hidden">{t('approvals.queue.age')}</th>
+            <th scope="col" className="text-right"><span className="sr-only">{t('approvals.queue.investigate')}</span></th>
           </tr>
         </thead>
         <tbody>
           {recs.map((r) => {
             const level = pendingApprovalLevel(r);
             const chainLen = approvalChain(r).length;
+            const product = products.get(r.sku);
             return (
-              <tr key={r.id} className="h-row border-t border-line transition-colors duration-fast hover:bg-subtle">
-                <td className="px-3 py-row">
-                  <Link href={`/recommendations/${r.id}`} className="tabular font-medium text-brand hover:underline">{r.id}</Link>
-                  <span className="tabular text-muted"> · {r.sku}</span>
+              <tr key={r.id}>
+                <td>
+                  <Link href={`/recommendations/${r.id}`} className="tabular block font-semibold text-brand [overflow-wrap:anywhere] hover:underline">{r.id}</Link>
+                  <span className="block truncate text-caption text-faint">
+                    <span className="tabular whitespace-nowrap">{r.sku}</span>
+                    {product && <> · {product.name}</>}
+                    <span className="xl:hidden"> · {formatRelativeTime(r.createdAt, locale)}</span>
+                  </span>
                 </td>
-                <td className="tabular px-3 text-right">
-                  {formatPrice(r.currentPrice, locale)} → {formatPrice(r.proposedPrice, locale)}
-                </td>
-                <td className="px-3 text-right"><PriceValue value={r.projectedMarginImpact} /></td>
+                <td className="num"><PriceMove from={r.currentPrice} to={r.proposedPrice} /></td>
+                <td className="num"><Money value={r.projectedMarginImpact} signed className="font-semibold" /></td>
                 {showChain && (
-                  <td className="px-3 text-xs text-muted">
-                    {t('approvals.chain.waiting', { level: level ? t(`common.role.${level}`) : '—', done: r.approvals.length, total: chainLen })}
+                  <td>
+                    <span className="block truncate font-medium text-fg">{t('approvals.queue.awaitingRole', { role: level ? t(`common.role.${level}`) : '—' })}</span>
+                    <span className="tabular block truncate text-caption text-faint">{t('approvals.queue.levels', { done: r.approvals.length, total: chainLen })}</span>
                   </td>
                 )}
-                <td className="px-3 text-xs text-muted">{formatRelativeTime(r.createdAt, locale)}</td>
-                <td className="px-3 text-right">
-                  <Button size="sm" variant="secondary" onClick={() => onInspect(r)}>{t('approvals.action.investigate')}</Button>
+                <td className="tabular whitespace-nowrap text-muted max-xl:hidden">{formatRelativeTime(r.createdAt, locale)}</td>
+                <td className="text-right">
+                  <Button size="sm" variant="secondary" className="min-w-28" onClick={() => onInspect(r)}>{t('approvals.action.investigate')}</Button>
                 </td>
               </tr>
             );
@@ -216,7 +231,7 @@ function DelegationStrip({ t, locale }: { t: T; locale: 'en' | 'id' }) {
   };
 
   return (
-    <section aria-label={t('approvals.delegation.title')} className="mb-6 max-w-3xl rounded-card border border-line bg-surface p-card shadow-e1">
+    <section aria-label={t('approvals.delegation.title')} className="mb-8 rounded-card border border-line bg-surface p-6">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
           <h2 className="text-sm font-semibold">{t('approvals.delegation.title')}</h2>
@@ -271,16 +286,16 @@ function WorkflowSection({ title, desc, recs, locale, resubmit, t, ctaKey, extra
 }) {
   return (
     <section aria-label={title}>
-      <h2 className="mb-2 text-sm font-semibold">{title} <span className="tabular text-muted">({recs.length})</span></h2>
-      <p className="mb-2 text-xs text-muted">{desc}</p>
+      <h2 className="text-section">{title} <span className="tabular text-muted">({recs.length})</span></h2>
+      <p className="mb-4 mt-1 text-body-sm text-muted">{desc}</p>
       {extra && <RecoveryNotice className="mb-2">{extra}</RecoveryNotice>}
       <ul className="grid grid-cols-1 gap-2">
         {recs.map((r) => (
-          <li key={r.id} className="flex flex-wrap items-center gap-x-4 gap-y-1.5 rounded-card border border-line bg-surface p-3 shadow-e1">
+          <li key={r.id} className="flex flex-wrap items-center gap-x-4 gap-y-1.5 rounded-card border border-line bg-surface px-5 py-4">
             <StatusBadge status={r.status} />
             <Link href={`/recommendations/${r.id}`} className="tabular text-sm font-medium text-brand hover:underline">{r.id}</Link>
             <span className="tabular text-sm">{r.sku}</span>
-            <span className="tabular text-sm text-muted">{formatPrice(r.currentPrice, locale)} → {formatPrice(r.proposedPrice, locale)}</span>
+            <PriceMove from={r.currentPrice} to={r.proposedPrice} align="start" className="text-sm" />
             <span className="text-xs text-faint">{formatDate(r.createdAt, locale)}</span>
             {r.decisionNote && <span className="w-full text-xs text-muted">“{r.decisionNote}”</span>}
             <span className="ms-auto"><Button size="sm" variant="secondary" onClick={() => resubmit(r)}>{t(ctaKey)}</Button></span>

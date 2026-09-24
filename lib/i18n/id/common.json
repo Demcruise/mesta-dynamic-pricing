@@ -94,7 +94,8 @@
     "groupBy": "Kelompokkan",
     "groupNone": "Tidak ada",
     "colAbout": "Tentang {name}",
-    "sortPriority": "Prioritas urutan {n}"
+    "sortPriority": "Prioritas urutan {n}",
+    "moreActions": "Aksi lain"
   },
   "perm": {
     "deniedTitle": "Akses ditolak",
@@ -126,7 +127,8 @@
     "reset": "Atur ulang cakupan",
     "category": "Kategori",
     "allCategories": "Semua kategori",
-    "dataAsOf": "Data per {at}"
+    "dataAsOf": "Data per {at}",
+    "dataScope": "Cakupan data"
   },
   "cmd": {
     "open": "Cari atau lompat ke…",
@@ -350,5 +352,70 @@
   "freshness": {
     "updated": "Diperbarui {at}",
     "never": "Belum ada data"
+  },
+  "bounds": {
+    "title": "Rentang harga efektif",
+    "help": "Batas efektif adalah harga yang boleh dipakai strategi setelah batas produk, MAP, dan guardrail strategi diterapkan.",
+    "effectiveMin": "Minimum efektif",
+    "effectiveMax": "Maksimum efektif",
+    "current": "Harga saat ini",
+    "proposed": "Harga usulan",
+    "noMin": "Tanpa minimum",
+    "noMax": "Tanpa maksimum",
+    "noRange": "Tidak ada rentang valid",
+    "row": {
+      "product": "Batas produk",
+      "strategy": "Batas strategi",
+      "change": "Perubahan maks. per siklus",
+      "map": "Batas bawah MAP",
+      "effective": "Batas efektif"
+    },
+    "source": {
+      "product": "Data master produk",
+      "strategy": "Guardrail strategi",
+      "strategyNamed": "Guardrail strategi · {name}",
+      "change": "±{pct}% dari harga saat ini",
+      "map": "Kebijakan MAP ditegakkan",
+      "mapOff": "Tidak ditegakkan oleh strategi ini",
+      "current": "Harga katalog saat ini",
+      "effective": "Irisan semua batas di atas"
+    },
+    "term": {
+      "product": "Minimum produk",
+      "productMax": "Maksimum produk",
+      "strategy": "Minimum strategi",
+      "strategyMax": "Maksimum strategi",
+      "change": "Batas bawah perubahan per siklus",
+      "changeMax": "Batas atas perubahan per siklus",
+      "map": "MAP"
+    },
+    "state": {
+      "within": "Harga saat ini berada dalam batas.",
+      "below": "Harga saat ini di bawah minimum efektif.",
+      "above": "Harga saat ini di atas maksimum efektif.",
+      "equal": "Tidak ada pergerakan harga yang diizinkan dengan batasan saat ini.",
+      "invalid": "Batasan ini tidak menyisakan rentang harga yang valid. Tinjau minimum, maksimum, MAP, dan batas strategi."
+    },
+    "derivedFrom": "Dari {sources}",
+    "binding": "Menentukan",
+    "why": "Bagaimana ini dihitung?",
+    "aria": "Batas harga efektif {min} sampai {max}. Harga saat ini {current}.",
+    "ariaInvalid": "Tidak ada rentang harga valid: minimum efektif {min} di atas maksimum efektif {max}. Harga saat ini {current}.",
+    "ariaMap": " MAP {map}.",
+    "strategyUnset": "Tanpa min/maks",
+    "changeOff": "Tanpa batas perubahan",
+    "previewFor": "Pratinjau SKU",
+    "scopeOutside": "{n} dari {total} SKU dalam cakupan saat ini di luar batas efektifnya",
+    "scopeInside": "Semua {total} SKU dalam cakupan saat ini berada dalam batas efektifnya",
+    "noScope": "Tambahkan kategori atau SKU di Cakupan untuk melihat pratinjau batas efektif."
+  },
+  "form": {
+    "optional": "opsional"
+  },
+  "filter": {
+    "clear": "Hapus filter",
+    "view": "Filter tampilan",
+    "all": "Semua",
+    "any": "Semua"
   }
 }

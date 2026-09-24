@@ -28,8 +28,8 @@ import {
 import { OverrideDialog } from './OverrideDialog';
 import { SkuDrawer } from './SkuDrawer';
 
-/** Reference row rhythm: 56px comfortable (two-line cells), 44px compact. */
-const ROW_HEIGHT = { compact: 44, comfortable: 56 } as const;
+/** Table contract identity rows (DS-002): 72px comfortable, 56px compact — must match --table-row-h-lg. */
+const ROW_HEIGHT = { compact: 56, comfortable: 72 } as const;
 const isDev = process.env.NODE_ENV !== 'production';
 
 export function CatalogPage() {
@@ -50,8 +50,9 @@ export function CatalogPage() {
   const setFailQueries = useDevStore((s) => s.setFailQueries);
   const [overrideTarget, setOverrideTarget] = useState<Product | null>(null);
   const [drawerTarget, setDrawerTarget] = useState<Product | null>(null);
-  // Category is shown under the product name; the standalone column stays available for sorting.
-  const columnVis = useColumnVisibility('catalog', ['category']);
+  // Category is shown under the product name and cost is secondary (TABLE-021 priority): both stay
+  // available from the column menu, hidden by default so the core tracks fit a laptop viewport.
+  const columnVis = useColumnVisibility('catalog', ['category', 'cost']);
   const can = useCan();
 
   // Filters live in the URL so KPIs, table and shared links agree.
@@ -198,7 +199,7 @@ export function CatalogPage() {
             <RoleGate action="catalog.apply_strategy">
               <Link
                 href="/strategy/new"
-                className="inline-flex h-9 items-center rounded-input bg-brand px-3 text-sm font-medium text-brand-fg transition-opacity duration-fast hover:opacity-90"
+                className="inline-flex h-control-md items-center rounded-input bg-brand px-3 text-sm font-medium text-brand-fg transition-opacity duration-fast hover:opacity-90"
               >
                 {t('catalog.action.applyStrategy')}
               </Link>

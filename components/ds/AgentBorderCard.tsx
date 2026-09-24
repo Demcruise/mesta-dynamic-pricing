@@ -7,32 +7,28 @@ import { cn } from '@/lib/utils';
 export type Actor = 'agent' | 'human' | 'rule';
 export type DecisionState = 'pending' | 'approved' | 'rejected' | 'adjusted' | 'changes_requested' | 'escalated' | 'expired';
 
-const BORDER: Record<Actor, string> = {
-  agent: 'border-l-agent',
-  human: 'border-l-brand',
-  rule: 'border-l-hold',
-};
-
-/** Once a human decides, the border encodes the outcome — readable without the status text. */
-const STATE_BORDER: Record<DecisionState, string> = {
-  pending: 'border-l-agent',
-  approved: 'border-l-up',
-  rejected: 'border-l-down',
-  adjusted: 'border-l-brand',
-  changes_requested: 'border-l-warn',
-  escalated: 'border-l-warn',
-  expired: 'border-l-line',
-};
-
-export function AgentBorderCard({ actor, status, children, className }: {
+/**
+ * Card for content authored by an agent, a human or a rule. Backlog v11 RECOMMENDATION-001/002,
+ * APPROVAL-008/015: no permanent coloured left rail — the card is neutral (1px border, surface,
+ * subtle hover) and provenance/decision state are carried by explicit badges in the content plus
+ * the screen-reader line below. `selected` gives the tinted selected state.
+ */
+export function AgentBorderCard({ actor, status, selected = false, children, className }: {
   actor: Actor;
   status?: DecisionState;
+  selected?: boolean;
   children: ReactNode;
   className?: string;
 }) {
   const { t } = useTranslation();
   return (
-    <article className={cn('rounded-card border border-l-4 border-line bg-surface p-card shadow-e1', status ? STATE_BORDER[status] : BORDER[actor], className)}>
+    <article
+      className={cn(
+        'rounded-card border bg-surface p-6 transition-colors duration-fast',
+        selected ? 'border-brand bg-brand-soft/40' : 'border-line hover:border-line-strong',
+        className,
+      )}
+    >
       <span className="sr-only">{t(`common.agent.${actor}`)}{status ? ` · ${t(`common.status.${status}`)}` : ''}</span>
       {children}
     </article>

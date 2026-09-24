@@ -51,11 +51,11 @@ function Detail({ p }: { p: Product }) {
         actions={
           <>
             <RoleGate action="simulation.use">
-              <Link href={`/simulation?sku=${p.sku}`} className="inline-flex h-9 items-center gap-1.5 rounded-input bg-brand px-3 text-sm font-medium text-brand-fg">
+              <Link href={`/simulation?sku=${p.sku}`} className="inline-flex h-control-md items-center gap-1.5 rounded-input bg-brand px-3 text-sm font-medium text-brand-fg">
                 <FlaskConical className="size-4" aria-hidden />{t('catalog.action.simulate')}
               </Link>
             </RoleGate>
-            <Link href={`/audit?sku=${p.sku}`} className="inline-flex h-9 items-center gap-1.5 rounded-input border border-line bg-surface px-3 text-sm">
+            <Link href={`/audit?sku=${p.sku}`} className="inline-flex h-control-md items-center gap-1.5 rounded-input border border-line bg-surface px-3 text-sm">
               <ScrollText className="size-4" aria-hidden />{t('catalog.action.audit')}
             </Link>
           </>

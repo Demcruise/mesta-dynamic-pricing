@@ -16,7 +16,7 @@ const button = cva(
         selected: 'border border-brand/30 bg-brand-soft text-brand',
         destructive: 'border border-white/20 bg-down text-brand-fg shadow-cta hover:opacity-90',
       },
-      size: { sm: 'h-8 px-2.5 text-xs', md: 'h-9 px-3.5 text-[13px]', icon: 'size-9 max-sm:size-11' },
+      size: { sm: 'h-control-sm px-2.5 text-xs', md: 'h-control-md px-3.5 text-[13px]', icon: 'size-control-md max-sm:size-11' },
     },
     defaultVariants: { variant: 'primary', size: 'md' },
   },

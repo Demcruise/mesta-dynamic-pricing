@@ -60,7 +60,7 @@ export function StrategyListPage() {
         subtitle={t('strategy.subtitle')}
         actions={
           <RoleGate action="strategy.create">
-            <Link href="/strategy/new" className="inline-flex h-9 items-center rounded-input bg-brand px-3 text-sm font-medium text-brand-fg">
+            <Link href="/strategy/new" className="inline-flex h-control-md items-center rounded-input bg-brand px-3 text-sm font-medium text-brand-fg">
               {t('strategy.new')}
             </Link>
           </RoleGate>

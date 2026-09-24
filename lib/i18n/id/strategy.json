@@ -57,7 +57,14 @@
     "guardrail": "Guardrail",
     "rules": "Sinyal & aturan",
     "review": "Tinjau",
-    "progress": "Langkah {n} dari {total}"
+    "progress": "Langkah {n} dari {total}",
+    "needsAttention": "Perlu perhatian",
+    "state": {
+      "completed": "Selesai",
+      "current": "Langkah saat ini",
+      "upcoming": "Belum dimulai",
+      "blocked": "Ada masalah pemblokir"
+    }
   },
   "schedule": {
     "title": "Jadwalkan aktivasi",
@@ -81,8 +88,8 @@
     "skus": "SKU dalam cakupan",
     "addSku": "Tambah SKU",
     "addSkuHint": "Ketik SKU lalu tekan Tambah",
-    "minPrice": "Harga minimum (opsional)",
-    "maxPrice": "Harga maksimum (opsional)",
+    "minPrice": "Harga minimum",
+    "maxPrice": "Harga maksimum",
     "map": "Terapkan MAP",
     "maxChange": "Perubahan harga maks per siklus (%)",
     "threshold": "Ambang keyakinan auto-approve (0–100)",
@@ -160,5 +167,14 @@
     "pendingRecs": "Dalam antrean",
     "acceptance": "Acceptance",
     "projected": "Margin terproyeksi"
+  },
+  "guardrailForm": {
+    "title": "Guardrail",
+    "desc": "Membatasi setiap harga yang dapat direkomendasikan strategi ini. Kosongkan kolom harga untuk tanpa batas.",
+    "minHint": "Harga terendah yang boleh ditetapkan strategi. Kosong = tanpa minimum strategi.",
+    "maxHint": "Harga tertinggi yang boleh ditetapkan strategi. Kosong = tanpa maksimum strategi.",
+    "changeHint": "Perubahan terbesar per siklus harga, naik atau turun.",
+    "thresholdHint": "Rekomendasi dengan keyakinan di atas ambang ini dapat disetujui otomatis.",
+    "mapHint": "Jangan pernah menetapkan harga di bawah harga iklan minimum."
   }
 }

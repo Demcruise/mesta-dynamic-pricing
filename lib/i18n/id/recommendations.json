@@ -36,7 +36,15 @@
     "requiresManager": "Perlu persetujuan manajer",
     "chainRecorded": "Persetujuan tercatat — menunggu {level}",
     "requires_manager": "Perlu manajer",
-    "requires_approver": "Perlu approver finansial"
+    "requires_approver": "Perlu approver finansial",
+    "moreSignals": "+{n} sinyal lainnya",
+    "noDriver": "Tidak ada pendorong dominan",
+    "summary": "Ringkasan",
+    "confidence": "Keyakinan",
+    "staleShort": "Data harga atau pesaing berubah",
+    "breachShort": "Harga usulan di luar batas",
+    "staleAckShort": "Data terkini sudah dicek ulang",
+    "bounds": "Batas harga"
   },
   "view": {
     "label": "Tampilan",

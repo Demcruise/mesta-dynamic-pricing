@@ -28,7 +28,7 @@ export function RecommendationDetailPage({ recId }: { recId: string }) {
 
   return (
     <>
-      <Link href="/recommendations" className="mb-3 inline-flex items-center gap-1 text-sm text-muted transition-colors duration-fast hover:text-fg">
+      <Link href="/recommendations" className="mb-6 inline-flex items-center gap-1 text-sm text-muted transition-colors duration-fast hover:text-fg">
         <ArrowLeft className="size-4" aria-hidden />{t('recommendations.back')}
       </Link>
       {q.isLoading ? <LoadingRows rows={3} rowHeight={120} /> : q.isError ? (
@@ -37,19 +37,19 @@ export function RecommendationDetailPage({ recId }: { recId: string }) {
         <EmptyState title={t('recommendations.notFound')} />
       ) : (
         <>
-          <PageHeader title={q.data.id} subtitle={q.data.sku} />
-          <div className="grid max-w-3xl grid-cols-1 gap-4">
-            <RecommendationCard rec={q.data} product={product} defaultOpen stickyActions />
-            <section className="rounded-card border border-line bg-surface p-card shadow-e1">
-              <h2 className="mb-2 text-sm font-semibold">{t('recommendations.logic.title')}</h2>
+          <div className="mx-auto w-full max-w-[1200px]"><PageHeader title={q.data.id} subtitle={q.data.sku} /></div>
+          <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-6 pb-8">
+            <RecommendationCard rec={q.data} product={product} defaultOpen stickyActions variant="detail" />
+            <section className="rounded-card border border-line bg-surface p-6">
+              <h2 className="mb-4 text-section">{t('recommendations.logic.title')}</h2>
               <AppliedLogic rec={q.data} product={product} strategy={strategy} rule={rule} scenario={scenario ?? null} />
             </section>
-            <section className="rounded-card border border-line bg-surface p-card shadow-e1">
-              <h2 className="mb-2 text-sm font-semibold">{t('recommendations.confidence.title')}</h2>
+            <section className="rounded-card border border-line bg-surface p-6">
+              <h2 className="mb-4 text-section">{t('recommendations.confidence.title')}</h2>
               <ConfidenceBreakdown rec={q.data} product={product} observations={observations} />
             </section>
-            <section className="rounded-card border border-line bg-surface p-card shadow-e1">
-              <h2 className="mb-2 text-sm font-semibold">{t('recommendations.rules.title')}</h2>
+            <section className="rounded-card border border-line bg-surface p-6">
+              <h2 className="mb-4 text-section">{t('recommendations.rules.title')}</h2>
               <RuleEvaluation rec={q.data} product={product} />
               {q.data.ruleId && (
                 <p className="mt-2 text-xs text-muted">
@@ -59,8 +59,8 @@ export function RecommendationDetailPage({ recId }: { recId: string }) {
               )}
             </section>
             {q.data.status === 'pending' && (
-              <section className="rounded-card border border-line bg-surface p-card shadow-e1">
-                <h2 className="mb-2 text-sm font-semibold">{t('recommendations.decision.title')}</h2>
+              <section className="rounded-card border border-line bg-surface p-6">
+                <h2 className="mb-4 text-section">{t('recommendations.decision.title')}</h2>
                 <ConsequencePreview
                   items={[
                     { label: t('recommendations.decision.priceMove'), value: `${formatPrice(q.data.currentPrice, locale)} → ${formatPrice(q.data.proposedPrice, locale)}` },
@@ -74,8 +74,8 @@ export function RecommendationDetailPage({ recId }: { recId: string }) {
                 </RecoveryNotice>
               </section>
             )}
-            <section className="rounded-card border border-line bg-surface p-card shadow-e1">
-              <h2 className="mb-2 text-sm font-semibold">{t('recommendations.audit')}</h2>
+            <section className="rounded-card border border-line bg-surface p-6">
+              <h2 className="mb-4 text-section">{t('recommendations.audit')}</h2>
               {events.length === 0 ? (
                 <p className="text-sm text-muted">{t('catalog.detail.none')}</p>
               ) : (

@@ -9,6 +9,7 @@ import { useDeploymentRecords, useRecommendations } from '@/lib/queries';
 import { useSessionStore, useUiStore } from '@/lib/stores';
 import { cn } from '@/lib/utils';
 import { DevRoleSelect } from './DevRoleSelect';
+import { MestaLogo } from './MestaLogo';
 import { RoleGate } from './RoleGate';
 import { isActive, NAV_SECTIONS, type NavItem } from './nav';
 
@@ -108,10 +109,11 @@ export function Sidebar() {
         {collapsed ? <PanelLeftOpen className="size-3.5" aria-hidden /> : <PanelLeftClose className="size-3.5" aria-hidden />}
       </button>
 
-      <div className="flex h-14 shrink-0 items-center gap-2 px-4 font-semibold">
-        <span className="grid size-6 shrink-0 place-items-center rounded bg-brand text-xs text-brand-fg" aria-hidden>M</span>
-        <span className={labelCls}>{t('common.app.name')}</span>
-      </div>
+      <Link href="/overview" aria-label={t('common.app.name')} className="flex h-14 shrink-0 items-center px-4">
+        {/* Icon rail (tablet, or collapsed at lg+) shows the mark; the expanded sidebar shows mark + wordmark. */}
+        <MestaLogo variant="mark" label={t('common.app.name')} className={rail ? '' : 'lg:hidden'} />
+        {!rail && <MestaLogo variant="full" label={t('common.app.name')} className="hidden lg:inline-flex" />}
+      </Link>
 
       <nav aria-label={t('common.nav.primary')} className="flex-1 overflow-y-auto overflow-x-hidden px-2 py-2">
         {NAV_SECTIONS.map((section, si) => (

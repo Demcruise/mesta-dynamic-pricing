@@ -94,7 +94,8 @@
     "groupBy": "Group by",
     "groupNone": "None",
     "colAbout": "About {name}",
-    "sortPriority": "Sort priority {n}"
+    "sortPriority": "Sort priority {n}",
+    "moreActions": "More actions"
   },
   "perm": {
     "deniedTitle": "Access denied",
@@ -126,7 +127,8 @@
     "reset": "Reset scope",
     "category": "Category",
     "allCategories": "All categories",
-    "dataAsOf": "Data as of {at}"
+    "dataAsOf": "Data as of {at}",
+    "dataScope": "Data scope"
   },
   "cmd": {
     "open": "Search or jump to…",
@@ -350,5 +352,70 @@
   "freshness": {
     "updated": "Updated {at}",
     "never": "No data yet"
+  },
+  "bounds": {
+    "title": "Effective price range",
+    "help": "Effective bounds are the prices the strategy is allowed to use after product limits, MAP, and strategy guardrails are applied.",
+    "effectiveMin": "Effective minimum",
+    "effectiveMax": "Effective maximum",
+    "current": "Current price",
+    "proposed": "Proposed price",
+    "noMin": "No minimum",
+    "noMax": "No maximum",
+    "noRange": "No valid range",
+    "row": {
+      "product": "Product bounds",
+      "strategy": "Strategy bounds",
+      "change": "Max change per cycle",
+      "map": "MAP floor",
+      "effective": "Effective bounds"
+    },
+    "source": {
+      "product": "Product master data",
+      "strategy": "Strategy guardrail",
+      "strategyNamed": "Strategy guardrail · {name}",
+      "change": "±{pct}% around the current price",
+      "map": "Enforced MAP policy",
+      "mapOff": "Not enforced by this strategy",
+      "current": "Current catalog price",
+      "effective": "Intersection of every limit above"
+    },
+    "term": {
+      "product": "Product minimum",
+      "productMax": "Product maximum",
+      "strategy": "Strategy minimum",
+      "strategyMax": "Strategy maximum",
+      "change": "Change-per-cycle floor",
+      "changeMax": "Change-per-cycle ceiling",
+      "map": "MAP"
+    },
+    "state": {
+      "within": "Current price is within bounds.",
+      "below": "Current price is below the effective minimum.",
+      "above": "Current price is above the effective maximum.",
+      "equal": "No price movement is permitted under the current constraints.",
+      "invalid": "These constraints leave no valid price range. Review the minimum, maximum, MAP, and strategy limits."
+    },
+    "derivedFrom": "From {sources}",
+    "binding": "Binding",
+    "why": "How is this calculated?",
+    "aria": "Effective price bounds are {min} to {max}. Current price is {current}.",
+    "ariaInvalid": "No valid price range: the effective minimum {min} is above the effective maximum {max}. Current price is {current}.",
+    "ariaMap": " MAP is {map}.",
+    "strategyUnset": "No min or max set",
+    "changeOff": "No change limit",
+    "previewFor": "Preview SKU",
+    "scopeOutside": "{n} of {total} scoped SKUs are currently outside their effective bounds",
+    "scopeInside": "All {total} scoped SKUs are currently within their effective bounds",
+    "noScope": "Add a category or SKU in Scope to preview effective bounds."
+  },
+  "form": {
+    "optional": "optional"
+  },
+  "filter": {
+    "clear": "Clear filters",
+    "view": "View filter",
+    "all": "All",
+    "any": "Any"
   }
 }

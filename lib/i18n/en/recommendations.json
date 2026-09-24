@@ -36,7 +36,15 @@
     "requiresManager": "Manager approval required",
     "chainRecorded": "Approval recorded — now awaiting {level}",
     "requires_manager": "Requires a manager",
-    "requires_approver": "Requires the finance approver"
+    "requires_approver": "Requires the finance approver",
+    "moreSignals": "+{n} additional signals",
+    "noDriver": "No dominant driver",
+    "summary": "Summary",
+    "confidence": "Confidence",
+    "staleShort": "Price or competitor data changed",
+    "breachShort": "Proposed price is outside allowed bounds",
+    "staleAckShort": "Re-checked current data",
+    "bounds": "Price limits"
   },
   "view": {
     "label": "View",

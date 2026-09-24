@@ -85,3 +85,20 @@ export function ScopeSelector() {
     </div>
   );
 }
+
+/**
+ * The active business scope as one readable path ("Mesta Retail / ID-West / Jawa / Jakarta HQ /
+ * All categories"). Pages that also have local view filters print it as "Data scope" so global
+ * scope and page filters are never confused (GUARDRAIL-007, ALERT-020).
+ */
+export function useScopePath() {
+  const { t } = useTranslation();
+  const scope = useUiStore((s) => s.scope);
+  return [
+    ORG_NAME,
+    scope.region ? buOf(scope.region) : t('common.scope.allBus'),
+    scope.region ?? t('common.scope.allRegions'),
+    scope.store ?? t('common.scope.allStores'),
+    scope.category ?? t('common.scope.allCategories'),
+  ].join(' / ');
+}

@@ -175,7 +175,7 @@ export function StrategyDetailPage({ strategyId }: { strategyId: string }) {
           <div className="mx-auto flex max-w-3xl flex-wrap items-center gap-2">
             {s.status === 'draft' && (
               <>
-                <Link href={`/strategy/${s.id}/edit`} className="inline-flex h-9 items-center rounded-input border border-line px-3 text-sm">
+                <Link href={`/strategy/${s.id}/edit`} className="inline-flex h-control-md items-center rounded-input border border-line px-3 text-sm">
                   {t('strategy.action.edit')}
                 </Link>
                 <Button size="sm" onClick={() => run(submitStrategy(user, s.id))}>{t('strategy.action.submit')}</Button>
@@ -197,7 +197,7 @@ export function StrategyDetailPage({ strategyId }: { strategyId: string }) {
               )}
               {s.status === 'active' && (
                 <>
-                  <Link href={`/strategy/${s.id}/edit`} className="inline-flex h-9 items-center rounded-input border border-line px-3 text-sm">
+                  <Link href={`/strategy/${s.id}/edit`} className="inline-flex h-control-md items-center rounded-input border border-line px-3 text-sm">
                     {t('strategy.action.edit')}
                   </Link>
                   <Button size="sm" variant="secondary" onClick={() => run(archiveStrategy(user, s.id))}>{t('strategy.action.archive')}</Button>

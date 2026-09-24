@@ -51,17 +51,23 @@
     "promotion": {
       "name": "Promotion constraint",
       "desc": "Promo calendars and mechanics.",
-      "detail": "The demo catalog carries no promotion data."
+      "detail": "The demo catalog carries no promotion data.",
+      "why": "No promotion data in the current catalog.",
+      "enable": "Connect a promotion calendar feed in Data & integrations."
     },
     "regulatory": {
       "name": "Regulatory constraint",
       "desc": "Price ceilings, subsidies and jurisdiction rules.",
-      "detail": "No jurisdiction data in the demo."
+      "detail": "No jurisdiction data in the demo.",
+      "why": "No jurisdiction or price-control data in the current catalog.",
+      "enable": "Add a regulatory price-control source for each region."
     },
     "channel": {
       "name": "Channel constraint",
       "desc": "Per-channel price rules.",
-      "detail": "Channels exist on publish jobs only."
+      "detail": "Channels exist on publish jobs only.",
+      "why": "Channels exist on publish jobs only, not as price inputs.",
+      "enable": "Map channel price lists as a data source."
     }
   },
   "enforced": "Enforced",
@@ -81,8 +87,17 @@
       "constraint": "Constraint",
       "price": "Current price",
       "detail": "Detail",
-      "action": "Actions"
-    }
+      "action": "Actions",
+      "expected": "Expected bound",
+      "actual": "Actual value",
+      "severity": "Severity"
+    },
+    "severity": {
+      "critical": "Critical",
+      "warning": "Warning"
+    },
+    "filteredBy": "Showing breaches of {name}",
+    "pendingRec": "Pending recommendation"
   },
   "drill": {
     "title": "Per-SKU drill-down",
@@ -133,5 +148,73 @@
   },
   "filterHint": "Click to filter the breach table",
   "filterOn": "Filtering the breach table — click to clear",
-  "clearFilter": "Clear: {name}"
+  "clearFilter": "Clear: {name}",
+  "filter": {
+    "label": "Guardrail status",
+    "all": "All",
+    "type": "Constraint type",
+    "typeAll": "All types",
+    "edit": "Editability",
+    "editAll": "Any editability",
+    "editable": "Editable in-app",
+    "locked": "Not editable in-app",
+    "source": "Configured on",
+    "sourceAll": "Any source",
+    "visible": "{n} visible constraints",
+    "density": "Card density",
+    "comfortable": "Comfortable",
+    "compact": "Compact",
+    "empty": "No constraints match these filters"
+  },
+  "type": {
+    "price_limits": "Price limits",
+    "movement": "Price movement",
+    "approval": "Approval gates",
+    "inventory": "Inventory",
+    "external": "External data"
+  },
+  "mode": {
+    "enforced": "The pricing engine uses this constraint to block or modify decisions.",
+    "observed": "Tracked for decision context — not enforced at pricing time.",
+    "unavailable": "No current input is available for this constraint.",
+    "breached": "Enforced — some SKUs currently violate it.",
+    "flagged": "Observed — pending recommendations are flagged, not blocked."
+  },
+  "card": {
+    "coverage": "Coverage",
+    "source": "Configured on",
+    "editable": "Editable",
+    "updated": "Last updated",
+    "notTracked": "Not tracked",
+    "viewBreaches": "View {n} breaches",
+    "inspect": "Inspect constraint",
+    "noCoverage": "No SKUs governed"
+  },
+  "col": {
+    "constraint": "Constraint",
+    "status": "Status",
+    "coverage": "Coverage",
+    "updated": "Last updated",
+    "action": "Action"
+  },
+  "summary": {
+    "title": "Breach summary",
+    "constraints": "constraints breached",
+    "skus": "affected SKUs",
+    "per": "{name} breaches"
+  },
+  "inspect": {
+    "definition": "Definition",
+    "behavior": "Effective behavior",
+    "coverage": "Coverage",
+    "breaches": "Current breaches",
+    "source": "Source",
+    "sources": "Configured by",
+    "editability": "Editability",
+    "lastChanged": "Last changed",
+    "viewAffected": "View affected SKUs",
+    "why": "Why",
+    "enable": "How to enable",
+    "gates": "Changes gate approvals"
+  }
 }

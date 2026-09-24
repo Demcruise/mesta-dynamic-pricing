@@ -1,5 +1,10 @@
+import { Suspense } from 'react';
 import { GuardrailsPage } from '@/features/guardrails/GuardrailsPage';
 
 export default function Page() {
-  return <GuardrailsPage />;
+  return (
+    <Suspense>
+      <GuardrailsPage />
+    </Suspense>
+  );
 }

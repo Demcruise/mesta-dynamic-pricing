@@ -20,6 +20,8 @@ import {
   tabMatches, type QueueFilters, type QueueTab,
 } from './filters';
 import { RecommendationCard } from './RecommendationCard';
+import { FilterTabs } from '@/components/ui/filter-tabs';
+import { Segmented } from '@/components/ui/segmented';
 import { pillCls } from '@/components/ds/Pill';
 
 const PAGE_SIZE = 50;
@@ -101,14 +103,15 @@ export function QueuePage() {
         subtitle={t('recommendations.subtitle', { count: rows.length, total: recs.data.length })}
         actions={
           <>
-            <div role="group" aria-label={t('recommendations.view.label')} className="flex gap-1">
-              {(['cards', 'table'] as const).map((v) => (
-                <Button key={v} size="sm" variant={view === v ? 'selected' : 'secondary'} aria-pressed={view === v} onClick={() => setView(v)}>
-                  {v === 'cards' ? <LayoutGrid className="size-4" aria-hidden /> : <Table2 className="size-4" aria-hidden />}
-                  {t(`recommendations.view.${v}`)}
-                </Button>
-              ))}
-            </div>
+            <Segmented
+              label={t('recommendations.view.label')}
+              value={view}
+              onChange={setView}
+              options={[
+                { value: 'cards', label: t('recommendations.view.cards'), icon: LayoutGrid },
+                { value: 'table', label: t('recommendations.view.table'), icon: Table2 },
+              ]}
+            />
             <RoleGate action="recommendation.decide">
               <Button onClick={() => { track('bulk_approval_dialog_opened'); setBulkOpen(true); }}>{t('recommendations.action.bulk')}</Button>
             </RoleGate>
@@ -116,26 +119,16 @@ export function QueuePage() {
         }
       />
 
-      <nav aria-label={t('recommendations.tabs.label')} className="mb-3 flex flex-wrap gap-1 border-b border-line">
-        {tabCounts.map(({ tab, n }) => (
-          <button
-            key={tab}
-            type="button"
-            aria-pressed={filters.tab === tab}
-            title={tab === 'impact' ? t('recommendations.tabs.impactHint', { n: HIGH_IMPACT_IDR.toLocaleString() }) : undefined}
-            onClick={() => patch({ tab })}
-            className={cn(
-              '-mb-px flex items-center gap-1.5 border-b-2 px-3 py-2 text-sm transition-colors duration-fast',
-              filters.tab === tab ? 'border-brand font-medium text-fg' : 'border-transparent text-muted hover:text-fg',
-            )}
-          >
-            {t(`recommendations.tabs.${tab}`)}
-            <span className={`tabular ${pillCls('neutral', 'sm')}`}>{n}</span>
-          </button>
-        ))}
-      </nav>
+      {/* RECOMMENDATION-025/026 — one 40px control system: status tabs, then filters, then the grid. */}
+      <FilterTabs
+        className="mb-4"
+        label={t('recommendations.tabs.label')}
+        value={filters.tab}
+        onChange={(tab) => patch({ tab })}
+        tabs={tabCounts.map(({ tab, n }) => ({ value: tab, label: t(`recommendations.tabs.${tab}`), count: n }))}
+      />
 
-      <div className="mb-3 flex flex-wrap gap-2" role="search">
+      <div className="mb-5 flex flex-wrap gap-2" role="search">
         {filters.tab === 'all' && (
         <Select label={t('recommendations.filter.status')} value={filters.status} onChange={(v) => patch({ status: v as QueueFilters['status'] })}>
           {(['pending', 'approved', 'rejected', 'adjusted', 'all'] as const).map((s) => (
@@ -209,9 +202,10 @@ export function QueuePage() {
             />
           ) : (
             <>
-              <ul className="grid grid-cols-1 gap-3 xl:grid-cols-2">
+              {/* RECOMMENDATION-006/017: equal-width 2-column grid; every card fills its row height. */}
+              <ul className="grid grid-cols-1 gap-5 lg:grid-cols-2">
                 {rows.slice(0, shown).map((r) => (
-                  <li key={r.id} className="min-w-0"><RecommendationCard rec={r} product={productMap.get(r.sku)} showStatus={filters.tab === 'all'} /></li>
+                  <li key={r.id} className="flex min-w-0 flex-col"><RecommendationCard rec={r} product={productMap.get(r.sku)} showStatus={filters.tab === 'all'} /></li>
                 ))}
               </ul>
               {rows.length > shown && (

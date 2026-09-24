@@ -64,16 +64,16 @@ export function SkuDrawer({ product, pendingSkus, detailQuery = '', onClose, onO
           </section>
           <div className="flex flex-wrap gap-2 border-t border-line pt-3">
             <RoleGate action="simulation.use">
-              <Link href={`/simulation?sku=${product.sku}`} className="inline-flex h-9 items-center gap-1.5 rounded-input border border-line px-3 text-sm transition-colors duration-fast hover:bg-subtle">
+              <Link href={`/simulation?sku=${product.sku}`} className="inline-flex h-control-md items-center gap-1.5 rounded-input border border-line px-3 text-sm transition-colors duration-fast hover:bg-subtle">
                 <FlaskConical className="size-4" aria-hidden />{t('catalog.action.simulate')}
               </Link>
             </RoleGate>
             <RoleGate action="catalog.override_price">
-              <button type="button" onClick={() => onOverride(product)} className="inline-flex h-9 items-center gap-1.5 rounded-input border border-line px-3 text-sm transition-colors duration-fast hover:bg-subtle">
+              <button type="button" onClick={() => onOverride(product)} className="inline-flex h-control-md items-center gap-1.5 rounded-input border border-line px-3 text-sm transition-colors duration-fast hover:bg-subtle">
                 <PencilLine className="size-4" aria-hidden />{t('catalog.action.override')}
               </button>
             </RoleGate>
-            <Link href={`/audit?sku=${product.sku}`} className="inline-flex h-9 items-center gap-1.5 rounded-input border border-line px-3 text-sm transition-colors duration-fast hover:bg-subtle">
+            <Link href={`/audit?sku=${product.sku}`} className="inline-flex h-control-md items-center gap-1.5 rounded-input border border-line px-3 text-sm transition-colors duration-fast hover:bg-subtle">
               <ScrollText className="size-4" aria-hidden />{t('catalog.action.audit')}
             </Link>
           </div>

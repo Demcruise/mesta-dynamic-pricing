@@ -51,17 +51,23 @@
     "promotion": {
       "name": "Batasan promosi",
       "desc": "Kalender dan mekanik promo.",
-      "detail": "Katalog demo tidak membawa data promosi."
+      "detail": "Katalog demo tidak membawa data promosi.",
+      "why": "Tidak ada data promosi di katalog saat ini.",
+      "enable": "Hubungkan feed kalender promosi di Data & integrasi."
     },
     "regulatory": {
       "name": "Batasan regulasi",
       "desc": "Batas harga, subsidi, dan aturan yurisdiksi.",
-      "detail": "Tidak ada data yurisdiksi di demo."
+      "detail": "Tidak ada data yurisdiksi di demo.",
+      "why": "Tidak ada data yurisdiksi atau kontrol harga di katalog saat ini.",
+      "enable": "Tambahkan sumber kontrol harga regulasi untuk setiap wilayah."
     },
     "channel": {
       "name": "Batasan channel",
       "desc": "Aturan harga per channel.",
-      "detail": "Channel hanya ada pada job publish."
+      "detail": "Channel hanya ada pada job publish.",
+      "why": "Kanal hanya ada pada tugas publikasi, bukan sebagai input harga.",
+      "enable": "Petakan daftar harga kanal sebagai sumber data."
     }
   },
   "enforced": "Ditegakkan",
@@ -81,8 +87,17 @@
       "constraint": "Batasan",
       "price": "Harga saat ini",
       "detail": "Detail",
-      "action": "Aksi"
-    }
+      "action": "Aksi",
+      "expected": "Batas yang diharapkan",
+      "actual": "Nilai aktual",
+      "severity": "Tingkat"
+    },
+    "severity": {
+      "critical": "Kritis",
+      "warning": "Peringatan"
+    },
+    "filteredBy": "Menampilkan pelanggaran {name}",
+    "pendingRec": "Rekomendasi tertunda"
   },
   "drill": {
     "title": "Rincian per SKU",
@@ -133,5 +148,73 @@
   },
   "filterHint": "Klik untuk memfilter tabel pelanggaran",
   "filterOn": "Sedang memfilter tabel — klik untuk hapus",
-  "clearFilter": "Hapus: {name}"
+  "clearFilter": "Hapus: {name}",
+  "filter": {
+    "label": "Status guardrail",
+    "all": "Semua",
+    "type": "Jenis batasan",
+    "typeAll": "Semua jenis",
+    "edit": "Dapat diubah",
+    "editAll": "Semua",
+    "editable": "Dapat diubah di aplikasi",
+    "locked": "Tidak dapat diubah di aplikasi",
+    "source": "Dikonfigurasi pada",
+    "sourceAll": "Semua sumber",
+    "visible": "{n} batasan ditampilkan",
+    "density": "Kepadatan kartu",
+    "comfortable": "Nyaman",
+    "compact": "Ringkas",
+    "empty": "Tidak ada batasan yang cocok dengan filter ini"
+  },
+  "type": {
+    "price_limits": "Batas harga",
+    "movement": "Pergerakan harga",
+    "approval": "Gerbang persetujuan",
+    "inventory": "Inventaris",
+    "external": "Data eksternal"
+  },
+  "mode": {
+    "enforced": "Mesin harga memakai batasan ini untuk memblokir atau mengubah keputusan.",
+    "observed": "Dipantau sebagai konteks keputusan — tidak ditegakkan saat penetapan harga.",
+    "unavailable": "Belum ada input untuk batasan ini.",
+    "breached": "Ditegakkan — beberapa SKU saat ini melanggarnya.",
+    "flagged": "Dipantau — rekomendasi tertunda ditandai, tidak diblokir."
+  },
+  "card": {
+    "coverage": "Cakupan",
+    "source": "Dikonfigurasi pada",
+    "editable": "Dapat diubah",
+    "updated": "Terakhir diperbarui",
+    "notTracked": "Tidak dilacak",
+    "viewBreaches": "Lihat {n} pelanggaran",
+    "inspect": "Periksa batasan",
+    "noCoverage": "Tidak ada SKU yang diatur"
+  },
+  "col": {
+    "constraint": "Batasan",
+    "status": "Status",
+    "coverage": "Cakupan",
+    "updated": "Terakhir diperbarui",
+    "action": "Aksi"
+  },
+  "summary": {
+    "title": "Ringkasan pelanggaran",
+    "constraints": "batasan dilanggar",
+    "skus": "SKU terdampak",
+    "per": "pelanggaran {name}"
+  },
+  "inspect": {
+    "definition": "Definisi",
+    "behavior": "Perilaku efektif",
+    "coverage": "Cakupan",
+    "breaches": "Pelanggaran saat ini",
+    "source": "Sumber",
+    "sources": "Dikonfigurasi oleh",
+    "editability": "Dapat diubah oleh",
+    "lastChanged": "Terakhir diubah",
+    "viewAffected": "Lihat SKU terdampak",
+    "why": "Alasan",
+    "enable": "Cara mengaktifkan",
+    "gates": "Perubahan memerlukan persetujuan"
+  }
 }

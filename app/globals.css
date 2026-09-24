@@ -48,6 +48,10 @@
   --radius-input: var(--radius-input);
   --radius-card: var(--radius-card);
   --radius-panel: var(--radius-panel);
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --color-divider: var(--table-divider);
   --color-rb-accent-fg: var(--rb-accent-fg);
   --color-rb-accent: var(--rb-accent);
 
@@ -59,6 +63,35 @@
 
   /* Density-aware spacing → p-card / px-card / py-card */
   --spacing-card: var(--card-pad);
+  /* Table cell inset → px-cell / py-cell (density-aware) */
+  --spacing-cell: var(--table-cell-px);
+  --spacing-cell-y: var(--table-cell-py);
+  /* Control heights → h-control-sm / h-control-md / h-control-lg */
+  --spacing-control-sm: var(--control-h-sm);
+  --spacing-control-md: var(--control-h-md);
+  --spacing-control-lg: var(--control-h-lg);
+
+  /* DS-005 type scale → text-heading / text-section / text-body / text-body-sm / text-label /
+     text-caption / text-numeric-lg / text-numeric-md. Names avoid the --text / --text-muted colour tokens. */
+  --text-heading: 22px;
+  --text-heading--line-height: 28px;
+  --text-heading--font-weight: 600;
+  --text-section: 15px;
+  --text-section--line-height: 22px;
+  --text-section--font-weight: 600;
+  --text-body: 14px;
+  --text-body--line-height: 20px;
+  --text-body-sm: 13px;
+  --text-body-sm--line-height: 18px;
+  --text-label: 13px;
+  --text-label--line-height: 18px;
+  --text-label--font-weight: 500;
+  --text-caption: 12px;
+  --text-caption--line-height: 16px;
+  --text-numeric-lg: 28px;
+  --text-numeric-lg--line-height: 32px;
+  --text-numeric-md: 16px;
+  --text-numeric-md--line-height: 22px;
 
   /* Motion easings → ease-standard / ease-decelerate / ease-accelerate */
   --ease-standard: var(--ease-standard);
@@ -110,6 +143,10 @@ body {
 @utility h-row { height: var(--row-h); }
 @utility min-h-row { min-height: var(--row-h); }
 @utility py-row { padding-block: var(--row-py); }
+/* Table contract rows (DS-002): header 48, row 56 (44 compact), identity row 72 (56 compact). */
+@utility h-table-head { height: var(--table-header-h); }
+@utility h-table-row { height: var(--table-row-h); }
+@utility h-table-row-lg { height: var(--table-row-h-lg); }
 
 /* Floating surfaces: translucent token background + backdrop blur.
    Pair with shadow-e3 — used on popovers, sticky bars, toasts, command menu. */
@@ -121,7 +158,7 @@ body {
 
 /* Pills inside data-table cells always render at the compact size so every row keeps one
    height, whatever size the call site asked for. */
-table td .pill { height: 1.25rem; padding-inline: 0.375rem; font-size: 11px; gap: 0.25rem; }
+table td .pill { height: 1.375rem; padding-inline: 0.5rem; font-size: 12px; gap: 0.25rem; }
 table td .pill svg { width: 0.75rem; height: 0.75rem; }
 
 /* Named chrome shadows (components never use arbitrary shadow values):
@@ -132,29 +169,45 @@ table td .pill svg { width: 0.75rem; height: 0.75rem; }
 @utility shadow-head-mask { box-shadow: 0 -12px 0 var(--bg-surface); }
 @utility shadow-pin-head { box-shadow: inset -1px 0 0 var(--border), 0 -12px 0 var(--bg-surface); }
 
-/* ── mesta-table: the reference table grammar for hand-built <table>s ──────────────────
-   Same anatomy as MestaDataTable (components/ds/table): header band + separated row bands,
-   8px radius, 6px row gap, 11px/600 headers, 12px/500 cells. Deliberately unlayered so it
-   overrides legacy per-cell utilities (row borders, tinted theads, text-sm) inside these
-   tables — alignment utilities (text-right …) are untouched. */
-table.mesta-table { border-collapse: separate; border-spacing: 0 6px; font-size: 12px; font-weight: 500; color: var(--text); }
+/* ── mesta-table: the shared table grammar for hand-built <table>s ─────────────────────
+   Same contract as MestaDataTable (components/ds/table): ONE continuous surface — header band,
+   1px dividers between rows, no floating row cards (backlog v11 VIS-001 / MON-025). Header 48px,
+   rows 56px (44 compact), 16px cell inset, 12px/600 headers, 13px cells, tabular figures.
+   Deliberately unlayered so it overrides legacy per-cell utilities inside these tables —
+   alignment utilities (text-right …) are untouched. Put `table-layout: fixed` + a <colgroup>
+   on the table when the columns must hold fixed tracks (header and body share them). */
+table.mesta-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 13px; font-weight: 500; color: var(--text); font-variant-numeric: tabular-nums; }
 table.mesta-table > thead { background: transparent; }
-table.mesta-table > thead > tr { height: 40px; }
-table.mesta-table > tbody > tr { height: auto; }
+table.mesta-table > thead > tr { height: var(--table-header-h); }
+table.mesta-table > tbody > tr { height: var(--table-row-h); }
 table.mesta-table > thead > tr > th {
-  background: var(--bg-head); border: 0; padding: 10px; height: 40px;
-  font-size: 11px; font-weight: 600; letter-spacing: -0.02em; color: var(--text-muted); white-space: nowrap;
+  background: var(--bg-head); border: 0; border-bottom: 1px solid var(--table-divider);
+  padding: 0 var(--table-cell-px); height: var(--table-header-h); vertical-align: middle;
+  font-size: 12px; font-weight: 600; letter-spacing: -0.01em; color: var(--text-muted); white-space: nowrap;
 }
 table.mesta-table > tbody > tr > th,
-table.mesta-table > tbody > tr > td { background: var(--bg-row); border: 0; padding: 10px; vertical-align: middle; }
+table.mesta-table > tbody > tr > td {
+  background: var(--bg-surface); border: 0; border-bottom: 1px solid var(--table-divider);
+  padding: var(--table-cell-py) var(--table-cell-px); vertical-align: middle;
+}
+table.mesta-table > tbody > tr:last-child > * { border-bottom: 0; }
+/* Identity/decision rows (two-line identity + actions): 72px, 56 compact. */
+table.mesta-table.rows-lg > tbody > tr { height: var(--table-row-h-lg); }
 table.mesta-table > tbody > tr > th { font-weight: 500; }
-table.mesta-table > * > tr > :first-child { border-top-left-radius: var(--radius-row); border-bottom-left-radius: var(--radius-row); }
-table.mesta-table > * > tr > :last-child { border-top-right-radius: var(--radius-row); border-bottom-right-radius: var(--radius-row); }
-table.mesta-table > tbody > tr { transition: background-color var(--motion-fast); }
+table.mesta-table > tbody > tr > * { transition: background-color var(--motion-fast); }
 table.mesta-table > tbody > tr:hover > * { background: var(--bg-subtle); }
 table.mesta-table > thead > tr > th[class*='sticky'] { background: var(--bg-head); }
-/* A bordered card that directly wraps a mesta-table gets inner gutters so the bands float. */
-.rounded-card:has(> table.mesta-table:first-child) { padding: 0 12px 6px; }
+/* Numeric cells: right-aligned, tabular, never wrap (a minus sign stays attached to its figure). */
+table.mesta-table .num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+/* A bordered card that directly wraps a mesta-table becomes the table's frame: no inner gutter,
+   and the corner cells follow the card radius (no overflow clipping, so cell popovers still escape). */
+.rounded-card:has(> table.mesta-table:first-child) { padding: 0; }
+.rounded-card > table.mesta-table:first-child > thead > tr > :first-child { border-top-left-radius: calc(var(--radius-card) - 1px); }
+.rounded-card > table.mesta-table:first-child > thead > tr > :last-child { border-top-right-radius: calc(var(--radius-card) - 1px); }
+.rounded-card > table.mesta-table:first-child > tbody > tr:last-child > :first-child { border-bottom-left-radius: calc(var(--radius-card) - 1px); }
+.rounded-card > table.mesta-table:first-child > tbody > tr:last-child > :last-child { border-bottom-right-radius: calc(var(--radius-card) - 1px); }
+/* Scroll wrappers around tables keep the scrollbar gutter reserved so columns never shift (MON-018). */
+.table-scroll { overflow: auto; scrollbar-gutter: stable; }
 
 /* Reference type scale for figures: tight tracking on large numerals. */
 @utility tracking-figure { letter-spacing: -0.025em; }

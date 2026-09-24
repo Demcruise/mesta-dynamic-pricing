@@ -56,6 +56,8 @@
     "impact": "Dampak margin",
     "awaiting": "Menunggu",
     "age": "Usia",
-    "investigate": "Investigasi"
+    "investigate": "Investigasi",
+    "awaitingRole": "Menunggu {role}",
+    "levels": "{done}/{total} level selesai"
   }
 }

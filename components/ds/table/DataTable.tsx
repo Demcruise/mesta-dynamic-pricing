@@ -19,7 +19,14 @@ export interface DataColumn<T> {
   headerHint?: string;
   /** When set (and `sort` prop is provided) the header renders a sort toggle. */
   sortKey?: string;
-  align?: 'left' | 'right';
+  /** Numeric/currency columns are right-aligned (TABLE-002); trends and checkboxes centre. */
+  align?: 'left' | 'right' | 'center';
+  /**
+   * Fixed track width in px (TABLE-001). When any column sets one the table switches to a fixed
+   * layout driven by a shared <colgroup>, so header and every row hold identical boundaries; columns
+   * without a width share the remaining space (the flexible "Product"/"Recommendation" track).
+   */
+  width?: number;
   /** Cannot be hidden via the column menu (e.g. primary identifier, actions). */
   required?: boolean;
   /** Default pixel width used until the user resizes (resizable tables only). */
@@ -110,8 +117,14 @@ export interface MestaDataTableProps<T> {
   };
   /** Row click (non-interactive targets) opens a quick-view surface, e.g. a Drawer. */
   onRowClick?: (row: T) => void;
-  /** Windowed rendering for large datasets. Rows keep `h-row` density otherwise. */
+  /** Windowed rendering for large datasets. */
   virtualize?: boolean;
+  /**
+   * Row size from the table contract (DS-002): `md` = 56px (44 compact) for single/two-line cells,
+   * `lg` = 72px (56 compact) for identity rows with an icon + name + meta.
+   */
+  rowSize?: 'md' | 'lg';
+  /** Pixel row height the virtualizer uses — must match `rowSize` at the active density. */
   rowHeight?: number;
   minWidth?: number;
   /** Adds a CSV export button to the table toolbar (caller gates by permission). */
@@ -129,16 +142,19 @@ export interface MestaDataTableProps<T> {
 }
 
 const OVERSCAN = 12;
-/** Vertical gap between row bands (reference: 6px). Mirrors --row-gap for the virtualizer. */
-const ROW_GAP = 6;
 
-/** Cell chrome shared by every body cell: band fill, 10px inline padding, rounded ends. */
-const cellBase = 'px-2.5 align-middle first:rounded-l-row last:rounded-r-row';
+/**
+ * Cell chrome shared by every header and body cell: the table contract inset (16px, 12 compact)
+ * and a 1px divider. The table is one continuous surface — no floating row cards (VIS-001).
+ */
+const cellBase = 'px-cell align-middle border-b border-divider';
+const alignCls = (a: 'left' | 'right' | 'center' | undefined) => (a === 'right' ? 'text-right' : a === 'center' ? 'text-center' : undefined);
 const checkboxCls = 'size-4 cursor-pointer rounded accent-brand';
+const SELECT_COL_W = 48;
 
 export function MestaDataTable<T>({
   tableId, caption, columns, rows, getRowId, sort, selection, onRowClick,
-  virtualize = false, rowHeight = 44, minWidth = 680, csv, toolbar, visibility,
+  virtualize = false, rowSize = 'md', rowHeight = 56, minWidth = 680, csv, toolbar, visibility,
   resizable = false, stickyFirst = false, groups,
 }: MestaDataTableProps<T>) {
   const { t } = useTranslation();
@@ -193,12 +209,15 @@ export function MestaDataTable<T>({
   const virt = useVirtualizer({
     count: rows.length,
     getScrollElement: () => scrollRef.current,
-    estimateSize: () => rowHeight + ROW_GAP,
+    estimateSize: () => rowHeight,
     overscan: OVERSCAN,
     enabled: virtualize,
   });
 
   const visible = columns.filter((c) => c.required || !visibility?.hidden.has(c.id));
+  // Deterministic column model (TABLE-001): any fixed track → fixed layout with a shared colgroup.
+  const fixedTracks = resizable || visible.some((c) => c.width !== undefined);
+  const trackWidth = (c: DataColumn<T>) => (resizable ? widths[c.id] ?? c.defaultWidth ?? c.width ?? FALLBACK_COL_W : c.width);
   const firstColId = stickyFirst ? visible[0]?.id : undefined;
   // Multi-sort priority: primary key plus any secondary levels.
   const sortLevels = sort ? [{ key: sort.key, dir: sort.dir }, ...(sort.levels ?? [])] : [];
@@ -248,17 +267,17 @@ export function MestaDataTable<T>({
       style={virtualize ? { height: rowHeight } : undefined}
       aria-selected={selection ? selection.selected.has(getRowId(row)) : undefined}
       className={cn(
-        // Each cell paints the band so the row reads as one rounded pill (reference table row).
-        'group/row outline-none [&>td]:transition-colors [&>td]:duration-fast focus-visible:[&>td]:bg-brand-soft',
-        !virtualize && 'h-row',
+        // Cells paint the fill so pinned cells occlude scrolled content; one divider per row.
+        'group/row outline-none [&>td]:transition-colors [&>td]:duration-fast focus-visible:[&>td]:bg-brand-soft [&:last-child>td]:border-b-0',
+        !virtualize && (rowSize === 'lg' ? 'h-table-row-lg' : 'h-table-row'),
         selection?.selected.has(getRowId(row))
           ? '[&>td]:bg-selected'
-          : '[&>td]:bg-row hover:[&>td]:bg-subtle',
+          : '[&>td]:bg-surface hover:[&>td]:bg-subtle',
         onRowClick && 'cursor-pointer',
       )}
     >
       {selection && (
-        <td className={cn(cellBase, 'w-10 text-center')}>
+        <td className={cn(cellBase, 'text-center')}>
           <input
             type="checkbox"
             className={checkboxCls}
@@ -273,10 +292,11 @@ export function MestaDataTable<T>({
           key={c.id}
           className={cn(
             cellBase,
-            'py-row',
-            c.align === 'right' && 'text-right',
-            resizable && 'overflow-hidden',
-            // Pinned cell keeps the band fill so it occludes scrolled content; hairline edge on the right.
+            'py-cell-y',
+            alignCls(c.align),
+            // Fixed tracks never let content widen a column; overflow truncates inside the cell (TABLE-022).
+            fixedTracks && 'overflow-hidden',
+            // Pinned cell keeps its fill so it occludes scrolled content; hairline edge on the right.
             stickyFirst && c.id === firstColId && 'sticky left-0 z-[5] shadow-pin-edge',
           )}
         >
@@ -288,7 +308,7 @@ export function MestaDataTable<T>({
 
   const groupHeaderRow = (key: string) => (
     <tr key={`group-${key}`}>
-      <td colSpan={visible.length + (selection ? 1 : 0)} className="px-2.5 pb-0.5 pt-3 text-[11px] font-semibold tracking-label text-muted">
+      <td colSpan={visible.length + (selection ? 1 : 0)} className="h-9 border-b border-divider bg-subtle px-cell text-xs font-semibold tracking-label text-muted">
         {activeGroup!.format ? activeGroup!.format(key) : key} <span className="tabular text-faint">· {groupCounts.get(key) ?? 0}</span>
       </td>
     </tr>
@@ -297,12 +317,12 @@ export function MestaDataTable<T>({
   return (
     <div>
       {(visibility || csv || toolbar || (groups && groups.length > 0)) && (
-        <div className="mb-3 flex items-center justify-end gap-2">
+        <div className="mb-3 flex flex-wrap items-center justify-end gap-2">
           {toolbar}
           {groups && groups.length > 0 && !virtualize && (
             <select
               aria-label={t('common.table.groupBy')}
-              className={cn(inputCls, 'h-9 w-44')}
+              className={cn(inputCls, 'w-44')}
               value={groupId}
               onChange={(e) => chooseGroup(e.target.value)}
             >
@@ -316,7 +336,7 @@ export function MestaDataTable<T>({
               onClick={exportCsv}
               aria-label={t('common.table.exportCsv')}
               title={t('common.table.exportCsv')}
-              className="grid size-9 place-items-center rounded-input border border-line-strong bg-input text-muted transition-colors duration-fast hover:bg-subtle hover:text-fg"
+              className="grid size-control-md place-items-center rounded-input border border-line-strong bg-input text-muted transition-colors duration-fast hover:bg-subtle hover:text-fg"
             >
               <Download className="size-4" aria-hidden />
             </button>
@@ -330,23 +350,24 @@ export function MestaDataTable<T>({
           )}
         </div>
       )}
-      <div ref={scrollRef} className={cn('rounded-panel border border-line bg-surface px-3 pb-2', virtualize ? 'max-h-[70vh] overflow-auto' : 'overflow-x-auto')}>
+      {/* One framed surface: header band, 1px row dividers; the scrollbar gutter is reserved so
+          columns never shift when a scrollbar appears (MON-018). */}
+      <div ref={scrollRef} className={cn('rounded-card border border-line bg-surface', virtualize ? 'table-scroll max-h-[70vh]' : 'overflow-x-auto')}>
         <table
-          className="w-full border-separate text-xs font-medium text-fg"
-          style={{ minWidth, tableLayout: resizable ? 'fixed' : undefined, borderSpacing: `0 ${ROW_GAP}px` }}
+          className="tabular w-full border-separate border-spacing-0 text-[13px] font-medium text-fg"
+          style={{ minWidth, tableLayout: fixedTracks ? 'fixed' : undefined }}
         >
           <caption className="sr-only">{caption}</caption>
-          {resizable && (
+          {fixedTracks && (
             <colgroup>
-              {selection && <col style={{ width: 44 }} />}
-              {visible.map((c) => <col key={c.id} style={{ width: widths[c.id] ?? c.defaultWidth ?? FALLBACK_COL_W }} />)}
+              {selection && <col style={{ width: SELECT_COL_W }} />}
+              {visible.map((c) => <col key={c.id} style={{ width: trackWidth(c) }} />)}
             </colgroup>
           )}
           <thead className="sticky top-0 z-10">
-            {/* The surface band above the header hides rows scrolling under the sticky head. */}
-            <tr className="h-10 [&>th]:shadow-head-mask">
+            <tr className="h-table-head">
               {selection && (
-                <th scope="col" className="w-10 bg-head px-2.5 text-center first:rounded-l-row">
+                <th scope="col" className={cn(cellBase, 'bg-head text-center')} style={fixedTracks ? undefined : { width: SELECT_COL_W }}>
                   <input
                     type="checkbox"
                     className={checkboxCls}
@@ -369,10 +390,11 @@ export function MestaDataTable<T>({
                     scope="col"
                     aria-sort={active ? (dir === 'asc' ? 'ascending' : 'descending') : sortable ? 'none' : undefined}
                     className={cn(
-                      'whitespace-nowrap bg-head px-2.5 text-left text-[11px] font-semibold tracking-label text-muted first:rounded-l-row last:rounded-r-row',
-                      c.align === 'right' && 'text-right',
+                      cellBase,
+                      'whitespace-nowrap bg-head text-left text-xs font-semibold tracking-label text-muted',
+                      alignCls(c.align),
                       resizable && 'relative',
-                      pinned && 'sticky left-0 z-20 shadow-pin-head',
+                      pinned && 'sticky left-0 z-20 shadow-pin-edge',
                     )}
                   >
                     {sortable ? (
@@ -384,6 +406,7 @@ export function MestaDataTable<T>({
                           active && 'text-fg',
                           // Right-aligned columns keep the label flush with the figures; the arrow sits before it.
                           c.align === 'right' && 'flex-row-reverse',
+                          c.align === 'center' && 'justify-center',
                         )}
                       >
                         <span className="truncate">{c.header}</span>

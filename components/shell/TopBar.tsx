@@ -9,6 +9,7 @@ import { useSessionStore, useUiStore } from '@/lib/stores';
 import { Breadcrumbs } from './Breadcrumbs';
 import { useCommandStore } from './command-store';
 import { DevRoleSelect } from './DevRoleSelect';
+import { MestaLogo } from './MestaLogo';
 import { useFeedbackDialog } from './FeedbackDialog';
 import { useGlossaryStore } from './Glossary';
 import { NotificationBell } from './NotificationBell';
@@ -68,11 +69,12 @@ export function TopBar() {
 
   return (
     <div className="sticky top-0 z-20 flex h-14 items-center gap-2 border-b border-line bg-surface px-2 sm:gap-3 sm:px-4">
+      <MestaLogo variant="mark" label={t('common.app.name')} className="md:hidden" />
       <Breadcrumbs />
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="flex h-9 min-w-0 flex-1 items-center gap-2 rounded-input border border-line bg-bg px-3 text-left text-sm text-faint transition-colors duration-fast hover:border-line-strong md:max-w-xs"
+        className="flex h-control-md min-w-0 flex-1 items-center gap-2 rounded-input border border-line bg-bg px-3 text-left text-sm text-faint transition-colors duration-fast hover:border-line-strong md:max-w-xs"
       >
         <Search className="size-4 shrink-0" aria-hidden />
         <span className="min-w-0 flex-1 truncate">{t('common.cmd.open')}</span>

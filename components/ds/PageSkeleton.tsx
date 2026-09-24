@@ -31,7 +31,7 @@ export function PageSkeleton({ variant }: { variant: 'table' | 'cards' | 'board'
       )}
       {variant === 'table' && (
         <>
-          <div className="flex gap-2"><Bar className="h-9 w-44" /><Bar className="h-9 w-44" /><Bar className="h-9 w-44" /></div>
+          <div className="flex gap-2"><Bar className="h-control-md w-44" /><Bar className="h-control-md w-44" /><Bar className="h-control-md w-44" /></div>
           <div className="rounded-card border border-line">
             {Array.from({ length: 8 }, (_, i) => <Bar key={i} className="mx-3 my-2 h-row" />)}
           </div>

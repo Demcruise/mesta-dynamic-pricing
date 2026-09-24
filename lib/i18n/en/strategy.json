@@ -57,7 +57,14 @@
     "guardrail": "Guardrails",
     "rules": "Signals & rules",
     "review": "Review",
-    "progress": "Step {n} of {total}"
+    "progress": "Step {n} of {total}",
+    "needsAttention": "Needs attention",
+    "state": {
+      "completed": "Completed",
+      "current": "Current step",
+      "upcoming": "Not started",
+      "blocked": "Has blocking issues"
+    }
   },
   "schedule": {
     "title": "Schedule activation",
@@ -81,8 +88,8 @@
     "skus": "SKUs in scope",
     "addSku": "Add SKU",
     "addSkuHint": "Type an SKU and press Add",
-    "minPrice": "Minimum price (optional)",
-    "maxPrice": "Maximum price (optional)",
+    "minPrice": "Minimum price",
+    "maxPrice": "Maximum price",
     "map": "Enforce MAP",
     "maxChange": "Max price change per cycle (%)",
     "threshold": "Auto-approve confidence threshold (0–100)",
@@ -160,5 +167,14 @@
     "pendingRecs": "In queue",
     "acceptance": "Acceptance",
     "projected": "Projected margin"
+  },
+  "guardrailForm": {
+    "title": "Guardrails",
+    "desc": "Limits every price this strategy can recommend. Leave a price field empty for no limit.",
+    "minHint": "Lowest price the strategy may set. Empty = no strategy minimum.",
+    "maxHint": "Highest price the strategy may set. Empty = no strategy maximum.",
+    "changeHint": "Largest move per pricing cycle, up or down.",
+    "thresholdHint": "Recommendations at or above this confidence can auto-approve.",
+    "mapHint": "Never price below the minimum advertised price."
   }
 }

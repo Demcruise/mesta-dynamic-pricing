@@ -66,7 +66,36 @@
   --radius-input: 10px;
   --radius-card: 12px;
   --radius-panel: 16px;
+  /* Backlog v11 DS-004 aliases: sm = row/chip, md = control, lg = card. */
+  --radius-sm: var(--radius-row);
+  --radius-md: var(--radius-input);
+  --radius-lg: var(--radius-card);
   --space: 4px;
+
+  /* DS-001 spacing scale — 4 · 8 · 12 · 16 · 20 · 24 · 32 · 40 · 48. Tailwind's 4px spacing
+     scale maps 1:1 (gap-3 = --space-3); these names exist for CSS that is not a utility. */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 32px;
+  --space-8: 40px;
+  --space-9: 48px;
+
+  /* DS-003 control heights: sm = inline/table actions, md = toolbar + filters, lg = form fields. */
+  --control-h-sm: 32px;
+  --control-h-md: 40px;
+  --control-h-lg: 44px;
+
+  /* DS-002 table contract — one continuous surface, 1px dividers, no floating row bands (VIS-001). */
+  --table-header-h: 48px;
+  --table-row-h: 56px;        /* single-line + two-line cells */
+  --table-row-h-lg: 72px;     /* identity rows (icon + name + meta): Catalog, Monitoring SKU table */
+  --table-cell-px: 16px;
+  --table-cell-py: 12px;
+  --table-divider: rgb(24 24 27 / 0.08);
 
   /* Density: row height, row cell padding, card padding.
      Compact shrinks all three via [data-density='compact'] below. */
@@ -97,6 +126,10 @@
   --row-py: 4px;
   --row-gap: 4px;
   --card-pad: 12px;
+  --table-row-h: 44px;
+  --table-row-h-lg: 56px;
+  --table-cell-px: 12px;
+  --table-cell-py: 8px;
 }
 
 :root[data-theme='dark'] {
@@ -116,6 +149,7 @@
   --border: rgb(255 255 255 / 0.06);
   --border-strong: rgb(255 255 255 / 0.14);
   --border-icon: rgb(255 255 255 / 0.06);
+  --table-divider: rgb(255 255 255 / 0.08);
   --brand: #60a5fa;           /* reference #3b82f6 lifted so brand text/buttons stay AA */
   --brand-hover: #93c5fd;
   --brand-fg: #0a0a0a;

@@ -18,7 +18,7 @@ function MultiSelect<T extends string>({
         <span>{label}{value.length > 0 && <span className={`ml-1.5 ${pillCls('brand', 'sm')}`}>{value.length}</span>}</span>
         <ChevronDown className="size-3.5" aria-hidden />
       </summary>
-      <fieldset className="glass absolute left-0 top-10 z-20 min-w-44 rounded-card border border-line p-2 shadow-e3 max-sm:static max-sm:mt-1 max-sm:w-full">
+      <fieldset className="glass absolute left-0 top-11 z-20 min-w-44 rounded-card border border-line p-2 shadow-e3 max-sm:static max-sm:mt-1 max-sm:w-full">
         <legend className="sr-only">{label}</legend>
         {options.map((o) => (
           <label key={o.value} className="flex cursor-pointer items-center gap-2 rounded px-2 py-1 text-sm transition-colors duration-fast hover:bg-subtle">
@@ -67,9 +67,9 @@ export function FilterBar({ filters, onChange, onClear }: Props) {
         options={(['healthy', 'thin', 'critical'] as const).map((v) => ({ value: v, label: t(`catalog.health.${v}`) }))} />
       <MultiSelect label={t('catalog.filter.stock')} value={filters.stock} onChange={(stock) => set({ stock })}
         options={(['in_stock', 'low_stock', 'out_of_stock'] as const).map((v) => ({ value: v, label: t(`catalog.stock.${v}`) }))} />
-      <Input type="number" aria-label={t('catalog.filter.gapMin')} placeholder={t('catalog.filter.gapMin')} className="tabular w-28"
+      <Input type="number" aria-label={t('catalog.filter.gapMin')} placeholder={t('catalog.filter.gapMin')} className="tabular w-32"
         value={filters.gapMin ?? ''} onChange={numChange('gapMin')} />
-      <Input type="number" aria-label={t('catalog.filter.gapMax')} placeholder={t('catalog.filter.gapMax')} className="tabular w-28"
+      <Input type="number" aria-label={t('catalog.filter.gapMax')} placeholder={t('catalog.filter.gapMax')} className="tabular w-32"
         value={filters.gapMax ?? ''} onChange={numChange('gapMax')} />
 
       {count > 0 && (
