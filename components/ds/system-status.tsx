@@ -51,7 +51,8 @@ export function JobProgress({ done, total, label, className }: {
         role="progressbar" aria-label={label} aria-valuemin={0} aria-valuemax={total} aria-valuenow={done}
         className="h-1.5 overflow-hidden rounded-full bg-subtle"
       >
-        <div className="h-full rounded-full bg-brand transition-[width] duration-base ease-decelerate motion-reduce:transition-none" style={{ width: `${pct}%` }} />
+        {/* Compositor-only fill: scaleX animates without layout/paint (Lighthouse NCA). */}
+        <div className="h-full w-full origin-left rounded-full bg-brand transition-transform duration-base ease-decelerate motion-reduce:transition-none" style={{ transform: `scaleX(${pct / 100})` }} />
       </div>
     </div>
   );

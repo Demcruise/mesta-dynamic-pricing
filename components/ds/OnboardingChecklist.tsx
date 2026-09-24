@@ -49,7 +49,8 @@ export function OnboardingChecklist({ title, subtitle, steps, doneLabel, onDismi
       </div>
       <div className="mt-3 flex items-center gap-3">
         <div role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} aria-label={doneLabel(done, steps.length)} className="h-1 min-w-0 flex-1 overflow-hidden rounded-full bg-subtle">
-          <div className="h-full rounded-full bg-brand transition-[width] duration-slow ease-decelerate motion-reduce:transition-none" style={{ width: `${pct}%` }} />
+          {/* Compositor-only fill: scaleX animates without layout/paint (Lighthouse NCA). */}
+          <div className="h-full w-full origin-left rounded-full bg-brand transition-transform duration-slow ease-decelerate motion-reduce:transition-none" style={{ transform: `scaleX(${pct / 100})` }} />
         </div>
         <p className="tabular shrink-0 text-xs text-faint">{doneLabel(done, steps.length)}</p>
       </div>

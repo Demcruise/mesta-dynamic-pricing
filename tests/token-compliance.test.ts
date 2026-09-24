@@ -43,3 +43,38 @@ describe('Token compliance (backlog v4 B): no raw elevation/motion utilities', (
     expect(violations).toEqual([]);
   });
 });
+
+// Animating layout/paint properties runs off the compositor thread (Lighthouse
+// "Avoid non-composited animations"): jank on low-end devices, main-thread work,
+// and CLS from elements actually moving. Animate transform/opacity instead.
+// Progress/meter fills use transform: scaleX() with origin-left.
+const NON_COMPOSITED = /\btransition-\[(?:width|height|grid-template-rows|top|right|bottom|left|margin[\w-]*|padding[\w-]*|stroke-dashoffset)\]/g;
+
+// Inherent layout/paint animations kept deliberately — each is a documented,
+// interaction-triggered change with no compositor-only equivalent.
+const COMPOSITED_EXCEPTIONS = new Set([
+  // Collapsing the rail IS the content-column reflow; width is the layout change.
+  'components/shell/Sidebar.tsx::transition-[width]',
+  // Auto-height disclosure: no compositor-only equivalent for animating to auto.
+  'components/ds/RationaleBreakdown.tsx::transition-[grid-template-rows]',
+  // 24px SVG countdown ring — paint-only, only runs while an undo toast is up.
+  'components/shell/ToastHost.tsx::transition-[stroke-dashoffset]',
+]);
+
+describe('Animation compliance: no non-composited transitions', () => {
+  it('only compositor-only properties are animated (exceptions documented above)', () => {
+    const violations: string[] = [];
+    for (const dir of SCANNED_DIRS) {
+      for (const file of walk(join(ROOT, dir))) {
+        if (isRawBlock(file)) continue;
+        const rel = file.slice(ROOT.length + 1).replaceAll('\\', '/');
+        const src = readFileSync(file, 'utf8');
+        for (const m of src.matchAll(NON_COMPOSITED)) {
+          if (COMPOSITED_EXCEPTIONS.has(`${rel}::${m[0]}`)) continue;
+          violations.push(`${rel}: "${m[0]}" — animate transform/opacity instead`);
+        }
+      }
+    }
+    expect(violations).toEqual([]);
+  });
+});

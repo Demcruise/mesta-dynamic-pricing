@@ -26,7 +26,8 @@ export function ConfidenceBreakdown({
             <span className="tabular text-muted">{f.score}</span>
           </div>
           <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-subtle" role="meter" aria-valuemin={0} aria-valuemax={100} aria-valuenow={f.score} aria-label={t(`recommendations.confidence.${f.key}`)}>
-            <div className="h-full rounded-full bg-brand transition-[width] duration-base" style={{ width: `${f.score}%` }} />
+            {/* Compositor-only fill: scaleX animates without layout/paint (Lighthouse NCA). */}
+            <div className="h-full w-full origin-left rounded-full bg-brand transition-transform duration-base" style={{ transform: `scaleX(${f.score / 100})` }} />
           </div>
           <p className="mt-0.5 text-xs text-faint">{f.detail}</p>
         </li>
