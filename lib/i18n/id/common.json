@@ -16,7 +16,6 @@
     "deployment": "Deployment",
     "monitoring": "Monitoring",
     "audit": "Audit",
-    "designSystem": "Sistem Desain",
     "settings": "Pengaturan",
     "primary": "Navigasi utama",
     "mobile": "Navigasi mobile",
@@ -409,7 +408,17 @@
     "previewFor": "Pratinjau SKU",
     "scopeOutside": "{n} dari {total} SKU dalam cakupan saat ini di luar batas efektifnya",
     "scopeInside": "Semua {total} SKU dalam cakupan saat ini berada dalam batas efektifnya",
-    "noScope": "Tambahkan kategori atau SKU di Cakupan untuk melihat pratinjau batas efektif."
+    "noScope": "Tambahkan kategori atau SKU di Cakupan untuk melihat pratinjau batas efektif.",
+    "effectiveRange": "Rentang efektif",
+    "min": "Min",
+    "max": "Maks",
+    "rangeAria": "Rentang efektif {min} sampai {max}. Harga saat ini {current}. Harga usulan {proposed}.",
+    "proposedState": {
+      "within": "Harga usulan berada dalam rentang efektif.",
+      "below": "Harga usulan di bawah minimum efektif ({min}).",
+      "above": "Harga usulan di atas maksimum efektif ({max}).",
+      "invalid": "Batasan tidak menyisakan rentang harga valid untuk SKU ini."
+    }
   },
   "form": {
     "optional": "opsional"

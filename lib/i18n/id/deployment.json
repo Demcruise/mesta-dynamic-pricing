@@ -12,7 +12,12 @@
     "avgRetries": "Rerata retry",
     "recent": "Aktivitas terbaru",
     "retry": "Coba ulang",
-    "progress": "Kanal tersinkron"
+    "progress": "Kanal tersinkron",
+    "group": {
+      "pos": "POS",
+      "ecommerce": "E-commerce",
+      "marketplaces": "Marketplace"
+    }
   },
   "status": {
     "all": "Semua status",

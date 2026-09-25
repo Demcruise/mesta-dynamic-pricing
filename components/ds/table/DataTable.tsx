@@ -131,6 +131,13 @@ export interface MestaDataTableProps<T> {
   csv?: CsvExport<T>;
   /** Extra toolbar controls (e.g. SavedViewMenu), rendered before the column menu. */
   toolbar?: ReactNode;
+  /**
+   * Left side of the toolbar row — a section heading or a view switch — so title and table
+   * controls share one line (DEPLOYMENT-UI-002, AUDIT-UI-001).
+   */
+  toolbarLeading?: ReactNode;
+  /** Filter controls rendered on their own row between the toolbar and the table. */
+  filterBar?: ReactNode;
   /** From `useColumnVisibility`. Omit to render all columns without the menu. */
   visibility?: ColumnVisibility;
   /** Draggable + keyboard column resize, widths persisted per `tableId`. Switches the table to fixed layout. */
@@ -154,7 +161,7 @@ const SELECT_COL_W = 48;
 
 export function MestaDataTable<T>({
   tableId, caption, columns, rows, getRowId, sort, selection, onRowClick,
-  virtualize = false, rowSize = 'md', rowHeight = 56, minWidth = 680, csv, toolbar, visibility,
+  virtualize = false, rowSize = 'md', rowHeight = 56, minWidth = 680, csv, toolbar, toolbarLeading, filterBar, visibility,
   resizable = false, stickyFirst = false, groups,
 }: MestaDataTableProps<T>) {
   const { t } = useTranslation();
@@ -316,13 +323,16 @@ export function MestaDataTable<T>({
 
   return (
     <div>
-      {(visibility || csv || toolbar || (groups && groups.length > 0)) && (
-        <div className="mb-3 flex flex-wrap items-center justify-end gap-2">
+      {(visibility || csv || toolbar || toolbarLeading || (groups && groups.length > 0)) && (
+        // UI-FIX-002: one row, one vertical centre — leading content left, table controls right.
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+          <div className="flex min-w-0 flex-wrap items-center gap-2">{toolbarLeading}</div>
+          <div className="flex flex-wrap items-center justify-end gap-2">
           {toolbar}
           {groups && groups.length > 0 && !virtualize && (
             <select
               aria-label={t('common.table.groupBy')}
-              className={cn(inputCls, 'w-44')}
+              className={cn(inputCls, 'w-auto min-w-44')}
               value={groupId}
               onChange={(e) => chooseGroup(e.target.value)}
             >
@@ -348,8 +358,10 @@ export function MestaDataTable<T>({
               onToggle={visibility.toggle}
             />
           )}
+          </div>
         </div>
       )}
+      {filterBar && <div className="mb-3 flex flex-wrap items-center gap-2">{filterBar}</div>}
       {/* One framed surface: header band, 1px row dividers; the scrollbar gutter is reserved so
           columns never shift when a scrollbar appears (MON-018). */}
       <div ref={scrollRef} className={cn('rounded-card border border-line bg-surface', virtualize ? 'table-scroll max-h-[70vh]' : 'overflow-x-auto')}>

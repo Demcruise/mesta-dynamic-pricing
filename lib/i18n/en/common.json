@@ -16,7 +16,6 @@
     "deployment": "Deployment",
     "monitoring": "Monitoring",
     "audit": "Audit",
-    "designSystem": "Design System",
     "settings": "Settings",
     "primary": "Primary navigation",
     "mobile": "Mobile navigation",
@@ -409,7 +408,17 @@
     "previewFor": "Preview SKU",
     "scopeOutside": "{n} of {total} scoped SKUs are currently outside their effective bounds",
     "scopeInside": "All {total} scoped SKUs are currently within their effective bounds",
-    "noScope": "Add a category or SKU in Scope to preview effective bounds."
+    "noScope": "Add a category or SKU in Scope to preview effective bounds.",
+    "effectiveRange": "Effective range",
+    "min": "Min",
+    "max": "Max",
+    "rangeAria": "Effective range {min} to {max}. Current price {current}. Proposed price {proposed}.",
+    "proposedState": {
+      "within": "Proposed price is within the effective range.",
+      "below": "Proposed price is below the effective minimum ({min}).",
+      "above": "Proposed price is above the effective maximum ({max}).",
+      "invalid": "The constraints leave no valid price range for this SKU."
+    }
   },
   "form": {
     "optional": "optional"

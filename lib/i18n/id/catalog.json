@@ -119,7 +119,8 @@
     "skuNav": "Navigasi SKU",
     "prev": "Sebelumnya: {sku}",
     "next": "Berikutnya: {sku}",
-    "position": "{i} dari {n}"
+    "position": "{i} dari {n}",
+    "vsPrevious": "{pct} vs sebelumnya"
   },
   "bulk": {
     "assignTitle": "Tetapkan ke strategi",

@@ -170,7 +170,8 @@ function Simulator({ sku, strategyId, initial, basePrice }: {
       />
       <StrategySelect product={product} strategyId={strategyId} />
 
-      <div className="mb-4 grid gap-3 md:grid-cols-3">
+      {/* SIMULATION-UI-001: scenario cards share the full content width whatever their count. */}
+      <div className="mb-4 grid gap-3 md:grid-cols-[repeat(auto-fit,minmax(260px,1fr))]">
         {rows.map(({ s, price, check }, i) => {
           const disabled = !!s.sentRec || !can('simulation.use');
           const errId = `err-${s.key}`;
@@ -321,17 +322,20 @@ function SkuPicker({ strategyId, currentSku }: { strategyId: string | null; curr
   return (
     <>
       <PageHeader title={t('simulation.title')} subtitle={t('simulation.subtitle')} />
+      {/* SIMULATION-UI-001: the search keeps its comfortable width; the result surface uses the full content width. */}
       <div className="max-w-md">
         <p className="mb-2 text-sm text-muted">{t('simulation.context.pick')}</p>
         <Input aria-label={t('simulation.context.searchSku')} placeholder={t('simulation.context.searchSku')} value={q} onChange={(e) => setQ(e.target.value)} />
-        <ul className="mt-2 divide-y divide-line rounded-card border border-line bg-surface shadow-e1">
+      </div>
+      <div className="mt-3 w-full">
+        <ul className="divide-y divide-divider rounded-card border border-line bg-surface">
           {hits.map((p) => {
             const selected = p.sku === currentSku;
             return (
             <li key={p.sku}>
               {/* L-02: the picker's selected state mirrors the loaded SKU. */}
               <button type="button" aria-pressed={selected}
-                className={`flex w-full items-center justify-between px-3 py-2 text-left text-sm transition-colors duration-fast ${selected ? 'bg-brand-soft' : 'hover:bg-subtle'}`}
+                className={`flex min-h-16 w-full items-center justify-between gap-4 px-5 py-3 text-left text-sm transition-colors duration-fast first:rounded-t-card last:rounded-b-card ${selected ? 'bg-brand-soft' : 'hover:bg-subtle'}`}
                 onClick={() => router.push(`/simulation?sku=${p.sku}${strategyId ? `&strategyId=${strategyId}` : ''}`)}>
                 <ProductIdentity product={p} />
                 <PriceValue value={p.price} muted />

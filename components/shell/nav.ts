@@ -1,5 +1,5 @@
 import {
-  Activity, BarChart3, Beaker, BellRing, Database, FlaskConical, Inbox, LayoutDashboard, ListChecks, Package, Palette,
+  Activity, BarChart3, Beaker, BellRing, Database, FlaskConical, Inbox, LayoutDashboard, ListChecks, Package,
   Radio, Scale, ScrollText, Send, Settings, ShieldCheck, Siren, Sparkles, TrendingUp,
   type LucideIcon,
 } from 'lucide-react';
@@ -10,7 +10,7 @@ export interface NavItem {
   key:
     | 'overview' | 'catalog' | 'strategy' | 'rules' | 'guardrails' | 'simulation' | 'recommendations' | 'approvals' | 'deployment' | 'monitoring' | 'audit'
     | 'exceptions' | 'alerts' | 'data' | 'competitors' | 'signals' | 'analytics' | 'experiments'
-    | 'designSystem' | 'settings';
+    | 'settings';
   icon: LucideIcon;
   /** Absent = visible to every role (open routes). */
   action?: Action;
@@ -61,7 +61,6 @@ export const NAV_SECTIONS: NavSection[] = [
   {
     key: 'account',
     items: [
-      { href: '/design-system', key: 'designSystem', icon: Palette },
       { href: '/settings', key: 'settings', icon: Settings },
     ],
   },

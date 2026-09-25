@@ -119,7 +119,8 @@
     "skuNav": "SKU navigation",
     "prev": "Previous: {sku}",
     "next": "Next: {sku}",
-    "position": "{i} of {n}"
+    "position": "{i} of {n}",
+    "vsPrevious": "{pct} vs previous"
   },
   "bulk": {
     "assignTitle": "Assign to strategy",

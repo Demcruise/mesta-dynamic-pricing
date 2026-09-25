@@ -22,6 +22,9 @@ const button = cva(
   },
 );
 
+/** Button styling for links that must look and size exactly like a Button (UI-FIX-003). */
+export const buttonVariants = button;
+
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof button> {
   ref?: Ref<HTMLButtonElement>;
   /** Async action in flight: spinner + aria-busy, interaction blocked. */

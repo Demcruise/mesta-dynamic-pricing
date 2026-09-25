@@ -90,7 +90,7 @@ export function AlertsPage() {
                   ...ORDER.map((s) => ({ value: s, label: t(`alerts.sev.${s}`), count: counts[s], icon: SEV_ICON[s], iconCls: SEV_ICON_CLS[s] })),
                 ]}
               />
-              <select aria-label={t('alerts.sort.label')} className={cn(inputCls, 'w-52')} value={q.sort} onChange={(e) => setQ({ sort: e.target.value })}>
+              <select aria-label={t('alerts.sort.label')} className={cn(inputCls, 'w-auto min-w-40')} value={q.sort} onChange={(e) => setQ({ sort: e.target.value })}>
                 {(['severity', 'newest', 'oldest'] as const).map((s) => <option key={s} value={s}>{`${t('alerts.sort.label')}: ${t(`alerts.sort.${s}`)}`}</option>)}
               </select>
             </div>

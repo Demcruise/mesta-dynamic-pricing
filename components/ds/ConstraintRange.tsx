@@ -154,7 +154,7 @@ export function ConstraintRange({ bounds, proposed, strategyName, compact = fals
                 title={`${r.label} — ${r.source}`}
                 className={cn(
                   'grid grid-cols-1 items-center gap-x-4 gap-y-1.5 border-t border-divider px-4 py-3 sm:grid-cols-[minmax(0,13rem)_minmax(0,1fr)_minmax(0,12rem)]',
-                  r.id === 'effective' && 'bg-subtle',
+                  r.id === 'effective' && 'border-t-2 border-t-line-strong bg-subtle',
                 )}
               >
                 <span className="min-w-0">
@@ -257,5 +257,74 @@ function Derivation({ title, fn, terms }: { title: string; fn: 'Max' | 'Min'; te
       </ul>
       <p className="font-mono text-caption text-muted">)</p>
     </div>
+  );
+}
+
+/**
+ * APPROVAL-UI-001 — the decision view of a price range: one labelled track from effective minimum
+ * to effective maximum with two named markers, Current and Proposed. Values are printed, markers
+ * differ by shape (dot vs diamond) and label, and a proposal outside the range gets an explicit
+ * warning line — never colour alone.
+ */
+export function PriceRangeSummary({ bounds, proposed, className }: { bounds: BoundsExplanation; proposed: number; className?: string }) {
+  const { t, locale } = useTranslation();
+  const fmt = (n: number) => formatPrice(n, locale);
+  const b = bounds;
+  const invalid = b.state === 'invalid';
+  const lo = Math.min(b.effectiveMin, b.current, proposed);
+  const hi = Math.max(b.effectiveMax, b.current, proposed);
+  const pad = (hi - lo || hi || 1) * 0.12;
+  const pos = (v: number) => Math.min(100, Math.max(0, ((v - (lo - pad)) / (hi - lo + pad * 2 || 1)) * 100));
+  const proposedState = invalid ? 'invalid' : proposed < b.effectiveMin ? 'below' : proposed > b.effectiveMax ? 'above' : 'within';
+  const out = proposedState !== 'within';
+  const shift = (p: number) => (p < 14 ? '0%' : p > 86 ? '-100%' : '-50%');
+
+  return (
+    <section aria-label={t('common.bounds.title')} className={cn('flex flex-col gap-4', className)}>
+      <dl className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+        <div className="min-w-0">
+          <dt className="text-caption font-medium text-muted">{t('common.bounds.effectiveRange')}</dt>
+          <dd className="tabular mt-1 text-body-sm font-semibold text-fg">{invalid ? t('common.bounds.noRange') : `${fmt(b.effectiveMin)} — ${fmt(b.effectiveMax)}`}</dd>
+        </div>
+        <div className="min-w-0">
+          <dt className="flex items-center gap-1.5 text-caption font-medium text-muted"><span aria-hidden className="size-2.5 rounded-full bg-fg" />{t('common.bounds.current')}</dt>
+          <dd className="tabular mt-1 text-body-sm font-semibold text-fg">{fmt(b.current)}</dd>
+        </div>
+        <div className="min-w-0">
+          <dt className="flex items-center gap-1.5 text-caption font-medium text-muted"><span aria-hidden className={cn('size-2.5 rotate-45', out ? 'bg-critical' : 'bg-brand')} />{t('common.bounds.proposed')}</dt>
+          <dd className={cn('tabular mt-1 text-body-sm font-semibold', out ? 'text-critical' : 'text-brand')}>{fmt(proposed)}</dd>
+        </div>
+      </dl>
+
+      <div role="img" aria-label={t('common.bounds.rangeAria', { min: fmt(b.effectiveMin), max: fmt(b.effectiveMax), current: fmt(b.current), proposed: fmt(proposed) })} className="px-1">
+        {/* Marker labels above the track. */}
+        <div className="relative h-6" aria-hidden>
+          <span className="tabular absolute bottom-0 whitespace-nowrap text-[11px] font-semibold text-fg" style={{ left: `${pos(b.current)}%`, transform: `translateX(${shift(pos(b.current))})` }}>{t('common.bounds.current')}</span>
+        </div>
+        <div className="relative h-4" aria-hidden>
+          <span className="absolute inset-x-0 top-1/2 h-1 -translate-y-1/2 rounded-full bg-line-strong" />
+          {!invalid && (
+            <span className="absolute top-1/2 h-2.5 -translate-y-1/2 rounded-full bg-up-soft ring-1 ring-inset ring-up-graphic"
+              style={{ left: `${pos(b.effectiveMin)}%`, width: `${Math.max(1, pos(b.effectiveMax) - pos(b.effectiveMin))}%` }} />
+          )}
+          <span className="absolute top-1/2 size-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-surface bg-fg" style={{ left: `${pos(b.current)}%` }} />
+          <span className={cn('absolute top-1/2 size-3 -translate-x-1/2 -translate-y-1/2 rotate-45 border-2 border-surface', out ? 'bg-critical' : 'bg-brand')} style={{ left: `${pos(proposed)}%` }} />
+        </div>
+        <div className="relative h-6" aria-hidden>
+          <span className={cn('tabular absolute top-1 whitespace-nowrap text-[11px] font-semibold', out ? 'text-critical' : 'text-brand')} style={{ left: `${pos(proposed)}%`, transform: `translateX(${shift(pos(proposed))})` }}>{t('common.bounds.proposed')}</span>
+        </div>
+        {!invalid && (
+          <div className="relative h-5 text-caption text-faint" aria-hidden>
+            <span className="tabular absolute whitespace-nowrap" style={{ left: `${pos(b.effectiveMin)}%`, transform: `translateX(${shift(pos(b.effectiveMin))})` }}>{t('common.bounds.min')} {fmt(b.effectiveMin)}</span>
+            <span className="tabular absolute whitespace-nowrap" style={{ left: `${pos(b.effectiveMax)}%`, transform: `translateX(${shift(pos(b.effectiveMax))})` }}>{t('common.bounds.max')} {fmt(b.effectiveMax)}</span>
+          </div>
+        )}
+      </div>
+
+      <p role="status" className={cn('flex items-start gap-2 rounded-input px-3 py-2 text-body-sm font-medium', out ? 'bg-critical-soft text-critical' : 'bg-up-soft text-up')}>
+        {out ? <CircleAlert aria-hidden className="mt-0.5 size-4 shrink-0" /> : <CircleCheck aria-hidden className="mt-0.5 size-4 shrink-0" />}
+        {t(`common.bounds.proposedState.${proposedState}`, { min: fmt(b.effectiveMin), max: fmt(b.effectiveMax) })}
+      </p>
+    </section>
   );
 }

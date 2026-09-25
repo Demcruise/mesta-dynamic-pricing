@@ -64,3 +64,20 @@ Approvals, Exceptions, Alerts, Monitoring, Signals, Audit, Enterprise Settings) 
   form fields.
 - Signals metric columns are left-aligned because SIG-002…006 say so explicitly; other tables right-align figures.
 - Settings persist per browser (demo workspace, like the existing policy overrides); credentials are fixtures.
+
+# Backlog v12 — 11 precision fixes (2026-09-25)
+
+| ID | Change |
+|---|---|
+| UI-FIX-001 | One dropdown pattern for every native `<select>` (global CSS): 16px chevron 12px from the right edge, 36px right padding (≈8px text → icon), theme-aware; compact scope-bar selects use `data-size="sm"`. Custom dropdown triggers (Catalog filters) follow the same 6px / 12px spacing. |
+| CATALOG-UI-001 | All seven catalog filters on one row: flexible search, content-width dropdowns, Gap min/max as one 128px pair that wraps together. |
+| STRATEGY-UI-001/002 | Filters on one grid (wide search + three equal dropdown tracks); Edit links use `buttonVariants` so Edit/Archive share height, padding and baseline. |
+| GUARDRAIL-UI-001/002/003 | Row 1 = status tabs (+ count, density), row 2 = All types / Any editability / Any source; 12px gap between the title/status row and the card copy on every card. |
+| SIMULATION-UI-001 | SKU picker keeps the search at its width while the result list spans the content width; scenario cards auto-fit the full width. |
+| RECOMMENDATION-UI-001/002 | Filter dropdowns are content-width with the shared chevron spacing; status tabs stay on the shared FilterTabs component. |
+| CATALOG-DETAIL-001/002 | Effective-bounds row reads as the result (2px separator, tinted). Price history uses the interactive chart: hover/focus/←→ shows date · time, price and change vs previous, placed off the point; the text history stays below. |
+| APPROVAL-UI-001 | `PriceRangeSummary`: one labelled effective-range track with Current (dot) and Proposed (diamond) markers, printed values, and an explicit within / below / above message. Used in the approvals drawer and full detail; purple lines removed. |
+| DEPLOYMENT-UI-001/002 | Three top cards — POS, E-commerce, Marketplaces (A and B kept as individual panels with status, sync and retry). Deployment records heading shares its row with Download/Columns (`toolbarLeading`), All statuses sits on the filter row (`filterBar`). |
+| ALERTS-UI-001 | Sort dropdown uses the shared pattern at content width. |
+| AUDIT-UI-001/002/003 | One toolbar row: List/Timeline left; JSON, Evidence package, Bookmark, Group by, Download, Columns right — all 40px; timeline view keeps the same row. |
+| DESIGN-SYSTEM-UI-001 | The `/design-system` page, route, nav entry and its visual-baseline spec are removed. Tokens, primitives and shared components are unchanged. |

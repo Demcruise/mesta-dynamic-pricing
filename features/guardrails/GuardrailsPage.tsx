@@ -216,7 +216,8 @@ export function GuardrailsPage() {
         <p className="mb-2 truncate text-caption text-faint">
           <span className="font-semibold uppercase tracking-wide">{t('common.scope.dataScope')}</span> · {scopePath}
         </p>
-        <div className="flex flex-wrap items-center gap-2">
+        {/* GUARDRAIL-UI-001: row 1 = status tabs (+ result count, density); row 2 = the three dropdown filters. */}
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <FilterTabs
             label={t('guardrails.filter.label')}
             controls="guardrail-catalog"
@@ -227,25 +228,7 @@ export function GuardrailsPage() {
               ...STATUSES.map((s) => ({ value: s, label: t(`guardrails.group.${s}`), count: counts[s], icon: STATUS_PILL[s].icon })),
             ]}
           />
-          <select aria-label={t('guardrails.filter.type')} className={cn(inputCls, 'w-40')} value={q.type} onChange={(e) => setQ({ type: e.target.value })}>
-            <option value="">{t('guardrails.filter.typeAll')}</option>
-            {TYPES.map((x) => <option key={x} value={x}>{t(`guardrails.type.${x}`)}</option>)}
-          </select>
-          <select aria-label={t('guardrails.filter.edit')} className={cn(inputCls, 'w-44')} value={q.edit} onChange={(e) => setQ({ edit: e.target.value })}>
-            <option value="">{t('guardrails.filter.editAll')}</option>
-            <option value="editable">{t('guardrails.filter.editable')}</option>
-            <option value="locked">{t('guardrails.filter.locked')}</option>
-          </select>
-          <select aria-label={t('guardrails.filter.source')} className={cn(inputCls, 'w-48')} value={q.source} onChange={(e) => setQ({ source: e.target.value })}>
-            <option value="">{t('guardrails.filter.sourceAll')}</option>
-            {SOURCES.map((x) => <option key={x} value={x}>{t(`guardrails.config.scope.${x}`)}</option>)}
-          </select>
-          {filtersActive && (
-            <button type="button" className="px-1 text-label font-medium text-brand hover:underline" onClick={clearViewFilters}>
-              {t('common.filter.clear')}
-            </button>
-          )}
-          <span className="ml-auto flex items-center gap-3">
+          <span className="flex items-center gap-3">
             <span className="tabular text-caption text-muted" aria-live="polite">{t('guardrails.filter.visible', { n: visible.length })}</span>
             <Segmented
               label={t('guardrails.filter.density')}
@@ -258,6 +241,26 @@ export function GuardrailsPage() {
               ]}
             />
           </span>
+        </div>
+        <div className="mt-2 flex flex-wrap items-center gap-2">
+          <select aria-label={t('guardrails.filter.type')} className={cn(inputCls, 'w-44')} value={q.type} onChange={(e) => setQ({ type: e.target.value })}>
+            <option value="">{t('guardrails.filter.typeAll')}</option>
+            {TYPES.map((x) => <option key={x} value={x}>{t(`guardrails.type.${x}`)}</option>)}
+          </select>
+          <select aria-label={t('guardrails.filter.edit')} className={cn(inputCls, 'w-52')} value={q.edit} onChange={(e) => setQ({ edit: e.target.value })}>
+            <option value="">{t('guardrails.filter.editAll')}</option>
+            <option value="editable">{t('guardrails.filter.editable')}</option>
+            <option value="locked">{t('guardrails.filter.locked')}</option>
+          </select>
+          <select aria-label={t('guardrails.filter.source')} className={cn(inputCls, 'w-56')} value={q.source} onChange={(e) => setQ({ source: e.target.value })}>
+            <option value="">{t('guardrails.filter.sourceAll')}</option>
+            {SOURCES.map((x) => <option key={x} value={x}>{t(`guardrails.config.scope.${x}`)}</option>)}
+          </select>
+          {filtersActive && (
+            <button type="button" className="px-1 text-label font-medium text-brand hover:underline" onClick={clearViewFilters}>
+              {t('common.filter.clear')}
+            </button>
+          )}
         </div>
       </div>
 
@@ -327,7 +330,7 @@ export function GuardrailsPage() {
                     <h3 className="text-section">{t(`guardrails.constraint.${r.id}.name`)}</h3>
                     {statusPill(r)}
                   </div>
-                  <p className="pt-1 text-caption font-medium text-muted">{modeText(r)}</p>
+                  <p className="pt-3 text-caption font-medium text-muted">{modeText(r)}</p>
                   <p className="line-clamp-3 pt-3 text-body-sm text-fg">{t(`guardrails.constraint.${r.id}.desc`)}</p>
                   <p className="tabular pt-4 text-body-sm font-semibold text-fg">{coverageText(r)}</p>
                   <div className="pb-5 pt-4">{actionFor(r)}</div>

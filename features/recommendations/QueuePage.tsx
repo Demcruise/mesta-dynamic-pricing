@@ -28,7 +28,7 @@ const PAGE_SIZE = 50;
 
 function Select({ label, value, onChange, children }: { label: string; value: string; onChange: (v: string) => void; children: React.ReactNode }) {
   return (
-    <select aria-label={label} className={cn(inputCls, 'w-44')} value={value} onChange={(e) => onChange(e.target.value)}>
+    <select aria-label={label} className={cn(inputCls, 'w-auto min-w-36 max-w-64')} value={value} onChange={(e) => onChange(e.target.value)}>
       {children}
     </select>
   );

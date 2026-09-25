@@ -7,7 +7,7 @@ import { AgentBorderCard } from '@/components/ds/AgentBorderCard';
 import { AgentRunTimeline, type RunStep } from '@/components/ds/AgentRunTimeline';
 import { ApprovalChain } from '@/components/ds/ApprovalChain';
 import { ConfidenceBar } from '@/components/ds/ConfidenceBar';
-import { ConstraintRange } from '@/components/ds/ConstraintRange';
+import { ConstraintRange, PriceRangeSummary } from '@/components/ds/ConstraintRange';
 import { DeltaBadge } from '@/components/ds/DeltaBadge';
 import { Money } from '@/components/ds/numeric';
 import { Pill } from '@/components/ds/Pill';
@@ -191,7 +191,7 @@ export function RecommendationCard({ rec, product, defaultOpen = false, showStat
             </dl>
           </div>
         )}
-        {bounds && <ConstraintRange bounds={bounds} proposed={rec.proposedPrice} compact />}
+        {bounds && <ConstraintRange bounds={bounds} compact />}
         <RoleGate action="simulation.use">
           <Link href={rec.scenarioId ? `/simulation/${rec.scenarioId}` : `/simulation?sku=${rec.sku}`} className="text-caption font-medium text-brand underline">
             {t('recommendations.card.simulate')}
@@ -249,7 +249,12 @@ export function RecommendationCard({ rec, product, defaultOpen = false, showStat
         <div className="flex flex-col gap-3">{identity}{meta}</div>
         {statusGroup}
         <Section title={t('recommendations.card.summary')}>
-          <div className="flex flex-col gap-4">{impact}{confidence}{driver}</div>
+          <div className="flex flex-col gap-4">
+            {impact}
+            {/* APPROVAL-UI-001: current vs proposed on one labelled effective range. */}
+            {bounds && <PriceRangeSummary bounds={bounds} proposed={rec.proposedPrice} />}
+            {confidence}{driver}
+          </div>
         </Section>
         <Section title={t('recommendations.card.evidence')}>{evidence}</Section>
         {notes}
@@ -268,7 +273,10 @@ export function RecommendationCard({ rec, product, defaultOpen = false, showStat
           {statusGroup}
         </header>
         {driver}
-        <div className="border-y border-divider py-5">{impact}</div>
+        <div className="flex flex-col gap-5 border-y border-divider py-5">
+          {impact}
+          {bounds && <PriceRangeSummary bounds={bounds} proposed={rec.proposedPrice} />}
+        </div>
         {evidence}
         {notes}
         {actions}

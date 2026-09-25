@@ -53,9 +53,13 @@ function useWidth<T extends HTMLElement>() {
  * are lower-emphasis context (forecast), which survives greyscale. Hover or ←/→ moves a
  * crosshair with a tooltip; the default marker sits on the latest point.
  */
-export function LineChart({ series, labels, format = (v) => String(Math.round(v)), axisFormat, label, height = 240 }: {
+export function LineChart({ series, labels, tooltipLabels, tooltipNote, format = (v) => String(Math.round(v)), axisFormat, label, height = 240 }: {
   series: Series[];
   labels: string[];
+  /** Full per-point label for the tooltip (e.g. date + time) when axis labels are abbreviated. */
+  tooltipLabels?: string[];
+  /** Extra tooltip line for a point, e.g. "+2.4% vs previous" (CATALOG-DETAIL-002). */
+  tooltipNote?: (index: number) => ReactNode;
   format?: (v: number) => string;
   /** Compact tick formatter; defaults to `format`. */
   axisFormat?: (v: number) => string;
@@ -116,6 +120,10 @@ export function LineChart({ series, labels, format = (v) => String(Math.round(v)
     else if (e.key === 'End') { e.preventDefault(); setActive(n - 1); }
   };
   const tipLeft = Math.min(Math.max(x(idx), P.l + 70), W - P.r - 70);
+  // Keep the tooltip off the hovered point: below it when the point sits high, above it otherwise.
+  const heroPoint = series[heroIdx]?.points[idx];
+  const pointY = Number.isFinite(heroPoint) ? y(heroPoint!) : P.t;
+  const tipBelow = pointY < P.t + plotH / 2;
   const heroTone = series[heroIdx]?.tone ?? 'brand';
 
   return (
@@ -188,16 +196,17 @@ export function LineChart({ series, labels, format = (v) => String(Math.round(v)
       {active !== null && (
         <div
           role="status"
-          className="glass pointer-events-none absolute top-0 z-10 min-w-32 -translate-x-1/2 rounded-row border border-line px-2.5 py-2 text-xs shadow-e3"
-          style={{ left: tipLeft }}
+          className="glass pointer-events-none absolute z-10 min-w-32 rounded-row border border-line px-2.5 py-2 text-xs shadow-e3"
+          style={{ left: tipLeft, top: tipBelow ? pointY + 14 : pointY - 14, transform: `translate(-50%, ${tipBelow ? '0' : '-100%'})` }}
         >
-          <p className="mb-1 font-medium text-faint">{labels[idx]}</p>
+          <p className="tabular mb-1 font-medium text-faint">{tooltipLabels?.[idx] ?? labels[idx]}</p>
           {series.map((s) => (
             <p key={s.name} className="flex items-center justify-between gap-3">
               <span className="text-muted">{s.name}</span>
               <span className="tabular font-semibold text-fg">{Number.isFinite(s.points[idx]) ? format(s.points[idx]!) : '—'}</span>
             </p>
           ))}
+          {tooltipNote && <p className="tabular mt-1 text-muted">{tooltipNote(idx)}</p>}
         </div>
       )}
       {series.length > 1 && (

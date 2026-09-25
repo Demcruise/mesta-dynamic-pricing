@@ -14,7 +14,8 @@ import { EmptyState, ErrorState, LoadingRows, PageHeader } from '@/components/ds
 import { Term } from '@/components/shell/Glossary';
 import { RoleGate } from '@/components/shell/RoleGate';
 import { competitorGap, elasticityBand, marginHealth, marginPct } from '@/lib/domain';
-import { formatDate, formatPercent } from '@/lib/format';
+import { formatDate, formatPercent, formatPrice } from '@/lib/format';
+import { LineChart } from '@/components/ds/charts';
 import { useTranslation } from '@/lib/i18n';
 import type { Product } from '@/lib/ontology';
 import { useAuditLog, useCompetitorObservations, useRecommendations, useSkuDetail, useSkuList, useStrategies } from '@/lib/queries';
@@ -89,7 +90,22 @@ function Detail({ p }: { p: Product }) {
         </div>
 
         <Card title={t('catalog.detail.history')}>
-          <Sparkline points={p.priceHistory.map((h) => h.price)} tone="brand" className="h-20 w-full" />
+          {/* CATALOG-DETAIL-002: hover or ←/→ on the chart shows date/time, price and change vs previous. */}
+          <LineChart
+            label={t('catalog.detail.history')}
+            height={160}
+            series={[{ name: t('catalog.detail.price'), points: p.priceHistory.map((h) => h.price), tone: 'brand' }]}
+            labels={p.priceHistory.map((h) => formatDate(h.at, locale).split(',')[0] ?? h.at)}
+            tooltipLabels={p.priceHistory.map((h) => formatDate(h.at, locale).replace(/, (\d{1,2}[:.]\d{2})/, ' · $1'))}
+            tooltipNote={(i) => {
+              const prev = p.priceHistory[i - 1]?.price;
+              const cur = p.priceHistory[i]?.price;
+              if (prev === undefined || cur === undefined || prev === 0) return null;
+              return t('catalog.detail.vsPrevious', { pct: `${cur >= prev ? '+' : ''}${formatPercent(cur / prev - 1, locale)}` });
+            }}
+            format={(v) => formatPrice(Math.round(v), locale)}
+            axisFormat={(v) => `${Math.round(v / 1000)}k`}
+          />
           <table className="mesta-table mt-3 w-full text-sm">
             <thead>
               <tr className="text-left text-xs text-muted">

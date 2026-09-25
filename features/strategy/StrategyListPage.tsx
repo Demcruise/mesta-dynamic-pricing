@@ -5,7 +5,7 @@ import { useMemo, useState } from 'react';
 import { EmptyState, ErrorState, LoadingRows, PageHeader } from '@/components/ds/states';
 import { StatusBadge } from '@/components/ds/StatusBadge';
 import { RoleGate } from '@/components/shell/RoleGate';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { Field, Input, inputCls } from '@/components/ui/field';
 import { activateStrategy, archiveStrategy, rejectStrategy, submitStrategy, unscheduleStrategy } from '@/lib/actions/strategy';
@@ -66,17 +66,18 @@ export function StrategyListPage() {
           </RoleGate>
         }
       />
-      <div className="mb-3 flex flex-wrap gap-2" role="search">
-        <Input type="search" aria-label={t('strategy.search')} placeholder={t('strategy.search')} className="w-52" value={search} onChange={(e) => setSearch(e.target.value)} />
-        <select aria-label={t('strategy.status.all')} className={cn(inputCls, 'w-52')} value={status} onChange={(e) => setStatus(e.target.value)}>
+      {/* STRATEGY-UI-001: one grid — search is the wider track, the three dropdowns share one width token. */}
+      <div className="mb-5 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-[minmax(0,1.4fr)_repeat(3,minmax(0,1fr))] xl:max-w-[1080px]" role="search">
+        <Input type="search" aria-label={t('strategy.search')} placeholder={t('strategy.search')} value={search} onChange={(e) => setSearch(e.target.value)} />
+        <select aria-label={t('strategy.status.all')} className={inputCls} value={status} onChange={(e) => setStatus(e.target.value)}>
           <option value="">{t('strategy.status.all')}</option>
           {STATUS_ORDER.map((s) => <option key={s} value={s}>{t(`strategy.status.${s}`)}</option>)}
         </select>
-        <select aria-label={t('strategy.objective.all')} className={cn(inputCls, 'w-52')} value={objective} onChange={(e) => setObjective(e.target.value)}>
+        <select aria-label={t('strategy.objective.all')} className={inputCls} value={objective} onChange={(e) => setObjective(e.target.value)}>
           <option value="">{t('strategy.objective.all')}</option>
           {(['maximize_margin', 'maximize_revenue', 'match_competitor', 'clear_inventory'] as const).map((o) => <option key={o} value={o}>{t(`strategy.objective.${o}`)}</option>)}
         </select>
-        <select aria-label={t('strategy.list.category')} className={cn(inputCls, 'w-44')} value={category} onChange={(e) => setCategory(e.target.value)}>
+        <select aria-label={t('strategy.list.category')} className={inputCls} value={category} onChange={(e) => setCategory(e.target.value)}>
           <option value="">{t('strategy.list.category')}</option>
           {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
         </select>
@@ -124,10 +125,10 @@ export function StrategyListPage() {
                   </>
                 )}
               </dl>
-              <div className="mt-3 flex flex-wrap gap-2">
+              <div className="mt-4 flex flex-wrap items-center gap-2">
                 {can('strategy.create') && s.status === 'draft' && (
                   <>
-                    <Link href={`/strategy/${s.id}/edit`} className="inline-flex h-7 items-center rounded-input border border-line px-2 text-sm">{t('strategy.action.edit')}</Link>
+                    <Link href={`/strategy/${s.id}/edit`} className={buttonVariants({ variant: 'secondary', size: 'sm' })}>{t('strategy.action.edit')}</Link>
                     <Button size="sm" onClick={() => run(submitStrategy(user, s.id))}>{t('strategy.action.submit')}</Button>
                   </>
                 )}
@@ -146,7 +147,7 @@ export function StrategyListPage() {
                 )}
                 {can('strategy.activate') && s.status === 'active' && (
                   <>
-                    <Link href={`/strategy/${s.id}/edit`} className="inline-flex h-7 items-center rounded-input border border-line px-2 text-sm">{t('strategy.action.edit')}</Link>
+                    <Link href={`/strategy/${s.id}/edit`} className={buttonVariants({ variant: 'secondary', size: 'sm' })}>{t('strategy.action.edit')}</Link>
                     <Button size="sm" variant="secondary" onClick={() => run(archiveStrategy(user, s.id))}>{t('strategy.action.archive')}</Button>
                   </>
                 )}

@@ -17,6 +17,13 @@ import { Button } from '@/components/ui/button';
 import { inputCls } from '@/components/ui/field';
 import { cancelPublishJob, createPublishJob, liveJobStatus, retryDeployment, runScheduledJob } from '@/lib/actions/deployment';
 import { CHANNELS } from '@/lib/stores/deployment';
+
+/** DEPLOYMENT-UI-001: top-level channel cards; marketplaces are grouped but keep per-channel detail. */
+const CHANNEL_GROUPS: { key: 'pos' | 'ecommerce' | 'marketplaces'; channels: string[] }[] = [
+  { key: 'pos', channels: ['pos'] },
+  { key: 'ecommerce', channels: ['ecommerce'] },
+  { key: 'marketplaces', channels: ['marketplace_a', 'marketplace_b'] },
+];
 import { formatDate, formatPercent, formatRelativeTime } from '@/lib/format';
 import { useCan } from '@/lib/hooks';
 import { useTranslation } from '@/lib/i18n';
@@ -81,6 +88,12 @@ export function DeploymentPage() {
     () => records.data.filter((r) => !status || r.status === status)
       .sort((a, b) => STATUSES.indexOf(a.status) - STATUSES.indexOf(b.status) || b.updatedAt.localeCompare(a.updatedAt)),
     [records.data, status],
+  );
+  const statusSelect = (
+    <select aria-label={t('deployment.status.all')} className={cn(inputCls, 'w-auto min-w-44')} value={status} onChange={(e) => setStatus(e.target.value)}>
+      <option value="">{t('deployment.status.all')}</option>
+      {STATUSES.map((s) => <option key={s} value={s}>{t(`deployment.status.${s}`)}</option>)}
+    </select>
   );
   const board = CHANNELS.map((channel) => {
     const rs = records.data.filter((r) => r.channel === channel);
@@ -159,48 +172,63 @@ export function DeploymentPage() {
         <ErrorState title={t('common.state.error')} onRetry={records.refetch} />
       ) : (
         <>
-          <section aria-label={t('deployment.board.title')} className="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            {board.map((b) => {
-              const health: MestaStatus = b.failed > 0 ? 'failed' : b.inFlight > 0 ? 'in_flight' : b.pending > 0 ? 'queued' : 'healthy';
+          {/* DEPLOYMENT-UI-001: three top-level cards — POS, E-commerce, Marketplaces. The Marketplaces card
+              keeps Marketplace A and B as individual panels with their own status, sync and retry. */}
+          <section aria-label={t('deployment.board.title')} className="mb-5 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
+            {CHANNEL_GROUPS.map((group) => {
+              const channels = board.filter((b) => group.channels.includes(b.channel));
+              const single = channels.length === 1;
               return (
-              <div key={b.channel} className="flex flex-col rounded-card border border-line bg-surface p-card shadow-e1">
-                <div className="mb-2 flex items-center justify-between gap-2">
-                  <h2 className="text-sm font-semibold">{t(`common.channel.${b.channel}`)}</h2>
-                  <div className="flex items-center gap-2">
-                    <SyncStatus status={health} />
-                    <RoleGate action="deployment.execute">
-                      {b.lastFailed && (
-                        <Button size="sm" variant="secondary" onClick={() => run(retryDeployment(user, b.lastFailed!.id))}>
-                          {t('deployment.board.retry')}
-                        </Button>
-                      )}
-                    </RoleGate>
+                <div key={group.key} className="flex flex-col rounded-card border border-line bg-surface p-card">
+                  {!single && <h2 className="mb-3 text-sm font-semibold">{t(`deployment.board.group.${group.key}`)}</h2>}
+                  <div className={cn('grid flex-1 gap-3', !single && 'md:grid-cols-2 xl:grid-cols-1 min-[1600px]:grid-cols-2')}>
+                    {channels.map((b) => {
+                      const health: MestaStatus = b.failed > 0 ? 'failed' : b.inFlight > 0 ? 'in_flight' : b.pending > 0 ? 'queued' : 'healthy';
+                      return (
+                        <div key={b.channel} className={cn('flex min-w-0 flex-col', !single && 'rounded-input border border-line p-3')}>
+                          <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+                            {single
+                              ? <h2 className="text-sm font-semibold">{t(`common.channel.${b.channel}`)}</h2>
+                              : <h3 className="text-sm font-semibold">{t(`common.channel.${b.channel}`)}</h3>}
+                            <div className="flex items-center gap-2">
+                              <SyncStatus status={health} />
+                              <RoleGate action="deployment.execute">
+                                {b.lastFailed && (
+                                  <Button size="sm" variant="secondary" onClick={() => run(retryDeployment(user, b.lastFailed!.id))}>
+                                    {t('deployment.board.retry')}
+                                  </Button>
+                                )}
+                              </RoleGate>
+                            </div>
+                          </div>
+                          <dl className="grid grid-cols-3 gap-1 text-center text-xs">
+                            <div className="rounded bg-up-soft p-1.5 text-up"><dd className="tabular text-lg font-semibold">{b.synced}</dd><dt>{t('deployment.board.synced')}</dt></div>
+                            <div className="rounded bg-info-soft p-1.5 text-info"><dd className="tabular text-lg font-semibold">{b.pending}</dd><dt>{t('deployment.board.pending')}</dt></div>
+                            <div className="rounded bg-down-soft p-1.5 text-down"><dd className="tabular text-lg font-semibold">{b.failed}</dd><dt>{t('deployment.board.failed')}</dt></div>
+                          </dl>
+                          {b.total > 0 && <JobProgress done={b.synced} total={b.total} label={t('deployment.board.progress')} className="mt-2" />}
+                          <dl className="mt-2 grid grid-cols-3 gap-1 border-t border-line pt-2 text-xs">
+                            <div><dt className="text-faint">{t('deployment.board.updated')}</dt><dd><FreshnessBadge at={b.last} /></dd></div>
+                            <div><dt className="text-faint">{t('deployment.board.successRate')}</dt><dd className="tabular">{b.successRate === null ? '—' : formatPercent(b.successRate, locale)}</dd></div>
+                            <div><dt className="text-faint">{t('deployment.board.avgRetries')}</dt><dd className="tabular">{b.avgRetries === null ? '—' : b.avgRetries.toFixed(1)}</dd></div>
+                          </dl>
+                          {b.recent.length > 0 && (
+                            <ul aria-label={t('deployment.board.recent')} className="mt-2 flex flex-col gap-1 border-t border-line pt-2 text-xs">
+                              {b.recent.map((r) => (
+                                <li key={r.id} className="flex items-center gap-2">
+                                  <span aria-hidden className={cn('size-1.5 shrink-0 rounded-full', DOT_CLS[r.status])} />
+                                  <span className="tabular min-w-0 flex-1 truncate">{r.sku}</span>
+                                  <StatusBadge status={r.status} label={t(`deployment.status.${r.status}`)} className="px-1.5 py-px" />
+                                  <span className="tabular shrink-0 text-faint">{formatRelativeTime(r.updatedAt, locale)}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
-                <dl className="grid grid-cols-3 gap-1 text-center text-xs">
-                  <div className="rounded bg-up-soft p-1.5 text-up"><dd className="tabular text-lg font-semibold">{b.synced}</dd><dt>{t('deployment.board.synced')}</dt></div>
-                  <div className="rounded bg-info-soft p-1.5 text-info"><dd className="tabular text-lg font-semibold">{b.pending}</dd><dt>{t('deployment.board.pending')}</dt></div>
-                  <div className="rounded bg-down-soft p-1.5 text-down"><dd className="tabular text-lg font-semibold">{b.failed}</dd><dt>{t('deployment.board.failed')}</dt></div>
-                </dl>
-                {b.total > 0 && <JobProgress done={b.synced} total={b.total} label={t('deployment.board.progress')} className="mt-2" />}
-                <dl className="mt-2 grid grid-cols-3 gap-1 border-t border-line pt-2 text-xs">
-                  <div><dt className="text-faint">{t('deployment.board.updated')}</dt><dd><FreshnessBadge at={b.last} /></dd></div>
-                  <div><dt className="text-faint">{t('deployment.board.successRate')}</dt><dd className="tabular">{b.successRate === null ? '—' : formatPercent(b.successRate, locale)}</dd></div>
-                  <div><dt className="text-faint">{t('deployment.board.avgRetries')}</dt><dd className="tabular">{b.avgRetries === null ? '—' : b.avgRetries.toFixed(1)}</dd></div>
-                </dl>
-                {b.recent.length > 0 && (
-                  <ul aria-label={t('deployment.board.recent')} className="mt-2 flex flex-col gap-1 border-t border-line pt-2 text-xs">
-                    {b.recent.map((r) => (
-                      <li key={r.id} className="flex items-center gap-2">
-                        <span aria-hidden className={cn('size-1.5 shrink-0 rounded-full', DOT_CLS[r.status])} />
-                        <span className="tabular min-w-0 flex-1 truncate">{r.sku}</span>
-                        <StatusBadge status={r.status} label={t(`deployment.status.${r.status}`)} className="px-1.5 py-px" />
-                        <span className="tabular shrink-0 text-faint">{formatRelativeTime(r.updatedAt, locale)}</span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
               );
             })}
           </section>
@@ -303,19 +331,18 @@ export function DeploymentPage() {
           </section>
 
           <section>
-            <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-              <h2 className="text-sm font-semibold">{t('deployment.table.title')}</h2>
-              <select aria-label={t('deployment.status.all')} className={cn(inputCls, 'w-48')} value={status} onChange={(e) => setStatus(e.target.value)}>
-                <option value="">{t('deployment.status.all')}</option>
-                {STATUSES.map((s) => <option key={s} value={s}>{t(`deployment.status.${s}`)}</option>)}
-              </select>
-            </div>
             {rows.length === 0 ? (
-              <EmptyState variant="filter" title={t('deployment.table.empty')} {...(status ? { action: { label: t('common.state.clearFilters'), onClick: () => setStatus('') } } : {})} />
+              <>
+                <h2 className="mb-3 text-section">{t('deployment.table.title')}</h2>
+                <div className="mb-3">{statusSelect}</div>
+                <EmptyState variant="filter" title={t('deployment.table.empty')} {...(status ? { action: { label: t('common.state.clearFilters'), onClick: () => setStatus('') } } : {})} />
+              </>
             ) : (
               <MestaDataTable
                 tableId="deployment"
                 caption={t('deployment.table.caption')}
+                toolbarLeading={<h2 className="text-section">{t('deployment.table.title')}</h2>}
+                filterBar={statusSelect}
                 rows={rows}
                 getRowId={(r) => r.id}
                 onRowClick={setSelected}

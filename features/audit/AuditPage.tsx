@@ -106,6 +106,30 @@ export function AuditPage() {
     ? eventLinks(selected).find((l) => { const a = actionForPath(l.href.split('?')[0] ?? l.href); return !a || can(a); })
     : undefined;
 
+  // AUDIT-UI-001/003: one toolbar system — view switch left; exports, saved views, grouping, CSV and
+  // columns right, all 40px and on one vertical centre.
+  const viewSwitch = (
+    <Segmented
+      label={t('audit.view.label')}
+      value={view}
+      onChange={setView}
+      options={[
+        { value: 'list', label: t('audit.view.list'), icon: LayoutList },
+        { value: 'timeline', label: t('audit.view.timeline'), icon: ListTree },
+      ]}
+    />
+  );
+  const exportGroup = can('audit.export') ? (
+    <div role="group" aria-label={t('audit.exportMenu.label')} className="flex items-center gap-2 border-r border-divider pr-3">
+      <Button variant="secondary" onClick={() => { downloadJson('mesta-audit.json', rows); track('audit_exported', { rows: rows.length, format: 'json' }); }}>
+        {t('audit.exportMenu.json')}
+      </Button>
+      <Button variant="secondary" onClick={() => { downloadJson('mesta-audit-evidence.json', evidencePackage(rows, { scope, exportedBy: user.userId })); track('audit_exported', { rows: rows.length, format: 'evidence' }); }}>
+        {t('audit.exportMenu.evidence')}
+      </Button>
+    </div>
+  ) : null;
+
   return (
     <>
       <PageHeader
@@ -115,30 +139,6 @@ export function AuditPage() {
       <p className="mb-4 text-caption text-muted">{t(`audit.scopeNote.${scope}`)}</p>
 
       <AuditFilterBar filters={filters} set={set} actors={actors} types={TYPES} />
-
-      {/* AUD-015/016/023: VIEW (List/Timeline) on the left, DISPLAY/export on the right — separate from filtering. */}
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <Segmented
-          label={t('audit.view.label')}
-          value={view}
-          onChange={setView}
-          options={[
-            { value: 'list', label: t('audit.view.list'), icon: LayoutList },
-            { value: 'timeline', label: t('audit.view.timeline'), icon: ListTree },
-          ]}
-        />
-        {/* AUD-009: CSV lives in the table toolbar; JSON + evidence package here. */}
-        {can('audit.export') && (
-          <div role="group" aria-label={t('audit.exportMenu.label')} className="flex gap-2">
-            <Button size="sm" variant="secondary" onClick={() => { downloadJson('mesta-audit.json', rows); track('audit_exported', { rows: rows.length, format: 'json' }); }}>
-              {t('audit.exportMenu.json')}
-            </Button>
-            <Button size="sm" variant="secondary" onClick={() => { downloadJson('mesta-audit-evidence.json', evidencePackage(rows, { scope, exportedBy: user.userId })); track('audit_exported', { rows: rows.length, format: 'evidence' }); }}>
-              {t('audit.exportMenu.evidence')}
-            </Button>
-          </div>
-        )}
-      </div>
 
       {log.isLoading ? <LoadingRows rows={8} /> : log.isError ? (
         <ErrorState title={t('common.state.error')} onRetry={log.refetch} />
@@ -152,6 +152,10 @@ export function AuditPage() {
         </EmptyState>
       ) : view === 'timeline' ? (
         <>
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+            {viewSwitch}
+            <div className="flex flex-wrap items-center gap-2">{exportGroup}</div>
+          </div>
           <AuditTimeline events={rows.slice(0, shown)} onSelect={setSelected} />
           {rows.length > shown && <div className="mt-3 text-center"><Button variant="secondary" onClick={() => setShown(shown + PAGE)}>{t('recommendations.action.more', { n: rows.length - shown })}</Button></div>}
         </>
@@ -168,7 +172,10 @@ export function AuditPage() {
             resizable
             groups={groups}
             visibility={columnVis}
+            toolbarLeading={viewSwitch}
             toolbar={
+              <>
+              {exportGroup}
               <SavedViewMenu
                 tableId="audit"
                 currentQuery={serializeAuditFilters(filters).toString()}
@@ -178,6 +185,7 @@ export function AuditPage() {
                   columnVis.setHidden(hidden);
                 }}
               />
+              </>
             }
             csv={can('audit.export') ? {
               filename: 'mesta-audit.csv',

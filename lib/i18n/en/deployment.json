@@ -12,7 +12,12 @@
     "avgRetries": "Avg retries",
     "recent": "Recent activity",
     "retry": "Retry latest",
-    "progress": "Channels synced"
+    "progress": "Channels synced",
+    "group": {
+      "pos": "POS",
+      "ecommerce": "E-commerce",
+      "marketplaces": "Marketplaces"
+    }
   },
   "status": {
     "all": "All statuses",

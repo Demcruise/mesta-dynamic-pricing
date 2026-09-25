@@ -35,6 +35,7 @@ export function ScopeSelector() {
       <ChevronRight className="size-3 shrink-0 text-faint" aria-hidden />
       <label className="sr-only" htmlFor="scope-region">{t('common.scope.region')}</label>
       <select
+        data-size="sm"
         id="scope-region"
         className="h-6 rounded-input border border-line bg-surface px-1.5 text-xs"
         value={scope.region ?? ''}
@@ -46,6 +47,7 @@ export function ScopeSelector() {
       <ChevronRight className="size-3 shrink-0 text-faint" aria-hidden />
       <label className="sr-only" htmlFor="scope-store">{t('common.scope.store')}</label>
       <select
+        data-size="sm"
         id="scope-store"
         className="h-6 rounded-input border border-line bg-surface px-1.5 text-xs"
         value={scope.store ?? ''}
@@ -60,6 +62,7 @@ export function ScopeSelector() {
       <ChevronRight className="size-3 shrink-0 text-faint" aria-hidden />
       <label className="sr-only" htmlFor="scope-category">{t('common.scope.category')}</label>
       <select
+        data-size="sm"
         id="scope-category"
         className="h-6 rounded-input border border-line bg-surface px-1.5 text-xs"
         value={scope.category ?? ''}
