@@ -165,9 +165,13 @@ export function GuardrailsPage() {
     requestAnimationFrame(() => document.getElementById('guardrail-breaches')?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
   };
 
-  if (products.isLoading || strategies.isLoading || rules.isLoading) return <LoadingRows rows={4} rowHeight={90} />;
+  const header = <PageHeader title={t('guardrails.page.title')} subtitle={t('guardrails.page.desc')} />;
+
+  if (products.isLoading || strategies.isLoading || rules.isLoading) {
+    return <>{header}<LoadingRows rows={4} rowHeight={90} /></>;
+  }
   if (products.isError || strategies.isError || rules.isError) {
-    return <ErrorState title={t('common.state.error')} onRetry={() => { products.refetch(); strategies.refetch(); rules.refetch(); }} />;
+    return <>{header}<ErrorState title={t('common.state.error')} onRetry={() => { products.refetch(); strategies.refetch(); rules.refetch(); }} /></>;
   }
 
   const statusLabel = (r: ConstraintRow) => {
@@ -209,7 +213,7 @@ export function GuardrailsPage() {
 
   return (
     <>
-      <PageHeader title={t('guardrails.page.title')} subtitle={t('guardrails.page.desc')} />
+      {header}
 
       {/* GUARDRAIL-005/007/021 — sticky view filters, visibly separate from the global data scope. */}
       <div className="sticky top-14 z-10 -mx-4 mb-5 border-b border-divider bg-bg/95 px-4 py-3 backdrop-blur sm:-mx-6 sm:px-6 lg:-mx-7 lg:px-7">
@@ -327,7 +331,7 @@ export function GuardrailsPage() {
                   )}
                 >
                   <div className="flex items-start justify-between gap-3 pt-6">
-                    <h3 className="text-section">{t(`guardrails.constraint.${r.id}.name`)}</h3>
+                    <h2 className="text-section">{t(`guardrails.constraint.${r.id}.name`)}</h2>
                     {statusPill(r)}
                   </div>
                   <p className="pt-3 text-caption font-medium text-muted">{modeText(r)}</p>
