@@ -10,6 +10,8 @@ const SECURITY_HEADERS = [
   { key: 'X-Frame-Options', value: 'DENY' },
   { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
   { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(), payment=()' },
+  // SSO uses full-page redirects, never popups, so the window can be isolated from other origins.
+  { key: 'Cross-Origin-Opener-Policy', value: 'same-origin' },
 ];
 
 const nextConfig: NextConfig = {
