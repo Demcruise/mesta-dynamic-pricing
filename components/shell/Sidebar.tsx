@@ -92,6 +92,8 @@ export function Sidebar() {
   // Below lg the sidebar is always icon-only (tablet); at lg+ the user can collapse it.
   const rail = collapsed;
   const labelCls = rail ? 'hidden' : 'hidden lg:inline';
+  // Count badges need their own display: `lg:inline` would drop the grid centring and push the digits up.
+  const badgeCls = rail ? 'hidden' : 'hidden lg:grid';
 
   return (
     <aside
@@ -140,7 +142,7 @@ export function Sidebar() {
                       <span className={cn('truncate', labelCls)}>{t(`common.nav.${key}`)}</span>
                       {count > 0 && badge && (
                         <>
-                          <span className={cn('tabular ml-auto grid h-5 min-w-5 place-items-center rounded-full px-1.5 text-[11px] font-semibold leading-none', BADGE_CLS[badge].chip, labelCls)}>
+                          <span className={cn('tabular ml-auto h-5 min-w-5 shrink-0 place-items-center rounded-full px-1.5 text-[11px] font-semibold leading-none', BADGE_CLS[badge].chip, badgeCls)}>
                             {count}
                           </span>
                           <span className={cn('absolute right-1.5 top-1.5 size-2 rounded-full', BADGE_CLS[badge].dot, rail ? '' : 'lg:hidden')} aria-hidden />
