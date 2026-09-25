@@ -1,193 +1,150 @@
 'use client';
 
-import { Check, Lock, RotateCcw } from 'lucide-react';
-import { PageHeader } from '@/components/ds/states';
+import { Download, Search, X } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useMemo, useState, type ComponentType } from 'react';
+import { EmptyState, PageHeader } from '@/components/ds/states';
 import { Button } from '@/components/ui/button';
+import { inputCls } from '@/components/ui/field';
 import { useCan } from '@/lib/hooks';
 import { useTranslation } from '@/lib/i18n';
-import { PERMISSIONS, POLICY_LOCKED, ROLES, can, type Action } from '@/lib/rbac';
-import { useAuditStore, usePolicyStore, useRecommendationStore, useSessionStore, useToastStore, useUiStore } from '@/lib/stores';
-import type { Locale } from '@/lib/format';
-import type { Role } from '@/lib/ontology';
+import { useToastStore, useWorkspaceSettingsStore } from '@/lib/stores';
 import { cn } from '@/lib/utils';
+import { GROUPS, SECTIONS, sectionBySlug } from './registry';
+import { ApiSection, AuditRetentionSection, FeaturesSection, RolesSection, SecuritySection } from './sections-governance';
+import { NotificationsSection, PreferencesSection, ViewsSection } from './sections-personal';
+import {
+  AlertsRoutingSection, ApprovalsSection, GeneralSection, GuardrailDefaultsSection, IntegrationsSection, PricingEngineSection, ScopeSection, WorkflowSection,
+} from './sections-workspace';
 
-function Row({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div className="flex flex-wrap items-center justify-between gap-3 py-3">
-      <span className="text-sm text-muted">{label}</span>
-      <div className="flex gap-1">{children}</div>
-    </div>
-  );
-}
-
-export function SettingsPage() {
-  const { t, locale } = useTranslation();
-  const theme = useUiStore((s) => s.theme);
-  const setTheme = useUiStore((s) => s.setTheme);
-  const density = useUiStore((s) => s.density);
-  const setDensity = useUiStore((s) => s.setDensity);
-  const setLocale = useUiStore((s) => s.setLocale);
-  const recs = useRecommendationStore((s) => s.items);
-  const pending = recs.filter((r) => r.status === 'pending').length;
-  const sources = {
-    agent: recs.filter((r) => r.source === 'agent').length,
-    simulation: recs.filter((r) => r.source === 'simulation').length,
-    manual: recs.filter((r) => r.source === 'manual').length,
-  };
-
-  return (
-    <>
-      <PageHeader title={t('common.nav.settings')} subtitle={t('common.settings.subtitle')} />
-      <section aria-label={t('common.settings.appearance')} className="max-w-lg divide-y divide-line rounded-card border border-line bg-surface px-card shadow-e1">
-        <Row label={t('common.user.theme')}>
-          {(['light', 'dark'] as const).map((v) => (
-            <Button key={v} size="sm" variant={theme === v ? 'selected' : 'secondary'} aria-pressed={theme === v} onClick={() => setTheme(v)}>
-              {t(`common.user.${v}`)}
-            </Button>
-          ))}
-        </Row>
-        <Row label={t('common.user.language')}>
-          {(['id', 'en'] as const).map((l: Locale) => (
-            <Button key={l} size="sm" variant={locale === l ? 'selected' : 'secondary'} aria-pressed={locale === l} onClick={() => setLocale(l)}>
-              {l.toUpperCase()}
-            </Button>
-          ))}
-        </Row>
-        <Row label={t('common.density.label')}>
-          {(['comfortable', 'compact'] as const).map((d) => (
-            <Button key={d} size="sm" variant={density === d ? 'selected' : 'secondary'} aria-pressed={density === d} onClick={() => setDensity(d)}>
-              {t(`common.density.${d}`)}
-            </Button>
-          ))}
-        </Row>
-      </section>
-      <section aria-label={t('common.settings.ai')} className="mt-6 max-w-lg rounded-card border border-line bg-surface p-card shadow-e1">
-        <h2 className="text-sm font-semibold">{t('common.settings.ai')}</h2>
-        <dl className="mt-3 flex flex-col gap-3 text-sm">
-          <div>
-            <dt className="text-xs font-medium text-muted">{t('common.settings.aiVolume')}</dt>
-            <dd className="mt-0.5">
-              {t('common.settings.aiVolumeBody', { total: recs.length, pending, decided: recs.length - pending })}
-            </dd>
-            <dd className="tabular mt-0.5 text-xs text-faint">{t('common.settings.aiVolumeSources', sources)}</dd>
-          </div>
-          <div>
-            <dt className="text-xs font-medium text-muted">{t('common.settings.aiModel')}</dt>
-            <dd className="mt-0.5">{t('common.settings.aiModelBody')}</dd>
-          </div>
-          <div className="rounded-input bg-warn-soft p-3">
-            <dt className="text-xs font-medium text-warn">{t('common.settings.aiLimit')}</dt>
-            <dd className="mt-0.5 text-muted">{t('common.settings.aiLimitBody')}</dd>
-          </div>
-        </dl>
-      </section>
-      <PolicyMatrix />
-    </>
-  );
-}
+const VIEWS: Record<string, ComponentType> = {
+  preferences: PreferencesSection, notifications: NotificationsSection, views: ViewsSection,
+  general: GeneralSection, 'scope-hierarchy': ScopeSection, 'pricing-engine': PricingEngineSection, integrations: IntegrationsSection,
+  approvals: ApprovalsSection, guardrails: GuardrailDefaultsSection, workflow: WorkflowSection, alerts: AlertsRoutingSection,
+  roles: RolesSection, audit: AuditRetentionSection, api: ApiSection, security: SecuritySection, features: FeaturesSection,
+};
 
 /**
- * GOV-003: writable policy matrix. `can()` already consults the persisted override
- * map, so toggles take effect immediately across the workspace. `policy.manage`
- * is locked — overriding it could lock out every role. This is a local demo
- * control only; the code-owned PERMISSIONS matrix remains the default.
+ * Enterprise settings shell (SET-001/002/033/034/041/042/044): a persistent 240px navigation split
+ * into Personal · Workspace · Governance · System, a settings search, and one section per stable
+ * URL (/settings/<slug>). The content column is capped at 1280px overall. Below lg the navigation
+ * collapses into a section picker so forms get the full width.
  */
-function PolicyMatrix() {
+export function SettingsPage({ section }: { section: string }) {
   const { t } = useTranslation();
-  const user = useSessionStore((s) => s.user);
-  const canDo = useCan();
+  const router = useRouter();
+  const can = useCan();
   const toast = useToastStore((s) => s.push);
-  const overrides = usePolicyStore((s) => s.overrides);
-  const setOverride = usePolicyStore((s) => s.set);
-  const resetAll = usePolicyStore((s) => s.resetAll);
-  const editable = canDo('policy.manage');
-  const overrideCount = Object.keys(overrides).length;
+  const drafts = useWorkspaceSettingsStore((s) => s.drafts);
+  const config = useWorkspaceSettingsStore((s) => s.config);
+  const [q, setQ] = useState('');
+  const active = sectionBySlug(section);
+  const View = active ? VIEWS[active.slug] : undefined;
 
-  const toggle = (role: Role, action: Action) => {
-    const key = `${role}:${action}` as const;
-    const effective = can(role, action);
-    const next = !effective;
-    const codeDefault = (PERMISSIONS[action] as readonly Role[]).includes(role);
-    setOverride(key, next === codeDefault ? undefined : next);
-    useAuditStore.getState().record({
-      type: 'policy_override', actorId: user.userId, actorRole: user.role, entityType: 'policy',
-      entityId: key, sku: null, source: 'ui',
-      note: `${action} → ${role}: ${next === codeDefault ? 'reset to default' : next ? 'allowed' : 'denied'}`,
-    });
-    toast(t('common.settings.policyChanged', { action, role: t(`common.role.${role}`) }));
+  // SET-041: search section titles, descriptions and keywords.
+  const results = useMemo(() => {
+    const needle = q.trim().toLowerCase();
+    if (!needle) return [];
+    return SECTIONS.filter((s) => [t(`settings.section.${s.slug}.title`), t(`settings.section.${s.slug}.desc`), ...s.keywords].some((x) => x.toLowerCase().includes(needle)));
+  }, [q, t]);
+
+  // SET-044: non-secret configuration only — credentials never leave the browser.
+  const exportConfig = () => {
+    const blob = new Blob([JSON.stringify({ exportedAt: new Date().toISOString(), workspace: config }, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `mesta-workspace-config-${config.general.workspaceId}.json`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+    toast(t('settings.export.done'));
   };
 
   return (
-      <section aria-label={t('common.settings.access')} className="mt-6 rounded-card border border-line bg-surface p-card shadow-e1">
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <h2 className="text-sm font-semibold">{t('common.settings.access')}</h2>
-            <p className="mt-1 text-xs text-muted">
-              {editable ? t('common.settings.accessBodyEdit') : t('common.settings.accessBody')}
-            </p>
+    <div className="mx-auto w-full max-w-[1280px]">
+      <PageHeader
+        title={t('settings.title')}
+        subtitle={t('settings.subtitle')}
+        actions={can('settings.manage') ? <Button variant="secondary" onClick={exportConfig}><Download className="size-4" aria-hidden />{t('settings.export.button')}</Button> : undefined}
+      />
+
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[240px_minmax(0,1fr)]">
+        <aside className="lg:sticky lg:top-20 lg:self-start">
+          <div className="relative mb-4">
+            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted" aria-hidden />
+            <input type="search" aria-label={t('settings.search.label')} placeholder={t('settings.search.placeholder')} value={q}
+              onChange={(e) => setQ(e.target.value)} className={cn(inputCls, 'pl-9 pr-9 [&::-webkit-search-cancel-button]:hidden')} />
+            {q && (
+              <button type="button" aria-label={t('common.filter.clear')} onClick={() => setQ('')} className="absolute right-2 top-1/2 grid size-6 -translate-y-1/2 place-items-center rounded-full text-muted hover:bg-subtle">
+                <X className="size-3.5" aria-hidden />
+              </button>
+            )}
           </div>
-          {editable && overrideCount > 0 && (
-            <Button size="sm" variant="secondary" onClick={() => { resetAll(); toast(t('common.settings.policyReset')); }}>
-              <RotateCcw className="size-3.5" />{t('common.settings.policyResetAll', { n: overrideCount })}
-            </Button>
-          )}
-        </div>
-        <div className="mt-3 max-h-96 overflow-auto rounded-input border border-line" tabIndex={0}>
-          <table className="mesta-table w-full text-xs">
-            <caption className="sr-only">{t('common.settings.access')}</caption>
-            <thead className="sticky top-0 bg-surface text-muted">
-              <tr className="border-b border-line">
-                <th scope="col" className="py-1.5 pe-2 ps-3 text-left font-medium">{t('common.settings.accessAction')}</th>
-                {ROLES.map((r) => (
-                  <th key={r} scope="col" className="py-1.5 pe-3 text-center font-medium">{t(`common.role.${r}`)}</th>
+
+          {q ? (
+            <div role="region" aria-live="polite" aria-label={t('settings.search.results', { n: results.length })}>
+              <p className="mb-2 text-caption text-faint">{t('settings.search.results', { n: results.length })}</p>
+              {results.length === 0 ? <p className="text-body-sm text-muted">{t('settings.search.empty', { q })}</p> : (
+                <ul className="flex flex-col gap-1">
+                  {results.map((s) => (
+                    <li key={s.slug}>
+                      <Link href={`/settings/${s.slug}`} onClick={() => setQ('')} className="block rounded-input px-3 py-2 hover:bg-subtle">
+                        <span className="block text-label font-medium text-fg">{t(`settings.section.${s.slug}.title`)}</span>
+                        <span className="block text-caption text-faint">{t(`settings.group.${s.group}`)}</span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          ) : (
+            <>
+              {/* Narrow screens: one picker instead of the full rail (SET-046 responsive). */}
+              <label className="lg:hidden">
+                <span className="sr-only">{t('settings.nav.jump')}</span>
+                <select className={inputCls} value={section} onChange={(e) => router.push(`/settings/${e.target.value}`)}>
+                  {GROUPS.map((g) => (
+                    <optgroup key={g} label={t(`settings.group.${g}`)}>
+                      {SECTIONS.filter((s) => s.group === g).map((s) => <option key={s.slug} value={s.slug}>{t(`settings.section.${s.slug}.title`)}</option>)}
+                    </optgroup>
+                  ))}
+                </select>
+              </label>
+              <nav aria-label={t('settings.nav.label')} className="hidden flex-col gap-5 lg:flex">
+                {GROUPS.map((g) => (
+                  <div key={g}>
+                    <p className="mb-1.5 px-3 text-[11px] font-semibold uppercase tracking-wider text-faint">{t(`settings.group.${g}`)}</p>
+                    <ul className="flex flex-col gap-0.5">
+                      {SECTIONS.filter((s) => s.group === g).map((s) => {
+                        const Icon = s.icon;
+                        const current = s.slug === section;
+                        const unsaved = s.configKey !== undefined && drafts[s.configKey] !== undefined;
+                        return (
+                          <li key={s.slug}>
+                            <Link
+                              href={`/settings/${s.slug}`}
+                              aria-current={current ? 'page' : undefined}
+                              className={cn('flex h-9 items-center gap-2.5 rounded-row px-3 text-[13px] transition-colors duration-fast', current ? 'bg-brand-soft font-semibold text-brand' : 'font-medium text-muted hover:bg-subtle hover:text-fg')}
+                            >
+                              <Icon className="size-4 shrink-0" aria-hidden />
+                              <span className="truncate">{t(`settings.section.${s.slug}.title`)}</span>
+                              {unsaved && <span className="ml-auto size-2 shrink-0 rounded-full bg-warn" aria-label={t('settings.save.unsaved')} />}
+                            </Link>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
                 ))}
-              </tr>
-            </thead>
-            <tbody>
-              {(Object.keys(PERMISSIONS) as Action[]).map((a) => {
-                const locked = POLICY_LOCKED.has(a);
-                return (
-                <tr key={a} className="border-b border-line last:border-0">
-                  <th scope="row" className="py-1.5 pe-2 ps-3 text-left font-normal text-muted">
-                    <code>{a}</code>
-                    {locked && <Lock className="ms-1 inline size-3 text-faint" aria-label={t('common.settings.policyLocked')} />}
-                  </th>
-                  {ROLES.map((r) => {
-                    const key = `${r}:${a}` as const;
-                    const overridden = overrides[key] !== undefined;
-                    const allowed = can(r, a);
-                    const mark = allowed
-                      ? <Check className="mx-auto size-3.5 text-ok" aria-label={t('common.settings.accessYes')} />
-                      : <span aria-label={t('common.settings.accessNo')} className="text-faint">—</span>;
-                    return (
-                    <td key={r} className={cn('py-1.5 pe-3 text-center', overridden && 'bg-brand-soft/40')}>
-                      {editable && !locked ? (
-                        <button
-                          type="button"
-                          onClick={() => toggle(r, a)}
-                          aria-pressed={allowed}
-                          aria-label={t('common.settings.policyCell', { action: a, role: t(`common.role.${r}`) })}
-                          className="mx-auto block rounded px-1 hover:bg-subtle focus-visible:outline-2 focus-visible:outline-brand"
-                        >
-                          {mark}
-                          {overridden && <span className="mx-auto mt-0.5 block size-1 rounded-full bg-brand" aria-hidden />}
-                        </button>
-                      ) : (
-                        <span className="relative inline-block">
-                          {mark}
-                          {overridden && <span className="absolute -bottom-1.5 left-1/2 size-1 -translate-x-1/2 rounded-full bg-brand" aria-hidden />}
-                        </span>
-                      )}
-                    </td>
-                    );
-                  })}
-                </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-        {editable && <p className="mt-2 text-xs text-faint">{t('common.settings.policyHonest')}</p>}
-      </section>
+              </nav>
+            </>
+          )}
+        </aside>
+
+        <section className="min-w-0" aria-label={active ? t(`settings.section.${active.slug}.title`) : t('settings.title')}>
+          {View ? <View /> : <EmptyState title={t('common.state.notFound')} action={{ label: t('settings.section.preferences.title'), onClick: () => router.push('/settings/preferences') }} />}
+        </section>
+      </div>
+    </div>
   );
 }

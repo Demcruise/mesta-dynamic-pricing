@@ -1,0 +1,558 @@
+{
+  "title": "Settings",
+  "subtitle": "Manage your preferences and the workspace’s pricing, governance and system configuration",
+  "nav": {
+    "label": "Settings navigation",
+    "jump": "Go to section"
+  },
+  "group": {
+    "personal": "Personal",
+    "workspace": "Workspace",
+    "governance": "Governance",
+    "system": "System"
+  },
+  "section": {
+    "preferences": {
+      "title": "Preferences",
+      "desc": "How Mesta looks and formats data for you. Saved automatically."
+    },
+    "notifications": {
+      "title": "Notifications",
+      "desc": "Your personal delivery for each notification type. Mandatory alerts set by admins cannot be muted."
+    },
+    "views": {
+      "title": "My views",
+      "desc": "Table views you saved across Mesta — filters, columns, sorting and density."
+    },
+    "general": {
+      "title": "General",
+      "desc": "Workspace identity, ownership and support contact."
+    },
+    "scope-hierarchy": {
+      "title": "Scope & hierarchy",
+      "desc": "The business hierarchy every pricing surface filters by, and the scope users start in."
+    },
+    "pricing-engine": {
+      "title": "Pricing engine",
+      "desc": "Price calculation, rounding, freshness windows and how the engine behaves when inputs are missing."
+    },
+    "integrations": {
+      "title": "Data & integrations",
+      "desc": "Connected systems, freshness policies and the authoritative source for each field."
+    },
+    "approvals": {
+      "title": "Approval policies",
+      "desc": "Who approves which price changes, how fast, and which duties must stay separated."
+    },
+    "guardrails": {
+      "title": "Guardrail defaults",
+      "desc": "Workspace-wide defaults that strategies and SKUs inherit unless they override them."
+    },
+    "workflow": {
+      "title": "Workflow defaults",
+      "desc": "Defaults for recommendations, simulations and experiments."
+    },
+    "alerts": {
+      "title": "Alerts & routing",
+      "desc": "Which events notify whom, on which channels. Critical events can be made mandatory."
+    },
+    "roles": {
+      "title": "Roles & permissions",
+      "desc": "Role-based access: what each role may do across Mesta."
+    },
+    "audit": {
+      "title": "Audit & retention",
+      "desc": "How long audit events are kept, who may export them, and which events are captured."
+    },
+    "api": {
+      "title": "API & access",
+      "desc": "API keys, service accounts and webhook credentials. Secrets are never displayed."
+    },
+    "security": {
+      "title": "Security",
+      "desc": "Sessions, sign-in and re-authentication for sensitive actions."
+    },
+    "features": {
+      "title": "Feature controls",
+      "desc": "Turn product capabilities on or off for this workspace. Each shows what it depends on."
+    }
+  },
+  "search": {
+    "label": "Search settings",
+    "placeholder": "Search settings",
+    "empty": "No settings match “{q}”",
+    "results": "{n} results"
+  },
+  "readOnly": {
+    "title": "Managed by Workspace Admin",
+    "body": "You can view these settings. Changing them requires the Workspace Admin role (Manager).",
+    "badge": "Read-only"
+  },
+  "meta": {
+    "changed": "Last changed by {by} · {at}",
+    "never": "Default configuration — never changed",
+    "viewAudit": "View audit event"
+  },
+  "save": {
+    "unsaved": "Unsaved changes",
+    "count": "{n} changed fields",
+    "discard": "Discard",
+    "save": "Save changes",
+    "saved": "{section} saved",
+    "invalid": "Fix the highlighted fields before saving.",
+    "autosave": "Saved automatically",
+    "leave": "You have unsaved settings. Leave anyway?"
+  },
+  "confirm": {
+    "title": "Confirm high-impact change",
+    "intro": "You are changing:",
+    "affected": "Affected",
+    "affectedValue": "{skus} SKUs · {cats} categories · {regions} regions",
+    "note": "These settings govern live pricing decisions. The change is recorded in the audit log.",
+    "apply": "Confirm change",
+    "sensitive": "High impact"
+  },
+  "export": {
+    "button": "Export configuration",
+    "done": "Configuration exported (secrets excluded)"
+  },
+  "state": {
+    "inherited": "Inherited",
+    "overridden": "Overridden",
+    "default": "Workspace default",
+    "on": "On",
+    "off": "Off",
+    "required": "Required"
+  },
+  "unit": {
+    "hours": "hours",
+    "days": "days",
+    "minutes": "minutes",
+    "pct": "%"
+  },
+  "err": {
+    "tierOrder": "Each tier limit must be higher than the previous tier.",
+    "positive": "Enter a value greater than zero.",
+    "confidenceRange": "Confidence must be between 50 and 100.",
+    "blockAfterWarn": "Block threshold must be greater than the warning threshold.",
+    "changeRange": "Max change per cycle must be between 0 and 50%.",
+    "ceilingAboveChange": "Price ceiling must be greater than the max change per cycle.",
+    "sessionRange": "Session timeout must be between 5 and 720 minutes."
+  },
+  "prefs": {
+    "appearance": "Appearance",
+    "theme": "Theme",
+    "language": "Language",
+    "density": "Table density",
+    "regional": "Regional formats",
+    "timezone": "Time zone",
+    "dateFormat": "Date format",
+    "date": {
+      "medium": "Sep 25, 2026, 10:41 AM",
+      "iso": "2026-09-25 10:41",
+      "dmy": "25/09/2026 10:41"
+    },
+    "currency": {
+      "code": "IDR 49,300",
+      "symbol": "Rp 49,300"
+    },
+    "number": {
+      "locale": "Follow language",
+      "en": "1,234.5",
+      "id": "1.234,5"
+    },
+    "workspace": "Workspace defaults for you",
+    "landing": "Default landing page",
+    "currencyLabel": "Currency display",
+    "numberLabel": "Number format"
+  },
+  "notif": {
+    "event": "Event",
+    "inapp": "In-app",
+    "email": "Email",
+    "mandatory": "Mandatory",
+    "mandatoryHint": "Set by your Workspace Admin for {roles}"
+  },
+  "event": {
+    "decision_required": "Recommendation requires decision",
+    "guardrail_breach": "Guardrail breach",
+    "deployment_failure": "Deployment failure",
+    "data_quality": "Data-quality issue",
+    "stale_recommendation": "Stale recommendation",
+    "approval_escalation": "Approval escalation",
+    "experiment_complete": "Experiment completion",
+    "monitoring_anomaly": "Monitoring anomaly"
+  },
+  "views": {
+    "table": "Table",
+    "name": "View",
+    "filters": "Filters",
+    "open": "Open",
+    "empty": "No saved views yet. Use the bookmark button above any table to save one.",
+    "noFilters": "No filters"
+  },
+  "general": {
+    "name": "Workspace name",
+    "id": "Workspace ID",
+    "org": "Organization",
+    "environment": "Environment",
+    "env": {
+      "production": "Production",
+      "staging": "Staging",
+      "sandbox": "Sandbox"
+    },
+    "status": {
+      "active": "Active",
+      "suspended": "Suspended"
+    },
+    "created": "Created",
+    "owner": "Workspace owner",
+    "admin": "Primary administrator",
+    "support": "Support contact",
+    "identity": "Identity",
+    "ownership": "Ownership & support",
+    "statusLabel": "Status"
+  },
+  "scope": {
+    "hierarchy": "Business hierarchy",
+    "labels": "Hierarchy labels",
+    "bu": "Level 1 label",
+    "region": "Level 2 label",
+    "store": "Level 3 label",
+    "category": "Level 4 label",
+    "source": "Hierarchy source",
+    "preview": "Hierarchy preview",
+    "defaults": "Default workspace scope",
+    "defaultRegion": "Default region",
+    "defaultStore": "Default store",
+    "defaultCategory": "Default category",
+    "all": "All",
+    "currency": "Default currency",
+    "inherit": "Child levels inherit configuration from their parent",
+    "current": "Users start in",
+    "noRewrite": "Changing the default scope never changes existing strategies or rules — it only sets where users start."
+  },
+  "system": {
+    "erp": "ERP",
+    "pos": "POS",
+    "engine": "Pricing engine",
+    "competitor": "Competitor connector",
+    "model": "Demand model",
+    "warehouse": "Data warehouse"
+  },
+  "pricing": {
+    "calc": "Price calculation & rounding",
+    "currency": "Currency",
+    "precision": "Decimal precision",
+    "rounding": "Rounding direction",
+    "round": {
+      "nearest": "Nearest increment",
+      "up": "Always up",
+      "down": "Always down"
+    },
+    "increment": "Minimum price increment",
+    "psychological": "Psychological pricing (end prices in 900)",
+    "example": "Live example",
+    "calculated": "Calculated price",
+    "applied": "Applied rounding",
+    "appliedValue": "{dir} IDR {inc}",
+    "final": "Final price",
+    "cadence": "Cadence & freshness",
+    "refresh": "Pricing refresh interval",
+    "recFreshness": "Recommendation freshness window",
+    "simHorizon": "Default simulation horizon",
+    "competitorFreshness": "Competitor data freshness threshold",
+    "behavior": "Engine behavior when inputs are missing or conflict",
+    "behaviorHint": "Every state has one explicit action — no implicit defaults.",
+    "b": {
+      "missingCompetitor": "Missing competitor data",
+      "missingElasticity": "Missing elasticity",
+      "staleInventory": "Stale inventory",
+      "stalePrice": "Stale price",
+      "lowConfidence": "Insufficient confidence",
+      "conflictingRules": "Conflicting rules",
+      "guardrailFailure": "Guardrail failure"
+    }
+  },
+  "action": {
+    "block": "Block",
+    "fallback": "Fallback",
+    "flag": "Flag for review",
+    "warn": "Continue with warning"
+  },
+  "model": {
+    "title": "Model transparency",
+    "type": "Model type",
+    "typeValue": "Deterministic, rules-based pricing engine (not a language model)",
+    "version": "Demand model version",
+    "released": "Released",
+    "status": "Status",
+    "statusValue": "In production",
+    "usedBy": "Used by",
+    "usedByValue": "{n} active strategies",
+    "sources": "Data sources",
+    "sourcesValue": "Catalog, competitor observations, inventory, price history",
+    "method": "Methodology",
+    "methodValue": "Competitor observations → per-SKU elasticity → strategy guardrails → target price.",
+    "limits": "Known limitation",
+    "limitsValue": "Elasticity is assumed constant within each band; confidence reflects data freshness and observed response, not guaranteed margin.",
+    "review": "Human review",
+    "reviewValue": "Every recommendation needs a human decision unless auto-approval is enabled and confidence ≥ threshold.",
+    "volume": "Recommendation volume",
+    "switchLocked": "Model switching requires a change request and is audit-logged."
+  },
+  "int": {
+    "center": "Integration center",
+    "connection": "Connection",
+    "type": "Type",
+    "status": "Status",
+    "lastSync": "Last sync",
+    "records": "Records",
+    "errors": "Errors",
+    "owner": "Owner",
+    "env": "Environment",
+    "actions": "Actions",
+    "details": "View details",
+    "test": "Test connection",
+    "testOk": "{name}: connection OK",
+    "freshness": "Data freshness policies",
+    "freshnessHint": "Feeds Exceptions, Alerts, Recommendations and Monitoring.",
+    "warnAfter": "Warn after",
+    "blockAfter": "Block after",
+    "feed": {
+      "catalog": "Catalog",
+      "price": "Price",
+      "inventory": "Inventory",
+      "competitor": "Competitor",
+      "demand": "Demand signals"
+    },
+    "sot": "Source of truth",
+    "field": "Field",
+    "source": "Authoritative source",
+    "sotField": {
+      "sku": "SKU identity",
+      "cost": "Cost",
+      "inventory": "Inventory",
+      "price": "Current price",
+      "competitor": "Competitor price",
+      "demand": "Demand signal"
+    },
+    "conflict": {
+      "source_of_truth": "Use the source of truth",
+      "most_recent": "Use the most recent value",
+      "flag": "Flag for review"
+    },
+    "conflictLabel": "When two systems disagree"
+  },
+  "appr": {
+    "tiers": "Approval thresholds",
+    "tiersHint": "By projected margin impact. Connected to the Approvals inbox.",
+    "upTo": "Impact up to",
+    "above": "Above previous tier",
+    "approver": "Approver role",
+    "level": "Level {n}",
+    "timing": "Timing & automation",
+    "sla": "Decision SLA",
+    "expiry": "Expiration window",
+    "escalate": "Escalate after",
+    "auto": "Auto-approve confidence threshold",
+    "highImpact": "High-impact approval policy starts at",
+    "justification": "Require a justification note on every decision",
+    "sod": {
+      "authorNotApprover": "Strategy author ≠ final approver",
+      "ruleAuthorNotPublisher": "Rule author ≠ publisher",
+      "requesterNotApprover": "Override requester ≠ override approver"
+    },
+    "sodViolation": "Tier {n} is approved by the same role as the strategy author ({role}) — this violates “Strategy author ≠ final approver”.",
+    "sodLabel": "Segregation of duties"
+  },
+  "gr": {
+    "defaults": "Workspace guardrail policies",
+    "maxChange": "Max price movement per cycle",
+    "floorPrice": "Price floor",
+    "floorHint": "Empty = product minimum applies",
+    "ceiling": "Price ceiling above current",
+    "map": "Enforce MAP by default",
+    "approvalThreshold": "Approval threshold",
+    "confidence": "Recommendation confidence threshold",
+    "staleData": "Stale data behavior",
+    "frequency": "Minimum days between price changes",
+    "inheritance": "Inheritance",
+    "inheritanceHint": "Each level inherits from the one above unless it overrides. The effective value is what the engine uses.",
+    "level": {
+      "workspace": "Workspace",
+      "strategy": "Strategy",
+      "rule": "Rule",
+      "sku": "SKU"
+    },
+    "effective": "Effective",
+    "examplePick": "Example SKU",
+    "noOverride": "No override"
+  },
+  "wf": {
+    "recs": "Recommendation workflow",
+    "ttl": "Recommendation TTL",
+    "stale": "Stale after",
+    "escalate": "Escalate after",
+    "queue": {
+      "decide": "Needs decision",
+      "all": "All",
+      "impact": "High impact"
+    },
+    "assignment": "Assignment",
+    "assign": {
+      "owner": "SKU owner",
+      "round_robin": "Round robin",
+      "category": "By category"
+    },
+    "sort": {
+      "confidence": "Confidence",
+      "impact": "Impact",
+      "age": "Age"
+    },
+    "review": {
+      "cards": "Cards",
+      "table": "Table"
+    },
+    "sim": "Simulation defaults",
+    "simScenarios": "Default number of scenarios",
+    "simHorizon": "Simulation horizon",
+    "simBaseline": "Baseline",
+    "baseline": {
+      "current": "Current price",
+      "competitor": "Competitor average"
+    },
+    "simConfidence": "Show forecast confidence bands",
+    "exp": "Experiment defaults",
+    "expDuration": "Default duration",
+    "expSample": "Minimum sample size",
+    "expDelta": "Max treatment price delta",
+    "expApproval": "Experiments need approval before they start",
+    "expConclusion": "Who concludes an experiment",
+    "units": "units",
+    "queueLabel": "Default queue",
+    "sortLabel": "Default sort",
+    "reviewLabel": "Default review mode"
+  },
+  "route": {
+    "title": "Notification routing",
+    "hint": "Event → severity → recipients → channels. Mandatory routes cannot be muted by users.",
+    "event": "Event",
+    "severity": "Severity",
+    "recipients": "Recipients",
+    "channels": "Channels",
+    "mandatory": "Mandatory"
+  },
+  "channel": {
+    "inapp": "In-app",
+    "email": "Email",
+    "webhook": "Webhook",
+    "slack": "Slack"
+  },
+  "roles": {
+    "matrix": "Permission matrix",
+    "adminNote": "Manager acts as Workspace Admin in this workspace."
+  },
+  "audit": {
+    "retentionDays": "Keep audit events for",
+    "retention": {
+      "365": "1 year",
+      "1095": "3 years",
+      "2555": "7 years",
+      "3650": "10 years"
+    },
+    "immutable": "Events are immutable (append-only)",
+    "exportRoles": "Roles allowed to export",
+    "format": "Export format",
+    "timezone": "Timestamp time zone",
+    "actor": {
+      "sso": "SSO identity required",
+      "local": "Local account allowed"
+    },
+    "events": "Captured events",
+    "ev": {
+      "price_change": "Price change",
+      "recommendation_generated": "Recommendation generated",
+      "recommendation_approved": "Recommendation approved",
+      "recommendation_rejected": "Recommendation rejected",
+      "strategy_changed": "Strategy changed",
+      "rule_changed": "Rule changed",
+      "guardrail_changed": "Guardrail changed",
+      "override_requested": "Override requested",
+      "override_approved": "Override approved",
+      "configuration_changed": "Configuration changed",
+      "integration_changed": "Integration changed",
+      "experiment_lifecycle": "Experiment started / completed"
+    },
+    "lockedEvent": "Always captured",
+    "retentionLabel": "Retention",
+    "actorLabel": "Actor identity"
+  },
+  "api": {
+    "keys": "API keys & service accounts",
+    "name": "Name",
+    "key": "Key",
+    "created": "Created",
+    "lastUsed": "Last used",
+    "expires": "Expires",
+    "owner": "Owner",
+    "kind": {
+      "api_key": "API key",
+      "service": "Service account",
+      "webhook": "Webhook secret",
+      "integration": "Integration secret"
+    },
+    "status": {
+      "active": "Active",
+      "expiring": "Expiring soon",
+      "revoked": "Revoked"
+    },
+    "revoke": "Revoke",
+    "revokeConfirm": "Revoke {name}? Systems using it stop authenticating immediately.",
+    "revoked": "{name} revoked",
+    "secretNote": "Secrets are shown once at creation and never again.",
+    "never": "Never",
+    "kindLabel": "Kind",
+    "statusLabel": "Status"
+  },
+  "sec": {
+    "session": "Sessions",
+    "timeout": "Session timeout",
+    "reauth": "Re-authenticate before sensitive actions",
+    "signin": "Sign-in",
+    "sso": {
+      "saml": "SAML 2.0",
+      "oidc": "OpenID Connect",
+      "off": "Off"
+    },
+    "mfa": "Require multi-factor authentication",
+    "domains": "Trusted domains",
+    "policy": {
+      "sso_only": "SSO only",
+      "sso_or_password": "SSO or password"
+    },
+    "impact": "Security impact: changes apply to every user at their next sign-in.",
+    "ssoLabel": "Single sign-on",
+    "policyLabel": "Login policy"
+  },
+  "feat": {
+    "dynamicPricing": "Dynamic pricing",
+    "automatedRecs": "Automated recommendations",
+    "autoApproval": "Auto-approval",
+    "experiments": "Experiments",
+    "competitorIntel": "Competitor intelligence",
+    "monitoring": "Monitoring",
+    "apiAccess": "API access",
+    "requires": "Requires",
+    "noDeps": "No dependencies",
+    "dep": {
+      "approvalPolicy": "Approval policy",
+      "guardrails": "Guardrails",
+      "confidence": "Confidence threshold",
+      "dynamicPricing": "Dynamic pricing",
+      "automatedRecs": "Automated recommendations",
+      "apiAccess": "API access"
+    },
+    "blocked": "Turn on its dependencies first"
+  }
+}

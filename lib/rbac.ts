@@ -40,6 +40,8 @@ export const PERMISSIONS = {
   'experiment.manage': ['analyst', 'manager'],
   'approval.delegate': ['manager'],
   'policy.manage': ['manager'],
+  /** Workspace administration (SET-001/039): everyone may read settings; only admins may change them. */
+  'settings.manage': ['manager'],
 } as const satisfies Record<string, readonly Role[]>;
 
 export type Action = keyof typeof PERMISSIONS;

@@ -54,6 +54,7 @@ const ICONS: Record<AuditEventType, LucideIcon> = {
   notification_acknowledge: Bell,
   notification_snooze: Timer,
   notification_escalate: TriangleAlert,
+  settings_change: Settings2,
 };
 
 const TONE_CLS: Record<AuditTone, string> = {

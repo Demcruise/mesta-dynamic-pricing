@@ -181,8 +181,8 @@ export function OverviewPage() {
                   icon={meta.icon}
                   polarity={meta.polarity}
                   label={
-                    <Link href={k.href ?? '/overview'} onClick={() => quick(k.href ?? '/overview')} className="inline-flex min-h-6 items-center rounded transition-colors duration-fast hover:text-brand hover:underline">
-                      {t(`overview.kpi.${k.key}`)}
+                    <Link href={k.href ?? '/overview'} onClick={() => quick(k.href ?? '/overview')} className="flex min-h-6 max-w-full items-center rounded transition-colors duration-fast hover:text-brand hover:underline">
+                      <span className="truncate">{t(`overview.kpi.${k.key}`)}</span>
                     </Link>
                   }
                   value={typeof k.value === 'number' ? k.value : fmt(k)}

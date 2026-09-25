@@ -6,7 +6,8 @@
   "sev": {
     "critical": "Critical",
     "warning": "Warning",
-    "info": "Info"
+    "info": "Info",
+    "all": "active"
   },
   "kind": {
     "anomaly": "Price anomaly",
@@ -16,11 +17,30 @@
   "empty": "No active alerts in the current scope.",
   "action": {
     "anatomy": "Details",
-    "investigate": "Investigate"
+    "investigate": "Investigate",
+    "showAll": "Show all alerts"
   },
   "anatomy": {
     "changed": "What changed",
     "expected": "Expected",
     "observed": "Observed"
+  },
+  "filter": {
+    "severity": "Severity",
+    "all": "All"
+  },
+  "sort": {
+    "label": "Sort",
+    "severity": "Severity",
+    "newest": "Newest first",
+    "oldest": "Oldest first"
+  },
+  "filtered": "No {sev} alerts in the current workspace scope",
+  "col": {
+    "severity": "Severity",
+    "type": "Alert type",
+    "entity": "Entity",
+    "detail": "Detail",
+    "age": "Age"
   }
 }

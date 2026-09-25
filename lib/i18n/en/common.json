@@ -76,7 +76,8 @@
     "retry": "Retry",
     "empty": "No data yet.",
     "clearFilters": "Clear filters",
-    "back": "Back"
+    "back": "Back",
+    "notFound": "This page does not exist."
   },
   "table": {
     "columns": "Columns",
@@ -325,7 +326,8 @@
     "delegation_revoke": "Delegation revoked",
     "strategy_save": "Strategy saved",
     "policy_override": "Policy override changed",
-    "publish_window_end": "Publish window ended"
+    "publish_window_end": "Publish window ended",
+    "settings_change": "Settings changed"
   },
   "channel": {
     "pos": "POS",

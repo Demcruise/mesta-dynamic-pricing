@@ -5,7 +5,8 @@ import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import { DeltaBadge } from '@/components/ds/DeltaBadge';
 import { LiveDot } from '@/components/ds/LiveDot';
-import { PriceValue } from '@/components/ds/PriceValue';
+import { Money } from '@/components/ds/numeric';
+import { Segmented } from '@/components/ui/segmented';
 import { ProductIdentity } from '@/components/ds/ProductIdentity';
 import { SeverityChip } from '@/components/ds/SeverityChip';
 import { EmptyState, ErrorState, LoadingRows, PageHeader } from '@/components/ds/states';
@@ -75,56 +76,62 @@ export function MonitoringPage() {
         <ErrorState title={t('common.state.error')} onRetry={() => { outcomes.refetch(); anomalies.refetch(); }} />
       ) : (
         <>
-          <div className="mb-4 flex items-center gap-2 rounded-card border border-line bg-surface px-3 py-2 text-xs text-muted shadow-e1" role="status">
+          <div className="mb-6 flex items-center gap-2 rounded-card border border-line bg-surface px-4 py-3 text-xs text-muted" role="status">
             <LiveDot />
             <span className="font-medium text-fg">{t('monitoring.live.stream')}</span>
             {lastEventAt && <FreshnessBadge at={lastEventAt} label={t('monitoring.live.lastEvent', { at: formatRelativeTime(lastEventAt, locale) })} />}
             <span className="tabular ml-auto">{t('monitoring.live.alerts', { n: visible.length })}</span>
           </div>
-          <div className="mb-2 flex items-center justify-between gap-2">
-            <h2 className="text-sm font-semibold">{t('monitoring.forecast.title')}</h2>
-            <div role="group" aria-label={t('monitoring.forecast.title')} className="flex gap-1">
-              {(['revenue', 'margin', 'units'] as const).map((m) => (
-                <Button key={m} size="sm" variant={metric === m ? 'selected' : 'secondary'} aria-pressed={metric === m} onClick={() => setMetric(m)}>
-                  {t(`monitoring.forecast.${m}`)}
-                </Button>
-              ))}
-            </div>
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+            <h2 className="text-section">{t('monitoring.forecast.title')}</h2>
+            <Segmented
+              label={t('monitoring.forecast.title')}
+              value={metric}
+              onChange={setMetric}
+              options={(['revenue', 'margin', 'units'] as const).map((m) => ({ value: m, label: t(`monitoring.forecast.${m}`) }))}
+            />
           </div>
           {sorted.length === 0 ? <EmptyState variant="caughtUp" title={t('monitoring.forecast.empty')} /> : (
             <>
               <ForecastCharts outcomes={sorted} metric={metric} />
-              <div className="mt-4 overflow-x-auto rounded-card border border-line bg-surface shadow-e1">
-                <table className="mesta-table w-full min-w-[640px] text-sm">
+              {/* MON-008…015 — SKU outcome table on fixed tracks: SKU (fluid) · Forecast · Actual · Variance ·
+                  Origin · Linked record. Numeric tracks right-aligned; variance badges share one anchor. */}
+              <div className="mt-5 overflow-x-auto rounded-card border border-line bg-surface">
+                <table className="mesta-table rows-lg min-w-[1000px]" style={{ tableLayout: 'fixed' }}>
                   <caption className="sr-only">{t('monitoring.forecast.caption')}</caption>
-                  <thead className="bg-subtle text-xs text-muted">
-                    <tr className="h-row">
-                      {(['sku', 'forecastLabel', 'actualLabel', 'variance', 'source', 'traceLink'] as const).map((c) => (
-                        <th key={c} scope="col" className={cn('px-3 py-row font-medium', c === 'sku' || c === 'traceLink' || c === 'source' ? 'text-left' : 'text-right')}>
-                          {c === 'sku' ? t('monitoring.anomaly.sku') : t(`monitoring.forecast.${c}`)}
-                        </th>
-                      ))}
+                  <colgroup>
+                    <col /><col style={{ width: 140 }} /><col style={{ width: 140 }} /><col style={{ width: 132 }} /><col style={{ width: 184 }} /><col style={{ width: 148 }} />
+                  </colgroup>
+                  <thead>
+                    <tr>
+                      <th scope="col" className="text-left">{t('monitoring.anomaly.sku')}</th>
+                      <th scope="col" className="text-right">{t('monitoring.forecast.forecastLabel')}</th>
+                      <th scope="col" className="text-right">{t('monitoring.forecast.actualLabel')}</th>
+                      <th scope="col" className="text-right">{t('monitoring.forecast.variance')}</th>
+                      <th scope="col" className="text-left">{t('monitoring.forecast.source')}</th>
+                      <th scope="col" className="text-left">{t('monitoring.forecast.traceLink')}</th>
                     </tr>
                   </thead>
                   <tbody>
                     {[...sorted].reverse().map((o) => {
                       const f = o.forecast[metric], a = o.actual[metric];
-                      const fmt = (v: number) => (metric === 'units' ? String(Math.round(v)) : <PriceValue value={Math.round(v)} />);
+                      const fmt = (v: number) => (metric === 'units' ? Math.round(v).toLocaleString(locale === 'id' ? 'id-ID' : 'en-US') : <Money value={Math.round(v)} />);
+                      const product = productsBySku.get(o.sku);
                       return (
-                        <tr key={o.id} className="h-row border-t border-line transition-colors duration-fast hover:bg-subtle">
-                          <td className="px-3 py-row">
-                            {productsBySku.get(o.sku)
-                              ? <Link href={`/catalog/${o.sku}`} className="hover:underline"><ProductIdentity product={productsBySku.get(o.sku)!} size="sm" /></Link>
+                        <tr key={o.id}>
+                          <td>
+                            {product
+                              ? <Link href={`/catalog/${o.sku}`} className="block hover:underline"><ProductIdentity product={product} /></Link>
                               : <Link href={`/catalog/${o.sku}`} className="tabular text-brand hover:underline">{o.sku}</Link>}
                           </td>
-                          <td className="tabular px-3 text-right">{fmt(f)}</td>
-                          <td className="tabular px-3 text-right">{fmt(a)}</td>
-                          <td className="px-3 text-right"><DeltaBadge value={f ? (a - f) / f : 0} /></td>
+                          <td className="num">{fmt(f)}</td>
+                          <td className="num font-semibold">{fmt(a)}</td>
+                          <td className="num"><DeltaBadge value={f ? (a - f) / f : 0} /></td>
                           {/* Q-01: where the measured change came from — experiment treatment, deployed rec, or manual. */}
-                          <td className="px-3 text-xs text-muted">
+                          <td className="truncate text-muted">
                             {o.experimentId ? t('monitoring.forecast.srcExperiment') : o.recommendationId ? t('monitoring.forecast.srcRecommendation') : t('monitoring.forecast.srcManual')}
                           </td>
-                          <td className="px-3">{o.recommendationId ? <Link href={`/recommendations/${o.recommendationId}`} className="tabular text-brand underline">{o.recommendationId}</Link> : '—'}</td>
+                          <td className="truncate">{o.recommendationId ? <Link href={`/recommendations/${o.recommendationId}`} className="tabular text-brand underline">{o.recommendationId}</Link> : <span className="text-faint">—</span>}</td>
                         </tr>
                       );
                     })}
@@ -136,16 +143,17 @@ export function MonitoringPage() {
 
           <section className="mt-8">
             <div className="mb-3 flex flex-wrap items-end justify-between gap-3">
-              <h2 className="text-sm font-semibold">{t('monitoring.anomaly.title')}</h2>
+              <h2 className="text-section">{t('monitoring.anomaly.title')}</h2>
               <div className="flex flex-wrap items-end gap-3">
                 <Field label={t('monitoring.anomaly.threshold')}>
                   {(p) => <Input {...p} type="number" min={0} max={100} className="tabular w-28" value={threshold} onChange={(e) => setThreshold(Math.min(100, Math.max(0, Number(e.target.value) || 0)))} />}
                 </Field>
-                <div role="group" aria-label={t('monitoring.anomaly.mode')} className="flex gap-1">
-                  {(['digest', 'granular'] as const).map((m) => (
-                    <Button key={m} variant={mode === m ? 'selected' : 'secondary'} aria-pressed={mode === m} onClick={() => setMode(m)}>{t(`monitoring.anomaly.${m}`)}</Button>
-                  ))}
-                </div>
+                <Segmented
+                  label={t('monitoring.anomaly.mode')}
+                  value={mode}
+                  onChange={setMode}
+                  options={(['digest', 'granular'] as const).map((m) => ({ value: m, label: t(`monitoring.anomaly.${m}`) }))}
+                />
               </div>
             </div>
 
@@ -177,20 +185,28 @@ export function MonitoringPage() {
               </ul>
             ) : (
               <div className="overflow-x-auto rounded-card border border-line bg-surface shadow-e1">
-                <table className="mesta-table w-full min-w-[640px] text-sm">
+                <table className="mesta-table min-w-[820px]" style={{ tableLayout: 'fixed' }}>
                   <caption className="sr-only">{t('monitoring.anomaly.caption')}</caption>
-                  <thead className="bg-subtle text-xs text-muted">
-                    <tr className="h-row">{(['sku', 'category', 'deviation', 'channel', 'severity', 'actions'] as const).map((c) => <th key={c} scope="col" className="px-3 py-row text-left font-medium">{t(`monitoring.anomaly.${c}`)}</th>)}</tr>
+                  <colgroup><col style={{ width: 128 }} /><col /><col style={{ width: 128 }} /><col style={{ width: 160 }} /><col style={{ width: 136 }} /><col style={{ width: 168 }} /></colgroup>
+                  <thead>
+                    <tr>
+                      <th scope="col" className="text-left">{t('monitoring.anomaly.sku')}</th>
+                      <th scope="col" className="text-left">{t('monitoring.anomaly.category')}</th>
+                      <th scope="col" className="text-right">{t('monitoring.anomaly.deviation')}</th>
+                      <th scope="col" className="text-left">{t('monitoring.anomaly.channel')}</th>
+                      <th scope="col" className="text-left">{t('monitoring.anomaly.severity')}</th>
+                      <th scope="col" className="text-right">{t('monitoring.anomaly.actions')}</th>
+                    </tr>
                   </thead>
                   <tbody>
                     {[...visible].sort((a, b) => Math.abs(b.deviationPercent) - Math.abs(a.deviationPercent)).map((a) => (
-                      <tr key={a.id} className="h-row border-t border-line transition-colors duration-fast hover:bg-subtle">
-                        <td className="px-3 py-row"><Link href={`/catalog/${a.sku}`} className="tabular text-brand hover:underline">{a.sku}</Link></td>
-                        <td className="px-3">{a.category}</td>
-                        <td className="tabular px-3">{a.deviationPercent}%</td>
-                        <td className="px-3">{t(`common.channel.${a.channel}`)}</td>
-                        <td className="px-3"><SeverityChip s={a.severity} /></td>
-                        <td className="px-3"><FlagCell a={a} /></td>
+                      <tr key={a.id}>
+                        <td><Link href={`/catalog/${a.sku}`} className="tabular font-semibold text-brand hover:underline">{a.sku}</Link></td>
+                        <td className="truncate">{a.category}</td>
+                        <td className="num font-semibold">{a.deviationPercent}%</td>
+                        <td className="truncate">{t(`common.channel.${a.channel}`)}</td>
+                        <td><SeverityChip s={a.severity} /></td>
+                        <td className="text-right"><FlagCell a={a} /></td>
                       </tr>
                     ))}
                   </tbody>

@@ -1,10 +1,6 @@
-import { Suspense } from 'react';
-import { SettingsPage } from '@/features/settings/SettingsPage';
+import { redirect } from 'next/navigation';
 
+/** SET-042: /settings deep-links to its first section. */
 export default function Page() {
-  return (
-    <Suspense>
-      <SettingsPage />
-    </Suspense>
-  );
+  redirect('/settings/preferences');
 }

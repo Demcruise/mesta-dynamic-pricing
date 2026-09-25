@@ -41,11 +41,13 @@ import enExperiments from './en/experiments.json';
 import idExperiments from './id/experiments.json';
 import enSignals from './en/signals.json';
 import idSignals from './id/signals.json';
+import enSettings from './en/settings.json';
+import idSettings from './id/settings.json';
 
 /** One file per namespace per locale; add new namespaces here. */
 export const messages = {
-  id: { common: idCommon, catalog: idCatalog, strategy: idStrategy, simulation: idSimulation, recommendations: idRecommendations, deployment: idDeployment, monitoring: idMonitoring, audit: idAudit, overview: idOverview, rules: idRules, guardrails: idGuardrails, approvals: idApprovals, data: idData, exceptions: idExceptions, alerts: idAlerts, competitors: idCompetitors, analytics: idAnalytics, experiments: idExperiments, signals: idSignals },
-  en: { common: enCommon, catalog: enCatalog, strategy: enStrategy, simulation: enSimulation, recommendations: enRecommendations, deployment: enDeployment, monitoring: enMonitoring, audit: enAudit, overview: enOverview, rules: enRules, guardrails: enGuardrails, approvals: enApprovals, data: enData, exceptions: enExceptions, alerts: enAlerts, competitors: enCompetitors, analytics: enAnalytics, experiments: enExperiments, signals: enSignals },
+  id: { common: idCommon, catalog: idCatalog, strategy: idStrategy, simulation: idSimulation, recommendations: idRecommendations, deployment: idDeployment, monitoring: idMonitoring, audit: idAudit, overview: idOverview, rules: idRules, guardrails: idGuardrails, approvals: idApprovals, data: idData, exceptions: idExceptions, alerts: idAlerts, competitors: idCompetitors, analytics: idAnalytics, experiments: idExperiments, signals: idSignals, settings: idSettings },
+  en: { common: enCommon, catalog: enCatalog, strategy: enStrategy, simulation: enSimulation, recommendations: enRecommendations, deployment: enDeployment, monitoring: enMonitoring, audit: enAudit, overview: enOverview, rules: enRules, guardrails: enGuardrails, approvals: enApprovals, data: enData, exceptions: enExceptions, alerts: enAlerts, competitors: enCompetitors, analytics: enAnalytics, experiments: enExperiments, signals: enSignals, settings: enSettings },
 } as const;
 
 type Tree = { [k: string]: string | Tree };

@@ -60,5 +60,17 @@
     "staleNote": "Rekomendasi lebih tua dari jendela freshness-nya — verifikasi ulang sebelum memutuskan.",
     "overrideTitle": "Permintaan override",
     "openSurface": "Buka permukaan terkait"
+  },
+  "col": {
+    "severity": "Tingkat",
+    "type": "Pengecualian",
+    "product": "Produk",
+    "context": "Konteks",
+    "age": "Usia"
+  },
+  "ctx": {
+    "missing": "{n} SKU tanpa data pesaing",
+    "unchanged": "Tidak berubah selama {n} hari",
+    "categoryLevel": "Pengecualian tingkat kategori"
   }
 }

@@ -23,6 +23,10 @@ import { MestaDataTable, useColumnVisibility } from '@/components/ds/table/DataT
 import { RoleGate } from '@/components/shell/RoleGate';
 import { Button } from '@/components/ui/button';
 import { Segmented } from '@/components/ui/segmented';
+import { FilterTabs } from '@/components/ui/filter-tabs';
+import { ConstraintRange } from '@/components/ds/ConstraintRange';
+import { Money, PriceMove } from '@/components/ds/numeric';
+import { explainBounds } from '@/lib/guardrails';
 import { Pill } from '@/components/ds/Pill';
 import { Check } from 'lucide-react';
 import { Dialog } from '@/components/ui/dialog';
@@ -95,6 +99,11 @@ const DEMO_REC = {
   strategyId: null, scenarioId: null, ruleId: null, createdAt: '2026-09-21T09:00:00Z', ownerId: 'agent', decidedAt: null, decisionNote: null, approvals: [], deployed: false,
 };
 
+function FilterTabsDemo() {
+  const [v, setV] = useState('all');
+  return <FilterTabs label="Severity" value={v} onChange={setV} tabs={[{ value: 'all', label: 'All', count: 34 }, { value: 'critical', label: 'Critical', count: 13 }, { value: 'warning', label: 'Warning', count: 8 }, { value: 'info', label: 'Info', count: 0 }]} />;
+}
+
 function SegmentedDemo() {
   const [v, setV] = useState<'chart' | 'table'>('chart');
   return <Segmented label="View" value={v} onChange={setV} options={[{ value: 'chart', label: 'Chart' }, { value: 'table', label: 'Data table' }]} />;
@@ -146,9 +155,9 @@ const ENTRIES: Entry[] = [
     demo: <Sparkline points={[4, 6, 5, 8, 7, 11, 9, 13]} className="h-8 w-40 text-brand" />,
   },
   {
-    name: 'AgentBorderCard', file: 'components/ds/AgentBorderCard.tsx', summary: 'Card whose left border marks who produced the content and its decision state.',
+    name: 'AgentBorderCard', file: 'components/ds/AgentBorderCard.tsx', summary: 'Neutral card for agent/human/rule-authored content. No coloured rail (backlog v11 RECOMMENDATION-001): provenance and decision state are explicit badges.',
     props: 'actor: "agent" | "human" | "rule" · status?: "pending" | "approved" | "adjusted" | "rejected" · className?',
-    a11y: 'Visually hidden label announces actor + status; colour is supplementary.',
+    a11y: 'Visually hidden label announces actor + status; state is always a text badge, never a border colour.',
     doText: 'Wrap recommendation-like content authored by an agent, human or rule.', dontText: 'Do not use as a generic card.',
     reactBits: 'Application UI › Cards · Blocks › agent-approval-2',
     demo: <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">{(['agent', 'human', 'rule'] as const).map((a) => <AgentBorderCard key={a} actor={a}><p className="text-sm">{a}</p></AgentBorderCard>)}</div>,
@@ -360,6 +369,30 @@ const ENTRIES: Entry[] = [
     doText: 'Mutually exclusive view switches with 2–4 options.', dontText: 'Do not use for filters that combine (use chips) or for navigation between pages (use tabs/links).',
     reactBits: 'Application UI › Forms › Toggle group',
     demo: <SegmentedDemo />,
+  },
+  {
+    name: 'FilterTabs', file: 'components/ui/filter-tabs.tsx', summary: 'Status/severity quick filter with live counts — Guardrails, Alerts, Exceptions, Recommendations.',
+    props: 'FilterTabs{value,onChange,tabs:{value,label,count?,icon?,iconCls?}[],label,controls?}',
+    a11y: 'role="tablist" / role="tab" + aria-selected; ←/→/Home/End move and select; zero-count tabs are disabled but stay visible; counts sit in a fixed-width slot.',
+    doText: 'One primary quick filter per page, 40px, above the filtered list.', dontText: 'Do not stack status sections vertically when a filter would do; do not change height or padding for the active tab.',
+    reactBits: 'Application UI › Navigation › Tabs',
+    demo: <FilterTabsDemo />,
+  },
+  {
+    name: 'ConstraintRange', file: 'components/ds/ConstraintRange.tsx', summary: 'Explains effective price bounds: product, strategy, change-per-cycle and MAP rows on one scale, intersected into the effective range (lib/guardrails explainBounds).',
+    props: 'ConstraintRange{bounds:BoundsExplanation,proposed?,strategyName?,compact?}',
+    a11y: 'The chart is role="img" with a full sentence (min, max, current, MAP); every value is also printed; state message is role="status".',
+    doText: 'Anywhere Mesta explains price limits: Strategy, SKU detail, Guardrails drawer, recommendation/approval evidence.', dontText: 'Do not plot unexplained dots; never show 0 for an unset limit — say “No minimum”.',
+    reactBits: 'Application UI › Data display',
+    demo: <ConstraintRange bounds={explainBounds(DEMO_PRODUCT, { minPrice: 105000, maxPrice: 180000, mapEnforced: true, maxChangePercent: 8, autoApproveThreshold: 80 })} compact />,
+  },
+  {
+    name: 'SKU cells / Money / PriceMove', file: 'components/ds/sku.tsx · components/ds/numeric.tsx', summary: 'Shared SKU cell family (SkuId, SkuIdentity, SkuMargin, SkuStock, SkuLastChange, SkuTrend, SkuRecommendationBadge, SkuActions) plus one-token money and price-move values.',
+    props: 'Money{value,signed?} · PriceMove{from,to,align?} · CellStack{primary,secondary?,align?}',
+    a11y: 'Values never wrap, so a minus sign cannot detach; row actions are 32px targets with “label + SKU” accessible names; overflow actions live in a … menu.',
+    doText: 'Compose SKU tables from these cells so every surface aligns identically.', dontText: 'Do not fix alignment with per-cell margins or transforms (DEV-002).',
+    reactBits: 'Application UI › Tables',
+    demo: <div className="flex flex-wrap items-center gap-6"><Money value={-157120} signed /><PriceMove from={20500} to={18900} /><ProductIdentity product={DEMO_PRODUCT} /></div>,
   },
 ];
 

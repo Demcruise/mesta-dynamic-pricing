@@ -1,6 +1,6 @@
 import { cva, type VariantProps } from 'class-variance-authority';
 import { LoaderCircle } from 'lucide-react';
-import type { ButtonHTMLAttributes } from 'react';
+import type { ButtonHTMLAttributes, Ref } from 'react';
 import { cn } from '@/lib/utils';
 
 const button = cva(
@@ -23,6 +23,7 @@ const button = cva(
 );
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof button> {
+  ref?: Ref<HTMLButtonElement>;
   /** Async action in flight: spinner + aria-busy, interaction blocked. */
   loading?: boolean;
 }

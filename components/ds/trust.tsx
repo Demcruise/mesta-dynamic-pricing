@@ -2,7 +2,8 @@
 
 import { BookOpen, CircleHelp, Undo2 } from 'lucide-react';
 import Link from 'next/link';
-import type { ReactNode } from 'react';
+import { useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import { cn } from '@/lib/utils';
 
 /**
@@ -80,28 +81,92 @@ export function MetricDefinition({ label, definition, rows = [], className }: {
   rows?: MetricDefinitionRow[];
   className?: string;
 }) {
+  /*
+   * SIG-009…014: rendered in a portal with fixed positioning, so table overflow and `nowrap`
+   * headers can never clip or stretch it. Width min(320px, viewport − 32px), text wraps inside the
+   * frame, flips above the trigger when there is no room below, clamps inside the viewport.
+   * Hover/focus previews it; click pins it; Escape or an outside click closes; opening one closes
+   * any other (no stacked popovers).
+   */
+  const [open, setOpen] = useState<false | 'peek' | 'pinned'>(false);
+  const [pos, setPos] = useState<{ top: number; left: number; width: number } | null>(null);
+  const trigger = useRef<HTMLButtonElement>(null);
+  const pop = useRef<HTMLDivElement>(null);
+  const id = useId();
+
+  useLayoutEffect(() => {
+    if (!open) return;
+    const place = () => {
+      const r = trigger.current?.getBoundingClientRect();
+      if (!r) return;
+      const width = Math.min(320, window.innerWidth - 32);
+      const h = pop.current?.offsetHeight ?? 120;
+      const left = Math.min(Math.max(16, r.left + r.width / 2 - width / 2), window.innerWidth - width - 16);
+      const below = r.bottom + 8 + h <= window.innerHeight - 8;
+      setPos({ top: below ? r.bottom + 8 : Math.max(8, r.top - 8 - h), left, width });
+    };
+    place();
+    const raf = requestAnimationFrame(place);
+    window.addEventListener('scroll', place, true);
+    window.addEventListener('resize', place);
+    return () => { cancelAnimationFrame(raf); window.removeEventListener('scroll', place, true); window.removeEventListener('resize', place); };
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    window.dispatchEvent(new CustomEvent('mesta:popover', { detail: id }));
+    const onOther = (e: Event) => { if ((e as CustomEvent).detail !== id) setOpen(false); };
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') { setOpen(false); trigger.current?.focus(); } };
+    const onDown = (e: MouseEvent) => {
+      const tgt = e.target as Node;
+      if (!trigger.current?.contains(tgt) && !pop.current?.contains(tgt)) setOpen(false);
+    };
+    window.addEventListener('mesta:popover', onOther);
+    document.addEventListener('keydown', onKey);
+    document.addEventListener('mousedown', onDown);
+    return () => { window.removeEventListener('mesta:popover', onOther); document.removeEventListener('keydown', onKey); document.removeEventListener('mousedown', onDown); };
+  }, [open, id]);
+
   return (
-    <details className={cn('group relative inline-flex', className)}>
-      <summary
+    <span className={cn('ml-1 inline-flex shrink-0 align-middle', className)}>
+      <button
+        ref={trigger}
+        type="button"
         aria-label={label}
-        title={label}
-        className="grid size-4 cursor-pointer list-none place-items-center rounded-full text-faint transition-colors duration-fast hover:text-fg [&::-webkit-details-marker]:hidden"
+        aria-expanded={!!open}
+        aria-controls={open ? id : undefined}
+        title={open ? undefined : label}
+        onClick={() => setOpen((o) => (o === 'pinned' ? false : 'pinned'))}
+        onMouseEnter={() => setOpen((o) => o || 'peek')}
+        onMouseLeave={() => setOpen((o) => (o === 'peek' ? false : o))}
+        onFocus={() => setOpen((o) => o || 'peek')}
+        onBlur={(e) => { if (!pop.current?.contains(e.relatedTarget as Node)) setOpen((o) => (o === 'peek' ? false : o)); }}
+        className="grid size-6 cursor-pointer place-items-center rounded-full text-faint transition-colors duration-fast hover:text-fg aria-expanded:text-brand"
       >
         <CircleHelp className="size-3.5" aria-hidden />
-      </summary>
-      <div className="glass absolute right-0 top-5 z-40 w-60 rounded-card border border-line p-3 text-left shadow-e3">
-        <p className="text-xs text-fg">{definition}</p>
-        {rows.length > 0 && (
-          <dl className="mt-2 flex flex-col gap-1 border-t border-line pt-2 text-xs">
-            {rows.map((r) => (
-              <div key={r.label} className="flex justify-between gap-2">
-                <dt className="text-muted">{r.label}</dt>
-                <dd className="tabular text-fg">{r.value}</dd>
-              </div>
-            ))}
-          </dl>
-        )}
-      </div>
-    </details>
+      </button>
+      {open && typeof document !== 'undefined' && createPortal(
+        <div
+          ref={pop}
+          id={id}
+          role="tooltip"
+          style={{ position: 'fixed', top: pos?.top ?? -9999, left: pos?.left ?? -9999, width: pos?.width ?? 320 }}
+          className="z-[60] whitespace-normal rounded-card border border-line bg-surface px-3.5 py-3 text-left font-normal normal-case tracking-normal shadow-e3 [overflow-wrap:break-word]"
+        >
+          <p className="text-caption leading-[1.45] text-fg">{definition}</p>
+          {rows.length > 0 && (
+            <dl className="mt-2 flex flex-col gap-1 border-t border-line pt-2 text-caption">
+              {rows.map((r) => (
+                <div key={r.label} className="flex justify-between gap-3">
+                  <dt className="text-muted">{r.label}</dt>
+                  <dd className="tabular text-right text-fg">{r.value}</dd>
+                </div>
+              ))}
+            </dl>
+          )}
+        </div>,
+        document.body,
+      )}
+    </span>
   );
 }

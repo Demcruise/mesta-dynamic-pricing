@@ -76,7 +76,8 @@
     "retry": "Coba lagi",
     "empty": "Belum ada data.",
     "clearFilters": "Hapus filter",
-    "back": "Kembali"
+    "back": "Kembali",
+    "notFound": "Halaman ini tidak ada."
   },
   "table": {
     "columns": "Kolom",
@@ -325,7 +326,8 @@
     "delegation_revoke": "Delegasi dicabut",
     "strategy_save": "Strategi disimpan",
     "policy_override": "Override kebijakan diubah",
-    "publish_window_end": "Jendela publish berakhir"
+    "publish_window_end": "Jendela publish berakhir",
+    "settings_change": "Pengaturan diubah"
   },
   "channel": {
     "pos": "POS",

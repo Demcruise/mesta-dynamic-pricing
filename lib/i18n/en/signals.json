@@ -25,10 +25,10 @@
     "risk": "Stock risk"
   },
   "def": {
-    "velocity": "Modelled units per month at the current price — from the demand model, not observed sales.",
-    "elasticity": "Price elasticity coefficient and its band; more negative means demand reacts harder to price moves.",
-    "coverage": "How many competitor feeds report a price for this SKU.",
-    "daysSupply": "Stock units divided by modelled daily velocity. “—” when velocity is zero.",
-    "risk": "Stockout < 7d of supply, low < 14d, overstock > 90d — thresholds are demand-model estimates."
+    "velocity": "Estimated units sold per month at the current price.",
+    "elasticity": "Estimated demand sensitivity to price changes.",
+    "coverage": "Number of competitor feeds reporting a price for this SKU.",
+    "daysSupply": "Estimated days of stock remaining at current velocity.",
+    "risk": "Stock risk band from days of supply: stockout, low, healthy or overstock."
   }
 }

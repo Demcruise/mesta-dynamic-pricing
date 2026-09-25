@@ -1,5 +1,8 @@
 import type { AuditEvent, AuditEventType } from '@/lib/ontology';
 
+/** Workspace settings section key → its deep-link slug (SET-042/043). */
+const SETTINGS_SLUG: Record<string, string> = { pricing: 'pricing-engine', data: 'integrations', scope: 'scope-hierarchy' };
+
 export interface AuditFilters {
   from: string; // yyyy-mm-dd
   to: string;
@@ -91,8 +94,8 @@ export function groupEventsByDay(events: AuditEvent[], locale: string): AuditDay
 }
 
 /** Where each event points, so a reviewer can jump from the log to the thing that changed. */
-export function eventLinks(e: AuditEvent): { key: 'sku' | 'recommendation' | 'deployment' | 'strategy' | 'scenario'; label: string; href: string }[] {
-  const out: { key: 'sku' | 'recommendation' | 'deployment' | 'strategy' | 'scenario'; label: string; href: string }[] = [];
+export function eventLinks(e: AuditEvent): { key: 'sku' | 'recommendation' | 'deployment' | 'strategy' | 'scenario' | 'settings'; label: string; href: string }[] {
+  const out: { key: 'sku' | 'recommendation' | 'deployment' | 'strategy' | 'scenario' | 'settings'; label: string; href: string }[] = [];
   if (e.sku) out.push({ key: 'sku', label: e.sku, href: `/catalog/${e.sku}` });
   if (e.entityType === 'recommendation') out.push({ key: 'recommendation', label: e.entityId, href: `/recommendations/${e.entityId}` });
   if (e.entityType === 'deployment') {
@@ -101,5 +104,6 @@ export function eventLinks(e: AuditEvent): { key: 'sku' | 'recommendation' | 'de
   }
   if (e.entityType === 'strategy') out.push({ key: 'strategy', label: e.entityId, href: '/strategy' });
   if (e.entityType === 'scenario') out.push({ key: 'scenario', label: e.entityId, href: `/simulation/${e.entityId}` });
+  if (e.entityType === 'settings') out.push({ key: 'settings', label: e.entityId, href: `/settings/${SETTINGS_SLUG[e.entityId] ?? e.entityId}` });
   return out;
 }

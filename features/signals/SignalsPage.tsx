@@ -3,7 +3,8 @@
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import { StatusBadge, type MestaStatus } from '@/components/ds/StatusBadge';
-import { CategoryIcon } from '@/components/ds/ProductIdentity';
+import { ProductIdentity } from '@/components/ds/ProductIdentity';
+import { SkuId } from '@/components/ds/sku';
 import { EmptyState, ErrorState, LoadingRows, PageHeader } from '@/components/ds/states';
 import { MestaDataTable, useColumnVisibility, type DataColumn } from '@/components/ds/table/DataTable';
 import { useTranslation } from '@/lib/i18n';
@@ -26,7 +27,8 @@ export function SignalsPage() {
   const { t, locale } = useTranslation();
   const products = useScopedSkuList();
   const competitors = useProductCatalogStore((s) => s.competitors);
-  const columnVis = useColumnVisibility('signals');
+  // Category repeats under the product name; the column stays available from the column menu.
+  const columnVis = useColumnVisibility('signals', ['category']);
   const [risk, setRisk] = useState<StockRisk | ''>('');
 
   const rows = useMemo(() => signalRows(products.data, competitors), [products.data, competitors]);
@@ -37,47 +39,45 @@ export function SignalsPage() {
   }, [rows]);
   const filtered = useMemo(() => (risk ? rows.filter((r) => r.stockRisk === risk) : rows), [rows, risk]);
 
+  /*
+   * SIG-001…008/015…018 — one central column model: every track has a fixed width (Name absorbs
+   * the rest), header and rows share it through the table colgroup, metric columns are
+   * left-aligned per the Signals spec with tabular figures, and each metric keeps its value as one
+   * semantic token ("-0.5 · Inelastic", "1,000/mo", "3d"). No per-cell offsets anywhere.
+   */
+  const nf = (n: number) => n.toLocaleString(locale === 'id' ? 'id-ID' : 'en-US');
   const columns: DataColumn<SkuSignals>[] = [
     {
-      id: 'sku', header: t('signals.table.sku'), required: true, defaultWidth: 110,
-      cell: (r) => <Link href={`/catalog/${r.product.sku}`} className="tabular text-brand hover:underline">{r.product.sku}</Link>,
+      id: 'sku', header: t('signals.table.sku'), required: true, defaultWidth: 128,
+      cell: (r) => <SkuId sku={r.product.sku} href={`/catalog/${r.product.sku}`} />,
     },
     {
-      id: 'name', header: t('signals.table.name'), defaultWidth: 180,
-      cell: (r) => (
-        <span className="flex items-center gap-2">
-          <CategoryIcon category={r.product.category} className="size-4" />
-          <span className="truncate text-fg">{r.product.name}</span>
-        </span>
-      ),
+      id: 'name', header: t('signals.table.name'), defaultWidth: 280,
+      cell: (r) => <ProductIdentity product={r.product} size="sm" showSku={false} />,
     },
-    { id: 'category', header: t('signals.table.category'), defaultWidth: 120, cell: (r) => <span className="text-muted">{r.product.category}</span> },
+    { id: 'category', header: t('signals.table.category'), defaultWidth: 160, cell: (r) => <span className="block truncate text-muted">{r.product.category}</span> },
     {
-      id: 'velocity', header: t('signals.table.velocity'), headerHint: t('signals.def.velocity'), align: 'right', defaultWidth: 110,
-      cell: (r) => <span className="tabular">{Math.round(r.velocity).toLocaleString(locale)}/mo</span>,
+      id: 'velocity', header: t('signals.table.velocity'), headerHint: t('signals.def.velocity'), defaultWidth: 140,
+      cell: (r) => <span className="tabular whitespace-nowrap">{nf(Math.round(r.velocity))}/mo</span>,
     },
     {
-      id: 'elasticity', header: t('signals.table.elasticity'), headerHint: t('signals.def.elasticity'), align: 'right', defaultWidth: 110,
-      cell: (r) => <span className="tabular">{r.product.elasticity} · {t(`catalog.elasticity.${r.elasticityBand}`)}</span>,
+      id: 'elasticity', header: t('signals.table.elasticity'), headerHint: t('signals.def.elasticity'), defaultWidth: 172,
+      cell: (r) => <span className="tabular whitespace-nowrap">{r.product.elasticity} · {t(`catalog.elasticity.${r.elasticityBand}`)}</span>,
     },
     {
-      id: 'coverage', header: t('signals.table.coverage'), headerHint: t('signals.def.coverage'), align: 'right', defaultWidth: 100,
+      id: 'coverage', header: t('signals.table.coverage'), headerHint: t('signals.def.coverage'), defaultWidth: 128,
       cell: (r) => <span className="tabular">{r.competitorCoverage}</span>,
     },
     {
-      id: 'stock', header: t('signals.table.stock'), align: 'right', defaultWidth: 100,
-      cell: (r) => <span className="tabular">{r.product.stockUnits.toLocaleString(locale)}</span>,
+      id: 'stock', header: t('signals.table.stock'), defaultWidth: 112,
+      cell: (r) => <span className="tabular">{nf(r.product.stockUnits)}</span>,
     },
     {
-      id: 'daysSupply', header: t('signals.table.daysSupply'), headerHint: t('signals.def.daysSupply'), align: 'right', defaultWidth: 110,
-      cell: (r) => (
-        <span className="tabular">
-          {Number.isFinite(r.daysOfSupply) ? `${Math.round(r.daysOfSupply)}d` : '—'}
-        </span>
-      ),
+      id: 'daysSupply', header: t('signals.table.daysSupply'), headerHint: t('signals.def.daysSupply'), defaultWidth: 152,
+      cell: (r) => <span className="tabular">{Number.isFinite(r.daysOfSupply) ? `${Math.round(r.daysOfSupply)}d` : '—'}</span>,
     },
     {
-      id: 'risk', header: t('signals.table.risk'), headerHint: t('signals.def.risk'), required: true, defaultWidth: 110,
+      id: 'risk', header: t('signals.table.risk'), headerHint: t('signals.def.risk'), required: true, defaultWidth: 136,
       cell: (r) => <StatusBadge status={RISK_STATUS[r.stockRisk]} label={t(`signals.risk.${r.stockRisk}`)} />,
     },
   ];
@@ -85,7 +85,7 @@ export function SignalsPage() {
   return (
     <>
       <PageHeader title={t('signals.page.title')} subtitle={t('signals.page.desc')} />
-      <p className="mb-3 rounded-input border border-line bg-subtle px-3 py-2 text-xs text-muted">{t('signals.page.honest')}</p>
+      <p className="mb-5 rounded-input border border-line bg-subtle px-4 py-2.5 text-caption text-muted">{t('signals.page.honest')}</p>
 
       {products.isLoading ? <LoadingRows rows={6} /> : products.isError ? (
         <ErrorState title={t('common.state.error')} onRetry={products.refetch} />
@@ -93,7 +93,7 @@ export function SignalsPage() {
         <EmptyState variant="empty" title={t('signals.empty')} />
       ) : (
         <>
-          <ul aria-label={t('signals.risk.title')} className="mb-4 grid grid-cols-2 gap-3 md:grid-cols-4">
+          <ul aria-label={t('signals.risk.title')} className="mb-5 grid grid-cols-2 gap-3 md:grid-cols-4">
             {RISK_ORDER.map((rk) => (
               <li key={rk}>
                 <button
@@ -101,7 +101,7 @@ export function SignalsPage() {
                   onClick={() => setRisk((cur) => (cur === rk ? '' : rk))}
                   aria-pressed={risk === rk}
                   className={cn(
-                    'flex w-full items-center justify-between rounded-card border p-3 text-left shadow-e1 transition-colors duration-fast',
+                    'flex h-16 w-full items-center justify-between rounded-card border px-5 text-left transition-colors duration-fast',
                     risk === rk ? 'border-brand bg-brand-soft' : 'border-line bg-surface',
                   )}
                 >
@@ -119,7 +119,7 @@ export function SignalsPage() {
             columns={columns}
             resizable
             virtualize
-            minWidth={860}
+            minWidth={1200}
             visibility={columnVis}
             csv={{
               filename: 'mesta-signals.csv',

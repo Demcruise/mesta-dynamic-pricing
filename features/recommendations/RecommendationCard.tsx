@@ -263,10 +263,10 @@ export function RecommendationCard({ rec, product, defaultOpen = false, showStat
     // APPROVAL-018: identity/status band, then the financial row, then evidence.
     return (
       <AgentBorderCard actor={rec.source === 'agent' ? 'agent' : 'human'} status={rec.status} className="flex flex-col gap-6">
-        <div className="flex flex-wrap items-start justify-between gap-4">
+        <header className="flex flex-wrap items-start justify-between gap-4">
           <div className="flex min-w-0 flex-col gap-2">{identity}{meta}</div>
           {statusGroup}
-        </div>
+        </header>
         {driver}
         <div className="border-y border-divider py-5">{impact}</div>
         {evidence}
@@ -280,7 +280,7 @@ export function RecommendationCard({ rec, product, defaultOpen = false, showStat
   // Queue card: fills the grid row; the action zone is pushed to the bottom (RECOMMENDATION-006/007).
   return (
     <AgentBorderCard actor={rec.source === 'agent' ? 'agent' : 'human'} status={rec.status} className="flex h-full flex-col gap-4">
-      <div className="flex flex-col gap-2">{identity}{meta}</div>
+      <header className="flex flex-col gap-2">{identity}{meta}</header>
       {driver}
       {statusGroup}
       <div className="min-h-[76px] rounded-input bg-subtle px-4 py-3">{impact}</div>

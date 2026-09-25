@@ -1,0 +1,558 @@
+{
+  "title": "Pengaturan",
+  "subtitle": "Kelola preferensi Anda serta konfigurasi harga, tata kelola, dan sistem workspace",
+  "nav": {
+    "label": "Navigasi pengaturan",
+    "jump": "Buka bagian"
+  },
+  "group": {
+    "personal": "Pribadi",
+    "workspace": "Workspace",
+    "governance": "Tata kelola",
+    "system": "Sistem"
+  },
+  "section": {
+    "preferences": {
+      "title": "Preferensi",
+      "desc": "Tampilan dan format data Mesta untuk Anda. Tersimpan otomatis."
+    },
+    "notifications": {
+      "title": "Notifikasi",
+      "desc": "Pengiriman pribadi untuk setiap jenis notifikasi. Peringatan wajib dari admin tidak dapat dimatikan."
+    },
+    "views": {
+      "title": "Tampilan saya",
+      "desc": "Tampilan tabel yang Anda simpan di Mesta — filter, kolom, urutan, dan kepadatan."
+    },
+    "general": {
+      "title": "Umum",
+      "desc": "Identitas workspace, kepemilikan, dan kontak dukungan."
+    },
+    "scope-hierarchy": {
+      "title": "Cakupan & hierarki",
+      "desc": "Hierarki bisnis yang dipakai semua halaman harga, dan cakupan awal pengguna."
+    },
+    "pricing-engine": {
+      "title": "Mesin harga",
+      "desc": "Perhitungan harga, pembulatan, jendela kesegaran, dan perilaku mesin saat input hilang."
+    },
+    "integrations": {
+      "title": "Data & integrasi",
+      "desc": "Sistem terhubung, kebijakan kesegaran, dan sumber otoritatif tiap kolom."
+    },
+    "approvals": {
+      "title": "Kebijakan persetujuan",
+      "desc": "Siapa menyetujui perubahan harga, seberapa cepat, dan tugas yang harus dipisahkan."
+    },
+    "guardrails": {
+      "title": "Default guardrail",
+      "desc": "Default seluruh workspace yang diwarisi strategi dan SKU kecuali di-override."
+    },
+    "workflow": {
+      "title": "Default alur kerja",
+      "desc": "Default untuk rekomendasi, simulasi, dan eksperimen."
+    },
+    "alerts": {
+      "title": "Peringatan & perutean",
+      "desc": "Event mana memberi tahu siapa, lewat kanal apa. Event kritis dapat dijadikan wajib."
+    },
+    "roles": {
+      "title": "Peran & izin",
+      "desc": "Akses berbasis peran: apa yang boleh dilakukan tiap peran di Mesta."
+    },
+    "audit": {
+      "title": "Audit & retensi",
+      "desc": "Berapa lama event audit disimpan, siapa yang boleh mengekspor, dan event apa yang dicatat."
+    },
+    "api": {
+      "title": "API & akses",
+      "desc": "Kunci API, akun layanan, dan kredensial webhook. Rahasia tidak pernah ditampilkan."
+    },
+    "security": {
+      "title": "Keamanan",
+      "desc": "Sesi, login, dan autentikasi ulang untuk aksi sensitif."
+    },
+    "features": {
+      "title": "Kontrol fitur",
+      "desc": "Aktifkan atau matikan kemampuan produk untuk workspace ini. Setiap fitur menunjukkan dependensinya."
+    }
+  },
+  "search": {
+    "label": "Cari pengaturan",
+    "placeholder": "Cari pengaturan",
+    "empty": "Tidak ada pengaturan yang cocok dengan “{q}”",
+    "results": "{n} hasil"
+  },
+  "readOnly": {
+    "title": "Dikelola oleh Admin Workspace",
+    "body": "Anda dapat melihat pengaturan ini. Mengubahnya memerlukan peran Admin Workspace (Manajer).",
+    "badge": "Hanya baca"
+  },
+  "meta": {
+    "changed": "Terakhir diubah oleh {by} · {at}",
+    "never": "Konfigurasi default — belum pernah diubah",
+    "viewAudit": "Lihat event audit"
+  },
+  "save": {
+    "unsaved": "Perubahan belum disimpan",
+    "count": "{n} kolom berubah",
+    "discard": "Buang",
+    "save": "Simpan perubahan",
+    "saved": "{section} tersimpan",
+    "invalid": "Perbaiki kolom yang ditandai sebelum menyimpan.",
+    "autosave": "Tersimpan otomatis",
+    "leave": "Ada pengaturan yang belum disimpan. Tetap keluar?"
+  },
+  "confirm": {
+    "title": "Konfirmasi perubahan berdampak tinggi",
+    "intro": "Anda mengubah:",
+    "affected": "Terdampak",
+    "affectedValue": "{skus} SKU · {cats} kategori · {regions} wilayah",
+    "note": "Pengaturan ini mengatur keputusan harga langsung. Perubahan dicatat di log audit.",
+    "apply": "Konfirmasi perubahan",
+    "sensitive": "Dampak tinggi"
+  },
+  "export": {
+    "button": "Ekspor konfigurasi",
+    "done": "Konfigurasi diekspor (tanpa rahasia)"
+  },
+  "state": {
+    "inherited": "Diwarisi",
+    "overridden": "Di-override",
+    "default": "Default workspace",
+    "on": "Aktif",
+    "off": "Nonaktif",
+    "required": "Wajib"
+  },
+  "unit": {
+    "hours": "jam",
+    "days": "hari",
+    "minutes": "menit",
+    "pct": "%"
+  },
+  "err": {
+    "tierOrder": "Batas setiap tingkat harus lebih tinggi dari tingkat sebelumnya.",
+    "positive": "Masukkan nilai lebih dari nol.",
+    "confidenceRange": "Keyakinan harus antara 50 dan 100.",
+    "blockAfterWarn": "Ambang blokir harus lebih besar dari ambang peringatan.",
+    "changeRange": "Perubahan maks. per siklus harus antara 0 dan 50%.",
+    "ceilingAboveChange": "Batas atas harga harus lebih besar dari perubahan maks. per siklus.",
+    "sessionRange": "Batas waktu sesi harus antara 5 dan 720 menit."
+  },
+  "prefs": {
+    "appearance": "Tampilan",
+    "theme": "Tema",
+    "language": "Bahasa",
+    "density": "Kepadatan tabel",
+    "regional": "Format regional",
+    "timezone": "Zona waktu",
+    "dateFormat": "Format tanggal",
+    "date": {
+      "medium": "25 Sep 2026, 10.41",
+      "iso": "2026-09-25 10:41",
+      "dmy": "25/09/2026 10:41"
+    },
+    "currency": {
+      "code": "IDR 49.300",
+      "symbol": "Rp 49.300"
+    },
+    "number": {
+      "locale": "Ikuti bahasa",
+      "en": "1,234.5",
+      "id": "1.234,5"
+    },
+    "workspace": "Default workspace untuk Anda",
+    "landing": "Halaman awal",
+    "currencyLabel": "Tampilan mata uang",
+    "numberLabel": "Format angka"
+  },
+  "notif": {
+    "event": "Event",
+    "inapp": "Dalam aplikasi",
+    "email": "Email",
+    "mandatory": "Wajib",
+    "mandatoryHint": "Ditetapkan Admin Workspace untuk {roles}"
+  },
+  "event": {
+    "decision_required": "Rekomendasi perlu keputusan",
+    "guardrail_breach": "Pelanggaran guardrail",
+    "deployment_failure": "Kegagalan deployment",
+    "data_quality": "Masalah kualitas data",
+    "stale_recommendation": "Rekomendasi kedaluwarsa",
+    "approval_escalation": "Eskalasi persetujuan",
+    "experiment_complete": "Eksperimen selesai",
+    "monitoring_anomaly": "Anomali pemantauan"
+  },
+  "views": {
+    "table": "Tabel",
+    "name": "Tampilan",
+    "filters": "Filter",
+    "open": "Buka",
+    "empty": "Belum ada tampilan tersimpan. Gunakan tombol penanda di atas tabel untuk menyimpannya.",
+    "noFilters": "Tanpa filter"
+  },
+  "general": {
+    "name": "Nama workspace",
+    "id": "ID workspace",
+    "org": "Organisasi",
+    "environment": "Lingkungan",
+    "env": {
+      "production": "Produksi",
+      "staging": "Staging",
+      "sandbox": "Sandbox"
+    },
+    "status": {
+      "active": "Aktif",
+      "suspended": "Ditangguhkan"
+    },
+    "created": "Dibuat",
+    "owner": "Pemilik workspace",
+    "admin": "Administrator utama",
+    "support": "Kontak dukungan",
+    "identity": "Identitas",
+    "ownership": "Kepemilikan & dukungan",
+    "statusLabel": "Status"
+  },
+  "scope": {
+    "hierarchy": "Hierarki bisnis",
+    "labels": "Label hierarki",
+    "bu": "Label level 1",
+    "region": "Label level 2",
+    "store": "Label level 3",
+    "category": "Label level 4",
+    "source": "Sumber hierarki",
+    "preview": "Pratinjau hierarki",
+    "defaults": "Cakupan workspace default",
+    "defaultRegion": "Wilayah default",
+    "defaultStore": "Toko default",
+    "defaultCategory": "Kategori default",
+    "all": "Semua",
+    "currency": "Mata uang default",
+    "inherit": "Level turunan mewarisi konfigurasi dari induknya",
+    "current": "Pengguna mulai di",
+    "noRewrite": "Mengubah cakupan default tidak mengubah strategi atau aturan yang ada — hanya menentukan titik awal pengguna."
+  },
+  "system": {
+    "erp": "ERP",
+    "pos": "POS",
+    "engine": "Mesin harga",
+    "competitor": "Konektor pesaing",
+    "model": "Model permintaan",
+    "warehouse": "Data warehouse"
+  },
+  "pricing": {
+    "calc": "Perhitungan & pembulatan harga",
+    "currency": "Mata uang",
+    "precision": "Presisi desimal",
+    "rounding": "Arah pembulatan",
+    "round": {
+      "nearest": "Kelipatan terdekat",
+      "up": "Selalu ke atas",
+      "down": "Selalu ke bawah"
+    },
+    "increment": "Kelipatan harga minimum",
+    "psychological": "Harga psikologis (akhiran 900)",
+    "example": "Contoh langsung",
+    "calculated": "Harga terhitung",
+    "applied": "Pembulatan diterapkan",
+    "appliedValue": "{dir} IDR {inc}",
+    "final": "Harga akhir",
+    "cadence": "Ritme & kesegaran",
+    "refresh": "Interval pembaruan harga",
+    "recFreshness": "Jendela kesegaran rekomendasi",
+    "simHorizon": "Horizon simulasi default",
+    "competitorFreshness": "Ambang kesegaran data pesaing",
+    "behavior": "Perilaku mesin saat input hilang atau bertentangan",
+    "behaviorHint": "Setiap kondisi punya satu aksi eksplisit — tanpa default tersirat.",
+    "b": {
+      "missingCompetitor": "Data pesaing hilang",
+      "missingElasticity": "Elastisitas hilang",
+      "staleInventory": "Inventaris usang",
+      "stalePrice": "Harga usang",
+      "lowConfidence": "Keyakinan tidak cukup",
+      "conflictingRules": "Aturan bertentangan",
+      "guardrailFailure": "Kegagalan guardrail"
+    }
+  },
+  "action": {
+    "block": "Blokir",
+    "fallback": "Cadangan",
+    "flag": "Tandai untuk ditinjau",
+    "warn": "Lanjut dengan peringatan"
+  },
+  "model": {
+    "title": "Transparansi model",
+    "type": "Jenis model",
+    "typeValue": "Mesin harga deterministik berbasis aturan (bukan model bahasa)",
+    "version": "Versi model permintaan",
+    "released": "Dirilis",
+    "status": "Status",
+    "statusValue": "Di produksi",
+    "usedBy": "Dipakai oleh",
+    "usedByValue": "{n} strategi aktif",
+    "sources": "Sumber data",
+    "sourcesValue": "Katalog, observasi pesaing, inventaris, riwayat harga",
+    "method": "Metodologi",
+    "methodValue": "Observasi pesaing → elastisitas per SKU → guardrail strategi → harga target.",
+    "limits": "Keterbatasan",
+    "limitsValue": "Elastisitas diasumsikan konstan di tiap band; keyakinan mencerminkan kesegaran data dan respons teramati, bukan jaminan margin.",
+    "review": "Tinjauan manusia",
+    "reviewValue": "Setiap rekomendasi perlu keputusan manusia kecuali auto-approve aktif dan keyakinan ≥ ambang.",
+    "volume": "Volume rekomendasi",
+    "switchLocked": "Mengganti model memerlukan permintaan perubahan dan dicatat di audit."
+  },
+  "int": {
+    "center": "Pusat integrasi",
+    "connection": "Koneksi",
+    "type": "Jenis",
+    "status": "Status",
+    "lastSync": "Sinkron terakhir",
+    "records": "Rekaman",
+    "errors": "Galat",
+    "owner": "Pemilik",
+    "env": "Lingkungan",
+    "actions": "Aksi",
+    "details": "Lihat detail",
+    "test": "Uji koneksi",
+    "testOk": "{name}: koneksi OK",
+    "freshness": "Kebijakan kesegaran data",
+    "freshnessHint": "Dipakai oleh Pengecualian, Peringatan, Rekomendasi, dan Pemantauan.",
+    "warnAfter": "Peringatkan setelah",
+    "blockAfter": "Blokir setelah",
+    "feed": {
+      "catalog": "Katalog",
+      "price": "Harga",
+      "inventory": "Inventaris",
+      "competitor": "Pesaing",
+      "demand": "Sinyal permintaan"
+    },
+    "sot": "Sumber kebenaran",
+    "field": "Kolom",
+    "source": "Sumber otoritatif",
+    "sotField": {
+      "sku": "Identitas SKU",
+      "cost": "Biaya",
+      "inventory": "Inventaris",
+      "price": "Harga saat ini",
+      "competitor": "Harga pesaing",
+      "demand": "Sinyal permintaan"
+    },
+    "conflict": {
+      "source_of_truth": "Pakai sumber kebenaran",
+      "most_recent": "Pakai nilai terbaru",
+      "flag": "Tandai untuk ditinjau"
+    },
+    "conflictLabel": "Saat dua sistem berbeda"
+  },
+  "appr": {
+    "tiers": "Ambang persetujuan",
+    "tiersHint": "Berdasarkan dampak margin terproyeksi. Terhubung ke kotak Persetujuan.",
+    "upTo": "Dampak hingga",
+    "above": "Di atas tingkat sebelumnya",
+    "approver": "Peran penyetuju",
+    "level": "Level {n}",
+    "timing": "Waktu & otomasi",
+    "sla": "SLA keputusan",
+    "expiry": "Jendela kedaluwarsa",
+    "escalate": "Eskalasi setelah",
+    "auto": "Ambang keyakinan auto-approve",
+    "highImpact": "Kebijakan persetujuan berdampak tinggi mulai dari",
+    "justification": "Wajibkan catatan justifikasi pada setiap keputusan",
+    "sod": {
+      "authorNotApprover": "Penulis strategi ≠ penyetuju akhir",
+      "ruleAuthorNotPublisher": "Penulis aturan ≠ penerbit",
+      "requesterNotApprover": "Pemohon override ≠ penyetuju override"
+    },
+    "sodViolation": "Tingkat {n} disetujui oleh peran yang sama dengan penulis strategi ({role}) — melanggar “Penulis strategi ≠ penyetuju akhir”.",
+    "sodLabel": "Pemisahan tugas"
+  },
+  "gr": {
+    "defaults": "Kebijakan guardrail workspace",
+    "maxChange": "Pergerakan harga maks. per siklus",
+    "floorPrice": "Batas bawah harga",
+    "floorHint": "Kosong = minimum produk berlaku",
+    "ceiling": "Batas atas di atas harga saat ini",
+    "map": "Tegakkan MAP secara default",
+    "approvalThreshold": "Ambang persetujuan",
+    "confidence": "Ambang keyakinan rekomendasi",
+    "staleData": "Perilaku data usang",
+    "frequency": "Hari minimum antar perubahan harga",
+    "inheritance": "Pewarisan",
+    "inheritanceHint": "Setiap level mewarisi dari level di atasnya kecuali di-override. Nilai efektif adalah yang dipakai mesin.",
+    "level": {
+      "workspace": "Workspace",
+      "strategy": "Strategi",
+      "rule": "Aturan",
+      "sku": "SKU"
+    },
+    "effective": "Efektif",
+    "examplePick": "Contoh SKU",
+    "noOverride": "Tanpa override"
+  },
+  "wf": {
+    "recs": "Alur rekomendasi",
+    "ttl": "Masa berlaku rekomendasi",
+    "stale": "Usang setelah",
+    "escalate": "Eskalasi setelah",
+    "queue": {
+      "decide": "Perlu keputusan",
+      "all": "Semua",
+      "impact": "Dampak tinggi"
+    },
+    "assignment": "Penugasan",
+    "assign": {
+      "owner": "Pemilik SKU",
+      "round_robin": "Bergiliran",
+      "category": "Per kategori"
+    },
+    "sort": {
+      "confidence": "Keyakinan",
+      "impact": "Dampak",
+      "age": "Usia"
+    },
+    "review": {
+      "cards": "Kartu",
+      "table": "Tabel"
+    },
+    "sim": "Default simulasi",
+    "simScenarios": "Jumlah skenario default",
+    "simHorizon": "Horizon simulasi",
+    "simBaseline": "Baseline",
+    "baseline": {
+      "current": "Harga saat ini",
+      "competitor": "Rata-rata pesaing"
+    },
+    "simConfidence": "Tampilkan pita keyakinan prakiraan",
+    "exp": "Default eksperimen",
+    "expDuration": "Durasi default",
+    "expSample": "Ukuran sampel minimum",
+    "expDelta": "Selisih harga perlakuan maks.",
+    "expApproval": "Eksperimen perlu persetujuan sebelum dimulai",
+    "expConclusion": "Siapa yang menyimpulkan eksperimen",
+    "units": "unit",
+    "queueLabel": "Antrian default",
+    "sortLabel": "Urutan default",
+    "reviewLabel": "Mode tinjau default"
+  },
+  "route": {
+    "title": "Perutean notifikasi",
+    "hint": "Event → tingkat → penerima → kanal. Rute wajib tidak dapat dimatikan pengguna.",
+    "event": "Event",
+    "severity": "Tingkat",
+    "recipients": "Penerima",
+    "channels": "Kanal",
+    "mandatory": "Wajib"
+  },
+  "channel": {
+    "inapp": "Aplikasi",
+    "email": "Email",
+    "webhook": "Webhook",
+    "slack": "Slack"
+  },
+  "roles": {
+    "matrix": "Matriks izin",
+    "adminNote": "Manajer bertindak sebagai Admin Workspace di workspace ini."
+  },
+  "audit": {
+    "retentionDays": "Simpan event audit selama",
+    "retention": {
+      "365": "1 tahun",
+      "1095": "3 tahun",
+      "2555": "7 tahun",
+      "3650": "10 tahun"
+    },
+    "immutable": "Event tidak dapat diubah (hanya tambah)",
+    "exportRoles": "Peran yang boleh mengekspor",
+    "format": "Format ekspor",
+    "timezone": "Zona waktu cap waktu",
+    "actor": {
+      "sso": "Identitas SSO wajib",
+      "local": "Akun lokal diizinkan"
+    },
+    "events": "Event yang dicatat",
+    "ev": {
+      "price_change": "Perubahan harga",
+      "recommendation_generated": "Rekomendasi dibuat",
+      "recommendation_approved": "Rekomendasi disetujui",
+      "recommendation_rejected": "Rekomendasi ditolak",
+      "strategy_changed": "Strategi diubah",
+      "rule_changed": "Aturan diubah",
+      "guardrail_changed": "Guardrail diubah",
+      "override_requested": "Override diminta",
+      "override_approved": "Override disetujui",
+      "configuration_changed": "Konfigurasi diubah",
+      "integration_changed": "Integrasi diubah",
+      "experiment_lifecycle": "Eksperimen dimulai / selesai"
+    },
+    "lockedEvent": "Selalu dicatat",
+    "retentionLabel": "Retensi",
+    "actorLabel": "Identitas aktor"
+  },
+  "api": {
+    "keys": "Kunci API & akun layanan",
+    "name": "Nama",
+    "key": "Kunci",
+    "created": "Dibuat",
+    "lastUsed": "Terakhir dipakai",
+    "expires": "Kedaluwarsa",
+    "owner": "Pemilik",
+    "kind": {
+      "api_key": "Kunci API",
+      "service": "Akun layanan",
+      "webhook": "Rahasia webhook",
+      "integration": "Rahasia integrasi"
+    },
+    "status": {
+      "active": "Aktif",
+      "expiring": "Segera kedaluwarsa",
+      "revoked": "Dicabut"
+    },
+    "revoke": "Cabut",
+    "revokeConfirm": "Cabut {name}? Sistem yang memakainya langsung berhenti terautentikasi.",
+    "revoked": "{name} dicabut",
+    "secretNote": "Rahasia hanya ditampilkan sekali saat dibuat.",
+    "never": "Belum pernah",
+    "kindLabel": "Jenis",
+    "statusLabel": "Status"
+  },
+  "sec": {
+    "session": "Sesi",
+    "timeout": "Batas waktu sesi",
+    "reauth": "Autentikasi ulang sebelum aksi sensitif",
+    "signin": "Login",
+    "sso": {
+      "saml": "SAML 2.0",
+      "oidc": "OpenID Connect",
+      "off": "Nonaktif"
+    },
+    "mfa": "Wajibkan autentikasi multi-faktor",
+    "domains": "Domain tepercaya",
+    "policy": {
+      "sso_only": "Hanya SSO",
+      "sso_or_password": "SSO atau kata sandi"
+    },
+    "impact": "Dampak keamanan: perubahan berlaku untuk semua pengguna saat login berikutnya.",
+    "ssoLabel": "Single sign-on",
+    "policyLabel": "Kebijakan login"
+  },
+  "feat": {
+    "dynamicPricing": "Harga dinamis",
+    "automatedRecs": "Rekomendasi otomatis",
+    "autoApproval": "Persetujuan otomatis",
+    "experiments": "Eksperimen",
+    "competitorIntel": "Intelijen pesaing",
+    "monitoring": "Pemantauan",
+    "apiAccess": "Akses API",
+    "requires": "Memerlukan",
+    "noDeps": "Tanpa dependensi",
+    "dep": {
+      "approvalPolicy": "Kebijakan persetujuan",
+      "guardrails": "Guardrail",
+      "confidence": "Ambang keyakinan",
+      "dynamicPricing": "Harga dinamis",
+      "automatedRecs": "Rekomendasi otomatis",
+      "apiAccess": "Akses API"
+    },
+    "blocked": "Aktifkan dependensinya terlebih dahulu"
+  }
+}

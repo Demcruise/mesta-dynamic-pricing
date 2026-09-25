@@ -124,15 +124,6 @@
   "overlap": {
     "title": "Overlapping scope"
   },
-  "guardrailViz": {
-    "title": "Effective bounds",
-    "aria": "Guardrail range covering {n} SKUs in scope",
-    "within": "Within bounds",
-    "belowMap": "Below MAP",
-    "outside": "Outside bounds",
-    "outsideCount": "{n} scoped SKUs outside these bounds",
-    "noMax": "no max"
-  },
   "notFound": "Strategy not found.",
   "draftRestored": "Restored your unsaved draft.",
   "history": {

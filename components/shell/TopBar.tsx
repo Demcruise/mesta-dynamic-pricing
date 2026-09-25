@@ -69,7 +69,7 @@ export function TopBar() {
 
   return (
     <div className="sticky top-0 z-20 flex h-14 items-center gap-2 border-b border-line bg-surface px-2 sm:gap-3 sm:px-4">
-      <MestaLogo variant="mark" label={t('common.app.name')} className="md:hidden" />
+      <MestaLogo variant="mark" label={t('common.app.name')} className="hidden sm:inline-flex md:hidden" />
       <Breadcrumbs />
       <button
         type="button"

@@ -17,3 +17,4 @@ export * from './monitoring';
 export * from './ops';
 export * from './policy';
 export * from './feedback';
+export * from './workspace-settings';

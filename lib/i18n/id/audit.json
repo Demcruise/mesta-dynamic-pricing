@@ -19,7 +19,18 @@
     "type": "Jenis kejadian",
     "sku": "SKU",
     "all": "Semua",
-    "search": "Filter berdasarkan SKU"
+    "search": "Filter berdasarkan SKU",
+    "dateRange": "Rentang tanggal",
+    "filters": "Filter",
+    "searchSku": "Cari berdasarkan SKU",
+    "clearSku": "Hapus pencarian SKU",
+    "active": "Filter aktif",
+    "remove": "Hapus filter: {label}",
+    "allActors": "Semua aktor",
+    "allSources": "Semua sumber",
+    "allTypes": "Semua jenis event",
+    "reset": "Atur ulang",
+    "apply": "Terapkan filter"
   },
   "export": "Ekspor CSV",
   "exported": "{n} kejadian diekspor",
@@ -32,7 +43,8 @@
     "entity": "Entitas",
     "empty": "Tidak ada kejadian audit yang cocok.",
     "none": "Belum ada kejadian audit yang tercatat.",
-    "open": "Detail {id}"
+    "open": "Detail {id}",
+    "emptyHint": "Coba hapus filter atau perluas rentang tanggal."
   },
   "view": {
     "label": "Tampilan",
@@ -59,7 +71,8 @@
     "strategy": "Strategi",
     "scenario": "Skenario",
     "noSnapshot": "Tidak ada cuplikan harga untuk kejadian ini.",
-    "none": "Tidak ada"
+    "none": "Tidak ada",
+    "settings": "Bagian pengaturan"
   },
   "group": {
     "day": "Hari"

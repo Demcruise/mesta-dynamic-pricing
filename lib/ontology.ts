@@ -280,14 +280,15 @@ export type AuditEventType =
   | 'delegation_grant' | 'delegation_revoke'
   | 'policy_override' | 'publish_window_end'
   | 'notification_acknowledge' | 'notification_snooze' | 'notification_escalate'
-  | 'model_review_feedback' | 'manual_override';
+  | 'model_review_feedback' | 'manual_override'
+  | 'settings_change';
 
 export interface AuditEvent {
   id: string;
   type: AuditEventType;
   actorId: string;
   actorRole: Role;
-  entityType: 'strategy' | 'scenario' | 'recommendation' | 'deployment' | 'anomaly' | 'product' | 'rule' | 'override' | 'datasource' | 'experiment' | 'delegation' | 'policy' | 'notification';
+  entityType: 'strategy' | 'scenario' | 'recommendation' | 'deployment' | 'anomaly' | 'product' | 'rule' | 'override' | 'datasource' | 'experiment' | 'delegation' | 'policy' | 'notification' | 'settings';
   entityId: string;
   sku: string | null;
   source: 'ui' | 'agent' | 'system';

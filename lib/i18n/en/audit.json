@@ -19,7 +19,18 @@
     "type": "Event type",
     "sku": "SKU",
     "all": "All",
-    "search": "Filter by SKU"
+    "search": "Filter by SKU",
+    "dateRange": "Date range",
+    "filters": "Filters",
+    "searchSku": "Search by SKU",
+    "clearSku": "Clear SKU search",
+    "active": "Active filters",
+    "remove": "Remove filter: {label}",
+    "allActors": "All actors",
+    "allSources": "All sources",
+    "allTypes": "All event types",
+    "reset": "Reset",
+    "apply": "Apply filters"
   },
   "export": "Export CSV",
   "exported": "Exported {n} events",
@@ -32,7 +43,8 @@
     "entity": "Entity",
     "empty": "No audit events match.",
     "none": "No audit events recorded yet.",
-    "open": "Details {id}"
+    "open": "Details {id}",
+    "emptyHint": "Try removing a filter or expanding the date range."
   },
   "view": {
     "label": "View",
@@ -59,7 +71,8 @@
     "strategy": "Strategy",
     "scenario": "Scenario",
     "noSnapshot": "No price snapshot for this event.",
-    "none": "None"
+    "none": "None",
+    "settings": "Settings section"
   },
   "group": {
     "day": "Day"

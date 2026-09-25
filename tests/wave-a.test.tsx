@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { SeverityChip } from '@/components/ds/SeverityChip';
 import { StatusBadge, StatusIcon } from '@/components/ds/StatusBadge';
@@ -78,8 +78,11 @@ describe('trust components', () => {
     const { container } = render(
       <MetricDefinition label="About pending approvals" definition="Recommendations waiting for a decision." rows={[{ label: 'Scope', value: 'All stores' }]} />,
     );
-    expect(container.querySelector('summary[aria-label="About pending approvals"]')).toBeTruthy();
-    expect(screen.getByText('Recommendations waiting for a decision.')).toBeInTheDocument();
+    const trigger = container.querySelector('button[aria-label="About pending approvals"]') as HTMLButtonElement;
+    expect(trigger).toBeTruthy();
+    fireEvent.click(trigger);
+    expect(trigger).toHaveAttribute('aria-expanded', 'true');
+    expect(screen.getByRole('tooltip')).toHaveTextContent('Recommendations waiting for a decision.');
     expect(screen.getByText('All stores')).toBeInTheDocument();
   });
 });

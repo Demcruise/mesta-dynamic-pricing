@@ -11,7 +11,9 @@ import { NAV } from './nav';
 const SECTION_LABEL = new Map(NAV.map((n) => [n.href.slice(1), n.key]));
 const SUB_LABEL = new Set(['new', 'edit']);
 
-function crumbLabel(seg: string, t: (k: string) => string): string {
+function crumbLabel(seg: string, t: (k: string) => string, parent?: string): string {
+  // Settings sections have their own titles (SET-042 deep links).
+  if (parent === 'settings') { const title = t(`settings.section.${seg}.title`); if (!title.startsWith('settings.')) return title; }
   const navKey = SECTION_LABEL.get(seg);
   if (navKey) return t(`common.nav.${navKey}`);
   if (SUB_LABEL.has(seg)) return t(`common.crumb.${seg}`);
@@ -30,13 +32,13 @@ export function Breadcrumbs() {
       <ol className="flex items-center gap-1 text-sm">
         {segs.map((seg, i) => {
           const last = i === segs.length - 1;
-          const known = SECTION_LABEL.has(seg) || SUB_LABEL.has(seg);
+          const known = SECTION_LABEL.has(seg) || SUB_LABEL.has(seg) || segs[i - 1] === 'settings';
           // Only segments that are real routes become links; ids stay text.
           const linkable = !last && SECTION_LABEL.has(seg);
           const href = `/${segs.slice(0, i + 1).join('/')}`;
           const body = (
             <span className={cn('truncate', !known && 'tabular', last ? 'font-medium text-fg' : 'text-muted', !last && linkable && 'transition-colors duration-fast hover:text-fg')}>
-              {crumbLabel(seg, t)}
+              {crumbLabel(seg, t, segs[i - 1])}
             </span>
           );
           return (

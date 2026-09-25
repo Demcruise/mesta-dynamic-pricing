@@ -1,10 +1,13 @@
 'use client';
 
 import Link from 'next/link';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 import { Drawer } from '@/components/ds/Drawer';
 import { PriceValue } from '@/components/ds/PriceValue';
-import { ProductIdentity } from '@/components/ds/ProductIdentity';
+import { CategoryIcon, ProductIdentity } from '@/components/ds/ProductIdentity';
+import { Money, PriceMove } from '@/components/ds/numeric';
+import { FilterTabs } from '@/components/ui/filter-tabs';
+import { useQueryState } from '@/lib/use-query-state';
 import { SeverityChip } from '@/components/ds/SeverityChip';
 import { StatusBadge } from '@/components/ds/StatusBadge';
 import { EmptyState, ErrorState, LoadingRows, PageHeader } from '@/components/ds/states';
@@ -33,7 +36,8 @@ export function ExceptionsPage() {
   const competitors = useProductCatalogStore((s) => s.competitors);
   const user = useSessionStore((s) => s.user);
   const toast = useToastStore((s) => s.push);
-  const [kind, setKind] = useState<ExceptionKind | 'all'>('all');
+  const [q, setQ] = useQueryState({ kind: 'all' });
+  const kind = q.kind as ExceptionKind | 'all';
   const [deciding, setDeciding] = useState<{ req: OverrideRequest; approve: boolean } | null>(null);
   const [inspecting, setInspecting] = useState<ExceptionItem | null>(null);
   const [note, setNote] = useState('');
@@ -81,30 +85,43 @@ export function ExceptionsPage() {
         <ErrorState title={t('common.state.error')} onRetry={() => { products.refetch(); recsQuery.refetch(); overrides.refetch(); }} />
       ) : (
         <>
-          <div role="group" aria-label={t('exceptions.filterLabel')} className="mb-4 flex flex-wrap gap-1">
-            <Button size="sm" variant={kind === 'all' ? 'selected' : 'secondary'} aria-pressed={kind === 'all'} onClick={() => setKind('all')}>
-              {t('exceptions.kind.all')}
-            </Button>
-            {KINDS.map((k) => (
-              <Button key={k} size="sm" variant={kind === k ? 'selected' : 'secondary'} aria-pressed={kind === k} onClick={() => setKind(k)}>
-                {t(`exceptions.kind.${k}`)} <span className="tabular">({counts.get(k) ?? 0})</span>
-              </Button>
-            ))}
-          </div>
+          {/* EXCEPTION-017/018/019 — stable tab geometry; 24px from the description, 20px to the queue. */}
+          <FilterTabs
+            className="mb-5"
+            label={t('exceptions.filterLabel')}
+            controls="exception-queue"
+            value={kind}
+            onChange={(v) => setQ({ kind: v })}
+            tabs={[
+              { value: 'all', label: t('exceptions.kind.all'), count: [...counts.values()].reduce((a, b) => a + b, 0) },
+              ...KINDS.map((k) => ({ value: k, label: t(`exceptions.kind.${k}`), count: counts.get(k) ?? 0 })),
+            ]}
+          />
 
           {items.length === 0 ? <EmptyState variant="caughtUp" title={t('exceptions.empty')} /> : (
-            <ul className="flex flex-col gap-2">
-              {items.map((x) => (
-                <ExceptionRow key={x.id} item={x} t={t} locale={locale} product={x.sku ? productsBySku.get(x.sku) : undefined} onInspect={setInspecting} />
-              ))}
-            </ul>
+            <div id="exception-queue">
+              {/* Column labels share the row grid, so every track reads as a column (EXCEPTION-001). */}
+              <div aria-hidden className={cn(ROW_GRID, 'mb-2 hidden min-h-0 border-transparent bg-transparent py-0 text-caption font-semibold text-muted xl:grid')}>
+                <span className="[grid-area:sev]">{t('exceptions.col.severity')}</span>
+                <span className="[grid-area:type]">{t('exceptions.col.type')}</span>
+                <span className="[grid-area:prod]">{t('exceptions.col.product')}</span>
+                <span className="[grid-area:ctx]">{t('exceptions.col.context')}</span>
+                <span className="[grid-area:age] max-[1399px]:hidden">{t('exceptions.col.age')}</span>
+              </div>
+              <ul className="flex flex-col gap-2">
+                {items.map((x) => (
+                  <ExceptionRow key={x.id} item={x} t={t} locale={locale} product={x.sku ? productsBySku.get(x.sku) : undefined}
+                    rec={x.refId ? recsById.get(x.refId) : undefined} override={x.refId ? overridesById.get(x.refId) : undefined} onInspect={setInspecting} />
+                ))}
+              </ul>
+            </div>
           )}
 
           <section aria-label={t('exceptions.requests.title')} className="mt-8">
-            <h2 className="mb-2 text-sm font-semibold">
+            <h2 className="text-section">
               {t('exceptions.requests.title')} <span className="tabular text-muted">({pendingRequests.length})</span>
             </h2>
-            <p className="mb-3 text-xs text-muted">{t('exceptions.requests.desc')}</p>
+            <p className="mb-4 mt-1 text-body-sm text-muted">{t('exceptions.requests.desc')}</p>
             {pendingRequests.length === 0 ? (
               <p className="rounded-card border border-line bg-surface p-3 text-xs text-muted shadow-e1">{t('exceptions.requests.empty')}</p>
             ) : (
@@ -135,7 +152,7 @@ export function ExceptionsPage() {
           </section>
 
           <section aria-label={t('exceptions.history.title')} className="mt-8">
-            <h2 className="mb-2 text-sm font-semibold">{t('exceptions.history.title')}</h2>
+            <h2 className="text-section">{t('exceptions.history.title')}</h2>
             {history.length === 0 ? (
               <p className="rounded-card border border-line bg-surface p-3 text-xs text-muted shadow-e1">{t('exceptions.history.empty')}</p>
             ) : (
@@ -213,23 +230,71 @@ export function ExceptionsPage() {
 
 type T = (key: string, vars?: Record<string, string | number>) => string;
 
-/** O-01 row anatomy: severity, kind, product identity, evidence fragment, age, investigate. */
-function ExceptionRow({ item, t, locale, product, onInspect }: {
+/**
+ * EXCEPTION-001…016/020/021 — one row grid for every exception kind. Fixed tracks: severity 112 ·
+ * type 184 · product (32px icon slot + name/meta, truncated) · context · age 120 · action 136, so
+ * every column starts on the same x whatever the kind. From xl the age track folds into the
+ * context line (it returns as its own column from 1400px); below xl the row stacks
+ * (severity + type / product / context + age / action).
+ */
+const ROW_GRID = cn(
+  'grid min-h-20 items-center gap-x-5 gap-y-2 rounded-card border border-line bg-surface px-5 py-4',
+  "grid-cols-[minmax(0,auto)_minmax(0,1fr)] [grid-template-areas:'sev_type'_'prod_prod'_'ctx_age'_'act_act']",
+  "xl:grid-cols-[112px_176px_minmax(200px,1.5fr)_minmax(200px,1fr)_136px] xl:[grid-template-areas:'sev_type_prod_ctx_act']",
+  "min-[1400px]:grid-cols-[112px_184px_minmax(240px,1.5fr)_minmax(200px,1fr)_120px_136px] min-[1400px]:[grid-template-areas:'sev_type_prod_ctx_age_act']",
+);
+
+function ExceptionRow({ item, t, locale, product, rec, override, onInspect }: {
   item: ExceptionItem; t: T; locale: 'en' | 'id';
-  product: Product | undefined; onInspect: (x: ExceptionItem) => void;
+  product: Product | undefined; rec: Recommendation | undefined; override: OverrideRequest | undefined;
+  onInspect: (x: ExceptionItem) => void;
 }) {
+  const age = formatRelativeTime(item.at, locale);
+  // EXCEPTION-007/008/009: one context slot per kind — price moves as PriceMove, ids never merged with age.
+  let primary: ReactNode = <span className="text-faint">—</span>;
+  let secondary: ReactNode = null;
+  if (item.kind === 'breach' && rec) {
+    primary = <PriceMove from={rec.currentPrice} to={rec.proposedPrice} align="start" />;
+    secondary = <span className="tabular">{rec.id}</span>;
+  } else if (item.kind === 'stale' && rec) {
+    primary = <Link href={`/recommendations/${rec.id}`} className="tabular font-semibold text-brand hover:underline">{rec.id}</Link>;
+    secondary = <PriceMove from={rec.currentPrice} to={rec.proposedPrice} align="start" />;
+  } else if (item.kind === 'override_request' && override) {
+    primary = <PriceMove from={product?.price} to={override.requestedPrice} align="start" />;
+    secondary = <span className="tabular">{override.id}</span>;
+  } else if (item.kind === 'missing_input') {
+    primary = <span className="tabular">{t('exceptions.ctx.missing', { n: item.count })}</span>;
+  } else if (item.kind === 'stale_price' && product) {
+    primary = <Money value={product.price} className="font-semibold" />;
+    secondary = t('exceptions.ctx.unchanged', { n: Math.round((Date.now() - new Date(product.lastChangeAt).getTime()) / 86_400_000) });
+  }
   return (
-    <li className={cn('flex flex-wrap items-center gap-x-3 gap-y-1.5 rounded-card border border-line bg-surface p-3 shadow-e1')}>
-      <SeverityChip s={item.severity} />
-      <span className="text-sm font-medium">{t(`exceptions.kind.${item.kind}`)}</span>
-      {product ? <ProductIdentity product={product} size="sm" /> : item.sku && <span className="tabular text-sm text-muted">{item.sku}</span>}
-      {item.category && <span className="text-sm text-muted">{item.category}</span>}
-      {item.count > 1 && <span className="tabular text-xs text-muted">×{item.count}</span>}
-      {item.detail && <span className="tabular text-xs text-faint">{item.detail}</span>}
-      <span className="tabular text-xs text-muted">{formatRelativeTime(item.at, locale)}</span>
-      <Button size="sm" variant="secondary" className="ms-auto" onClick={() => onInspect(item)}>
-        {t('exceptions.action.investigate')}
-      </Button>
+    <li className={ROW_GRID}>
+      <span className="[grid-area:sev]"><SeverityChip s={item.severity} /></span>
+      <span className="truncate font-semibold text-fg [grid-area:type]" title={t(`exceptions.kind.${item.kind}`)}>{t(`exceptions.kind.${item.kind}`)}</span>
+      <span className="min-w-0 [grid-area:prod]">
+        {product ? <ProductIdentity product={product} />
+          : item.category ? (
+            <span className="flex min-w-0 items-center gap-3">
+              <span aria-hidden className="grid size-8 shrink-0 place-items-center rounded-input border border-line-icon bg-icon"><CategoryIcon category={item.category} className="size-4" /></span>
+              <span className="min-w-0"><span className="block truncate text-sm font-semibold text-fg">{item.category}</span><span className="block truncate text-caption text-faint">{t('exceptions.ctx.categoryLevel')}</span></span>
+            </span>
+          ) : <span className="tabular text-muted">{item.sku}</span>}
+      </span>
+      <span className="min-w-0 text-body-sm [grid-area:ctx]">
+        <span className="block truncate">{primary}</span>
+        {/* The secondary line always renders so every row keeps the same two-line rhythm. */}
+        <span className="block min-h-4 truncate text-caption text-faint">
+          {secondary}
+          <span className="hidden xl:max-[1399px]:inline">{secondary ? ' · ' : ''}{age}</span>
+        </span>
+      </span>
+      <span className="tabular justify-self-end whitespace-nowrap text-body-sm text-muted [grid-area:age] xl:max-[1399px]:hidden min-[1400px]:justify-self-start">{age}</span>
+      <span className="justify-self-end [grid-area:act]">
+        <Button size="sm" variant="secondary" className="min-w-28" onClick={() => onInspect(item)}>
+          {t('exceptions.action.investigate')}
+        </Button>
+      </span>
     </li>
   );
 }
@@ -241,8 +306,8 @@ function ExceptionDetail({ item, t, locale, product, rec, override, onDecide }: 
   onDecide: (req: OverrideRequest, approve: boolean) => void;
 }) {
   return (
-    <div className="flex flex-col gap-3">
-      <div className="rounded-card border border-line bg-surface p-card shadow-e1">
+    <div className="flex flex-col gap-6">
+      <div className="rounded-card border border-line bg-surface p-5">
         <dl className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs">
           <dt className="text-muted">{t('exceptions.drawer.severity')}</dt>
           <dd><SeverityChip s={item.severity} /></dd>
@@ -272,11 +337,11 @@ function ExceptionDetail({ item, t, locale, product, rec, override, onDecide }: 
       </div>
 
       {rec && (
-        <div className="rounded-card border border-line bg-surface p-card shadow-e1">
+        <div className="rounded-card border border-line bg-surface p-5">
           <h3 className="mb-1.5 text-sm font-medium">{t('exceptions.drawer.recTitle')}</h3>
-          <p className="tabular text-sm">
-            {formatPrice(rec.currentPrice, locale)} → {formatPrice(rec.proposedPrice, locale)}
-            <span className="text-muted"> · {t(`common.status.${rec.status}`)}</span>
+          <p className="flex flex-wrap items-center gap-2 text-sm">
+            <PriceMove from={rec.currentPrice} to={rec.proposedPrice} align="start" />
+            <span className="text-muted">· {t(`common.status.${rec.status}`)}</span>
           </p>
           <p className="mt-1 text-xs text-muted">
             {item.kind === 'breach' ? t('exceptions.drawer.breachNote') : t('exceptions.drawer.staleNote')}
@@ -285,7 +350,7 @@ function ExceptionDetail({ item, t, locale, product, rec, override, onDecide }: 
       )}
 
       {override && (
-        <div className="rounded-card border border-line bg-surface p-card shadow-e1">
+        <div className="rounded-card border border-line bg-surface p-5">
           <h3 className="mb-1.5 text-sm font-medium">{t('exceptions.drawer.overrideTitle')}</h3>
           <p className="tabular text-sm">→ {formatPrice(override.requestedPrice, locale)}</p>
           <p className="mt-1 text-xs text-muted">“{override.reason}” — {override.requestedBy} · {formatDate(override.createdAt, locale)}</p>

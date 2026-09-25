@@ -7,7 +7,7 @@ export const inputCls =
 
 /** Form field control (44px, --control-h-lg, 15px text) — wizard and settings forms (STRATEGY-005/006). */
 export const fieldInputCls =
-  'h-control-lg w-full rounded-input border border-line-strong bg-input px-3.5 text-[15px] text-fg transition-colors duration-fast ease-standard placeholder:text-faint hover:bg-surface aria-[invalid=true]:border-critical';
+  'h-control-lg w-full rounded-input border border-line-strong bg-input px-3.5 text-[15px] text-fg transition-colors duration-fast ease-standard placeholder:text-faint hover:bg-surface aria-[invalid=true]:border-critical disabled:cursor-not-allowed disabled:bg-subtle disabled:text-muted';
 
 /** Compact header control (period selects, segmented toggles) — reference "Weekly ▾" button. */
 export const controlCls =

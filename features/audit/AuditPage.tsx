@@ -12,7 +12,8 @@ import { MestaDataTable, useColumnVisibility, type DataColumn } from '@/componen
 import { SavedViewMenu } from '@/components/ds/table/SavedViewMenu';
 import { RationaleBreakdown } from '@/components/ds/RationaleBreakdown';
 import { Button } from '@/components/ui/button';
-import { Input, inputCls } from '@/components/ui/field';
+import { Segmented } from '@/components/ui/segmented';
+import { AuditFilterBar } from './AuditFilterBar';
 import { formatDate } from '@/lib/format';
 import { useCan } from '@/lib/hooks';
 import { useTranslation } from '@/lib/i18n';
@@ -35,7 +36,7 @@ const TYPES: AuditEventType[] = [
   'experiment_save', 'experiment_start', 'experiment_conclude', 'experiment_cancel',
   'experiment_ready', 'experiment_complete', 'experiment_archive', 'delegation_grant', 'delegation_revoke',
   'policy_override', 'publish_window_end', 'model_review_feedback', 'manual_override',
-  'notification_acknowledge', 'notification_snooze', 'notification_escalate',
+  'notification_acknowledge', 'notification_snooze', 'notification_escalate', 'settings_change',
 ];
 const PAGE = 100;
 
@@ -77,9 +78,9 @@ export function AuditPage() {
   const scope = can('audit.view_all') ? 'all' : role === 'ops_lead' ? 'deployment' : 'own';
 
   const columns = useMemo<DataColumn<AuditEvent>[]>(() => [
-    { id: 'time', defaultWidth: 180, header: t('audit.list.time'), cell: (e) => <span className="tabular whitespace-nowrap text-muted">{formatDate(e.timestamp, locale)}</span> },
+    { id: 'time', defaultWidth: 200, header: t('audit.list.time'), cell: (e) => <span className="tabular whitespace-nowrap text-muted">{formatDate(e.timestamp, locale)}</span> },
     {
-      id: 'event', defaultWidth: 250, header: t('audit.list.event'), required: true,
+      id: 'event', defaultWidth: 320, header: t('audit.list.event'), required: true,
       cell: (e) => (
         // WCAG 2.5.3: the accessible name must contain the visible event label.
         <button type="button" aria-label={`${t(`common.event.${e.type}`)} — ${t('audit.list.open', { id: e.id })}`} onClick={() => setSelected(e)} className="text-left text-brand hover:underline">
@@ -87,9 +88,9 @@ export function AuditPage() {
         </button>
       ),
     },
-    { id: 'actor', defaultWidth: 180, header: t('audit.list.actor'), cell: (e) => <>{e.actorId} <span className="text-xs text-faint">({t(`common.role.${e.actorRole}`)})</span></> },
-    { id: 'source', defaultWidth: 120, header: t('audit.list.source'), cell: (e) => t(`common.source.${e.source}`) },
-    { id: 'entity', defaultWidth: 170, header: t('audit.list.entity'), cell: (e) => <span className="tabular">{e.sku ?? e.entityId}</span> },
+    { id: 'actor', defaultWidth: 220, header: t('audit.list.actor'), cell: (e) => <>{e.actorId} <span className="text-xs text-faint">({t(`common.role.${e.actorRole}`)})</span></> },
+    { id: 'source', defaultWidth: 140, header: t('audit.list.source'), cell: (e) => t(`common.source.${e.source}`) },
+    { id: 'entity', defaultWidth: 180, header: t('audit.list.entity'), cell: (e) => <span className="tabular">{e.sku ?? e.entityId}</span> },
   ], [t, locale]);
 
   const groups = useMemo(() => [
@@ -111,28 +112,24 @@ export function AuditPage() {
         title={t('audit.title')}
         subtitle={t('audit.subtitle', { count: rows.length, total: log.data.length })}
       />
-      <p className="mb-3 text-xs text-muted">{t(`audit.scopeNote.${scope}`)}</p>
+      <p className="mb-4 text-caption text-muted">{t(`audit.scopeNote.${scope}`)}</p>
 
-      <div className="mb-3 flex flex-wrap items-end gap-2" role="search">
-        <label className="flex flex-col gap-1 text-xs text-muted">{t('audit.filter.from')}<Input type="date" value={filters.from} onChange={(e) => set({ from: e.target.value })} /></label>
-        <label className="flex flex-col gap-1 text-xs text-muted">{t('audit.filter.to')}<Input type="date" value={filters.to} onChange={(e) => set({ to: e.target.value })} /></label>
-        <select aria-label={t('audit.filter.actor')} className={cn(inputCls, 'w-44')} value={filters.actor} onChange={(e) => set({ actor: e.target.value })}>
-          <option value="">{t('audit.filter.actor')}</option>
-          {actors.map((a) => <option key={a} value={a}>{a}</option>)}
-        </select>
-        <select aria-label={t('audit.filter.source')} className={cn(inputCls, 'w-36')} value={filters.source} onChange={(e) => set({ source: e.target.value })}>
-          <option value="">{t('audit.filter.source')}</option>
-          {(['ui', 'agent', 'system'] as const).map((s) => <option key={s} value={s}>{t(`common.source.${s}`)}</option>)}
-        </select>
-        <select aria-label={t('audit.filter.type')} className={cn(inputCls, 'w-56')} value={filters.type} onChange={(e) => set({ type: e.target.value })}>
-          <option value="">{t('audit.filter.type')}</option>
-          {TYPES.map((x) => <option key={x} value={x}>{t(`common.event.${x}`)}</option>)}
-        </select>
-        <Input type="search" aria-label={t('audit.filter.sku')} placeholder={t('audit.filter.search')} className="w-40" value={filters.sku} onChange={(e) => set({ sku: e.target.value })} />
-        <Button variant="ghost" onClick={() => set(EMPTY_AUDIT_FILTERS)}>{t('common.state.clearFilters')}</Button>
+      <AuditFilterBar filters={filters} set={set} actors={actors} types={TYPES} />
+
+      {/* AUD-015/016/023: VIEW (List/Timeline) on the left, DISPLAY/export on the right — separate from filtering. */}
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <Segmented
+          label={t('audit.view.label')}
+          value={view}
+          onChange={setView}
+          options={[
+            { value: 'list', label: t('audit.view.list'), icon: LayoutList },
+            { value: 'timeline', label: t('audit.view.timeline'), icon: ListTree },
+          ]}
+        />
         {/* AUD-009: CSV lives in the table toolbar; JSON + evidence package here. */}
         {can('audit.export') && (
-          <div role="group" aria-label={t('audit.exportMenu.label')} className="flex gap-1">
+          <div role="group" aria-label={t('audit.exportMenu.label')} className="flex gap-2">
             <Button size="sm" variant="secondary" onClick={() => { downloadJson('mesta-audit.json', rows); track('audit_exported', { rows: rows.length, format: 'json' }); }}>
               {t('audit.exportMenu.json')}
             </Button>
@@ -141,17 +138,6 @@ export function AuditPage() {
             </Button>
           </div>
         )}
-        <div role="group" aria-label={t('audit.view.label')} className="ml-auto flex gap-1">
-          {(['list', 'timeline'] as const).map((v) => (
-            <Button
-              key={v} size="sm" variant={view === v ? 'selected' : 'secondary'} aria-pressed={view === v}
-              onClick={() => setView(v)}
-            >
-              {v === 'list' ? <LayoutList className="size-4" aria-hidden /> : <ListTree className="size-4" aria-hidden />}
-              {t(`audit.view.${v}`)}
-            </Button>
-          ))}
-        </div>
       </div>
 
       {log.isLoading ? <LoadingRows rows={8} /> : log.isError ? (
@@ -160,8 +146,10 @@ export function AuditPage() {
         <EmptyState
           variant={serializeAuditFilters(filters).toString() !== '' ? 'filter' : 'empty'}
           title={serializeAuditFilters(filters).toString() !== '' ? t('audit.list.empty') : t('audit.list.none')}
-          {...(serializeAuditFilters(filters).toString() !== '' ? { action: { label: t('common.state.clearFilters'), onClick: () => set(EMPTY_AUDIT_FILTERS) } } : {})}
-        />
+          {...(serializeAuditFilters(filters).toString() !== '' ? { action: { label: t('common.filter.clear'), onClick: () => set(EMPTY_AUDIT_FILTERS) } } : {})}
+        >
+          {serializeAuditFilters(filters).toString() !== '' && <p className="text-body-sm text-muted">{t('audit.list.emptyHint')}</p>}
+        </EmptyState>
       ) : view === 'timeline' ? (
         <>
           <AuditTimeline events={rows.slice(0, shown)} onSelect={setSelected} />
@@ -176,7 +164,7 @@ export function AuditPage() {
             rows={rows.slice(0, shown)}
             getRowId={(e) => e.id}
             onRowClick={setSelected}
-            minWidth={720}
+            minWidth={1060}
             resizable
             groups={groups}
             visibility={columnVis}

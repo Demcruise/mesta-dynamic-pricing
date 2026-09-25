@@ -124,15 +124,6 @@
   "overlap": {
     "title": "Cakupan tumpang tindih"
   },
-  "guardrailViz": {
-    "title": "Batas efektif",
-    "aria": "Rentang guardrail mencakup {n} SKU dalam cakupan",
-    "within": "Dalam batas",
-    "belowMap": "Di bawah MAP",
-    "outside": "Di luar batas",
-    "outsideCount": "{n} SKU dalam cakupan di luar batas ini",
-    "noMax": "tanpa maks"
-  },
   "notFound": "Strategi tidak ditemukan.",
   "draftRestored": "Draf yang belum disimpan dipulihkan.",
   "history": {

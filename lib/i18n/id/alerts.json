@@ -6,7 +6,8 @@
   "sev": {
     "critical": "Kritis",
     "warning": "Peringatan",
-    "info": "Info"
+    "info": "Info",
+    "all": "aktif"
   },
   "kind": {
     "anomaly": "Anomali harga",
@@ -16,11 +17,30 @@
   "empty": "Tidak ada peringatan aktif dalam cakupan saat ini.",
   "action": {
     "anatomy": "Detail",
-    "investigate": "Selidiki"
+    "investigate": "Selidiki",
+    "showAll": "Tampilkan semua peringatan"
   },
   "anatomy": {
     "changed": "Apa yang berubah",
     "expected": "Diharapkan",
     "observed": "Teramati"
+  },
+  "filter": {
+    "severity": "Tingkat keparahan",
+    "all": "Semua"
+  },
+  "sort": {
+    "label": "Urutkan",
+    "severity": "Tingkat",
+    "newest": "Terbaru dulu",
+    "oldest": "Terlama dulu"
+  },
+  "filtered": "Tidak ada peringatan {sev} di cakupan saat ini",
+  "col": {
+    "severity": "Tingkat",
+    "type": "Jenis peringatan",
+    "entity": "Entitas",
+    "detail": "Detail",
+    "age": "Usia"
   }
 }

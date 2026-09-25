@@ -60,5 +60,17 @@
     "staleNote": "Recommendation is older than its freshness window — re-verify before deciding.",
     "overrideTitle": "Override request",
     "openSurface": "Open the owning surface"
+  },
+  "col": {
+    "severity": "Severity",
+    "type": "Exception",
+    "product": "Product",
+    "context": "Context",
+    "age": "Age"
+  },
+  "ctx": {
+    "missing": "{n} SKUs without competitor data",
+    "unchanged": "Unchanged for {n} days",
+    "categoryLevel": "Category-level exception"
   }
 }

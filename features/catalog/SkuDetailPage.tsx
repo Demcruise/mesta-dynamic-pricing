@@ -17,13 +17,16 @@ import { competitorGap, elasticityBand, marginHealth, marginPct } from '@/lib/do
 import { formatDate, formatPercent } from '@/lib/format';
 import { useTranslation } from '@/lib/i18n';
 import type { Product } from '@/lib/ontology';
-import { useAuditLog, useCompetitorObservations, useRecommendations, useSkuDetail, useSkuList } from '@/lib/queries';
+import { useAuditLog, useCompetitorObservations, useRecommendations, useSkuDetail, useSkuList, useStrategies } from '@/lib/queries';
+import { ConstraintRange } from '@/components/ds/ConstraintRange';
+import { explainBounds, governingStrategy } from '@/lib/guardrails';
+import { cn } from '@/lib/utils';
 import { applyFilters, parseFilters, sortProducts } from './filters';
 
-function Card({ title, children }: { title: string; children: React.ReactNode }) {
+function Card({ title, children, className }: { title: string; children: React.ReactNode; className?: string }) {
   return (
-    <section className="rounded-card border border-line bg-surface p-card shadow-e1">
-      <h2 className="mb-3 text-sm font-semibold">{title}</h2>
+    <section className={cn('rounded-card border border-line bg-surface p-6', className)}>
+      <h2 className="mb-4 text-section">{title}</h2>
       {children}
     </section>
   );
@@ -37,6 +40,7 @@ function Detail({ p }: { p: Product }) {
   const related = recs.data.filter((r) => r.sku === p.sku);
   const events = audit.data.filter((e) => e.sku === p.sku).slice(0, 8);
   const health = marginHealth(p);
+  const strategy = governingStrategy(p, useStrategies().data);
 
   return (
     <>
@@ -61,7 +65,7 @@ function Detail({ p }: { p: Product }) {
           </>
         }
       />
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
         <Card title={t('catalog.detail.identity')}>
           <dl className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
             <dt className="text-muted">{t('catalog.col.price')}</dt><dd><PriceValue value={p.price} animate /></dd>
@@ -78,6 +82,11 @@ function Detail({ p }: { p: Product }) {
             <dt className="text-muted">{t('catalog.detail.gap')}</dt><dd><DeltaBadge value={competitorGap(p)} /></dd>
           </dl>
         </Card>
+
+        {/* STRATEGY-023 / CROSS-001: the same constraint visualisation as Strategy and Guardrails. */}
+        <div className="rounded-card border border-line bg-surface p-6 lg:col-span-2">
+          <ConstraintRange bounds={explainBounds(p, strategy?.guardrail ?? null)} strategyName={strategy?.name} compact />
+        </div>
 
         <Card title={t('catalog.detail.history')}>
           <Sparkline points={p.priceHistory.map((h) => h.price)} tone="brand" className="h-20 w-full" />

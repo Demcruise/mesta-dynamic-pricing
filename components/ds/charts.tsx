@@ -260,16 +260,25 @@ function ViewToggle({ view, setView, label, iconOnly }: { view: 'chart' | 'table
   );
 }
 
-/** Data-table twin of a chart, in the reference table style (header band + row bands). */
+/**
+ * Data-table twin of a chart (MON-001…007/017/018). One table in one scroll container: the sticky
+ * header and every row share a fixed column model (label track fluid, each figure track 200px,
+ * right-aligned tabular numerals), and the scrollbar gutter is reserved so the Forecast/Actual
+ * columns never shift when the body starts to scroll. Same grammar as `.mesta-table`.
+ */
 function ChartTable({ caption, columns, rows }: { caption: string; columns: string[]; rows: ReactNode[][] }) {
   return (
-    <div className="max-h-72 overflow-auto">
-      <table className="w-full border-separate border-spacing-y-1 text-xs">
+    <div className="table-scroll max-h-80 rounded-card border border-line">
+      <table className="mesta-table" style={{ tableLayout: 'fixed', minWidth: 160 + (columns.length - 1) * 140 }}>
         <caption className="sr-only">{caption}</caption>
+        <colgroup>
+          <col />
+          {columns.slice(1).map((c) => <col key={c} style={{ width: 200 }} />)}
+        </colgroup>
         <thead className="sticky top-0 z-[1]">
           <tr>
             {columns.map((c, i) => (
-              <th key={c} scope="col" className={cn('bg-head px-2.5 py-2 font-semibold tracking-label text-muted first:rounded-l-row last:rounded-r-row', i ? 'text-right' : 'text-left')}>{c}</th>
+              <th key={c} scope="col" className={i ? 'text-right' : 'text-left'}>{c}</th>
             ))}
           </tr>
         </thead>
@@ -277,8 +286,8 @@ function ChartTable({ caption, columns, rows }: { caption: string; columns: stri
           {rows.map((r, ri) => (
             <tr key={ri}>
               {r.map((c, ci) => (ci === 0
-                ? <th key={ci} scope="row" className="bg-row px-2.5 py-2 text-left font-medium text-fg first:rounded-l-row last:rounded-r-row">{c}</th>
-                : <td key={ci} className="tabular bg-row px-2.5 py-2 text-right font-medium text-fg first:rounded-l-row last:rounded-r-row">{c}</td>))}
+                ? <th key={ci} scope="row" className="truncate text-left">{c}</th>
+                : <td key={ci} className="num">{c}</td>))}
             </tr>
           ))}
         </tbody>
