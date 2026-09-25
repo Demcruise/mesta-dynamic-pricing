@@ -12,6 +12,7 @@ import { useTranslation } from '@/lib/i18n';
 import { useToastStore, useWorkspaceSettingsStore } from '@/lib/stores';
 import { cn } from '@/lib/utils';
 import { GROUPS, SECTIONS, sectionBySlug } from './registry';
+import { IdentitySsoSection, SessionsSection, UsersSection } from './sections-access';
 import { ApiSection, AuditRetentionSection, FeaturesSection, RolesSection, SecuritySection } from './sections-governance';
 import { NotificationsSection, PreferencesSection, ViewsSection } from './sections-personal';
 import {
@@ -22,6 +23,7 @@ const VIEWS: Record<string, ComponentType> = {
   preferences: PreferencesSection, notifications: NotificationsSection, views: ViewsSection,
   general: GeneralSection, 'scope-hierarchy': ScopeSection, 'pricing-engine': PricingEngineSection, integrations: IntegrationsSection,
   approvals: ApprovalsSection, guardrails: GuardrailDefaultsSection, workflow: WorkflowSection, alerts: AlertsRoutingSection,
+  'identity-sso': IdentitySsoSection, users: UsersSection, sessions: SessionsSection,
   roles: RolesSection, audit: AuditRetentionSection, api: ApiSection, security: SecuritySection, features: FeaturesSection,
 };
 

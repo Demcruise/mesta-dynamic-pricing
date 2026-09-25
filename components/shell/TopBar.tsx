@@ -5,11 +5,11 @@ import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { resetMestaData } from '@/lib/bootstrap';
 import { useTranslation } from '@/lib/i18n';
-import { useSessionStore, useUiStore } from '@/lib/stores';
+import { useUiStore } from '@/lib/stores';
 import { Breadcrumbs } from './Breadcrumbs';
 import { useCommandStore } from './command-store';
-import { DevRoleSelect } from './DevRoleSelect';
 import { MestaLogo } from './MestaLogo';
+import { ProfileMenu } from './ProfileMenu';
 import { useFeedbackDialog } from './FeedbackDialog';
 import { useGlossaryStore } from './Glossary';
 import { NotificationBell } from './NotificationBell';
@@ -20,7 +20,6 @@ function UserMenu() {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
-  const user = useSessionStore((s) => s.user);
 
   useEffect(() => {
     if (!open) return;
@@ -37,20 +36,21 @@ function UserMenu() {
         <User className="size-4" aria-hidden />
       </Button>
       {open && (
-        <div role="menu" className="glass absolute right-0 top-10 z-40 w-56 rounded-card border border-line p-3 shadow-e3">
-          <p className="mb-2 text-sm font-medium">{user.name}</p>
-          {isDev && <div className="mb-2"><DevRoleSelect /></div>}
-          <Button size="sm" variant="secondary" className="mb-2 w-full sm:hidden" onClick={() => { useGlossaryStore.getState().show(null); setOpen(false); }}>
-            {t('common.a11y.help')}
-          </Button>
-          <Button size="sm" variant="secondary" className="mb-2 w-full" onClick={() => { useFeedbackDialog.getState().setOpen(true); setOpen(false); }}>
-            {t('common.a11y.feedback')}
-          </Button>
-          {isDev && (
-            <Button size="sm" variant="secondary" className="w-full" onClick={() => { resetMestaData(); setOpen(false); }}>
-              {t('common.user.resetDemo')}
+        <div className="absolute right-0 top-11 z-40 w-64">
+          <ProfileMenu onClose={() => setOpen(false)} />
+          <div className="glass mt-1 flex flex-col gap-1 rounded-card border border-line p-2 shadow-e3">
+            <Button size="sm" variant="ghost" className="w-full justify-start sm:hidden" onClick={() => { useGlossaryStore.getState().show(null); setOpen(false); }}>
+              {t('common.a11y.help')}
             </Button>
-          )}
+            <Button size="sm" variant="ghost" className="w-full justify-start" onClick={() => { useFeedbackDialog.getState().setOpen(true); setOpen(false); }}>
+              {t('common.a11y.feedback')}
+            </Button>
+            {isDev && (
+              <Button size="sm" variant="ghost" className="w-full justify-start" onClick={() => { resetMestaData(); setOpen(false); }}>
+                {t('common.user.resetDemo')}
+              </Button>
+            )}
+          </div>
         </div>
       )}
     </div>

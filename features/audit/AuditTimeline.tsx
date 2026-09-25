@@ -2,7 +2,7 @@
 
 import {
   Ban, Bell, CalendarClock, CheckCircle2, Database, Flag, FlaskConical, PenLine, Pencil, Play, RotateCw, Rocket, Send,
-  Settings2, Timer, TriangleAlert, Undo2, UserMinus, UserPlus, XCircle, type LucideIcon,
+  LogIn, LogOut, Settings2, ShieldAlert, Timer, UserRound, TriangleAlert, Undo2, UserMinus, UserPlus, XCircle, type LucideIcon,
 } from 'lucide-react';
 import { formatRelativeTime } from '@/lib/format';
 import { useTranslation } from '@/lib/i18n';
@@ -55,6 +55,16 @@ const ICONS: Record<AuditEventType, LucideIcon> = {
   notification_snooze: Timer,
   notification_escalate: TriangleAlert,
   settings_change: Settings2,
+  auth_sign_in: LogIn,
+  auth_sign_out: LogOut,
+  auth_sso_failed: ShieldAlert,
+  auth_access_denied: ShieldAlert,
+  auth_role_changed: UserRound,
+  auth_workspace_switched: UserRound,
+  auth_session_revoked: ShieldAlert,
+  auth_sso_config_changed: UserRound,
+  auth_user_provisioned: UserRound,
+  auth_user_deprovisioned: UserRound,
 };
 
 const TONE_CLS: Record<AuditTone, string> = {

@@ -20,7 +20,7 @@ export interface NavItem {
 }
 
 export interface NavSection {
-  key: 'workflow' | 'operations' | 'insight' | 'account';
+  key: 'workflow' | 'operations' | 'insight' | 'administration';
   items: NavItem[];
 }
 
@@ -41,7 +41,6 @@ export const NAV_SECTIONS: NavSection[] = [
   {
     key: 'operations',
     items: [
-      { href: '/deployment', key: 'deployment', icon: Send, action: 'deployment.view', mobile: true, badge: 'failedDeployments' },
       { href: '/exceptions', key: 'exceptions', icon: Siren, action: 'exceptions.view' },
       { href: '/alerts', key: 'alerts', icon: BellRing, action: 'alerts.view' },
       { href: '/monitoring', key: 'monitoring', icon: Activity, action: 'monitoring.view', mobile: true },
@@ -59,8 +58,9 @@ export const NAV_SECTIONS: NavSection[] = [
     ],
   },
   {
-    key: 'account',
+    key: 'administration',
     items: [
+      { href: '/deployment', key: 'deployment', icon: Send, action: 'deployment.view', mobile: true, badge: 'failedDeployments' },
       { href: '/settings', key: 'settings', icon: Settings },
     ],
   },

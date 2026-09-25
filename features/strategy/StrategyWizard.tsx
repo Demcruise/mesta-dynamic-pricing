@@ -415,7 +415,11 @@ function Wizard({ strategyId, initial, status, expectedUpdatedAt }: {
           ) : step < STEPS.length - 1 ? (
             <Button disabled={stepBlocked(step)} onClick={() => go(step + 1)}>{t('strategy.action.next')}</Button>
           ) : (
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap items-center gap-2">
+              {/* AUTH-10: explain a restricted action instead of silently hiding it. */}
+              {status !== 'active' && !can('strategy.activate') && (
+                <span className="text-caption text-muted">{t('auth.restricted.activate')}</span>
+              )}
               {can('strategy.create') && <Button variant="secondary" onClick={() => finish('draft')}>{t('strategy.action.saveDraft')}</Button>}
               {can('strategy.create') && status !== 'active' && !can('strategy.activate') && (
                 <Button disabled={hasBlocker(issues)} onClick={() => finish('submit')}>{t('strategy.action.submit')}</Button>

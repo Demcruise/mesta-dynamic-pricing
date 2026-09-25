@@ -7,6 +7,7 @@ const ROUTES = [
   '/rules', '/guardrails', '/approvals',
   '/recommendations', '/recommendations/REC-1000', '/deployment', '/monitoring', '/audit',
   '/data', '/exceptions', '/alerts', '/competitors', '/analytics', '/experiments', '/settings',
+  '/settings/identity-sso', '/settings/users', '/settings/sessions',
 ];
 
 async function violations(page: Page, label: string): Promise<string[]> {
@@ -68,3 +69,38 @@ test('axe: open dialogs and menus (command menu, override dialog, notifications,
   found.push(...(await violations(page, 'notifications')));
   expect(found).toEqual([]);
 });
+
+for (const theme of ['light', 'dark'] as const) {
+  test(`axe: sign-in flow has no WCAG A/AA violations (${theme})`, async ({ page }) => {
+    test.setTimeout(120_000);
+    await page.addInitScript((t) => {
+      localStorage.setItem('mesta-ui', JSON.stringify({ state: { density: 'comfortable', theme: t, locale: 'en', sidebarCollapsed: false }, version: 0 }));
+    }, theme);
+    const found: string[] = [];
+    const scan = async (label: string) => { await page.waitForTimeout(400); found.push(...(await violations(page, `${theme} ${label}`))); };
+    await page.goto('/login?expired=1');
+    await expect(page.getByLabel('Work email')).toBeVisible({ timeout: 20_000 });
+    await scan('/login expired');
+    await page.getByRole('button', { name: 'Continue with SSO' }).click();
+    await scan('/login required');
+    await page.getByLabel('Work email').fill('x@mestagroup.com');
+    await page.getByRole('button', { name: 'Continue with SSO' }).click();
+    await expect(page.getByText('We found multiple workspaces')).toBeVisible();
+    await scan('/login multiple');
+    await page.goto('/login');
+    await page.getByLabel('Work email').fill('budi@mesta.id');
+    await page.getByRole('button', { name: 'Continue with SSO' }).click();
+    await expect(page.getByText('Mesta Retail').first()).toBeVisible();
+    await scan('/login resolved');
+    await page.getByRole('button', { name: 'Continue with SSO' }).click();
+    await expect(page.getByRole('button', { name: 'Approve sign-in' })).toBeVisible({ timeout: 20_000 });
+    await scan('/auth/idp');
+    await page.getByRole('button', { name: 'Approve sign-in' }).click();
+    await expect(page.getByRole('heading', { name: 'Welcome back' })).toBeVisible({ timeout: 20_000 });
+    await scan('/workspaces');
+    await page.goto('/auth/error?reason=provider_unavailable');
+    await expect(page.getByText("We couldn't complete sign-in.")).toBeVisible({ timeout: 20_000 });
+    await scan('/auth/error');
+    expect(found).toEqual([]);
+  });
+}

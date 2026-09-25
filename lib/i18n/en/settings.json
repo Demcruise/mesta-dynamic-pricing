@@ -8,6 +8,7 @@
   "group": {
     "personal": "Personal",
     "workspace": "Workspace",
+    "access": "Access",
     "governance": "Governance",
     "system": "System"
   },
@@ -75,6 +76,18 @@
     "features": {
       "title": "Feature controls",
       "desc": "Turn product capabilities on or off for this workspace. Each shows what it depends on."
+    },
+    "identity-sso": {
+      "title": "Identity & SSO",
+      "desc": "How your organization signs in to Mesta: identity provider, domains and how IdP groups become Mesta roles."
+    },
+    "users": {
+      "title": "Users",
+      "desc": "People provisioned from your identity provider, their workspaces, roles and status."
+    },
+    "sessions": {
+      "title": "Sessions",
+      "desc": "Your current session and the active sessions in this workspace. Revoking ends access immediately."
     }
   },
   "search": {
@@ -554,5 +567,73 @@
       "apiAccess": "API access"
     },
     "blocked": "Turn on its dependencies first"
+  },
+  "sso": {
+    "provider": "Identity provider",
+    "providerName": "Provider",
+    "protocol": "Protocol",
+    "domains": "Verified domains",
+    "entityId": "Entity ID / issuer",
+    "redirectUri": "Redirect URI",
+    "certificate": "Signing certificate",
+    "certExpires": "Expires {date} ({days} days)",
+    "provisioning": "User provisioning (SCIM)",
+    "scimActive": "SCIM active",
+    "scimOff": "Not configured",
+    "credentials": "Passwords",
+    "noCredentials": "Mesta never stores passwords — authentication happens at your provider.",
+    "notConfigured": "SSO is not configured for this organization. Users cannot sign in until an identity provider is connected.",
+    "mapping": "Group → role mapping",
+    "mappingHint": "Users receive the Mesta role of the first matching IdP group. An explicit workspace role always wins.",
+    "group": "IdP group",
+    "role": "Mesta role",
+    "remove": "Remove",
+    "addGroup": "Add IdP group",
+    "add": "Add mapping",
+    "fallback": "Fallback role",
+    "fallbackHint": "Given to users whose groups match no mapping. “No access” blocks them at sign-in.",
+    "noFallback": "No access",
+    "multiple": "Multiple matching groups",
+    "multipleRule": "The first mapping in the table wins; order mappings from most to least privileged.",
+    "unmapped": "Groups without a mapping: {groups}. Users with only these groups get the fallback role.",
+    "saved": "SSO configuration saved"
+  },
+  "users": {
+    "user": "User",
+    "workspaces": "Workspaces",
+    "role": "Role",
+    "status": "Status",
+    "lastSignIn": "Last sign-in",
+    "actions": "Actions",
+    "more": "+{n} more",
+    "state": {
+      "active": "Active",
+      "disabled": "Deprovisioned"
+    },
+    "deprovision": "Deprovision",
+    "reactivate": "Reactivate",
+    "deprovisioned": "{name} deprovisioned — they can no longer sign in",
+    "reactivated": "{name} reactivated",
+    "scimNote": "Users are provisioned from your identity provider. Deprovisioning here blocks sign-in immediately; SCIM keeps the directory in sync."
+  },
+  "sessions": {
+    "current": "Your session",
+    "signedInAs": "Signed in as",
+    "workspace": "Workspace",
+    "provider": "Identity provider",
+    "started": "Started",
+    "expires": "Expires",
+    "role": "Role",
+    "endMine": "End my session",
+    "active": "Other active sessions",
+    "user": "User",
+    "device": "Device",
+    "ip": "IP address",
+    "revoke": "Revoke",
+    "revokedLabel": "Revoked",
+    "revoked": "Session for {user} revoked",
+    "confirmTitle": "Revoke session?",
+    "confirmBody": "{user} will be signed out and must sign in again with SSO.",
+    "confirmSelf": "You will be signed out now and must sign in again with SSO."
   }
 }

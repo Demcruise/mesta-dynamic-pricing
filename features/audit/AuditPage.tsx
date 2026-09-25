@@ -37,6 +37,7 @@ const TYPES: AuditEventType[] = [
   'experiment_ready', 'experiment_complete', 'experiment_archive', 'delegation_grant', 'delegation_revoke',
   'policy_override', 'publish_window_end', 'model_review_feedback', 'manual_override',
   'notification_acknowledge', 'notification_snooze', 'notification_escalate', 'settings_change',
+  'auth_sign_in', 'auth_sign_out', 'auth_sso_failed', 'auth_access_denied', 'auth_role_changed', 'auth_workspace_switched', 'auth_session_revoked', 'auth_sso_config_changed', 'auth_user_provisioned', 'auth_user_deprovisioned',
 ];
 const PAGE = 100;
 

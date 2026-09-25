@@ -1,20 +1,39 @@
 import { expect, type Page } from '@playwright/test';
+import { can, PERMISSIONS, type Action } from '../lib/rbac';
 
 export type RoleKey = 'analyst' | 'manager' | 'approver' | 'ops_lead' | 'compliance';
 
-/** English UI and fresh demo data for every test. */
+const PEOPLE: Record<RoleKey, { userId: string; name: string; email: string }> = {
+  analyst: { userId: 'u-analyst-1', name: 'Rina Analyst', email: 'rina@mesta.id' },
+  manager: { userId: 'u-manager-1', name: 'Budi Manager', email: 'budi@mesta.id' },
+  approver: { userId: 'u-approver-1', name: 'Andre Finance', email: 'andre@mesta.id' },
+  ops_lead: { userId: 'u-ops-1', name: 'Sari Ops', email: 'sari@mesta.id' },
+  compliance: { userId: 'u-compliance-1', name: 'Dewi Compliance', email: 'dewi@mesta.id' },
+};
+
+/** A signed-in SSO session for `role`, as the auth service would persist it after /auth/callback. */
+export function sessionFor(role: RoleKey) {
+  const now = Date.now();
+  return {
+    sessionId: `sess_e2e_${role}`, ...PEOPLE[role], organizationId: 'org-mesta-retail', organizationName: 'Mesta Retail',
+    workspaceId: 'ws-retail-jkt', role, permissions: (Object.keys(PERMISSIONS) as Action[]).filter((a) => can(role, a)),
+    identityProvider: 'Microsoft Entra ID', sessionCreatedAt: new Date(now).toISOString(), sessionExpiry: new Date(now + 8 * 3_600_000).toISOString(),
+  };
+}
+
+/** English UI, fresh demo data and a valid session for `role` in every test. */
 export async function open(page: Page, path: string, role: RoleKey = 'analyst', locale: 'en' | 'id' = 'en') {
-  await page.addInitScript((l) => {
+  await page.addInitScript(([l, session]) => {
     localStorage.setItem('mesta-ui', JSON.stringify({ state: { density: 'comfortable', theme: 'light', locale: l, sidebarCollapsed: false }, version: 0 }));
-  }, locale);
-  // Switch role on a page every role may open, then navigate client-side (route guard would redirect otherwise).
-  await page.goto(role === 'analyst' ? path : '/overview');
+    // Only seed once per test so sign-out / revocation inside a test is not undone by a reload.
+    if (!sessionStorage.getItem('e2e-seeded')) {
+      localStorage.setItem('mesta-auth', JSON.stringify({ state: { session, revoked: [], events: [] }, version: 1 }));
+      sessionStorage.setItem('e2e-seeded', '1');
+    }
+  }, [locale, sessionFor(role)] as const);
+  await page.goto(path);
   // Demo-data bootstrap + on-demand route compile can exceed the default 5s under parallel load.
   await expect(page.getByRole('main')).toBeVisible({ timeout: 20_000 });
-  if (role !== 'analyst') {
-    await setRole(page, role);
-    if (path !== '/overview') await go(page, path);
-  }
 }
 
 export async function setRole(page: Page, role: RoleKey) {

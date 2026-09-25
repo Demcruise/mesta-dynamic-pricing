@@ -11,6 +11,7 @@ import {
   useRecommendationStore, useScenarioStore, useStrategyStore,
 } from './stores';
 import { usePublishJobStore } from './stores/publish';
+import { useAuthStore } from './stores/auth';
 import { useRuleStore } from './stores/rule';
 import { expireStaleRecommendations } from './actions/recommendation';
 import { promoteScheduledStrategies } from './actions/strategy';
@@ -48,7 +49,8 @@ export function bootstrapMestaData({ productCount = DEFAULT_PRODUCT_COUNT, force
   useDelegationStore.getState().reset();
   useStrategyStore.getState().hydrate(generateStrategies());
   useRuleStore.getState().hydrate(generateRules());
-  useAuditStore.getState().hydrate(generateAudit(recs));
+  // Auth events (sign-in happens before seeding) are part of the same audit trail (AUTH-20).
+  useAuditStore.getState().hydrate([...useAuthStore.getState().events, ...generateAudit(recs)].sort((x, y) => y.timestamp.localeCompare(x.timestamp)));
   useDataSourceStore.getState().hydrate(generateDataSources());
   useOverrideRequestStore.getState().hydrate(generateOverrideRequests(seeded.products));
   expireStaleRecommendations();

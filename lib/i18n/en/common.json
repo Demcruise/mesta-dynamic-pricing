@@ -23,7 +23,8 @@
       "workflow": "Workflow",
       "insight": "Insight",
       "account": "Account",
-      "operations": "Operations"
+      "operations": "Operations",
+      "administration": "Administration"
     },
     "exceptions": "Exceptions",
     "alerts": "Alerts",
@@ -326,7 +327,17 @@
     "strategy_save": "Strategy saved",
     "policy_override": "Policy override changed",
     "publish_window_end": "Publish window ended",
-    "settings_change": "Settings changed"
+    "settings_change": "Settings changed",
+    "auth_sign_in": "User signed in",
+    "auth_sign_out": "User signed out",
+    "auth_sso_failed": "SSO authentication failed",
+    "auth_access_denied": "User access denied",
+    "auth_role_changed": "Role changed",
+    "auth_workspace_switched": "Workspace switched",
+    "auth_session_revoked": "Session revoked",
+    "auth_sso_config_changed": "SSO configuration changed",
+    "auth_user_provisioned": "User provisioned",
+    "auth_user_deprovisioned": "User deprovisioned"
   },
   "channel": {
     "pos": "POS",
@@ -342,7 +353,8 @@
   "source": {
     "ui": "User",
     "agent": "Agent",
-    "system": "System"
+    "system": "System",
+    "sso": "SSO"
   },
   "action": {
     "viewAudit": "View audit trail",

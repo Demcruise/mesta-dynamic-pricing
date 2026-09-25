@@ -8,6 +8,7 @@
   "group": {
     "personal": "Pribadi",
     "workspace": "Workspace",
+    "access": "Akses",
     "governance": "Tata kelola",
     "system": "Sistem"
   },
@@ -75,6 +76,18 @@
     "features": {
       "title": "Kontrol fitur",
       "desc": "Aktifkan atau matikan kemampuan produk untuk workspace ini. Setiap fitur menunjukkan dependensinya."
+    },
+    "identity-sso": {
+      "title": "Identitas & SSO",
+      "desc": "Cara organisasi Anda masuk ke Mesta: penyedia identitas, domain, dan pemetaan grup IdP ke peran Mesta."
+    },
+    "users": {
+      "title": "Pengguna",
+      "desc": "Pengguna yang diprovisikan dari penyedia identitas, workspace, peran, dan statusnya."
+    },
+    "sessions": {
+      "title": "Sesi",
+      "desc": "Sesi Anda saat ini dan sesi aktif di workspace ini. Pencabutan langsung mengakhiri akses."
     }
   },
   "search": {
@@ -554,5 +567,73 @@
       "apiAccess": "Akses API"
     },
     "blocked": "Aktifkan dependensinya terlebih dahulu"
+  },
+  "sso": {
+    "provider": "Penyedia identitas",
+    "providerName": "Penyedia",
+    "protocol": "Protokol",
+    "domains": "Domain terverifikasi",
+    "entityId": "Entity ID / issuer",
+    "redirectUri": "Redirect URI",
+    "certificate": "Sertifikat penandatanganan",
+    "certExpires": "Berakhir {date} ({days} hari)",
+    "provisioning": "Provisioning pengguna (SCIM)",
+    "scimActive": "SCIM aktif",
+    "scimOff": "Belum dikonfigurasi",
+    "credentials": "Kata sandi",
+    "noCredentials": "Mesta tidak pernah menyimpan kata sandi — autentikasi dilakukan di penyedia Anda.",
+    "notConfigured": "SSO belum dikonfigurasi untuk organisasi ini. Pengguna tidak dapat masuk sampai penyedia identitas terhubung.",
+    "mapping": "Pemetaan grup → peran",
+    "mappingHint": "Pengguna mendapat peran Mesta dari grup IdP pertama yang cocok. Peran workspace eksplisit selalu diutamakan.",
+    "group": "Grup IdP",
+    "role": "Peran Mesta",
+    "remove": "Hapus",
+    "addGroup": "Tambah grup IdP",
+    "add": "Tambah pemetaan",
+    "fallback": "Peran cadangan",
+    "fallbackHint": "Diberikan ke pengguna yang grupnya tidak cocok dengan pemetaan mana pun. “Tanpa akses” memblokir saat masuk.",
+    "noFallback": "Tanpa akses",
+    "multiple": "Beberapa grup cocok",
+    "multipleRule": "Pemetaan pertama di tabel yang berlaku; urutkan dari hak akses tertinggi ke terendah.",
+    "unmapped": "Grup tanpa pemetaan: {groups}. Pengguna yang hanya memiliki grup ini mendapat peran cadangan.",
+    "saved": "Konfigurasi SSO disimpan"
+  },
+  "users": {
+    "user": "Pengguna",
+    "workspaces": "Workspace",
+    "role": "Peran",
+    "status": "Status",
+    "lastSignIn": "Terakhir masuk",
+    "actions": "Aksi",
+    "more": "+{n} lainnya",
+    "state": {
+      "active": "Aktif",
+      "disabled": "Dinonaktifkan"
+    },
+    "deprovision": "Nonaktifkan",
+    "reactivate": "Aktifkan kembali",
+    "deprovisioned": "{name} dinonaktifkan — tidak dapat masuk lagi",
+    "reactivated": "{name} diaktifkan kembali",
+    "scimNote": "Pengguna diprovisikan dari penyedia identitas Anda. Menonaktifkan di sini langsung memblokir akses masuk; SCIM menjaga direktori tetap sinkron."
+  },
+  "sessions": {
+    "current": "Sesi Anda",
+    "signedInAs": "Masuk sebagai",
+    "workspace": "Workspace",
+    "provider": "Penyedia identitas",
+    "started": "Dimulai",
+    "expires": "Berakhir",
+    "role": "Peran",
+    "endMine": "Akhiri sesi saya",
+    "active": "Sesi aktif lainnya",
+    "user": "Pengguna",
+    "device": "Perangkat",
+    "ip": "Alamat IP",
+    "revoke": "Cabut",
+    "revokedLabel": "Dicabut",
+    "revoked": "Sesi {user} dicabut",
+    "confirmTitle": "Cabut sesi?",
+    "confirmBody": "{user} akan dikeluarkan dan harus masuk kembali dengan SSO.",
+    "confirmSelf": "Anda akan dikeluarkan sekarang dan harus masuk kembali dengan SSO."
   }
 }

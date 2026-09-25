@@ -23,7 +23,8 @@
       "workflow": "Alur Kerja",
       "insight": "Wawasan",
       "account": "Akun",
-      "operations": "Operasi"
+      "operations": "Operasi",
+      "administration": "Administrasi"
     },
     "exceptions": "Pengecualian",
     "alerts": "Peringatan",
@@ -326,7 +327,17 @@
     "strategy_save": "Strategi disimpan",
     "policy_override": "Override kebijakan diubah",
     "publish_window_end": "Jendela publish berakhir",
-    "settings_change": "Pengaturan diubah"
+    "settings_change": "Pengaturan diubah",
+    "auth_sign_in": "Pengguna masuk",
+    "auth_sign_out": "Pengguna keluar",
+    "auth_sso_failed": "Autentikasi SSO gagal",
+    "auth_access_denied": "Akses pengguna ditolak",
+    "auth_role_changed": "Peran diubah",
+    "auth_workspace_switched": "Workspace diganti",
+    "auth_session_revoked": "Sesi dicabut",
+    "auth_sso_config_changed": "Konfigurasi SSO diubah",
+    "auth_user_provisioned": "Pengguna diprovisikan",
+    "auth_user_deprovisioned": "Pengguna dinonaktifkan"
   },
   "channel": {
     "pos": "POS",
@@ -342,7 +353,8 @@
   "source": {
     "ui": "Pengguna",
     "agent": "Agen",
-    "system": "Sistem"
+    "system": "Sistem",
+    "sso": "SSO"
   },
   "action": {
     "viewAudit": "Lihat jejak audit",

@@ -8,12 +8,11 @@ import { useTranslation } from '@/lib/i18n';
 import { useDeploymentRecords, useRecommendations } from '@/lib/queries';
 import { useSessionStore, useUiStore } from '@/lib/stores';
 import { cn } from '@/lib/utils';
-import { DevRoleSelect } from './DevRoleSelect';
 import { MestaLogo } from './MestaLogo';
+import { ProfileMenu } from './ProfileMenu';
 import { RoleGate } from './RoleGate';
 import { isActive, NAV_SECTIONS, type NavItem } from './nav';
 
-const isDev = process.env.NODE_ENV !== 'production';
 
 const BADGE_CLS: Record<NonNullable<NavItem['badge']>, { chip: string; dot: string }> = {
   pendingRecommendations: { chip: 'bg-warn-soft text-warn', dot: 'bg-warn' },
@@ -72,13 +71,7 @@ function ProfileCard({ labelCls }: { labelCls: string }) {
         </span>
         <ChevronsUpDown className={cn('size-3.5 shrink-0 text-faint', labelCls)} aria-hidden />
       </button>
-      {open && (
-        <div role="menu" className="glass absolute inset-x-2 bottom-full z-40 mb-1 rounded-card border border-line p-3 shadow-e3">
-          <p className="text-sm font-medium">{user.name}</p>
-          <p className="mb-2 text-xs text-muted">{t(`common.role.${user.role}`)}</p>
-          {isDev && <DevRoleSelect />}
-        </div>
-      )}
+      {open && <ProfileMenu onClose={() => setOpen(false)} className="absolute inset-x-2 bottom-full z-40 mb-1" />}
     </div>
   );
 }

@@ -72,6 +72,8 @@ export function eventTone(type: AuditEventType): AuditTone {
   if (type === 'deployment_rollback' || type === 'publish_cancelled') return 'warn';
   if (type === 'manual_override') return 'warn';
   if (type === 'scenario_sent') return 'agent';
+  if (type === 'auth_sso_failed' || type === 'auth_access_denied' || type === 'auth_session_revoked') return 'down';
+  if (type === 'auth_sign_in') return 'up';
   return 'info';
 }
 

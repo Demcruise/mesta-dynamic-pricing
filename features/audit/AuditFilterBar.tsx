@@ -160,7 +160,7 @@ function FiltersPopover({ filters, count, actors, types, onApply, set }: {
             </label>
           </div>
           {select('actor', t('audit.filter.actor'), actors.map((a) => ({ value: a, label: a })), t('audit.filter.allActors'))}
-          {select('source', t('audit.filter.source'), (['ui', 'agent', 'system'] as const).map((s) => ({ value: s, label: t(`common.source.${s}`) })), t('audit.filter.allSources'))}
+          {select('source', t('audit.filter.source'), (['ui', 'agent', 'system', 'sso'] as const).map((s) => ({ value: s, label: t(`common.source.${s}`) })), t('audit.filter.allSources'))}
           {select('type', t('audit.filter.type'), types.map((x) => ({ value: x, label: t(`common.event.${x}`) })), t('audit.filter.allTypes'))}
           <div className="flex items-center justify-between gap-2 border-t border-divider pt-4">
             <Button variant="ghost" onClick={() => setDraft({ actor: '', source: '', type: '' })}>{t('audit.filter.reset')}</Button>

@@ -281,17 +281,18 @@ export type AuditEventType =
   | 'policy_override' | 'publish_window_end'
   | 'notification_acknowledge' | 'notification_snooze' | 'notification_escalate'
   | 'model_review_feedback' | 'manual_override'
-  | 'settings_change';
+  | 'settings_change'
+  | 'auth_sign_in' | 'auth_sign_out' | 'auth_sso_failed' | 'auth_access_denied' | 'auth_role_changed' | 'auth_workspace_switched' | 'auth_session_revoked' | 'auth_sso_config_changed' | 'auth_user_provisioned' | 'auth_user_deprovisioned';
 
 export interface AuditEvent {
   id: string;
   type: AuditEventType;
   actorId: string;
   actorRole: Role;
-  entityType: 'strategy' | 'scenario' | 'recommendation' | 'deployment' | 'anomaly' | 'product' | 'rule' | 'override' | 'datasource' | 'experiment' | 'delegation' | 'policy' | 'notification' | 'settings';
+  entityType: 'strategy' | 'scenario' | 'recommendation' | 'deployment' | 'anomaly' | 'product' | 'rule' | 'override' | 'datasource' | 'experiment' | 'delegation' | 'policy' | 'notification' | 'settings' | 'user';
   entityId: string;
   sku: string | null;
-  source: 'ui' | 'agent' | 'system';
+  source: 'ui' | 'agent' | 'system' | 'sso';
   note: string | null;
   timestamp: string;
   snapshot?: { oldPrice?: number; newPrice?: number };

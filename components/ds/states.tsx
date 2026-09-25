@@ -3,7 +3,9 @@
 import { CheckCircle2, FilterX, Inbox, Lock, type LucideIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { useTranslation } from '@/lib/i18n';
+import { useRouter } from 'next/navigation';
 import { useSessionStore } from '@/lib/stores/session';
+import { useToastStore } from '@/lib/stores/toast';
 import { useCountUp } from '@/lib/use-count-up';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -172,14 +174,29 @@ export function KpiCard({ label, value, format, hint, spark, delta, icon, polari
   );
 }
 
-export function PermissionDeniedState() {
+/**
+ * AUTH-11 unauthorized state: what is blocked, which permission it needs (human label, never a
+ * policy id), who to contact, and two ways forward — Back, or Request access.
+ */
+export function PermissionDeniedState({ action }: { action?: string | undefined }) {
   const { t } = useTranslation();
   const role = useSessionStore((s) => s.user.role);
+  const toast = useToastStore((s) => s.push);
+  const router = useRouter();
   return (
-    <div role="alert" className="flex flex-col items-center gap-2 rounded-card border border-line bg-surface p-10 text-center">
-      <Lock className="size-6 text-faint" aria-hidden />
-      <h2 className="text-base font-semibold">{t('common.perm.deniedTitle')}</h2>
-      <p className="text-sm text-muted">{t('common.perm.deniedBody', { role: t(`common.role.${role}`) })}</p>
+    <div role="alert" className="mx-auto flex max-w-xl flex-col items-center gap-3 rounded-card border border-line bg-surface px-8 py-12 text-center">
+      <Lock className="size-7 text-faint" aria-hidden />
+      <h2 className="text-section text-fg">{t('auth.denied.title')}</h2>
+      {action && (
+        <p className="text-body-sm text-muted">
+          {t('auth.denied.required')}: <span className="font-semibold text-fg">{t(`auth.permission.${action.replace('.', '_')}`)}</span>
+        </p>
+      )}
+      <p className="text-body-sm text-muted">{t('auth.denied.yourRole', { role: t(`common.role.${role}`) })} · {t('auth.denied.contact')}</p>
+      <div className="mt-2 flex gap-2">
+        <Button variant="secondary" onClick={() => (window.history.length > 1 ? router.back() : router.push('/overview'))}>{t('auth.denied.back')}</Button>
+        <Button onClick={() => toast(t('auth.denied.requested'))}>{t('auth.denied.request')}</Button>
+      </div>
     </div>
   );
 }

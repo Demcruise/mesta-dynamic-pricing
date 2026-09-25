@@ -8,6 +8,7 @@ import { CommandMenu } from './CommandMenu';
 import { FeedbackDialog } from './FeedbackDialog';
 import { GlossaryDialog } from './Glossary';
 import { RouteGuard, useGuardStore } from './guard';
+import { SessionTimer } from './AuthGate';
 import { MobileNav } from './MobileNav';
 import { ScopeSelector } from './ScopeSelector';
 import { Sidebar } from './Sidebar';
@@ -50,6 +51,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <MobileNav />
       <CommandMenu />
       <ToastHost />
+      <SessionTimer />
       <FeedbackDialog />
       <GlossaryDialog />
     </div>
